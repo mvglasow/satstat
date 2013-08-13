@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LSRN Tools</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_section1">GPS</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_gps_lat">Latitude (°)</string>
+    <string name="title_gps_lon">Longitude (°)</string>
+    <string name="title_gps_decl">Declination (°)</string>
+    <string name="title_gps_speed">Speed (km/h)</string>
+    <string name="title_gps_alt">Altitude (m)</string>
+    <string name="title_gps_time">Fix Time</string>
+    <string name="title_gps_bear">Bearing (°)</string>
+    <string name="title_gps_orient">Orientation</string>
+    <string name="title_gps_acc">Accuracy (m)</string>
+    <string name="value_none">---</string>
+    <string name="action_record">Record</string>
+    <string name="action_about">About</string>
+
+</resources>
