@@ -1,5 +1,6 @@
 package com.vonglasow.michael.lsrntools;
 
+import java.util.List;
 import java.util.Locale;
 
 
@@ -25,6 +26,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoGsm;
+import android.telephony.CellLocation;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -58,6 +64,7 @@ public class MainActivity extends FragmentActivity {
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
 	private Sensor mGyroSensor;
+	private static TelephonyManager mTelephonyManager;
 
 	protected static boolean isGpsViewReady = false;
 	protected static TextView gpsLat;
@@ -83,6 +90,13 @@ public class MainActivity extends FragmentActivity {
 	protected static TextView orPitch;
 	protected static TextView orRoll;
 	protected static TextView orAccuracy;
+	
+	protected static boolean isRadioViewReady = false;
+	protected static TextView rilMcc;
+	protected static TextView rilMnc;
+	protected static TextView rilCellId;
+	protected static TextView rilLac;
+	
 	/*
 	private PowerManager pm;
 	private WakeLock wl;
@@ -224,7 +238,8 @@ public class MainActivity extends FragmentActivity {
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mOrSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);        
         mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);     
-        mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);     
+        mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE); 
+        mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
     	
     	// SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
@@ -296,11 +311,15 @@ public class MainActivity extends FragmentActivity {
                 fragment = new SensorSectionFragment();
                 return fragment;
             case 2:
+                fragment = new RadioSectionFragment();
+                return fragment;
+            	/*
                 fragment = new DummySectionFragment();
                 Bundle args = new Bundle();
                 args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
                 fragment.setArguments(args);
                 return fragment;
+                */
             }
         return null;
         }
@@ -421,6 +440,68 @@ public class MainActivity extends FragmentActivity {
 
         	isSensorViewReady = true;
 
+            return rootView;
+        }
+    }
+
+
+    /**
+     * The fragment which displays radio network data.
+     */
+    public static class RadioSectionFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        public static final String ARG_SECTION_NUMBER = "section_number";
+
+        public RadioSectionFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main_radio, container, false);
+            
+            // Initialize controls
+        	rilMcc = (TextView) rootView.findViewById(R.id.rilMcc);
+        	rilMnc = (TextView) rootView.findViewById(R.id.rilMnc);
+        	rilCellId = (TextView) rootView.findViewById(R.id.rilCellId);
+        	rilLac = (TextView) rootView.findViewById(R.id.rilLac);
+
+        	isRadioViewReady = true;
+        	
+        	//FIXME: register for updates and update fields periodically (PhoneStateListener.onCellInfoChanged, onCellLocationChanged)
+        	List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
+        	if (allCells != null) {
+        		//we need to do this check as getAllCellInfo may return null
+	        	for (CellInfo cellInfo : allCells) {
+	        		//FIXME: this will just display the last cell encountered
+	        		if ((cellInfo.isRegistered()) && (cellInfo instanceof CellInfoGsm)) {
+	        			CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
+	        			rilMcc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMcc()));
+	        			rilMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
+	        			rilCellId.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
+	        			rilLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
+	        		}
+	        	}
+        	} else {
+	            CellLocation cellLocation = mTelephonyManager.getCellLocation();
+	            
+	            if (cellLocation instanceof GsmCellLocation) {
+		            String networkOperator = mTelephonyManager.getNetworkOperator();
+		             
+		            int cid = ((GsmCellLocation) cellLocation).getCid();
+		            int lac = ((GsmCellLocation) cellLocation).getLac();
+		            
+		            rilMcc.setText(networkOperator.substring(0, 3));
+		            rilMnc.setText(networkOperator.substring(3));
+		            rilCellId.setText(String.valueOf(cid));
+		            rilLac.setText(String.valueOf(lac));
+	            }
+	            //TODO: getNeighboringCellInfo
+        	}
+        	
             return rootView;
         }
     }

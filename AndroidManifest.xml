@@ -8,6 +8,7 @@
         android:minSdkVersion="17"
         android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     
     <application
         android:allowBackup="true"

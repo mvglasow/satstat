@@ -5,7 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_section1">GPS</string>
     <string name="title_section2">Sensors</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section3">Radio</string>
     <string name="title_gps_lat">Latitude (°)</string>
     <string name="title_gps_lon">Longitude (°)</string>
     <string name="title_gps_decl">Declination (°)</string>
@@ -30,5 +30,9 @@
     <string name="title_sensors_orPitch">Pitch (°)</string>
     <string name="title_sensors_orRoll">Roll (°)</string>
     <string name="title_sensors_orAccuracy">Accuracy</string>
+    <string name="title_radio_mcc">MCC</string>
+    <string name="title_radio_mnc">MNC</string>
+    <string name="title_radio_cellid">Cell ID</string>
+    <string name="title_radio_lac">LAC</string>
         
 </resources>
