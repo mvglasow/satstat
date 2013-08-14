@@ -27,9 +27,14 @@ public final class R {
     public static final class id {
         public static final int LinearLayout2=0x7f080003;
         public static final int LinearLayout3=0x7f080006;
-        public static final int action_about=0x7f080019;
-        public static final int action_record=0x7f080017;
-        public static final int action_settings=0x7f080018;
+        public static final int RootLayout=0x7f080017;
+        public static final int accAccuracy=0x7f08001f;
+        public static final int accX=0x7f080019;
+        public static final int accY=0x7f08001b;
+        public static final int accZ=0x7f08001d;
+        public static final int action_about=0x7f080032;
+        public static final int action_record=0x7f080030;
+        public static final int action_settings=0x7f080031;
         public static final int gpsAccuracy=0x7f080016;
         public static final int gpsAlt=0x7f08000e;
         public static final int gpsBearing=0x7f080012;
@@ -38,17 +43,37 @@ public final class R {
         public static final int gpsOrientation=0x7f080014;
         public static final int gpsSpeed=0x7f08000c;
         public static final int gpsTime=0x7f080010;
+        public static final int orAccuracy=0x7f08002f;
+        public static final int orAzimuth=0x7f080029;
         public static final int orDeclination=0x7f08000a;
+        public static final int orPitch=0x7f08002b;
+        public static final int orRoll=0x7f08002d;
         public static final int pager=0x7f080000;
         public static final int pager_title_strip=0x7f080001;
+        public static final int rotAccuracy=0x7f080027;
+        public static final int rotX=0x7f080021;
+        public static final int rotY=0x7f080023;
+        public static final int rotZ=0x7f080025;
         public static final int section_label=0x7f080002;
         public static final int textView10=0x7f08000f;
         public static final int textView12=0x7f080011;
         public static final int textView14=0x7f080013;
         public static final int textView16=0x7f080015;
+        public static final int textView19=0x7f080018;
         public static final int textView2=0x7f080004;
+        public static final int textView21=0x7f08001a;
+        public static final int textView23=0x7f08001c;
+        public static final int textView26=0x7f080028;
+        public static final int textView27=0x7f08002a;
+        public static final int textView28=0x7f08002c;
+        public static final int textView3=0x7f08001e;
         public static final int textView32=0x7f080009;
+        public static final int textView33=0x7f080020;
+        public static final int textView34=0x7f080022;
+        public static final int textView35=0x7f080024;
+        public static final int textView36=0x7f080026;
         public static final int textView4=0x7f080007;
+        public static final int textView5=0x7f08002e;
         public static final int textView6=0x7f08000b;
         public static final int textView8=0x7f08000d;
     }
@@ -56,6 +81,7 @@ public final class R {
         public static final int activity_main=0x7f030000;
         public static final int fragment_main_dummy=0x7f030001;
         public static final int fragment_main_gps=0x7f030002;
+        public static final int fragment_main_sensors=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f070000;
@@ -77,6 +103,18 @@ public final class R {
         public static final int title_section1=0x7f050002;
         public static final int title_section2=0x7f050003;
         public static final int title_section3=0x7f050004;
+        public static final int title_sensors_accAccuracy=0x7f050014;
+        public static final int title_sensors_accX=0x7f050011;
+        public static final int title_sensors_accY=0x7f050012;
+        public static final int title_sensors_accZ=0x7f050013;
+        public static final int title_sensors_orAccuracy=0x7f05001c;
+        public static final int title_sensors_orAzimuth=0x7f050019;
+        public static final int title_sensors_orPitch=0x7f05001a;
+        public static final int title_sensors_orRoll=0x7f05001b;
+        public static final int title_sensors_rotAccuracy=0x7f050018;
+        public static final int title_sensors_rotX=0x7f050015;
+        public static final int title_sensors_rotY=0x7f050016;
+        public static final int title_sensors_rotZ=0x7f050017;
         public static final int value_none=0x7f05000e;
     }
     public static final class style {

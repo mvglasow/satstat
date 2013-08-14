@@ -5,6 +5,14 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_HIGH;
+import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_LOW;
+import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM;
+import static android.hardware.SensorManager.SENSOR_STATUS_UNRELIABLE;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -42,8 +50,16 @@ public class MainActivity extends FragmentActivity {
      */
     ViewPager mViewPager;
     
-	private LocationManager mLocationManager;
+	//The rate in microseconds at which we would like to receive updates from the sensors.
+	private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
 
+	private LocationManager mLocationManager;
+	private SensorManager mSensorManager;
+	private Sensor mOrSensor;
+	private Sensor mAccSensor;
+	private Sensor mGyroSensor;
+
+	protected static boolean isGpsViewReady = false;
 	protected static TextView gpsLat;
 	protected static TextView gpsLon;
 	protected static TextView orDeclination;
@@ -53,6 +69,20 @@ public class MainActivity extends FragmentActivity {
 	protected static TextView gpsBearing;
 	protected static TextView gpsAccuracy;
 	protected static TextView gpsOrientation;
+
+	protected static boolean isSensorViewReady = false;
+	protected static TextView accX;
+	protected static TextView accY;
+	protected static TextView accZ;
+	protected static TextView accAccuracy;
+	protected static TextView rotX;
+	protected static TextView rotY;
+	protected static TextView rotZ;
+	protected static TextView rotAccuracy;
+	protected static TextView orAzimuth;
+	protected static TextView orPitch;
+	protected static TextView orRoll;
+	protected static TextView orAccuracy;
 	/*
 	private PowerManager pm;
 	private WakeLock wl;
@@ -64,47 +94,49 @@ public class MainActivity extends FragmentActivity {
      */
 	private final LocationListener mLocationListener = new LocationListener() {
 	    public void onLocationChanged(Location location) {
-	      // Called when a new location is found by the location provider.
-	    	if (location.hasAccuracy()) {
-	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
-	    	};
-	    	gpsLat.setText(String.format("%.5f", location.getLatitude()));
-	    	gpsLon.setText(String.format("%.5f", location.getLongitude()));
-	    	gpsTime.setText(String.format("%1$tH:%1$tM:%1$tS", location.getTime()));
-	    	if (location.hasAltitude()) {
-	    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
-	    		orDeclination.setText(String.format("%.0f", new GeomagneticField(
-	    				(float) location.getLatitude(),
-	    				(float) location.getLongitude(),
-	    				(float) location.getAltitude(),
-	    				location.getTime()
-	    				).getDeclination()));
-	    	}
-	    	if (location.hasBearing()) {
-	    		gpsBearing.setText(String.format("%.0f", location.getBearing()));
-	    		gpsOrientation.setText(
-	    				(location.getBearing() < 11.25) ? "N" :
-	    					(location.getBearing() < 33.75) ? "NNE" :
-	    						(location.getBearing() < 56.25) ? "NE" :
-	    							(location.getBearing() < 78.75) ? "ENE" :
-	    								(location.getBearing() < 101.25) ? "E" :
-	    									(location.getBearing() < 123.75) ? "ESE" :
-	    										(location.getBearing() < 146.25) ? "SE" :
-	    											(location.getBearing() < 168.75) ? "SSE" :
-	    												(location.getBearing() < 191.25) ? "S" :
-	    													(location.getBearing() < 213.75) ? "SSW" :
-	    														(location.getBearing() < 236.25) ? "SW" :
-	    															(location.getBearing() < 258.75) ? "WSW" :
-	    																(location.getBearing() < 280.25) ? "W" :
-	    																	(location.getBearing() < 302.75) ? "WNW" :
-	    																		(location.getBearing() < 325.25) ? "NW" :
-	    																			(location.getBearing() < 347.75) ? "NNW" :
-	    																				"N"
-	    				);
-	    	}
-	    	if (location.hasSpeed()) {
-	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
-	    	}
+	    	// Called when a new location is found by the location provider.
+        	if (isGpsViewReady) {
+		    	if (location.hasAccuracy()) {
+		    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
+		    	};
+		    	gpsLat.setText(String.format("%.5f", location.getLatitude()));
+		    	gpsLon.setText(String.format("%.5f", location.getLongitude()));
+		    	gpsTime.setText(String.format("%1$tH:%1$tM:%1$tS", location.getTime()));
+		    	if (location.hasAltitude()) {
+		    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
+		    		orDeclination.setText(String.format("%.0f", new GeomagneticField(
+		    				(float) location.getLatitude(),
+		    				(float) location.getLongitude(),
+		    				(float) location.getAltitude(),
+		    				location.getTime()
+		    				).getDeclination()));
+		    	}
+		    	if (location.hasBearing()) {
+		    		gpsBearing.setText(String.format("%.0f", location.getBearing()));
+		    		gpsOrientation.setText(
+		    				(location.getBearing() < 11.25) ? "N" :
+		    					(location.getBearing() < 33.75) ? "NNE" :
+		    						(location.getBearing() < 56.25) ? "NE" :
+		    							(location.getBearing() < 78.75) ? "ENE" :
+		    								(location.getBearing() < 101.25) ? "E" :
+		    									(location.getBearing() < 123.75) ? "ESE" :
+		    										(location.getBearing() < 146.25) ? "SE" :
+		    											(location.getBearing() < 168.75) ? "SSE" :
+		    												(location.getBearing() < 191.25) ? "S" :
+		    													(location.getBearing() < 213.75) ? "SSW" :
+		    														(location.getBearing() < 236.25) ? "SW" :
+		    															(location.getBearing() < 258.75) ? "WSW" :
+		    																(location.getBearing() < 280.25) ? "W" :
+		    																	(location.getBearing() < 302.75) ? "WNW" :
+		    																		(location.getBearing() < 325.25) ? "NW" :
+		    																			(location.getBearing() < 347.75) ? "NNW" :
+		    																				"N"
+		    				);
+		    	}
+		    	if (location.hasSpeed()) {
+		    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+		    	}
+        	}
 	    }
 
 	    public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -114,6 +146,65 @@ public class MainActivity extends FragmentActivity {
 	    public void onProviderDisabled(String provider) {}
 	};
 
+    public static String formatAccuracy(int accuracy) {
+    	switch (accuracy) {
+    	case SENSOR_STATUS_ACCURACY_HIGH:
+    		return("H");
+    	case SENSOR_STATUS_ACCURACY_MEDIUM:
+    		return("M");
+    	case SENSOR_STATUS_ACCURACY_LOW:
+    		return("L");
+    	case SENSOR_STATUS_UNRELIABLE:
+    		return("X");
+    	default:
+    		return("?");
+    	}
+    }
+    
+    //FIXME: same for formatOrientation(get string from bearing), using resource strings
+	
+    private final SensorEventListener mOrListener = new SensorEventListener() {
+        public void onSensorChanged(SensorEvent event) {
+        	if (isSensorViewReady) {
+	            orAzimuth.setText(String.format("%.0f", event.values[0]));
+	            orPitch.setText(String.format("%.0f", event.values[1]));
+	            orRoll.setText(String.format("%.0f", event.values[2]));
+				orAccuracy.setText(formatAccuracy(event.accuracy));
+        	}
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+		
+	private final SensorEventListener mAccListener = new SensorEventListener() {
+        public void onSensorChanged(SensorEvent event) {
+        	if (isSensorViewReady) {
+	            accX.setText(String.format("%.3f", event.values[0]));
+	            accY.setText(String.format("%.3f", event.values[1]));
+	            accZ.setText(String.format("%.3f", event.values[2]));
+				accAccuracy.setText(formatAccuracy(event.accuracy));
+        	}
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+		
+	private final SensorEventListener mGyroListener = new SensorEventListener() {
+        public void onSensorChanged(SensorEvent event) {
+        	if (isSensorViewReady) {
+	            rotX.setText(String.format("%.4f", event.values[0]));
+	            rotY.setText(String.format("%.4f", event.values[1]));
+	            rotZ.setText(String.format("%.4f", event.values[2]));
+				rotAccuracy.setText(formatAccuracy(event.accuracy));
+        	}
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,7 +219,12 @@ public class MainActivity extends FragmentActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         
+        // Register for events
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        mOrSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);        
+        mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);     
+        mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);     
     	
     	// SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
@@ -152,12 +248,18 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
         //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+        mSensorManager.registerListener(mOrListener, mOrSensor, iSensorRate);
+        mSensorManager.registerListener(mAccListener, mAccSensor, iSensorRate);
+        mSensorManager.registerListener(mGyroListener, mGyroSensor, iSensorRate);
     }
 
     @Override
     protected void onStop() {
     	mLocationManager.removeUpdates(mLocationListener);
-        super.onStop();
+    	mSensorManager.unregisterListener(mOrListener);
+    	mSensorManager.unregisterListener(mAccListener);
+    	mSensorManager.unregisterListener(mGyroListener);
+       super.onStop();
     }
     
     // we don't use wake locks
@@ -191,6 +293,8 @@ public class MainActivity extends FragmentActivity {
                 fragment = new GpsSectionFragment();
                 return fragment;
             case 1:
+                fragment = new SensorSectionFragment();
+                return fragment;
             case 2:
                 fragment = new DummySectionFragment();
                 Bundle args = new Bundle();
@@ -275,6 +379,47 @@ public class MainActivity extends FragmentActivity {
         	gpsBearing = (TextView) rootView.findViewById(R.id.gpsBearing);
         	gpsAccuracy = (TextView) rootView.findViewById(R.id.gpsAccuracy);
         	gpsOrientation = (TextView) rootView.findViewById(R.id.gpsOrientation);
+        	
+        	isGpsViewReady = true;
+        	
+            return rootView;
+        }
+    }
+
+
+    /**
+     * The fragment which displays sensor data.
+     */
+    public static class SensorSectionFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        public static final String ARG_SECTION_NUMBER = "section_number";
+
+        public SensorSectionFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main_sensors, container, false);
+            
+            // Initialize controls
+        	accX = (TextView) rootView.findViewById(R.id.accX);
+        	accY = (TextView) rootView.findViewById(R.id.accY);
+        	accZ = (TextView) rootView.findViewById(R.id.accZ);
+        	accAccuracy = (TextView) rootView.findViewById(R.id.accAccuracy);
+        	rotX = (TextView) rootView.findViewById(R.id.rotX);
+        	rotY = (TextView) rootView.findViewById(R.id.rotY);
+        	rotZ = (TextView) rootView.findViewById(R.id.rotZ);
+        	rotAccuracy = (TextView) rootView.findViewById(R.id.rotAccuracy);
+        	orAzimuth = (TextView) rootView.findViewById(R.id.orAzimuth);
+        	orPitch = (TextView) rootView.findViewById(R.id.orPitch);
+        	orRoll = (TextView) rootView.findViewById(R.id.orRoll);
+        	orAccuracy = (TextView) rootView.findViewById(R.id.orAccuracy);
+
+        	isSensorViewReady = true;
 
             return rootView;
         }
