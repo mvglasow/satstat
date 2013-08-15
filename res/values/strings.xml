@@ -16,6 +16,22 @@
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Accuracy (m)</string>
     <string name="value_none">---</string>
+    <string name="value_N">N</string>
+    <string name="value_NNE">NNE</string>
+    <string name="value_NE">NE</string>
+    <string name="value_ENE">ENE</string>
+    <string name="value_E">E</string>
+    <string name="value_ESE">ESE</string>
+    <string name="value_SE">SE</string>
+    <string name="value_SSE">SSE</string>
+    <string name="value_S">S</string>
+    <string name="value_SSW">SSW</string>
+    <string name="value_SW">SW</string>
+    <string name="value_WSW">WSW</string>
+    <string name="value_W">W</string>
+    <string name="value_WNW">WNW</string>
+    <string name="value_NW">NW</string>
+    <string name="value_NNW">NNW</string>
     <string name="action_record">Record</string>
     <string name="action_about">About</string>
     <string name="title_sensors_accX">gx (m/s²)</string>
@@ -34,5 +50,6 @@
     <string name="title_radio_mnc">MNC</string>
     <string name="title_radio_cellid">Cell ID</string>
     <string name="title_radio_lac">LAC</string>
-        
+    <string name="title_radio_asu">ASU</string>
+    
 </resources>

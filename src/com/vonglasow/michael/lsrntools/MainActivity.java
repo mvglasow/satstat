@@ -29,6 +29,12 @@ import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellLocation;
+import android.telephony.PhoneStateListener;
+import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
+import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
+import static android.telephony.PhoneStateListener.LISTEN_NONE;
+import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
+import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.view.Gravity;
@@ -37,9 +43,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements LocationListener, SensorEventListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -96,70 +105,86 @@ public class MainActivity extends FragmentActivity {
 	protected static TextView rilMnc;
 	protected static TextView rilCellId;
 	protected static TextView rilLac;
+	protected static TextView rilAsu;
+	protected static TableLayout rilCells;
 	
 	/*
 	private PowerManager pm;
 	private WakeLock wl;
 	*/
-
-
-    /**
-     * The {@link LocationListener} for updating the GPS display.
-     */
-	private final LocationListener mLocationListener = new LocationListener() {
-	    public void onLocationChanged(Location location) {
-	    	// Called when a new location is found by the location provider.
-        	if (isGpsViewReady) {
-		    	if (location.hasAccuracy()) {
-		    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
-		    	};
-		    	gpsLat.setText(String.format("%.5f", location.getLatitude()));
-		    	gpsLon.setText(String.format("%.5f", location.getLongitude()));
-		    	gpsTime.setText(String.format("%1$tH:%1$tM:%1$tS", location.getTime()));
-		    	if (location.hasAltitude()) {
-		    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
-		    		orDeclination.setText(String.format("%.0f", new GeomagneticField(
-		    				(float) location.getLatitude(),
-		    				(float) location.getLongitude(),
-		    				(float) location.getAltitude(),
-		    				location.getTime()
-		    				).getDeclination()));
-		    	}
-		    	if (location.hasBearing()) {
-		    		gpsBearing.setText(String.format("%.0f", location.getBearing()));
-		    		gpsOrientation.setText(
-		    				(location.getBearing() < 11.25) ? "N" :
-		    					(location.getBearing() < 33.75) ? "NNE" :
-		    						(location.getBearing() < 56.25) ? "NE" :
-		    							(location.getBearing() < 78.75) ? "ENE" :
-		    								(location.getBearing() < 101.25) ? "E" :
-		    									(location.getBearing() < 123.75) ? "ESE" :
-		    										(location.getBearing() < 146.25) ? "SE" :
-		    											(location.getBearing() < 168.75) ? "SSE" :
-		    												(location.getBearing() < 191.25) ? "S" :
-		    													(location.getBearing() < 213.75) ? "SSW" :
-		    														(location.getBearing() < 236.25) ? "SW" :
-		    															(location.getBearing() < 258.75) ? "WSW" :
-		    																(location.getBearing() < 280.25) ? "W" :
-		    																	(location.getBearing() < 302.75) ? "WNW" :
-		    																		(location.getBearing() < 325.25) ? "NW" :
-		    																			(location.getBearing() < 347.75) ? "NNW" :
-		    																				"N"
-		    				);
-		    	}
-		    	if (location.hasSpeed()) {
-		    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
-		    	}
-        	}
-	    }
-
-	    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-	    public void onProviderEnabled(String provider) {}
-
-	    public void onProviderDisabled(String provider) {}
+	
+	/** 
+	 * The {@link PhoneStateListener} for getting radio network updates 
+	 */
+	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
+			if (isRadioViewReady) {
+				rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+			}
+		}
+		
+		public void onCellLocationChanged (CellLocation location) {
+			showCellLocation(location);
+		}
 	};
 
+	/**
+	 * Updates the cell info display. Called by {@link PhoneStateListener.onCellLocationChanged}
+	 * or after explicitly getting the location by calling {@link TelephonyManager.getCellLocation}.
+	 * 
+	 * @param location The location passed to {@link PhoneStateListener.onCellLocationChanged} or returned by {@link TelephonyManager.getCellLocation}
+	 */
+	protected static void showCellLocation (CellLocation location) {
+		if (isRadioViewReady) {
+            if (location instanceof GsmCellLocation) {
+	            String networkOperator = mTelephonyManager.getNetworkOperator();
+	             
+	            int cid = ((GsmCellLocation) location).getCid();
+	            int lac = ((GsmCellLocation) location).getLac();
+	            
+	            rilMcc.setText(networkOperator.substring(0, 3));
+	            rilMnc.setText(networkOperator.substring(3));
+	            rilCellId.setText(String.valueOf(cid));
+	            rilLac.setText(String.valueOf(lac));
+	            
+	            //TODO: get neighboring cells and fill table like this (be sure to clear it first)
+	            /*
+	            TableRow row = new TableRow(rilCells.getContext());
+	            TextView newMcc = new TextView(rilCells.getContext());
+	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newMcc.setText(networkOperator.substring(0, 3));
+	            row.addView(newMcc);
+	            TextView newMnc = new TextView(rilCells.getContext());
+	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newMnc.setText(networkOperator.substring(3));
+	            row.addView(newMnc);
+	            TextView newCid = new TextView(rilCells.getContext());
+	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newCid.setText(String.valueOf(cid));
+	            row.addView(newCid);
+	            TextView newLac = new TextView(rilCells.getContext());
+	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
+	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newLac.setText(String.valueOf(lac));
+	            row.addView(newLac);
+	            TextView newAsu = new TextView(rilCells.getContext());
+	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newAsu.setText("");
+	            row.addView(newAsu);
+	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	            */
+            }
+		}
+	}
+
+    /**
+     * Converts an accuracy value into a human-readable description.
+     */
+	//FIXME: use resource strings... or substitute with colors
     public static String formatAccuracy(int accuracy) {
     	switch (accuracy) {
     	case SENSOR_STATUS_ACCURACY_HIGH:
@@ -175,49 +200,34 @@ public class MainActivity extends FragmentActivity {
     	}
     }
     
-    //FIXME: same for formatOrientation(get string from bearing), using resource strings
+    /**
+     * Converts a bearing (in degrees) into a directional name.
+     */
+    public String formatOrientation(float bearing) {
+		return 
+			(bearing < 11.25) ? getString(R.string.value_N) :
+				(bearing < 33.75) ? getString(R.string.value_NNE) :
+					(bearing < 56.25) ? getString(R.string.value_NE) :
+						(bearing < 78.75) ? getString(R.string.value_ENE) :
+							(bearing < 101.25) ? getString(R.string.value_E) :
+								(bearing < 123.75) ? getString(R.string.value_ESE) :
+									(bearing < 146.25) ? getString(R.string.value_SE) :
+										(bearing < 168.75) ? getString(R.string.value_SSE) :
+											(bearing < 191.25) ? getString(R.string.value_S) :
+												(bearing < 213.75) ? getString(R.string.value_SSW) :
+													(bearing < 236.25) ? getString(R.string.value_SW) :
+														(bearing < 258.75) ? getString(R.string.value_WSW) :
+															(bearing < 280.25) ? getString(R.string.value_W) :
+																(bearing < 302.75) ? getString(R.string.value_WNW) :
+																	(bearing < 325.25) ? getString(R.string.value_NW) :
+																		(bearing < 347.75) ? getString(R.string.value_NNW) :
+																			getString(R.string.value_N);
+    }
 	
-    private final SensorEventListener mOrListener = new SensorEventListener() {
-        public void onSensorChanged(SensorEvent event) {
-        	if (isSensorViewReady) {
-	            orAzimuth.setText(String.format("%.0f", event.values[0]));
-	            orPitch.setText(String.format("%.0f", event.values[1]));
-	            orRoll.setText(String.format("%.0f", event.values[2]));
-				orAccuracy.setText(formatAccuracy(event.accuracy));
-        	}
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
-		
-	private final SensorEventListener mAccListener = new SensorEventListener() {
-        public void onSensorChanged(SensorEvent event) {
-        	if (isSensorViewReady) {
-	            accX.setText(String.format("%.3f", event.values[0]));
-	            accY.setText(String.format("%.3f", event.values[1]));
-	            accZ.setText(String.format("%.3f", event.values[2]));
-				accAccuracy.setText(formatAccuracy(event.accuracy));
-        	}
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
-		
-	private final SensorEventListener mGyroListener = new SensorEventListener() {
-        public void onSensorChanged(SensorEvent event) {
-        	if (isSensorViewReady) {
-	            rotX.setText(String.format("%.4f", event.values[0]));
-	            rotY.setText(String.format("%.4f", event.values[1]));
-	            rotZ.setText(String.format("%.4f", event.values[2]));
-				rotAccuracy.setText(formatAccuracy(event.accuracy));
-        	}
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
+    /**
+     * Called when a sensor's accuracy has changed. Does nothing.
+     */
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -258,22 +268,100 @@ public class MainActivity extends FragmentActivity {
         return true;
     }
     
+    /**
+     * Called when the location changes. Updates GPS display.
+     */
+    public void onLocationChanged(Location location) {
+    	// Called when a new location is found by the location provider.
+    	if (isGpsViewReady) {
+	    	if (location.hasAccuracy()) {
+	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
+	    	};
+	    	gpsLat.setText(String.format("%.5f", location.getLatitude()));
+	    	gpsLon.setText(String.format("%.5f", location.getLongitude()));
+	    	gpsTime.setText(String.format("%1$tH:%1$tM:%1$tS", location.getTime()));
+	    	if (location.hasAltitude()) {
+	    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
+	    		orDeclination.setText(String.format("%.0f", new GeomagneticField(
+	    				(float) location.getLatitude(),
+	    				(float) location.getLongitude(),
+	    				(float) location.getAltitude(),
+	    				location.getTime()
+    				).getDeclination()));
+	    	}
+	    	if (location.hasBearing()) {
+	    		gpsBearing.setText(String.format("%.0f", location.getBearing()));
+	    		gpsOrientation.setText(formatOrientation(location.getBearing()));
+	    	}
+	    	if (location.hasSpeed()) {
+	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+	    	}
+    	}
+    }
+
+    /**
+     * Called when a location provider is disabled. Does nothing.
+     */
+    public void onProviderDisabled(String provider) {}
+
+    /**
+     * Called when a location provider is enabled. Does nothing.
+     */
+    public void onProviderEnabled(String provider) {}
+
     @Override
     protected void onResume() {
         super.onResume();
         //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-        mSensorManager.registerListener(mOrListener, mOrSensor, iSensorRate);
-        mSensorManager.registerListener(mAccListener, mAccSensor, iSensorRate);
-        mSensorManager.registerListener(mGyroListener, mGyroSensor, iSensorRate);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        mSensorManager.registerListener(this, mOrSensor, iSensorRate);
+        mSensorManager.registerListener(this, mAccSensor, iSensorRate);
+        mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
+        //FIXME: we also want LISTEN_CELL_INFO, LISTEN_CELL_LOCATION
+        mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_SIGNAL_STRENGTHS));
     }
+
+    /**
+     * Called when a sensor's reading changes. Updates sensor display.
+     */
+    public void onSensorChanged(SensorEvent event) {
+    	if (isSensorViewReady) {
+            switch (event.sensor.getType()) {  
+	            case Sensor.TYPE_ACCELEROMETER:
+		            accX.setText(String.format("%.3f", event.values[0]));
+		            accY.setText(String.format("%.3f", event.values[1]));
+		            accZ.setText(String.format("%.3f", event.values[2]));
+					accAccuracy.setText(formatAccuracy(event.accuracy));
+					break;
+	            case Sensor.TYPE_ORIENTATION:
+		            orAzimuth.setText(String.format("%.0f", event.values[0]));
+		            //orAzimuth.setText(formatOrientation(event.values[0]));
+		            orPitch.setText(String.format("%.0f", event.values[1]));
+		            orRoll.setText(String.format("%.0f", event.values[2]));
+					orAccuracy.setText(formatAccuracy(event.accuracy));
+					break;
+	            case Sensor.TYPE_GYROSCOPE:
+		            rotX.setText(String.format("%.4f", event.values[0]));
+		            rotY.setText(String.format("%.4f", event.values[1]));
+		            rotZ.setText(String.format("%.4f", event.values[2]));
+					rotAccuracy.setText(formatAccuracy(event.accuracy));
+					break;
+            }
+    	}
+    }
+    	
+    /**
+     * Called when a location provider's status changes. Does nothing.
+     */
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
 
     @Override
     protected void onStop() {
-    	mLocationManager.removeUpdates(mLocationListener);
-    	mSensorManager.unregisterListener(mOrListener);
-    	mSensorManager.unregisterListener(mAccListener);
-    	mSensorManager.unregisterListener(mGyroListener);
+    	mLocationManager.removeUpdates(this);
+    	mSensorManager.unregisterListener(this);
+    	mSensorManager.unregisterListener(this);
+    	mSensorManager.unregisterListener(this);
+        mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
        super.onStop();
     }
     
@@ -468,6 +556,8 @@ public class MainActivity extends FragmentActivity {
         	rilMnc = (TextView) rootView.findViewById(R.id.rilMnc);
         	rilCellId = (TextView) rootView.findViewById(R.id.rilCellId);
         	rilLac = (TextView) rootView.findViewById(R.id.rilLac);
+        	rilAsu = (TextView) rootView.findViewById(R.id.rilAsu);
+        	rilCells = (TableLayout) rootView.findViewById(R.id.rilCells);
 
         	isRadioViewReady = true;
         	
@@ -487,6 +577,10 @@ public class MainActivity extends FragmentActivity {
 	        	}
         	} else {
 	            CellLocation cellLocation = mTelephonyManager.getCellLocation();
+	            showCellLocation(cellLocation);
+        		// we do that via periodic updates now
+        		/*
+	            CellLocation cellLocation = mTelephonyManager.getCellLocation();
 	            
 	            if (cellLocation instanceof GsmCellLocation) {
 		            String networkOperator = mTelephonyManager.getNetworkOperator();
@@ -499,6 +593,7 @@ public class MainActivity extends FragmentActivity {
 		            rilCellId.setText(String.valueOf(cid));
 		            rilLac.setText(String.valueOf(lac));
 	            }
+	            */
 	            //TODO: getNeighboringCellInfo
         	}
         	
