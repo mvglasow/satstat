@@ -44,13 +44,13 @@ public final class R {
         public static final int action_record=0x7f090058;
         public static final int action_settings=0x7f090059;
         public static final int gpsAccuracy=0x7f090016;
-        public static final int gpsAlt=0x7f09000e;
-        public static final int gpsBearing=0x7f090012;
+        public static final int gpsAlt=0x7f09000a;
+        public static final int gpsBearing=0x7f090010;
         public static final int gpsLat=0x7f090005;
         public static final int gpsLon=0x7f090008;
-        public static final int gpsOrientation=0x7f090014;
+        public static final int gpsOrientation=0x7f090012;
         public static final int gpsSpeed=0x7f09000c;
-        public static final int gpsTime=0x7f090010;
+        public static final int gpsTime=0x7f09000e;
         public static final int humidHeader=0x7f090051;
         public static final int light=0x7f090055;
         public static final int lightHeader=0x7f090054;
@@ -67,7 +67,7 @@ public final class R {
         public static final int orAccuracyContainer=0x7f090046;
         public static final int orAziText=0x7f090047;
         public static final int orAzimuth=0x7f090045;
-        public static final int orDeclination=0x7f09000a;
+        public static final int orDeclination=0x7f090014;
         public static final int orHeader=0x7f090043;
         public static final int orPitch=0x7f090049;
         public static final int orRoll=0x7f09004b;
@@ -95,9 +95,9 @@ public final class R {
         public static final int rotZ=0x7f09003b;
         public static final int section_label=0x7f090002;
         public static final int tempHeader=0x7f09004d;
-        public static final int textView10=0x7f09000f;
-        public static final int textView12=0x7f090011;
-        public static final int textView14=0x7f090013;
+        public static final int textView10=0x7f09000d;
+        public static final int textView12=0x7f09000f;
+        public static final int textView14=0x7f090011;
         public static final int textView16=0x7f090015;
         public static final int textView19=0x7f090019;
         public static final int textView2=0x7f090004;
@@ -112,7 +112,7 @@ public final class R {
         public static final int textView29=0x7f090048;
         public static final int textView3=0x7f09001f;
         public static final int textView30=0x7f09004a;
-        public static final int textView32=0x7f090009;
+        public static final int textView32=0x7f090013;
         public static final int textView33=0x7f090036;
         public static final int textView34=0x7f090038;
         public static final int textView35=0x7f09003a;
@@ -120,7 +120,7 @@ public final class R {
         public static final int textView4=0x7f090007;
         public static final int textView5=0x7f090023;
         public static final int textView6=0x7f09000b;
-        public static final int textView8=0x7f09000d;
+        public static final int textView8=0x7f090009;
         public static final int wifiAps=0x7f09002c;
     }
     public static final class layout {

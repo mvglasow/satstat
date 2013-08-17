@@ -68,17 +68,17 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/textView32"
+                android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_gps_decl"
+                android:gravity="bottom"
+                android:text="@string/title_gps_alt"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/orDeclination"
+                android:id="@+id/gpsAlt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:lines="2"
                 android:maxLines="2"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -121,32 +121,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
-                android:text="@string/title_gps_alt"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/gpsAlt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="vertical" >
 
             <TextView
@@ -174,7 +149,7 @@
         android:layout_height="wrap_content"
         android:baselineAligned="true"
         android:measureWithLargestChild="true"
-        android:weightSum="3" >
+        android:weightSum="4" >
 
         <LinearLayout
             android:layout_width="0dp"
@@ -233,6 +208,31 @@
             android:orientation="vertical" >
 
             <TextView
+                android:id="@+id/textView32"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:lines="2"
+                android:text="@string/title_gps_decl"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/orDeclination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@string/value_none"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
                 android:id="@+id/textView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -250,7 +250,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
         </LinearLayout>
-
-    </LinearLayout>
+        
+        </LinearLayout>
 
 </LinearLayout>

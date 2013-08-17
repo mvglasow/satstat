@@ -23,8 +23,8 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
+//import android.os.PowerManager;
+//import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -345,10 +345,14 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
     	if (isGpsViewReady) {
 	    	if (location.hasAccuracy()) {
 	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
-	    	};
+	    	} else {
+	    		gpsAccuracy.setText(getString(R.string.value_none));
+	    	}
+	    	
 	    	gpsLat.setText(String.format("%.5f", location.getLatitude()));
 	    	gpsLon.setText(String.format("%.5f", location.getLongitude()));
-	    	gpsTime.setText(String.format("%1$tH:%1$tM:%1$tS", location.getTime()));
+	    	gpsTime.setText(String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", location.getTime()));
+	    	
 	    	if (location.hasAltitude()) {
 	    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
 	    		orDeclination.setText(String.format("%.0f", new GeomagneticField(
@@ -357,13 +361,23 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	    				(float) location.getAltitude(),
 	    				location.getTime()
     				).getDeclination()));
+	    	} else {
+	    		gpsAlt.setText(getString(R.string.value_none));
+	    		orDeclination.setText(getString(R.string.value_none));
 	    	}
+	    	
 	    	if (location.hasBearing()) {
 	    		gpsBearing.setText(String.format("%.0f", location.getBearing()));
 	    		gpsOrientation.setText(formatOrientation(location.getBearing()));
+	    	} else {
+	    		gpsBearing.setText(getString(R.string.value_none));
+	    		gpsOrientation.setText(getString(R.string.value_none));
 	    	}
+	    	
 	    	if (location.hasSpeed()) {
 	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+	    	} else {
+	    		gpsSpeed.setText(getString(R.string.value_none));
 	    	}
     	}
     }
@@ -447,19 +461,19 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 					lightHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_PROXIMITY:
-	            	proximity.setText(String.format("%s", event.values[0]));
+	            	proximity.setText(String.format("%.0f", event.values[0]));
 					proximityHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_PRESSURE:
-	            	metPressure.setText(String.format("%s", event.values[0]));
+	            	metPressure.setText(String.format("%.0f", event.values[0]));
 					pressureHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_RELATIVE_HUMIDITY:
-	            	metHumid.setText(String.format("%s", event.values[0]));
+	            	metHumid.setText(String.format("%.0f", event.values[0]));
 					humidHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_AMBIENT_TEMPERATURE:
-	            	metTemp.setText(String.format("%s", event.values[0]));
+	            	metTemp.setText(String.format("%.0f", event.values[0]));
 					tempHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
             }
