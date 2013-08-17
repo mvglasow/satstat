@@ -15,7 +15,7 @@
     <string name="title_gps_bear">Bearing (°)</string>
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Accuracy (m)</string>
-    <string name="value_none">---</string>
+    <string name="value_none">–</string>
     <string name="value_N">N</string>
     <string name="value_NNE">NNE</string>
     <string name="value_NE">NE</string>
@@ -46,10 +46,18 @@
     <string name="title_sensors_orPitch">Pitch (°)</string>
     <string name="title_sensors_orRoll">Roll (°)</string>
     <string name="title_sensors_orAccuracy">Accuracy</string>
+    <string name="title_radio_gsm">GSM</string>
     <string name="title_radio_mcc">MCC</string>
     <string name="title_radio_mnc">MNC</string>
     <string name="title_radio_cellid">Cell ID</string>
     <string name="title_radio_lac">LAC</string>
     <string name="title_radio_asu">ASU</string>
+    <string name="title_radio_cdma">CDMA</string>
+    <string name="title_radio_sid">SID</string>
+    <string name="title_radio_nid">NID</string>
+    <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_wifi">WiFi</string>
+    <string name="title_radio_mac">BSSID (MAC)</string>
+    <string name="title_radio_level">dBm</string>
     
 </resources>

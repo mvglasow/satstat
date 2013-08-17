@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Locale;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -17,6 +20,8 @@ import static android.hardware.SensorManager.SENSOR_STATUS_UNRELIABLE;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -27,6 +32,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
+import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;
@@ -37,6 +43,9 @@ import static android.telephony.PhoneStateListener.LISTEN_NONE;
 import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
+import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
+import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -75,6 +84,7 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	private Sensor mAccSensor;
 	private Sensor mGyroSensor;
 	private static TelephonyManager mTelephonyManager;
+	private static WifiManager mWifiManager;
 
 	protected static boolean isGpsViewReady = false;
 	protected static TextView gpsLat;
@@ -108,6 +118,12 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	protected static TextView rilLac;
 	protected static TextView rilAsu;
 	protected static TableLayout rilCells;
+	protected static TextView rilSid;
+	protected static TextView rilNid;
+	protected static TextView rilBsid;
+	protected static TextView rilCdmaAsu;
+	protected static TableLayout rilCdmaCells;
+	protected static TableLayout wifiAps;
 	
 	/*
 	private PowerManager pm;
@@ -125,18 +141,58 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 		public void onCellLocationChanged (CellLocation location) {
 			if (isRadioViewReady) {
 				showCellLocation(location);
-				//this may not be supported on some devices
-				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				showNeighboringCellInfo(neighboringCells);
+				if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
+					//this may not be supported on some devices
+					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+					showNeighboringCellInfo(neighboringCells);
+				}
 			}
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
 			if (isRadioViewReady) {
-				rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
-				//this may not be supported on some devices
-				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				showNeighboringCellInfo(neighboringCells);
+				int pt = mTelephonyManager.getPhoneType();
+				if (pt == PHONE_TYPE_GSM) {
+					rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+					//this may not be supported on some devices
+					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+					showNeighboringCellInfo(neighboringCells);
+				} else if (pt == PHONE_TYPE_CDMA) {
+					//FIXME: no idea if this works on CDMA
+					rilCdmaAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+				}
+			}
+		}
+	};
+	
+	/** 
+	 * The {@link BroadcastReceiver} for getting radio network updates 
+	 */
+	private final BroadcastReceiver mWifiScanReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context c, Intent intent) {
+			if (intent.getAction() == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
+				List <ScanResult> scanResults = mWifiManager.getScanResults();
+		 		if ((isRadioViewReady) && (scanResults != null)) {
+		 			wifiAps.removeAllViews();
+		 			for (ScanResult result : scanResults) {
+			            TableRow row = new TableRow(wifiAps.getContext());
+			            TextView newMac = new TextView(wifiAps.getContext());
+			            newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 17));
+			            newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Large);
+		    			newMac.setText(result.BSSID);
+			            row.addView(newMac);
+			            TextView newLevel = new TextView(wifiAps.getContext());
+			            newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+			            newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Large);
+			            newLevel.setText(String.valueOf(result.level));
+			            row.addView(newLevel);
+			            wifiAps.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		 			}
+		 		}
+			} else {
+				//something has changed about WiFi setup, rescan
+				mWifiManager.startScan();
 			}
 		}
 	};
@@ -203,13 +259,14 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         
-        // Register for events
+        // Get system services for event delivery
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mOrSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);        
         mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);     
         mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE); 
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     	
     	// SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
@@ -278,6 +335,19 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
         mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
         mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_SIGNAL_STRENGTHS));
+        
+        // register for certain WiFi events indicating that new networks may be in range
+        // An access point scan has completed, and results are available.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        
+        // The state of Wi-Fi connectivity has changed.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+        
+        // The RSSI (signal strength) has changed.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
+        
+        // A connection to the supplicant has been established or the connection to the supplicant has been lost.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
     }
 
     /**
@@ -321,7 +391,8 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
     	mSensorManager.unregisterListener(this);
     	mSensorManager.unregisterListener(this);
         mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
-       super.onStop();
+        unregisterReceiver(mWifiScanReceiver);
+        super.onStop();
     }
     
     // we don't use wake locks
@@ -372,6 +443,30 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
     	            newAsu.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getAsuLevel()));
     	            row.addView(newAsu);
     	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        		} else if (cell instanceof CellInfoCdma) {
+        			CellInfoCdma cellInfoCdma = (CellInfoCdma) cell;
+    	            TableRow row = new TableRow(rilCells.getContext());
+    	            TextView newSid = new TextView(rilCells.getContext());
+    	            newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+    	            newSid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newSid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getSystemId()));
+    	            row.addView(newSid);
+    	            TextView newNid = new TextView(rilCells.getContext());
+    	            newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+    	            newNid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newNid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getNetworkId()));
+    	            row.addView(newNid);
+    	            TextView newBsid = new TextView(rilCells.getContext());
+    	            newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+    	            newBsid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newBsid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getBasestationId()));
+    	            row.addView(newBsid);
+    	            TextView newAsu = new TextView(rilCells.getContext());
+    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newAsu.setText(String.valueOf(cellInfoCdma.getCellSignalStrength().getAsuLevel()));
+    	            row.addView(newAsu);
+    	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         		}
  			}
  		}
@@ -391,10 +486,22 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	            int cid = ((GsmCellLocation) location).getCid();
 	            int lac = ((GsmCellLocation) location).getLac();
 	            
-	            rilMcc.setText(networkOperator.substring(0, 3));
-	            rilMnc.setText(networkOperator.substring(3));
+	            if (networkOperator.length() >= 3) {
+		            rilMcc.setText(networkOperator.substring(0, 3));
+		            rilMnc.setText(networkOperator.substring(3));
+	            } else {
+	            	rilMcc.setText(rilMcc.getContext().getString(R.string.value_none));
+		            rilMnc.setText(rilMnc.getContext().getString(R.string.value_none));
+	            }
 	            rilCellId.setText(String.valueOf(cid));
 	            rilLac.setText(String.valueOf(lac));
+            } else if (location instanceof CdmaCellLocation) {
+            	int sid = ((CdmaCellLocation) location).getSystemId();
+            	int nid = ((CdmaCellLocation) location).getNetworkId();
+            	int bsid = ((CdmaCellLocation) location).getBaseStationId();
+            	rilSid.setText(String.valueOf(sid));
+            	rilNid.setText(String.valueOf(nid));
+            	rilBsid.setText(String.valueOf(bsid));
             }
 		}
 	}
@@ -414,12 +521,12 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	            TextView newMcc = new TextView(rilCells.getContext());
 	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
 	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-    			newMcc.setText("–");
+    			newMcc.setText(rilCells.getContext().getString(R.string.value_none));
 	            row.addView(newMcc);
 	            TextView newMnc = new TextView(rilCells.getContext());
 	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
 	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-    			newMnc.setText("–");
+    			newMnc.setText(rilCells.getContext().getString(R.string.value_none));
 	            row.addView(newMnc);
 	            TextView newCid = new TextView(rilCells.getContext());
 	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
@@ -625,30 +732,30 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         	rilLac = (TextView) rootView.findViewById(R.id.rilLac);
         	rilAsu = (TextView) rootView.findViewById(R.id.rilAsu);
         	rilCells = (TableLayout) rootView.findViewById(R.id.rilCells);
+        	
+        	rilSid = (TextView) rootView.findViewById(R.id.rilSid); 
+        	rilNid = (TextView) rootView.findViewById(R.id.rilNid);
+        	rilBsid = (TextView) rootView.findViewById(R.id.rilBsid);
+        	rilCdmaAsu = (TextView) rootView.findViewById(R.id.rilCdmaAsu);
+        	rilCdmaCells = (TableLayout) rootView.findViewById(R.id.rilCdmaCells);
+        	
+        	wifiAps = (TableLayout) rootView.findViewById(R.id.wifiAps);
 
         	isRadioViewReady = true;
         	
         	//get current phone info (first update won't fire until the cell actually changes)
+            CellLocation cellLocation = mTelephonyManager.getCellLocation();
+            showCellLocation(cellLocation);
+            
+			//this is not supported on some phones (returns an empty list)
+			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+			showNeighboringCellInfo(neighboringCells);
+			
+			//this is not implemented on some versions (at least 4.2.2) and will return null 
         	List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-        	if (allCells != null) {
-        		//we need to do this check as getAllCellInfo may return null (it always will on Android 4.2.2)
-	        	for (CellInfo cellInfo : allCells) {
-	        		//FIXME: this will just display the last cell encountered
-	        		if ((cellInfo.isRegistered()) && (cellInfo instanceof CellInfoGsm)) {
-	        			CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
-	        			rilMcc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMcc()));
-	        			rilMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
-	        			rilCellId.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
-	        			rilLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
-	        		}
-	        	}
-        	} else {
-	            CellLocation cellLocation = mTelephonyManager.getCellLocation();
-	            showCellLocation(cellLocation);
-				//this doesn't work at least in Android 4.2.2 (returns an empty list)
-				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				showNeighboringCellInfo(neighboringCells);
-        	}
+        	showCellInfo(allCells);
+        	
+        	mWifiManager.startScan();
         	
             return rootView;
         }
