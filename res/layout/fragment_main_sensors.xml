@@ -2,8 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RootLayout"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/accHeader"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_sensor_acc" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -11,6 +18,30 @@
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
         android:weightSum="4" >
+
+        <LinearLayout
+            android:id="@+id/accAccuracyContainer"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_accTotal"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/accTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@string/value_none"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -85,30 +116,14 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_sensors_accAccuracy"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/accAccuracy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/rotHeader"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_sensor_rot" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -116,6 +131,30 @@
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
         android:weightSum="4" >
+
+        <LinearLayout
+            android:id="@+id/rotAccuracyContainer"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView36"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_rotTotal"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/rotTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@string/value_none"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -127,8 +166,6 @@
                 android:id="@+id/textView33"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
                 android:text="@string/title_sensors_rotX"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -154,8 +191,6 @@
                 android:id="@+id/textView34"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
                 android:text="@string/title_sensors_rotY"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -180,8 +215,6 @@
                 android:id="@+id/textView35"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
                 android:text="@string/title_sensors_rotZ"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -196,32 +229,14 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView36"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
-                android:text="@string/title_sensors_rotAccuracy"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/rotAccuracy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/orHeader"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_sensor_or" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -240,8 +255,6 @@
                 android:id="@+id/textView26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
                 android:text="@string/title_sensors_orAzimuth"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -250,7 +263,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:text="@string/value_none"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/orAccuracyContainer"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_orAziText"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/orAziText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -266,8 +301,6 @@
                 android:id="@+id/textView27"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
                 android:text="@string/title_sensors_orPitch"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -276,7 +309,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -292,8 +324,6 @@
                 android:id="@+id/textView28"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
                 android:text="@string/title_sensors_orRoll"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -302,32 +332,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="2"
-                android:text="@string/title_sensors_orAccuracy"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/orAccuracy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minLines="2"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 

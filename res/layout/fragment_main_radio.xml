@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<LinearLayout
     android:id="@+id/RootLayout"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/rotHeader"
         style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -141,23 +145,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
     </TableLayout>
 
     
@@ -273,23 +260,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <TableRow
-            android:id="@+id/tableRow8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow9"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
     </TableLayout>
     
     <TextView
@@ -327,23 +297,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
     </TableLayout>
     
 </LinearLayout>
+</ScrollView>

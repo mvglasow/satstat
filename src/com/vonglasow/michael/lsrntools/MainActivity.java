@@ -54,6 +54,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -98,19 +99,25 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	protected static TextView gpsOrientation;
 
 	protected static boolean isSensorViewReady = false;
+	protected static TextView accHeader;
+	protected static TextView accTotal;
 	protected static TextView accX;
 	protected static TextView accY;
 	protected static TextView accZ;
-	protected static TextView accAccuracy;
+	protected static LinearLayout accAccuracyContainer;
+	protected static TextView rotHeader;
+	protected static TextView rotTotal;
 	protected static TextView rotX;
 	protected static TextView rotY;
 	protected static TextView rotZ;
-	protected static TextView rotAccuracy;
+	protected static LinearLayout rotAccuracyContainer;
+	protected static TextView orHeader;
 	protected static TextView orAzimuth;
+	protected static TextView orAziText;
 	protected static TextView orPitch;
 	protected static TextView orRoll;
-	protected static TextView orAccuracy;
-	
+	protected static LinearLayout orAccuracyContainer;
+
 	protected static boolean isRadioViewReady = false;
 	protected static TextView rilMcc;
 	protected static TextView rilMnc;
@@ -197,6 +204,25 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 		}
 	};
 
+	
+    /**
+     * Converts an accuracy value into a color identifier.
+     */
+	public static int accuracyToColor(int accuracy) {
+    	switch (accuracy) {
+    	case SENSOR_STATUS_ACCURACY_HIGH:
+    		return(R.color.accHigh);
+    	case SENSOR_STATUS_ACCURACY_MEDIUM:
+    		return(R.color.accMedium);
+    	case SENSOR_STATUS_ACCURACY_LOW:
+    		return(R.color.accLow);
+    	case SENSOR_STATUS_UNRELIABLE:
+    		return(R.color.accUnreliable);
+    	default:
+    		return(android.R.color.background_dark);
+    	}
+	}
+	
     /**
      * Converts an accuracy value into a human-readable description.
      */
@@ -360,20 +386,22 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 		            accX.setText(String.format("%.3f", event.values[0]));
 		            accY.setText(String.format("%.3f", event.values[1]));
 		            accZ.setText(String.format("%.3f", event.values[2]));
-					accAccuracy.setText(formatAccuracy(event.accuracy));
+					accTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+					accHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
 	            case Sensor.TYPE_ORIENTATION:
 		            orAzimuth.setText(String.format("%.0f", event.values[0]));
-		            //orAzimuth.setText(formatOrientation(event.values[0]));
+		            orAziText.setText(formatOrientation(event.values[0]));
 		            orPitch.setText(String.format("%.0f", event.values[1]));
 		            orRoll.setText(String.format("%.0f", event.values[2]));
-					orAccuracy.setText(formatAccuracy(event.accuracy));
+					orHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
 	            case Sensor.TYPE_GYROSCOPE:
 		            rotX.setText(String.format("%.4f", event.values[0]));
 		            rotY.setText(String.format("%.4f", event.values[1]));
 		            rotZ.setText(String.format("%.4f", event.values[2]));
-					rotAccuracy.setText(formatAccuracy(event.accuracy));
+					rotTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+					rotHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
             }
     	}
@@ -687,18 +715,24 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
             View rootView = inflater.inflate(R.layout.fragment_main_sensors, container, false);
             
             // Initialize controls
+        	accHeader = (TextView) rootView.findViewById(R.id.accHeader);
         	accX = (TextView) rootView.findViewById(R.id.accX);
         	accY = (TextView) rootView.findViewById(R.id.accY);
         	accZ = (TextView) rootView.findViewById(R.id.accZ);
-        	accAccuracy = (TextView) rootView.findViewById(R.id.accAccuracy);
+        	accTotal = (TextView) rootView.findViewById(R.id.accTotal);
+        	accAccuracyContainer = (LinearLayout) rootView.findViewById(R.id.accAccuracyContainer);
+        	rotHeader = (TextView) rootView.findViewById(R.id.rotHeader);
         	rotX = (TextView) rootView.findViewById(R.id.rotX);
         	rotY = (TextView) rootView.findViewById(R.id.rotY);
         	rotZ = (TextView) rootView.findViewById(R.id.rotZ);
-        	rotAccuracy = (TextView) rootView.findViewById(R.id.rotAccuracy);
+        	rotTotal = (TextView) rootView.findViewById(R.id.rotTotal);
+        	rotAccuracyContainer = (LinearLayout) rootView.findViewById(R.id.rotAccuracyContainer);
+        	orHeader = (TextView) rootView.findViewById(R.id.orHeader);
         	orAzimuth = (TextView) rootView.findViewById(R.id.orAzimuth);
+        	orAziText = (TextView) rootView.findViewById(R.id.orAziText);
         	orPitch = (TextView) rootView.findViewById(R.id.orPitch);
         	orRoll = (TextView) rootView.findViewById(R.id.orRoll);
-        	orAccuracy = (TextView) rootView.findViewById(R.id.orAccuracy);
+        	orAccuracyContainer = (LinearLayout) rootView.findViewById(R.id.orAccuracyContainer);
 
         	isSensorViewReady = true;
 
