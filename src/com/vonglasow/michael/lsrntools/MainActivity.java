@@ -29,6 +29,7 @@ import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellLocation;
+import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
@@ -117,69 +118,28 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
 	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
+	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
+	 			showCellInfo(cellInfo);
+	 	}
+	 	
+		public void onCellLocationChanged (CellLocation location) {
 			if (isRadioViewReady) {
-				rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+				showCellLocation(location);
+				//this may not be supported on some devices
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				showNeighboringCellInfo(neighboringCells);
 			}
 		}
 		
-		public void onCellLocationChanged (CellLocation location) {
-			showCellLocation(location);
+		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
+			if (isRadioViewReady) {
+				rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+				//this may not be supported on some devices
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				showNeighboringCellInfo(neighboringCells);
+			}
 		}
 	};
-
-	/**
-	 * Updates the cell info display. Called by {@link PhoneStateListener.onCellLocationChanged}
-	 * or after explicitly getting the location by calling {@link TelephonyManager.getCellLocation}.
-	 * 
-	 * @param location The location passed to {@link PhoneStateListener.onCellLocationChanged} or returned by {@link TelephonyManager.getCellLocation}
-	 */
-	protected static void showCellLocation (CellLocation location) {
-		if (isRadioViewReady) {
-            if (location instanceof GsmCellLocation) {
-	            String networkOperator = mTelephonyManager.getNetworkOperator();
-	             
-	            int cid = ((GsmCellLocation) location).getCid();
-	            int lac = ((GsmCellLocation) location).getLac();
-	            
-	            rilMcc.setText(networkOperator.substring(0, 3));
-	            rilMnc.setText(networkOperator.substring(3));
-	            rilCellId.setText(String.valueOf(cid));
-	            rilLac.setText(String.valueOf(lac));
-	            
-	            //TODO: get neighboring cells and fill table like this (be sure to clear it first)
-	            /*
-	            TableRow row = new TableRow(rilCells.getContext());
-	            TextView newMcc = new TextView(rilCells.getContext());
-	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-	            newMcc.setText(networkOperator.substring(0, 3));
-	            row.addView(newMcc);
-	            TextView newMnc = new TextView(rilCells.getContext());
-	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-	            newMnc.setText(networkOperator.substring(3));
-	            row.addView(newMnc);
-	            TextView newCid = new TextView(rilCells.getContext());
-	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-	            newCid.setText(String.valueOf(cid));
-	            row.addView(newCid);
-	            TextView newLac = new TextView(rilCells.getContext());
-	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-	            newLac.setText(String.valueOf(lac));
-	            row.addView(newLac);
-	            TextView newAsu = new TextView(rilCells.getContext());
-	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-	            newAsu.setText("");
-	            row.addView(newAsu);
-	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-	            */
-            }
-		}
-	}
 
     /**
      * Converts an accuracy value into a human-readable description.
@@ -317,7 +277,6 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
         mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
-        //FIXME: we also want LISTEN_CELL_INFO, LISTEN_CELL_LOCATION
         mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_SIGNAL_STRENGTHS));
     }
 
@@ -373,6 +332,114 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         super.onDestroy();
     }
     */
+
+	/**
+	 * Updates the list of cells in range. Called by {@link PhoneStateListener.onCellInfoChanged}
+	 * or after explicitly getting the location by calling {@link TelephonyManager.getAllCellInfo}.
+	 * 
+	 * @param cells The list of cells passed to {@link PhoneStateListener.onCellInfoChanged} or returned by {@link TelephonyManager.getAllCellInfo}
+	 */
+	protected static void showCellInfo (List <CellInfo> cells) {
+ 		if ((isRadioViewReady) && (cells != null)) {
+ 			rilCells.removeAllViews();
+ 			for (CellInfo cell : cells) {
+        		if (cell instanceof CellInfoGsm) {
+        			CellInfoGsm cellInfoGsm = (CellInfoGsm) cell;
+    	            TableRow row = new TableRow(rilCells.getContext());
+    	            TextView newMcc = new TextView(rilCells.getContext());
+    	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+    	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+        			newMcc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMcc()));
+    	            row.addView(newMcc);
+    	            TextView newMnc = new TextView(rilCells.getContext());
+    	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+    	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+        			newMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
+    	            row.addView(newMnc);
+    	            TextView newCid = new TextView(rilCells.getContext());
+    	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+    	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+        			newCid.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
+    	            row.addView(newCid);
+    	            TextView newLac = new TextView(rilCells.getContext());
+    	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
+    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+        			newLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
+    	            row.addView(newLac);
+    	            TextView newAsu = new TextView(rilCells.getContext());
+    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newAsu.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getAsuLevel()));
+    	            row.addView(newAsu);
+    	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        		}
+ 			}
+ 		}
+	}
+	
+	/**
+	 * Updates the info display for the current radio cell. Called by {@link PhoneStateListener.onCellLocationChanged}
+	 * or after explicitly getting the location by calling {@link TelephonyManager.getCellLocation}.
+	 * 
+	 * @param location The location passed to {@link PhoneStateListener.onCellLocationChanged} or returned by {@link TelephonyManager.getCellLocation}
+	 */
+	protected static void showCellLocation (CellLocation location) {
+		if (isRadioViewReady) {
+            if (location instanceof GsmCellLocation) {
+	            String networkOperator = mTelephonyManager.getNetworkOperator();
+	             
+	            int cid = ((GsmCellLocation) location).getCid();
+	            int lac = ((GsmCellLocation) location).getLac();
+	            
+	            rilMcc.setText(networkOperator.substring(0, 3));
+	            rilMnc.setText(networkOperator.substring(3));
+	            rilCellId.setText(String.valueOf(cid));
+	            rilLac.setText(String.valueOf(lac));
+            }
+		}
+	}
+	
+	//FIXME: don't repeat active cell in list (we're already displaying it above)
+	/**
+	 * Updates the list of cells in range. Called after explicitly getting a
+	 * list of neighboring cells by calling {@link TelephonyManager.getNeighboringCellInfo}.
+	 * 
+	 * @param neighboringCells The list of cells returned by {@link TelephonyManager.getNeighboringCellInfo}
+	 */
+	protected static void showNeighboringCellInfo (List <NeighboringCellInfo> neighboringCells) {
+ 		if ((isRadioViewReady) && (neighboringCells != null)) {
+ 			rilCells.removeAllViews();
+ 			for (NeighboringCellInfo cell : neighboringCells) {
+	            TableRow row = new TableRow(rilCells.getContext());
+	            TextView newMcc = new TextView(rilCells.getContext());
+	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    			newMcc.setText("–");
+	            row.addView(newMcc);
+	            TextView newMnc = new TextView(rilCells.getContext());
+	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    			newMnc.setText("–");
+	            row.addView(newMnc);
+	            TextView newCid = new TextView(rilCells.getContext());
+	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    			newCid.setText(String.valueOf(cell.getCid()));
+	            row.addView(newCid);
+	            TextView newLac = new TextView(rilCells.getContext());
+	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
+	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    			newLac.setText(String.valueOf(cell.getLac()));
+	            row.addView(newLac);
+	            TextView newAsu = new TextView(rilCells.getContext());
+	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newAsu.setText(String.valueOf(cell.getRssi()));
+	            row.addView(newAsu);
+	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+ 			}
+ 		}
+	}
     
 
     /**
@@ -561,10 +628,10 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 
         	isRadioViewReady = true;
         	
-        	//FIXME: register for updates and update fields periodically (PhoneStateListener.onCellInfoChanged, onCellLocationChanged)
+        	//get current phone info (first update won't fire until the cell actually changes)
         	List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
         	if (allCells != null) {
-        		//we need to do this check as getAllCellInfo may return null
+        		//we need to do this check as getAllCellInfo may return null (it always will on Android 4.2.2)
 	        	for (CellInfo cellInfo : allCells) {
 	        		//FIXME: this will just display the last cell encountered
 	        		if ((cellInfo.isRegistered()) && (cellInfo instanceof CellInfoGsm)) {
@@ -578,23 +645,9 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         	} else {
 	            CellLocation cellLocation = mTelephonyManager.getCellLocation();
 	            showCellLocation(cellLocation);
-        		// we do that via periodic updates now
-        		/*
-	            CellLocation cellLocation = mTelephonyManager.getCellLocation();
-	            
-	            if (cellLocation instanceof GsmCellLocation) {
-		            String networkOperator = mTelephonyManager.getNetworkOperator();
-		             
-		            int cid = ((GsmCellLocation) cellLocation).getCid();
-		            int lac = ((GsmCellLocation) cellLocation).getLac();
-		            
-		            rilMcc.setText(networkOperator.substring(0, 3));
-		            rilMnc.setText(networkOperator.substring(3));
-		            rilCellId.setText(String.valueOf(cid));
-		            rilLac.setText(String.valueOf(lac));
-	            }
-	            */
-	            //TODO: getNeighboringCellInfo
+				//this doesn't work at least in Android 4.2.2 (returns an empty list)
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				showNeighboringCellInfo(neighboringCells);
         	}
         	
             return rootView;
