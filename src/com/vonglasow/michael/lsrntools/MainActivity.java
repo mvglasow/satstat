@@ -84,6 +84,12 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
 	private Sensor mGyroSensor;
+	private Sensor mMagSensor;
+	private Sensor mLightSensor;
+	private Sensor mProximitySensor;
+	private Sensor mPressureSensor;
+	private Sensor mHumiditySensor;
+	private Sensor mTempSensor;
 	private static TelephonyManager mTelephonyManager;
 	private static WifiManager mWifiManager;
 
@@ -104,19 +110,33 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	protected static TextView accX;
 	protected static TextView accY;
 	protected static TextView accZ;
-	protected static LinearLayout accAccuracyContainer;
 	protected static TextView rotHeader;
 	protected static TextView rotTotal;
 	protected static TextView rotX;
 	protected static TextView rotY;
 	protected static TextView rotZ;
-	protected static LinearLayout rotAccuracyContainer;
+	protected static TextView magHeader;
+	protected static TextView magTotal;
+	protected static TextView magX;
+	protected static TextView magY;
+	protected static TextView magZ;
 	protected static TextView orHeader;
 	protected static TextView orAzimuth;
 	protected static TextView orAziText;
 	protected static TextView orPitch;
 	protected static TextView orRoll;
-	protected static LinearLayout orAccuracyContainer;
+	protected static TextView metHeader;
+	protected static TextView tempHeader;
+	protected static TextView metTemp;
+	protected static TextView pressureHeader;
+	protected static TextView metPressure;
+	protected static TextView humidHeader;
+	protected static TextView metHumid;
+	protected static TextView miscHeader;
+	protected static TextView lightHeader;
+	protected static TextView light;
+	protected static TextView proximityHeader;
+	protected static TextView proximity;
 
 	protected static boolean isRadioViewReady = false;
 	protected static TextView rilMcc;
@@ -291,6 +311,12 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         mOrSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);        
         mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);     
         mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE); 
+        mMagSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD); 
+        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        mPressureSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mHumiditySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        mTempSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     	
@@ -360,6 +386,12 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
         mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
+        mSensorManager.registerListener(this, mMagSensor, iSensorRate);
+        mSensorManager.registerListener(this, mLightSensor, iSensorRate);
+        mSensorManager.registerListener(this, mProximitySensor, iSensorRate);
+        mSensorManager.registerListener(this, mPressureSensor, iSensorRate);
+        mSensorManager.registerListener(this, mHumiditySensor, iSensorRate);
+        mSensorManager.registerListener(this, mTempSensor, iSensorRate);
         mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_SIGNAL_STRENGTHS));
         
         // register for certain WiFi events indicating that new networks may be in range
@@ -400,9 +432,36 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 		            rotX.setText(String.format("%.4f", event.values[0]));
 		            rotY.setText(String.format("%.4f", event.values[1]));
 		            rotZ.setText(String.format("%.4f", event.values[2]));
-					rotTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+					rotTotal.setText(String.format("%.4f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 					rotHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
+	            case Sensor.TYPE_MAGNETIC_FIELD:
+		            magX.setText(String.format("%.3f", event.values[0]));
+		            magY.setText(String.format("%.3f", event.values[1]));
+		            magZ.setText(String.format("%.3f", event.values[2]));
+					magTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+					magHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+	            	break;
+	            case Sensor.TYPE_LIGHT:
+	            	light.setText(String.format("%.1f", event.values[0]));
+					lightHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+	            	break;
+	            case Sensor.TYPE_PROXIMITY:
+	            	proximity.setText(String.format("%s", event.values[0]));
+					proximityHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+	            	break;
+	            case Sensor.TYPE_PRESSURE:
+	            	metPressure.setText(String.format("%s", event.values[0]));
+					pressureHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+	            	break;
+	            case Sensor.TYPE_RELATIVE_HUMIDITY:
+	            	metHumid.setText(String.format("%s", event.values[0]));
+					humidHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+	            	break;
+	            case Sensor.TYPE_AMBIENT_TEMPERATURE:
+	            	metTemp.setText(String.format("%s", event.values[0]));
+					tempHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+	            	break;
             }
     	}
     }
@@ -415,8 +474,6 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
     @Override
     protected void onStop() {
     	mLocationManager.removeUpdates(this);
-    	mSensorManager.unregisterListener(this);
-    	mSensorManager.unregisterListener(this);
     	mSensorManager.unregisterListener(this);
         mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
         unregisterReceiver(mWifiScanReceiver);
@@ -720,19 +777,33 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         	accY = (TextView) rootView.findViewById(R.id.accY);
         	accZ = (TextView) rootView.findViewById(R.id.accZ);
         	accTotal = (TextView) rootView.findViewById(R.id.accTotal);
-        	accAccuracyContainer = (LinearLayout) rootView.findViewById(R.id.accAccuracyContainer);
         	rotHeader = (TextView) rootView.findViewById(R.id.rotHeader);
         	rotX = (TextView) rootView.findViewById(R.id.rotX);
         	rotY = (TextView) rootView.findViewById(R.id.rotY);
         	rotZ = (TextView) rootView.findViewById(R.id.rotZ);
         	rotTotal = (TextView) rootView.findViewById(R.id.rotTotal);
-        	rotAccuracyContainer = (LinearLayout) rootView.findViewById(R.id.rotAccuracyContainer);
+        	magHeader = (TextView) rootView.findViewById(R.id.magHeader);
+        	magX = (TextView) rootView.findViewById(R.id.magX);
+        	magY = (TextView) rootView.findViewById(R.id.magY);
+        	magZ = (TextView) rootView.findViewById(R.id.magZ);
+        	magTotal = (TextView) rootView.findViewById(R.id.magTotal);
         	orHeader = (TextView) rootView.findViewById(R.id.orHeader);
         	orAzimuth = (TextView) rootView.findViewById(R.id.orAzimuth);
         	orAziText = (TextView) rootView.findViewById(R.id.orAziText);
         	orPitch = (TextView) rootView.findViewById(R.id.orPitch);
         	orRoll = (TextView) rootView.findViewById(R.id.orRoll);
-        	orAccuracyContainer = (LinearLayout) rootView.findViewById(R.id.orAccuracyContainer);
+        	metHeader = (TextView) rootView.findViewById(R.id.metHeader);
+        	tempHeader = (TextView) rootView.findViewById(R.id.tempHeader);
+        	metTemp = (TextView) rootView.findViewById(R.id.metTemp);
+        	pressureHeader = (TextView) rootView.findViewById(R.id.pressureHeader);
+        	metPressure = (TextView) rootView.findViewById(R.id.metPressure);
+        	humidHeader = (TextView) rootView.findViewById(R.id.humidHeader);
+        	metHumid = (TextView) rootView.findViewById(R.id.metHumid);
+        	miscHeader = (TextView) rootView.findViewById(R.id.miscHeader);
+        	lightHeader = (TextView) rootView.findViewById(R.id.lightHeader);
+        	light = (TextView) rootView.findViewById(R.id.light);
+        	proximityHeader = (TextView) rootView.findViewById(R.id.proximityHeader);
+        	proximity = (TextView) rootView.findViewById(R.id.proximity);
 
         	isSensorViewReady = true;
 
