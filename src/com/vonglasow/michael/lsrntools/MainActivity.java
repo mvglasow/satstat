@@ -17,6 +17,8 @@ import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_HIGH;
 import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_LOW;
 import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM;
 import static android.hardware.SensorManager.SENSOR_STATUS_UNRELIABLE;
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -59,7 +61,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements LocationListener, SensorEventListener {
+public class MainActivity extends FragmentActivity implements GpsStatus.Listener, LocationListener, SensorEventListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -103,6 +105,9 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	protected static TextView gpsBearing;
 	protected static TextView gpsAccuracy;
 	protected static TextView gpsOrientation;
+	protected static TextView gpsSatsInFix;
+	protected static TextView gpsSatsInView;
+	protected static TextView gpsTtff;
 
 	protected static boolean isSensorViewReady = false;
 	protected static TextView accHeader;
@@ -338,6 +343,26 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
     }
     
     /**
+     * Called when the status of the GPS changes. Updates GPS display.
+     */
+    public void onGpsStatusChanged (int event) {
+    	if (isGpsViewReady) {
+	    	GpsStatus status = mLocationManager.getGpsStatus(null);
+	    	int satsInView = 0;
+	    	int satsUsed = 0;
+	    	for (GpsSatellite sat : status.getSatellites()) {
+	    		satsInView++;
+	    		if (sat.usedInFix()) {
+	    			satsUsed++;
+	    		}
+	    	}
+	    	gpsSatsInView.setText(String.valueOf(satsInView));
+	    	gpsSatsInFix.setText(String.valueOf(satsUsed));
+	    	gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
+    	}
+    }
+    
+    /**
      * Called when the location changes. Updates GPS display.
      */
     public void onLocationChanged(Location location) {
@@ -379,6 +404,19 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
 	    	} else {
 	    		gpsSpeed.setText(getString(R.string.value_none));
 	    	}
+	    	
+	    	// this doesn't seem to work, always returns 0 satellites
+	    	/*
+	    	String sats  = getString(R.string.value_none);
+	    	Bundle extras = location.getExtras();
+	    	if (extras != null) {
+	    		Object oSats = extras.get("satellites");
+	    		if (oSats != null) {
+	    			sats = oSats.toString();
+	    		}
+	    	}
+	    	gpsSatsInFix.setText(sats);
+	    	*/
     	}
     }
 
@@ -397,6 +435,7 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         super.onResume();
         //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        mLocationManager.addGpsStatusListener(this);
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
         mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
@@ -488,6 +527,7 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
     @Override
     protected void onStop() {
     	mLocationManager.removeUpdates(this);
+    	mLocationManager.removeGpsStatusListener(this);
     	mSensorManager.unregisterListener(this);
         mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
         unregisterReceiver(mWifiScanReceiver);
@@ -759,6 +799,9 @@ public class MainActivity extends FragmentActivity implements LocationListener, 
         	gpsBearing = (TextView) rootView.findViewById(R.id.gpsBearing);
         	gpsAccuracy = (TextView) rootView.findViewById(R.id.gpsAccuracy);
         	gpsOrientation = (TextView) rootView.findViewById(R.id.gpsOrientation);
+        	gpsSatsInFix = (TextView) rootView.findViewById(R.id.gpsSatsInFix);
+        	gpsSatsInView = (TextView) rootView.findViewById(R.id.gpsSatsInView);
+        	gpsTtff = (TextView) rootView.findViewById(R.id.gpsTtff);
         	
         	isGpsViewReady = true;
         	
