@@ -6,6 +6,11 @@
     <string name="action_record">Record</string>
     <string name="action_stop_record">Stop recording</string>
     <string name="action_about">About</string>
+    <string name="error_write_file">Error writing to file</string>
+    <string name="error_ext_storage">External storage not available</string>
+    <string name="info_start_rec">Started recording</string>
+    <string name="notify_record_title">Recording sensor data</string>
+    <string name="notify_record_body">Touch to stop recording</string>
     <string name="title_section1">GPS</string>
     <string name="title_section2">Sensors</string>
     <string name="title_section3">Radio</string>

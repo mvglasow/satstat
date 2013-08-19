@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Locale;
 
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -60,6 +62,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import com.vonglasow.michael.lsrntools.LoggerService;
 
 public class MainActivity extends FragmentActivity implements GpsStatus.Listener, LocationListener, SensorEventListener {
 
@@ -94,6 +97,9 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	private Sensor mTempSensor;
 	private static TelephonyManager mTelephonyManager;
 	private static WifiManager mWifiManager;
+
+	protected static MenuItem menu_action_record;
+	protected static MenuItem menu_action_stop_record;
 
 	protected static boolean isGpsViewReady = false;
 	protected static TextView gpsLat;
@@ -325,7 +331,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     	
-    	// SCREEN_BRIGHT_WAKE_LOCK is deprecated
+        // SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Sensor Monitor");
@@ -339,6 +345,17 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        menu_action_record = menu.findItem(R.id.action_record);
+        menu_action_stop_record = menu.findItem(R.id.action_stop_record);
+        
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (LoggerService.class.getName().equals(service.service.getClassName())) {
+                menu_action_record.setVisible(false);
+                menu_action_stop_record.setVisible(true);
+            }
+        }
+        
         return true;
     }
     
@@ -418,6 +435,36 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	    	gpsSatsInFix.setText(sats);
 	    	*/
     	}
+    }
+    
+    /**
+     * Called when a menu item is selected, and triggers the appropriate action.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent logIntent;
+        switch (item.getItemId()) {
+        case R.id.action_record:
+        	//start logging            
+    		//start log
+    		logIntent = new Intent(this, LoggerService.class);
+    		logIntent.setAction("com.vonglasow.michael.lsrntools.intent.ACTION_START");
+    		startService (logIntent);
+            menu_action_stop_record.setVisible(true);
+            menu_action_record.setVisible(false);
+            return true;
+        case R.id.action_stop_record:
+        	//stop logging            
+    		logIntent = new Intent(this, LoggerService.class);
+    		logIntent.setAction("com.vonglasow.michael.lsrntools.intent.ACTION_STOP");
+    		startService (logIntent);
+            menu_action_record.setVisible(true);
+            menu_action_stop_record.setVisible(false);
+			//FIXME: should we broadcast the intent instead of calling startService?
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
