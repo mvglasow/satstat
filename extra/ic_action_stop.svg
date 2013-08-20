@@ -14,7 +14,10 @@
    id="svg2996"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="ic_menu_stop.svg">
+   sodipodi:docname="ic_action_stop.svg"
+   inkscape:export-filename="/home/michael/src/lsrntools/extra/ic_action_stop.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs2998" />
   <sodipodi:namedview
@@ -25,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="6.6145833"
-     inkscape:cx="21.92126"
+     inkscape:cx="22.223622"
      inkscape:cy="48"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -61,17 +64,12 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      transform="translate(0,64)">
-    <path
-       style="fill:#000000;fill-opacity:1;stroke:#00b900;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       d="M 48 12 C 28.117749 12 12 28.117749 12 48 C 12 67.882251 28.117749 84 48 84 C 67.882251 84 84 67.882251 84 48 C 84 28.117749 67.882251 12 48 12 z M 48 18 C 64.568542 18 78 31.431458 78 48 C 78 64.568542 64.568542 78 48 78 C 31.431458 78 18 64.568542 18 48 C 18 31.431458 31.431458 18 48 18 z "
-       transform="translate(0,-64)"
-       id="path3090" />
     <rect
        style="fill:#000000;fill-opacity:1;stroke:#00b900;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3906"
-       width="30"
-       height="30"
-       x="33"
-       y="-31" />
+       width="48"
+       height="48"
+       x="24"
+       y="-40" />
   </g>
 </svg>
