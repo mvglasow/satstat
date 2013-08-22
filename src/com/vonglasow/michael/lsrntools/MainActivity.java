@@ -448,7 +448,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         	//start logging            
     		//start log
     		logIntent = new Intent(this, LoggerService.class);
-    		logIntent.setAction("com.vonglasow.michael.lsrntools.intent.ACTION_START");
+    		logIntent.setAction(LoggerService.ACTION_START);
     		startService (logIntent);
             menu_action_stop_record.setVisible(true);
             menu_action_record.setVisible(false);
@@ -456,11 +456,10 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         case R.id.action_stop_record:
         	//stop logging            
     		logIntent = new Intent(this, LoggerService.class);
-    		logIntent.setAction("com.vonglasow.michael.lsrntools.intent.ACTION_STOP");
+    		logIntent.setAction(LoggerService.ACTION_STOP);
     		startService (logIntent);
             menu_action_record.setVisible(true);
             menu_action_stop_record.setVisible(false);
-			//FIXME: should we broadcast the intent instead of calling startService?
             return true;
         default:
             return super.onOptionsItemSelected(item);
