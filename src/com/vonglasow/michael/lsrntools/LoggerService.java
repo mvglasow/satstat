@@ -1,9 +1,8 @@
 package com.vonglasow.michael.lsrntools;
-//FIXME: logging overloads system
 //TODO: send a broadcast when stopping
-//TODO: more sensors
 //TODO: resolve that timestamp issue (uptime to real time): get one fixed offset and stick with that
 //TODO: rework XML format (timestamp fields) and think of new file extension
+//TODO: more sensors
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,8 +42,9 @@ import android.widget.Toast;
 public class LoggerService extends Service {
 
 	//The rate in microseconds at which we would like to receive updates from the sensors.
-	private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
-
+	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
+	private static final int iSensorRate = 20000; //Default is 20,000 for accel, 5,000 for gyro
+	
 	// The unique ID for the notification
 	private static final int ONGOING_NOTIFICATION = 1;
 	
@@ -60,6 +60,19 @@ public class LoggerService extends Service {
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
 	private Sensor mGyroSensor;
+
+	private long mOrLast = 0;
+	private long mAccLast = 0;
+	private long mGyroLast = 0;
+	/*
+	private long mMagLast = 0;
+	private long mLightLast = 0;
+	private long mProximityLast = 0;
+	private long mPressureLast = 0;
+	private long mHumidityLast = 0;
+	private long mTempLast = 0;
+	*/
+	
 	private FileWriter fwriter;
 	private BufferedWriter bwriter;
 	private PowerManager pm;
@@ -297,20 +310,59 @@ public class LoggerService extends Service {
 
 		// From SensorEventListener
 		public void onSensorChanged(SensorEvent event) {
-			if (bRecording) {
-				//event.timestamp is nanoseconds since boot; convert to UTC timestamp
-				long timeInMillis = (new Date()).getTime() + (event.timestamp - SystemClock.elapsedRealtimeNanos()) / 1000000L;
+			//event.timestamp is nanoseconds since boot; convert to UTC timestamp
+			long timeInMillis = (new Date()).getTime() + (event.timestamp - SystemClock.elapsedRealtimeNanos()) / 1000000L;
+			
+			//to enforce sensor rate
+			boolean isRateElapsed = false;
+			
+			switch (event.sensor.getType()) {
+			case Sensor.TYPE_ACCELEROMETER:
+				isRateElapsed = (event.timestamp / 1000) - mAccLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_ORIENTATION:
+				isRateElapsed = (event.timestamp / 1000) - mOrLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_GYROSCOPE:
+				isRateElapsed = (event.timestamp / 1000) - mGyroLast >= iSensorRate;
+				break;
+			/*
+			case Sensor.TYPE_MAGNETIC_FIELD:
+				isRateElapsed = (event.timestamp / 1000) - mMagLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_LIGHT:
+				isRateElapsed = (event.timestamp / 1000) - mLightLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_PROXIMITY:
+				isRateElapsed = (event.timestamp / 1000) - mProximityLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_PRESSURE:
+				isRateElapsed = (event.timestamp / 1000) - mPressureLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_RELATIVE_HUMIDITY:
+				isRateElapsed = (event.timestamp / 1000) - mHumidityLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_AMBIENT_TEMPERATURE:
+				isRateElapsed = (event.timestamp / 1000) - mTempLast >= iSensorRate;
+				break;
+			*/
+			}
+			
+			if (bRecording && isRateElapsed) {
 				String logText = "    <";
 				switch (event.sensor.getType()) {
 				case Sensor.TYPE_ORIENTATION:
+					mOrLast = event.timestamp / 1000;
 					logText += "orientation sensor=\"" + event.sensor.getName() + "\"";
 					logText += String.format(" azimuth=\"%f\" pitch=\"%f\" roll=\"%f\"", event.values[0], event.values[1], event.values[2]);
 					break;
 				case Sensor.TYPE_ACCELEROMETER:
+					mAccLast = event.timestamp / 1000;
 					logText += "accelerometer sensor=\"" + event.sensor.getName() + "\"";
 					logText += String.format(" x=\"%f\" y=\"%f\" z=\"%f\"", event.values[0], event.values[1], event.values[2]);
 					break;
 				case Sensor.TYPE_GYROSCOPE:
+					mOrLast = event.timestamp / 1000;
 					logText += "gyroscope sensor=\"" + event.sensor.getName() + "\"";
 					logText += String.format(" x=\"%f\" y=\"%f\" z=\"%f\"", event.values[0], event.values[1], event.values[2]);
 					break;

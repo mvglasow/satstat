@@ -41,7 +41,7 @@
                 android:id="@+id/accTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -90,7 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -114,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -154,7 +154,7 @@
                 android:id="@+id/rotTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -178,7 +178,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -203,7 +203,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -227,7 +227,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -266,7 +266,7 @@
                 android:id="@+id/magTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -290,7 +290,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -315,7 +315,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -339,7 +339,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 

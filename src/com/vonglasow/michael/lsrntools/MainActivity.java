@@ -1,5 +1,6 @@
 package com.vonglasow.michael.lsrntools;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +28,7 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 //import android.os.PowerManager;
 //import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
@@ -51,6 +53,7 @@ import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
 import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -82,7 +85,8 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     ViewPager mViewPager;
     
 	//The rate in microseconds at which we would like to receive updates from the sensors.
-	private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
+	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
+	private static final int iSensorRate = 200000; //Default is 20,000 for accel, 5,000 for gyro
 
 	private LocationManager mLocationManager;
 	private SensorManager mSensorManager;
@@ -95,6 +99,15 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	private Sensor mPressureSensor;
 	private Sensor mHumiditySensor;
 	private Sensor mTempSensor;
+	private long mOrLast = 0;
+	private long mAccLast = 0;
+	private long mGyroLast = 0;
+	private long mMagLast = 0;
+	private long mLightLast = 0;
+	private long mProximityLast = 0;
+	private long mPressureLast = 0;
+	private long mHumidityLast = 0;
+	private long mTempLast = 0;
 	private static TelephonyManager mTelephonyManager;
 	private static WifiManager mWifiManager;
 
@@ -331,7 +344,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     	
-        // SCREEN_BRIGHT_WAKE_LOCK is deprecated
+		// SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Sensor Monitor");
@@ -511,9 +524,47 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
      * Called when a sensor's reading changes. Updates sensor display.
      */
     public void onSensorChanged(SensorEvent event) {
-    	if (isSensorViewReady) {
+		//event.timestamp is nanoseconds since boot; convert to UTC timestamp
+		long timeInMillis = (new Date()).getTime() + (event.timestamp - SystemClock.elapsedRealtimeNanos()) / 1000000L;
+		
+		//to enforce sensor rate
+		boolean isRateElapsed = false;
+		
+		switch (event.sensor.getType()) {
+			case Sensor.TYPE_ACCELEROMETER:
+				isRateElapsed = (event.timestamp / 1000) - mAccLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_ORIENTATION:
+				isRateElapsed = (event.timestamp / 1000) - mOrLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_GYROSCOPE:
+				isRateElapsed = (event.timestamp / 1000) - mGyroLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_MAGNETIC_FIELD:
+				isRateElapsed = (event.timestamp / 1000) - mMagLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_LIGHT:
+				isRateElapsed = (event.timestamp / 1000) - mLightLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_PROXIMITY:
+				isRateElapsed = (event.timestamp / 1000) - mProximityLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_PRESSURE:
+				isRateElapsed = (event.timestamp / 1000) - mPressureLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_RELATIVE_HUMIDITY:
+				isRateElapsed = (event.timestamp / 1000) - mHumidityLast >= iSensorRate;
+				break;
+			case Sensor.TYPE_AMBIENT_TEMPERATURE:
+				isRateElapsed = (event.timestamp / 1000) - mTempLast >= iSensorRate;
+				break;
+		}
+		
+		if (isSensorViewReady && isRateElapsed) {
+			//Log.d("lsrntools", String.format("Processing sensor update at %s, rate %s, last %s ns ago", event.timestamp / 1000, iSensorRate, (event.timestamp / 1000) - mSensorRates.getLong(String.valueOf(event.sensor.getType()) + ".last")));
             switch (event.sensor.getType()) {  
 	            case Sensor.TYPE_ACCELEROMETER:
+	            	mAccLast = event.timestamp / 1000;
 		            accX.setText(String.format("%.3f", event.values[0]));
 		            accY.setText(String.format("%.3f", event.values[1]));
 		            accZ.setText(String.format("%.3f", event.values[2]));
@@ -521,6 +572,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 					accHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
 	            case Sensor.TYPE_ORIENTATION:
+	            	mOrLast = event.timestamp / 1000;
 		            orAzimuth.setText(String.format("%.0f", event.values[0]));
 		            orAziText.setText(formatOrientation(event.values[0]));
 		            orPitch.setText(String.format("%.0f", event.values[1]));
@@ -528,6 +580,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 					orHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
 	            case Sensor.TYPE_GYROSCOPE:
+	            	mGyroLast = event.timestamp / 1000;
 		            rotX.setText(String.format("%.4f", event.values[0]));
 		            rotY.setText(String.format("%.4f", event.values[1]));
 		            rotZ.setText(String.format("%.4f", event.values[2]));
@@ -535,29 +588,35 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 					rotHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 					break;
 	            case Sensor.TYPE_MAGNETIC_FIELD:
-		            magX.setText(String.format("%.3f", event.values[0]));
-		            magY.setText(String.format("%.3f", event.values[1]));
-		            magZ.setText(String.format("%.3f", event.values[2]));
-					magTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+	            	mMagLast = event.timestamp / 1000;
+		            magX.setText(String.format("%.2f", event.values[0]));
+		            magY.setText(String.format("%.2f", event.values[1]));
+		            magZ.setText(String.format("%.2f", event.values[2]));
+					magTotal.setText(String.format("%.2f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 					magHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_LIGHT:
+	            	mLightLast = event.timestamp / 1000;
 	            	light.setText(String.format("%.1f", event.values[0]));
 					lightHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_PROXIMITY:
+	            	mProximityLast = event.timestamp / 1000;
 	            	proximity.setText(String.format("%.0f", event.values[0]));
 					proximityHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_PRESSURE:
+	            	mPressureLast = event.timestamp / 1000;
 	            	metPressure.setText(String.format("%.0f", event.values[0]));
 					pressureHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_RELATIVE_HUMIDITY:
+	            	mHumidityLast = event.timestamp / 1000;
 	            	metHumid.setText(String.format("%.0f", event.values[0]));
 					humidHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
 	            case Sensor.TYPE_AMBIENT_TEMPERATURE:
+	            	mTempLast = event.timestamp / 1000;
 	            	metTemp.setText(String.format("%.0f", event.values[0]));
 					tempHeader.setBackgroundResource(accuracyToColor(event.accuracy));
 	            	break;
