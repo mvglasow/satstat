@@ -18,7 +18,7 @@
     <string name="title_gps_lon">Longitude (°)</string>
     <string name="title_gps_decl">Decl. (°)</string>
     <string name="title_gps_speed">Speed (km/h)</string>
-    <string name="title_gps_alt">Altitude (m)</string>
+    <string name="title_gps_alt">Elevation (m)</string>
     <string name="title_gps_time">Last Fix Obtained</string>
     <string name="title_gps_bear">Bearing (°)</string>
     <string name="title_gps_orient">Orientation</string>

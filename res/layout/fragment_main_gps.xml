@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gpsRootLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
@@ -9,13 +10,13 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:measureWithLargestChild="true"
-        android:weightSum="3" >
+        android:weightSum="23" >
 
         <LinearLayout
             android:id="@+id/LinearLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="8"
             android:orientation="vertical" >
 
             <TextView
@@ -30,7 +31,7 @@
                 android:id="@+id/gpsLat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -40,7 +41,7 @@
             android:id="@+id/LinearLayout3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="9"
             android:orientation="vertical" >
 
             <TextView
@@ -55,7 +56,7 @@
                 android:id="@+id/gpsLon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -64,7 +65,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_weight="6"
             android:orientation="vertical" >
 
             <TextView
@@ -79,7 +80,7 @@
                 android:id="@+id/gpsAlt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -104,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_speed"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -112,7 +113,7 @@
                 android:id="@+id/gpsSpeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -129,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_time"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -137,7 +138,7 @@
                 android:id="@+id/gpsTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -162,7 +163,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_bear"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -170,7 +171,7 @@
                 android:id="@+id/gpsBearing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -187,7 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_orient"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -195,7 +196,7 @@
                 android:id="@+id/gpsOrientation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -212,7 +213,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_decl"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -220,7 +221,7 @@
                 android:id="@+id/orDeclination"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -237,7 +238,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_acc"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -245,7 +246,7 @@
                 android:id="@+id/gpsAccuracy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -271,7 +272,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_satsInFix"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -279,7 +280,7 @@
                 android:id="@+id/gpsSatsInFix"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -296,7 +297,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_satsInView"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -304,7 +305,7 @@
                 android:id="@+id/gpsSatsInView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -321,7 +322,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/title_gps_ttff"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -329,7 +330,7 @@
                 android:id="@+id/gpsTtff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -346,7 +347,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -354,7 +355,7 @@
                 android:id="@+id/gpsReserved1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 

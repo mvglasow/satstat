@@ -66,6 +66,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import com.vonglasow.michael.lsrntools.LoggerService;
+import com.vonglasow.michael.lsrntools.widgets.GpsStatusView;
+import com.vonglasow.michael.lsrntools.widgets.SquareView;
 
 public class MainActivity extends FragmentActivity implements GpsStatus.Listener, LocationListener, SensorEventListener {
 
@@ -115,6 +117,8 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	protected static MenuItem menu_action_stop_record;
 
 	protected static boolean isGpsViewReady = false;
+	protected static LinearLayout gpsRootLayout;
+	protected static GpsStatusView gpsStatusView;
 	protected static TextView gpsLat;
 	protected static TextView gpsLon;
 	protected static TextView orDeclination;
@@ -380,7 +384,8 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	    	GpsStatus status = mLocationManager.getGpsStatus(null);
 	    	int satsInView = 0;
 	    	int satsUsed = 0;
-	    	for (GpsSatellite sat : status.getSatellites()) {
+	    	Iterable<GpsSatellite> sats = status.getSatellites();
+	    	for (GpsSatellite sat : sats) {
 	    		satsInView++;
 	    		if (sat.usedInFix()) {
 	    			satsUsed++;
@@ -389,6 +394,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	    	gpsSatsInView.setText(String.valueOf(satsInView));
 	    	gpsSatsInFix.setText(String.valueOf(satsUsed));
 	    	gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
+	    	gpsStatusView.showSats(sats);
     	}
     }
     
@@ -573,6 +579,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 					break;
 	            case Sensor.TYPE_ORIENTATION:
 	            	mOrLast = event.timestamp / 1000;
+	            	gpsStatusView.setYaw(event.values[0]);
 		            orAzimuth.setText(String.format("%.0f", event.values[0]));
 		            orAziText.setText(formatOrientation(event.values[0]));
 		            orPitch.setText(String.format("%.0f", event.values[1]));
@@ -895,6 +902,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
             View rootView = inflater.inflate(R.layout.fragment_main_gps, container, false);
             
             // Initialize controls
+            gpsRootLayout = (LinearLayout) rootView.findViewById(R.id.gpsRootLayout);
         	gpsLat = (TextView) rootView.findViewById(R.id.gpsLat);
         	gpsLon = (TextView) rootView.findViewById(R.id.gpsLon);
         	orDeclination = (TextView) rootView.findViewById(R.id.orDeclination);
@@ -907,6 +915,12 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         	gpsSatsInFix = (TextView) rootView.findViewById(R.id.gpsSatsInFix);
         	gpsSatsInView = (TextView) rootView.findViewById(R.id.gpsSatsInView);
         	gpsTtff = (TextView) rootView.findViewById(R.id.gpsTtff);
+        	
+            gpsStatusView = new GpsStatusView(rootView.getContext());
+            gpsStatusView.setRelativeSize(0.75f);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER_HORIZONTAL;
+            gpsRootLayout.addView(gpsStatusView, 0, params);
         	
         	isGpsViewReady = true;
         	
