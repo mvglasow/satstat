@@ -1,3 +1,22 @@
+/*
+ * Copyright © 2013 Michael von Glasow.
+ * 
+ * This file is part of LSRN Tools.
+ *
+ * LSRN Tools is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LSRN Tools is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.vonglasow.michael.lsrntools;
 
 import java.util.List;
@@ -449,27 +468,30 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	Intent logIntent;
-        switch (item.getItemId()) {
-        case R.id.action_record:
-        	//start logging            
+    	switch (item.getItemId()) {
+    	case R.id.action_record:
+    		//start logging            
     		//start log
     		logIntent = new Intent(this, LoggerService.class);
     		logIntent.setAction(LoggerService.ACTION_START);
     		startService (logIntent);
-            menu_action_stop_record.setVisible(true);
-            menu_action_record.setVisible(false);
-            return true;
-        case R.id.action_stop_record:
-        	//stop logging            
+    		menu_action_stop_record.setVisible(true);
+    		menu_action_record.setVisible(false);
+    		return true;
+    	case R.id.action_stop_record:
+    		//stop logging            
     		logIntent = new Intent(this, LoggerService.class);
     		logIntent.setAction(LoggerService.ACTION_STOP);
     		startService (logIntent);
-            menu_action_record.setVisible(true);
-            menu_action_stop_record.setVisible(false);
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+    		menu_action_record.setVisible(true);
+    		menu_action_stop_record.setVisible(false);
+    		return true;
+    	case R.id.action_about:
+    		startActivity(new Intent(this, AboutActivity.class));
+    		return true;
+    	default:
+    		return super.onOptionsItemSelected(item);
+    	}
     }
 
     /**

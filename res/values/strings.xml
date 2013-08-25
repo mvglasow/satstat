@@ -84,5 +84,28 @@
     <string name="title_radio_wifi">WiFi</string>
     <string name="title_radio_mac">BSSID (MAC)</string>
     <string name="title_radio_level">dBm</string>
-    
+    <string name="title_activity_about">About</string>
+    <string name="about_text">Location, Sensor and Radio Network Toolbox
+		\n
+		\nIf something doesn\'t work the way it should, or if you have an idea to make this
+		app even greater, please report it at:
+		\nhttp://www.vonglasow.com/~michael/comingsoon
+		\n
+		\nCopyright &#169; 2013 Michael von Glasow
+		\n
+		\nThis program is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+		\n
+		\nThis program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+		GNU General Public License for more details.
+		\n
+		\nYou should have received a copy of the GNU General Public License
+		along with this program. If not, see http://www.gnu.org/licenses/.
+		\n
+		\nThe source code for this application is at:
+		\nhttp://www.vonglasow.com/~michael/comingsoon</string>
 </resources>
