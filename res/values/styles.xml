@@ -16,9 +16,9 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
-    <color name="accHigh">#334D00</color>
-    <color name="accMedium">#804400</color>
-    <color name="accLow">#660000</color>
-    <color name="accUnreliable">#4D1A66</color>
+    <color name="accHigh">#669900</color>
+    <color name="accMedium">#FF8800</color>
+    <color name="accLow">#CC0000</color>
+    <color name="accUnreliable">#9933CC</color>
 
 </resources>

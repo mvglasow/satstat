@@ -16,6 +16,7 @@ public class GpsStatusView extends SquareView {
 	private Paint inactivePaint;
 	private Paint northPaint;
 	private Paint gridPaint;
+	private Paint gridBorderPaint;
 	
 	//FIXME: these two should be DPI-dependent, this is OK for MDPI
 	private int gridStrokeWidth = 2;
@@ -38,20 +39,25 @@ public class GpsStatusView extends SquareView {
 	
 	private void doInit() {
 		activePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		activePaint.setColor(Color.parseColor("#FF0099CC"));
+		activePaint.setColor(Color.parseColor("#FF33B5E5"));
 		activePaint.setStyle(Paint.Style.FILL);
 		
 		inactivePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		inactivePaint.setColor(Color.parseColor("#FFCC0000"));
+		inactivePaint.setColor(Color.parseColor("#FFFF4444"));
 		inactivePaint.setStyle(Paint.Style.FILL);
 		
 		gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		gridPaint.setColor(Color.parseColor("#FFFFBB33"));
+		gridPaint.setColor(Color.parseColor("#FFFF8800"));
 		gridPaint.setStyle(Paint.Style.STROKE);
 		gridPaint.setStrokeWidth(gridStrokeWidth);
 		
+		gridBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		gridBorderPaint.setColor(Color.parseColor("#50FF8800"));
+		gridBorderPaint.setStyle(Paint.Style.STROKE);
+		//gridBorderPaint.setStrokeWidth(gridStrokeWidth);
+		
 		northPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		northPaint.setColor(Color.parseColor("#FFFF4444"));
+		northPaint.setColor(Color.parseColor("#FFCC0000"));
 		northPaint.setStyle(Paint.Style.FILL);
 	}
 	
@@ -83,6 +89,10 @@ public class GpsStatusView extends SquareView {
 		northArrow.lineTo(8, -h * 0.30f);
 		northArrow.lineTo(0,  -h * 0.45f);
 		northArrow.close();
+		
+		gridBorderPaint.setStrokeWidth(w * 0.075f);
+		
+		canvas.drawCircle(0, 0, w * 0.4125f, gridBorderPaint);
 		
 		canvas.drawLine(-w * 0.45f, 0, w * 0.45f, 0, gridPaint);
 		canvas.drawLine(0, -h * 0.45f, 0, h * 0.45f, gridPaint);

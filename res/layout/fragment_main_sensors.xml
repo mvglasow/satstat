@@ -9,12 +9,26 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/accHeader"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_sensor_acc" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/accStatus"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dot"
+            android:textColor="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/accHeader"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_sensor_acc" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -122,12 +136,26 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/rotHeader"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_sensor_rot" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/rotStatus"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dot"
+            android:textColor="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/rotHeader"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_sensor_rot" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -235,12 +263,26 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/magHeader"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_sensor_mag" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/magStatus"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dot"
+            android:textColor="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/magHeader"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_sensor_mag" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -347,12 +389,26 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/orHeader"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_sensor_or" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/orStatus"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dot"
+            android:textColor="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/orHeader"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_sensor_or" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -456,91 +512,6 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/metHeader"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_sensor_met" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="true"
-        android:measureWithLargestChild="false"
-        android:weightSum="3" >
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/tempHeader"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_sensors_metTemp"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/metTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/pressureHeader"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_sensors_metPressure"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/metPressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/humidHeader"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_sensors_metHumid"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/metHumid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <TextView
         android:id="@+id/miscHeader"
         style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="fill_parent"
@@ -552,20 +523,83 @@
         android:layout_height="wrap_content"
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
-        android:weightSum="2" >
+        android:weightSum="22" >
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content"
+            android:layout_weight="5" >
 
             <TextView
-                android:id="@+id/lightHeader"
-                android:layout_width="fill_parent"
+                android:id="@+id/tempStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="right|center_vertical"
+                android:text="@string/dotSpace"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/transparent" />
+
+            <TextView
+                android:id="@+id/metTemp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_sensors_light"
+                android:gravity="right"
+                android:text="@string/value_none"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/tempHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_metTemp"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8" >
+
+            <TextView
+                android:id="@+id/pressureStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="right|center_vertical"
+                android:text="@string/dotSpace"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/transparent" />
+
+            <TextView
+                android:id="@+id/metPressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="@string/value_none"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/pressureHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_metPressure"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="9" >
+
+            <TextView
+                android:id="@+id/lightStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="right|center_vertical"
+                android:text="@string/dotSpace"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/transparent" />
 
             <TextView
                 android:id="@+id/light"
@@ -575,12 +609,64 @@
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
+            <TextView
+                android:id="@+id/lightHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_light"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="true"
+        android:measureWithLargestChild="false"
+        android:weightSum="22" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="13"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/humidHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_sensors_metHumid"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/humidStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="right|center_vertical"
+                    android:text="@string/dotSpace"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@android:color/transparent" />
+
+                <TextView
+                    android:id="@+id/metHumid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_weight="9"
             android:orientation="vertical" >
 
             <TextView
@@ -590,13 +676,28 @@
                 android:text="@string/title_sensors_proximity"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/proximity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/proximityStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="right|center_vertical"
+                    android:text="@string/dotSpace"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@android:color/transparent" />
+
+                <TextView
+                    android:id="@+id/proximity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

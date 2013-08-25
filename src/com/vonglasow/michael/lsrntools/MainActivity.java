@@ -1,6 +1,5 @@
 package com.vonglasow.michael.lsrntools;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -128,41 +128,48 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	protected static TextView gpsBearing;
 	protected static TextView gpsAccuracy;
 	protected static TextView gpsOrientation;
-	protected static TextView gpsSatsInFix;
-	protected static TextView gpsSatsInView;
+	protected static TextView gpsSats;
 	protected static TextView gpsTtff;
 
 	protected static boolean isSensorViewReady = false;
+	protected static TextView accStatus;
 	protected static TextView accHeader;
 	protected static TextView accTotal;
 	protected static TextView accX;
 	protected static TextView accY;
 	protected static TextView accZ;
+	protected static TextView rotStatus;
 	protected static TextView rotHeader;
 	protected static TextView rotTotal;
 	protected static TextView rotX;
 	protected static TextView rotY;
 	protected static TextView rotZ;
+	protected static TextView magStatus;
 	protected static TextView magHeader;
 	protected static TextView magTotal;
 	protected static TextView magX;
 	protected static TextView magY;
 	protected static TextView magZ;
+	protected static TextView orStatus;
 	protected static TextView orHeader;
 	protected static TextView orAzimuth;
 	protected static TextView orAziText;
 	protected static TextView orPitch;
 	protected static TextView orRoll;
-	protected static TextView metHeader;
+	protected static TextView miscHeader;
+	protected static TextView tempStatus;
 	protected static TextView tempHeader;
 	protected static TextView metTemp;
+	protected static TextView pressureStatus;
 	protected static TextView pressureHeader;
 	protected static TextView metPressure;
+	protected static TextView humidStatus;
 	protected static TextView humidHeader;
 	protected static TextView metHumid;
-	protected static TextView miscHeader;
+	protected static TextView lightStatus;
 	protected static TextView lightHeader;
 	protected static TextView light;
+	protected static TextView proximityStatus;
 	protected static TextView proximityHeader;
 	protected static TextView proximity;
 
@@ -272,25 +279,6 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	}
 	
     /**
-     * Converts an accuracy value into a human-readable description.
-     */
-	//FIXME: use resource strings... or substitute with colors
-    public static String formatAccuracy(int accuracy) {
-    	switch (accuracy) {
-    	case SENSOR_STATUS_ACCURACY_HIGH:
-    		return("H");
-    	case SENSOR_STATUS_ACCURACY_MEDIUM:
-    		return("M");
-    	case SENSOR_STATUS_ACCURACY_LOW:
-    		return("L");
-    	case SENSOR_STATUS_UNRELIABLE:
-    		return("X");
-    	default:
-    		return("?");
-    	}
-    }
-    
-    /**
      * Converts a bearing (in degrees) into a directional name.
      */
     public String formatOrientation(float bearing) {
@@ -391,8 +379,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	    			satsUsed++;
 	    		}
 	    	}
-	    	gpsSatsInView.setText(String.valueOf(satsInView));
-	    	gpsSatsInFix.setText(String.valueOf(satsUsed));
+	    	gpsSats.setText(String.valueOf(satsUsed) + "/" + String.valueOf(satsInView));
 	    	gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
 	    	gpsStatusView.showSats(sats);
     	}
@@ -530,9 +517,6 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
      * Called when a sensor's reading changes. Updates sensor display.
      */
     public void onSensorChanged(SensorEvent event) {
-		//event.timestamp is nanoseconds since boot; convert to UTC timestamp
-		long timeInMillis = (new Date()).getTime() + (event.timestamp - SystemClock.elapsedRealtimeNanos()) / 1000000L;
-		
 		//to enforce sensor rate
 		boolean isRateElapsed = false;
 		
@@ -575,7 +559,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 		            accY.setText(String.format("%.3f", event.values[1]));
 		            accZ.setText(String.format("%.3f", event.values[2]));
 					accTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-					accHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					accStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 					break;
 	            case Sensor.TYPE_ORIENTATION:
 	            	mOrLast = event.timestamp / 1000;
@@ -584,7 +568,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 		            orAziText.setText(formatOrientation(event.values[0]));
 		            orPitch.setText(String.format("%.0f", event.values[1]));
 		            orRoll.setText(String.format("%.0f", event.values[2]));
-					orHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					orStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 					break;
 	            case Sensor.TYPE_GYROSCOPE:
 	            	mGyroLast = event.timestamp / 1000;
@@ -592,7 +576,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 		            rotY.setText(String.format("%.4f", event.values[1]));
 		            rotZ.setText(String.format("%.4f", event.values[2]));
 					rotTotal.setText(String.format("%.4f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-					rotHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					rotStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 					break;
 	            case Sensor.TYPE_MAGNETIC_FIELD:
 	            	mMagLast = event.timestamp / 1000;
@@ -600,32 +584,32 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 		            magY.setText(String.format("%.2f", event.values[1]));
 		            magZ.setText(String.format("%.2f", event.values[2]));
 					magTotal.setText(String.format("%.2f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-					magHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					magStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_LIGHT:
 	            	mLightLast = event.timestamp / 1000;
 	            	light.setText(String.format("%.1f", event.values[0]));
-					lightHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					lightStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_PROXIMITY:
 	            	mProximityLast = event.timestamp / 1000;
 	            	proximity.setText(String.format("%.0f", event.values[0]));
-					proximityHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					proximityStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_PRESSURE:
 	            	mPressureLast = event.timestamp / 1000;
 	            	metPressure.setText(String.format("%.0f", event.values[0]));
-					pressureHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					pressureStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_RELATIVE_HUMIDITY:
 	            	mHumidityLast = event.timestamp / 1000;
 	            	metHumid.setText(String.format("%.0f", event.values[0]));
-					humidHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					humidStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_AMBIENT_TEMPERATURE:
 	            	mTempLast = event.timestamp / 1000;
 	            	metTemp.setText(String.format("%.0f", event.values[0]));
-					tempHeader.setBackgroundResource(accuracyToColor(event.accuracy));
+					tempStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
             }
     	}
@@ -678,15 +662,15 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
         			newMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
     	            row.addView(newMnc);
+    	            TextView newLac = new TextView(rilCells.getContext());
+    	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
+    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+        			newLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
     	            TextView newCid = new TextView(rilCells.getContext());
     	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
     	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
         			newCid.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
     	            row.addView(newCid);
-    	            TextView newLac = new TextView(rilCells.getContext());
-    	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-        			newLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
     	            row.addView(newLac);
     	            TextView newAsu = new TextView(rilCells.getContext());
     	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
@@ -779,15 +763,15 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
     			newMnc.setText(rilCells.getContext().getString(R.string.value_none));
 	            row.addView(newMnc);
+	            TextView newLac = new TextView(rilCells.getContext());
+	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
+	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    			newLac.setText(String.valueOf(cell.getLac()));
 	            TextView newCid = new TextView(rilCells.getContext());
 	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
 	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
     			newCid.setText(String.valueOf(cell.getCid()));
 	            row.addView(newCid);
-	            TextView newLac = new TextView(rilCells.getContext());
-	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-    			newLac.setText(String.valueOf(cell.getLac()));
 	            row.addView(newLac);
 	            TextView newAsu = new TextView(rilCells.getContext());
 	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
@@ -859,31 +843,6 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     }
 
     /**
-     * A dummy fragment representing a section of the app, but that simply
-     * displays dummy text.
-     */
-    public static class DummySectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        public DummySectionFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_dummy, container, false);
-            TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
-            dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
-
-    /**
      * The fragment which displays GPS data.
      */
     public static class GpsSectionFragment extends Fragment {
@@ -912,12 +871,11 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         	gpsBearing = (TextView) rootView.findViewById(R.id.gpsBearing);
         	gpsAccuracy = (TextView) rootView.findViewById(R.id.gpsAccuracy);
         	gpsOrientation = (TextView) rootView.findViewById(R.id.gpsOrientation);
-        	gpsSatsInFix = (TextView) rootView.findViewById(R.id.gpsSatsInFix);
-        	gpsSatsInView = (TextView) rootView.findViewById(R.id.gpsSatsInView);
+        	gpsSats = (TextView) rootView.findViewById(R.id.gpsSats);
         	gpsTtff = (TextView) rootView.findViewById(R.id.gpsTtff);
         	
             gpsStatusView = new GpsStatusView(rootView.getContext());
-            gpsStatusView.setRelativeSize(0.75f);
+            gpsStatusView.setRelativeSize(0.9f);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.CENTER_HORIZONTAL;
             gpsRootLayout.addView(gpsStatusView, 0, params);
@@ -948,39 +906,47 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
             View rootView = inflater.inflate(R.layout.fragment_main_sensors, container, false);
             
             // Initialize controls
+        	accStatus = (TextView) rootView.findViewById(R.id.accStatus);
         	accHeader = (TextView) rootView.findViewById(R.id.accHeader);
         	accX = (TextView) rootView.findViewById(R.id.accX);
         	accY = (TextView) rootView.findViewById(R.id.accY);
         	accZ = (TextView) rootView.findViewById(R.id.accZ);
         	accTotal = (TextView) rootView.findViewById(R.id.accTotal);
+        	rotStatus = (TextView) rootView.findViewById(R.id.rotStatus);
         	rotHeader = (TextView) rootView.findViewById(R.id.rotHeader);
         	rotX = (TextView) rootView.findViewById(R.id.rotX);
         	rotY = (TextView) rootView.findViewById(R.id.rotY);
         	rotZ = (TextView) rootView.findViewById(R.id.rotZ);
         	rotTotal = (TextView) rootView.findViewById(R.id.rotTotal);
+        	magStatus = (TextView) rootView.findViewById(R.id.magStatus);
         	magHeader = (TextView) rootView.findViewById(R.id.magHeader);
         	magX = (TextView) rootView.findViewById(R.id.magX);
         	magY = (TextView) rootView.findViewById(R.id.magY);
         	magZ = (TextView) rootView.findViewById(R.id.magZ);
         	magTotal = (TextView) rootView.findViewById(R.id.magTotal);
+        	orStatus = (TextView) rootView.findViewById(R.id.orStatus);
         	orHeader = (TextView) rootView.findViewById(R.id.orHeader);
         	orAzimuth = (TextView) rootView.findViewById(R.id.orAzimuth);
         	orAziText = (TextView) rootView.findViewById(R.id.orAziText);
         	orPitch = (TextView) rootView.findViewById(R.id.orPitch);
         	orRoll = (TextView) rootView.findViewById(R.id.orRoll);
-        	metHeader = (TextView) rootView.findViewById(R.id.metHeader);
+        	miscHeader = (TextView) rootView.findViewById(R.id.miscHeader);
+        	tempStatus = (TextView) rootView.findViewById(R.id.tempStatus);
         	tempHeader = (TextView) rootView.findViewById(R.id.tempHeader);
         	metTemp = (TextView) rootView.findViewById(R.id.metTemp);
+        	pressureStatus = (TextView) rootView.findViewById(R.id.pressureStatus);
         	pressureHeader = (TextView) rootView.findViewById(R.id.pressureHeader);
         	metPressure = (TextView) rootView.findViewById(R.id.metPressure);
+        	humidStatus = (TextView) rootView.findViewById(R.id.humidStatus);
         	humidHeader = (TextView) rootView.findViewById(R.id.humidHeader);
         	metHumid = (TextView) rootView.findViewById(R.id.metHumid);
-        	miscHeader = (TextView) rootView.findViewById(R.id.miscHeader);
+        	lightStatus = (TextView) rootView.findViewById(R.id.lightStatus);
         	lightHeader = (TextView) rootView.findViewById(R.id.lightHeader);
         	light = (TextView) rootView.findViewById(R.id.light);
+        	proximityStatus = (TextView) rootView.findViewById(R.id.proximityStatus);
         	proximityHeader = (TextView) rootView.findViewById(R.id.proximityHeader);
         	proximity = (TextView) rootView.findViewById(R.id.proximity);
-
+        	
         	isSensorViewReady = true;
 
             return rootView;

@@ -6,6 +6,8 @@
     <string name="action_record">Record</string>
     <string name="action_stop_record">Stop recording</string>
     <string name="action_about">About</string>
+    <string name="dot">&#x2b1b;</string>
+    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Error writing to file</string>
     <string name="error_ext_storage">External storage not available</string>
     <string name="info_start_rec">Started recording</string>
@@ -23,8 +25,7 @@
     <string name="title_gps_bear">Bearing (°)</string>
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Error (m)</string>
-    <string name="title_gps_satsInFix">Sats Used</string>
-    <string name="title_gps_satsInView">Sats in View</string>
+    <string name="title_gps_sats">Sats</string>
     <string name="title_gps_ttff">TTFF (s)</string>
     <string name="value_none">–</string>
     <string name="value_N">N</string>
@@ -64,11 +65,11 @@
     <string name="title_sensors_magY">By (µT)</string>
     <string name="title_sensors_magZ">Bz (µT)</string>
     <string name="title_sensor_met">Meteorology</string>
-    <string name="title_sensors_metTemp">Temp. (°C)</string>
-    <string name="title_sensors_metPressure">Pressure (hPa)</string>
-    <string name="title_sensors_metHumid">Rel. Humid. (%)</string>
+    <string name="title_sensors_metTemp">&#x00a0;°C</string>
+    <string name="title_sensors_metPressure">&#x00a0;hPa</string>
+    <string name="title_sensors_metHumid">Relative Humidity (%)</string>
     <string name="title_sensor_misc">Miscellaneous</string>
-    <string name="title_sensors_light">Light (lux)</string>
+    <string name="title_sensors_light">&#x00a0;lux</string>
     <string name="title_sensors_proximity">Proximity (cm)</string>
     <string name="title_radio_gsm">GSM</string>
     <string name="title_radio_mcc">MCC</string>
