@@ -26,6 +26,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.location.GpsSatellite;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class GpsStatusView extends SquareView {
 	private float mYaw = 0;
@@ -95,10 +96,13 @@ public class GpsStatusView extends SquareView {
 	
 	@Override
 	protected void onDraw(Canvas canvas) {
-		int w = canvas.getWidth();
-		int h = canvas.getHeight();
+		//don't use Canvas.getWidth() and Canvas.getHeight() here, they may return incorrect values
+		int w = getWidth();
+		int h = getHeight();
 		int cx = w / 2;
 		int cy = h / 2;
+
+		//Log.d("GpsStatusView", String.format("Drawing on a %dx%d canvas", w, h));
 
 		canvas.translate(cx, cy);
 		canvas.rotate(-mYaw);
