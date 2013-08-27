@@ -41,7 +41,7 @@
             android:id="@+id/LinearLayout3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="10"
             android:orientation="vertical" >
 
             <TextView
@@ -65,7 +65,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="7"
+            android:layout_weight="6"
             android:orientation="vertical" >
 
             <TextView
@@ -77,13 +77,29 @@
                 android:text="@string/title_gps_alt"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/gpsAlt"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:weightSum="8" >
+
+                <TextView
+                    android:id="@+id/gpsAlt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/TextView01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:lines="1"
+                    android:text="@string/unit_meter"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>
@@ -140,7 +156,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="7"
+            android:layout_weight="6"
             android:orientation="vertical" >
 
             <TextView
@@ -152,20 +168,36 @@
                 android:text="@string/title_gps_speed"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/gpsSpeed"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:weightSum="8" >
+
+                <TextView
+                    android:id="@+id/gpsSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/gpsSpeedUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:lines="1"
+                    android:text="@string/unit_km_h"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </LinearLayout>
 
         </LinearLayout>
         
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="5"
+            android:layout_weight="4.5"
             android:orientation="vertical" >
 
             <TextView
@@ -177,8 +209,49 @@
                 android:text="@string/title_gps_acc"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="8" >
+
+                <TextView
+                    android:id="@+id/gpsAccuracy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/TextView03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:lines="1"
+                    android:text="@string/unit_meter"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="5.5"
+            android:orientation="vertical" >
+
             <TextView
-                android:id="@+id/gpsAccuracy"
+                android:id="@+id/textView17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:lines="1"
+                android:text="@string/title_gps_sats"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/gpsSats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
@@ -187,31 +260,6 @@
 
         </LinearLayout>
         
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="4"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView32"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:lines="1"
-                android:text="@string/title_gps_decl"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/orDeclination"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        </LinearLayout>
-
     </LinearLayout>
     
     <LinearLayout
@@ -228,16 +276,16 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/textView17"
+                android:id="@+id/textView32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
                 android:lines="1"
-                android:text="@string/title_gps_sats"
+                android:text="@string/title_gps_decl"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/gpsSats"
+                android:id="@+id/orDeclination"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"

@@ -416,25 +416,25 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	    		gpsAccuracy.setText(getString(R.string.value_none));
 	    	}
 	    	
-	    	gpsLat.setText(String.format("%.5f", location.getLatitude()));
-	    	gpsLon.setText(String.format("%.5f", location.getLongitude()));
+	    	gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
+	    	gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
 	    	gpsTime.setText(String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", location.getTime()));
 	    	
 	    	if (location.hasAltitude()) {
 	    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
-	    		orDeclination.setText(String.format("%.0f", new GeomagneticField(
+	    		orDeclination.setText(String.format("%.0f%s", new GeomagneticField(
 	    				(float) location.getLatitude(),
 	    				(float) location.getLongitude(),
 	    				(float) location.getAltitude(),
 	    				location.getTime()
-    				).getDeclination()));
+    				).getDeclination(), getString(R.string.unit_degree)));
 	    	} else {
 	    		gpsAlt.setText(getString(R.string.value_none));
 	    		orDeclination.setText(getString(R.string.value_none));
 	    	}
 	    	
 	    	if (location.hasBearing()) {
-	    		gpsBearing.setText(String.format("%.0f", location.getBearing()));
+	    		gpsBearing.setText(String.format("%.0f%s", location.getBearing(), getString(R.string.unit_degree)));
 	    		gpsOrientation.setText(formatOrientation(location.getBearing()));
 	    	} else {
 	    		gpsBearing.setText(getString(R.string.value_none));
