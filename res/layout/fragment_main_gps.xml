@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/gpsRootLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -34,7 +35,6 @@
                 android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -59,7 +59,6 @@
                 android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -98,9 +97,7 @@
                     android:lines="1"
                     android:text="@string/unit_meter"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-
             </LinearLayout>
-
         </LinearLayout>
     </LinearLayout>
 
@@ -148,11 +145,9 @@
                     android:maxLines="1"
                     android:text="@string/value_none"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
-
             </LinearLayout>
-
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -189,11 +184,9 @@
                     android:lines="1"
                     android:text="@string/unit_km_h"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-
             </LinearLayout>
-
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -230,11 +223,9 @@
                     android:lines="1"
                     android:text="@string/unit_meter"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-
             </LinearLayout>
-
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -257,11 +248,9 @@
                 android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
-        
     </LinearLayout>
-    
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -291,7 +280,6 @@
                 android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -316,9 +304,8 @@
                 android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -341,9 +328,7 @@
                 android:maxLines="1"
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
     </LinearLayout>
-    
 
 </LinearLayout>

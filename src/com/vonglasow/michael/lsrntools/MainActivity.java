@@ -234,13 +234,12 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 			if (isRadioViewReady) {
 				int pt = mTelephonyManager.getPhoneType();
 				if (pt == PHONE_TYPE_GSM) {
-					rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+					rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength() * 2 - 113));
 					//this may not be supported on some devices
 					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 					showNeighboringCellInfo(neighboringCells);
 				} else if (pt == PHONE_TYPE_CDMA) {
-					//FIXME: no idea if this works on CDMA
-					rilCdmaAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength()));
+					rilCdmaAsu.setText(String.valueOf(signalStrength.getCdmaDbm()));
 				}
 			}
 		}
@@ -257,18 +256,34 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 		 		if ((isRadioViewReady) && (scanResults != null)) {
 		 			wifiAps.removeAllViews();
 		 			for (ScanResult result : scanResults) {
-			            TableRow row = new TableRow(wifiAps.getContext());
+			            TableRow row0 = new TableRow(wifiAps.getContext());
+			            View divider = new View(wifiAps.getContext());
+			            divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1, 1));
+			            divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
+			            row0.addView(divider);
+			            wifiAps.addView(row0, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			            
+			            TableRow row1 = new TableRow(wifiAps.getContext());
+			            //row.setPadding(0, (int) getResources().getDimension(R.dimen.activity_horizontal_margin), 0, 0);
 			            TextView newMac = new TextView(wifiAps.getContext());
-			            newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 17));
-			            newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Large);
+			            newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 14));
+			            newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 		    			newMac.setText(result.BSSID);
-			            row.addView(newMac);
+		    			row1.addView(newMac);
 			            TextView newLevel = new TextView(wifiAps.getContext());
-			            newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-			            newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Large);
+			            newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+			            newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 			            newLevel.setText(String.valueOf(result.level));
-			            row.addView(newLevel);
-			            wifiAps.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			            row1.addView(newLevel);
+			            wifiAps.addView(row1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+			            TableRow row2 = new TableRow(wifiAps.getContext());
+			            TextView newSSID = new TextView(wifiAps.getContext());
+			            newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 17));
+			            newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
+			            newSSID.setText(result.SSID);
+			            row2.addView(newSSID);
+			            wifiAps.addView(row2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		 			}
 		 		}
 			} else {
@@ -586,10 +601,10 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	            case Sensor.TYPE_ORIENTATION:
 	            	mOrLast = event.timestamp / 1000;
 	            	gpsStatusView.setYaw(event.values[0]);
-		            orAzimuth.setText(String.format("%.0f", event.values[0]));
+		            orAzimuth.setText(String.format("%.0f%s", event.values[0], getString(R.string.unit_degree)));
 		            orAziText.setText(formatOrientation(event.values[0]));
-		            orPitch.setText(String.format("%.0f", event.values[1]));
-		            orRoll.setText(String.format("%.0f", event.values[2]));
+		            orPitch.setText(String.format("%.0f%s", event.values[1], getString(R.string.unit_degree)));
+		            orRoll.setText(String.format("%.0f%s", event.values[2], getString(R.string.unit_degree)));
 					orStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 					break;
 	            case Sensor.TYPE_GYROSCOPE:
@@ -676,51 +691,51 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     	            TableRow row = new TableRow(rilCells.getContext());
     	            TextView newMcc = new TextView(rilCells.getContext());
     	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-    	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
         			newMcc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMcc()));
     	            row.addView(newMcc);
     	            TextView newMnc = new TextView(rilCells.getContext());
     	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-    	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
         			newMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
     	            row.addView(newMnc);
     	            TextView newLac = new TextView(rilCells.getContext());
     	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
         			newLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
     	            TextView newCid = new TextView(rilCells.getContext());
     	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-    	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
         			newCid.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
     	            row.addView(newCid);
     	            row.addView(newLac);
-    	            TextView newAsu = new TextView(rilCells.getContext());
-    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-    	            newAsu.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getAsuLevel()));
-    	            row.addView(newAsu);
+    	            TextView newDbm = new TextView(rilCells.getContext());
+    	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+    	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+    	            newDbm.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getDbm()));
+    	            row.addView(newDbm);
     	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         		} else if (cell instanceof CellInfoCdma) {
         			CellInfoCdma cellInfoCdma = (CellInfoCdma) cell;
     	            TableRow row = new TableRow(rilCells.getContext());
     	            TextView newSid = new TextView(rilCells.getContext());
     	            newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-    	            newSid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newSid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     	            newSid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getSystemId()));
     	            row.addView(newSid);
     	            TextView newNid = new TextView(rilCells.getContext());
     	            newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-    	            newNid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newNid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     	            newNid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getNetworkId()));
     	            row.addView(newNid);
     	            TextView newBsid = new TextView(rilCells.getContext());
     	            newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-    	            newBsid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newBsid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     	            newBsid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getBasestationId()));
     	            row.addView(newBsid);
     	            TextView newAsu = new TextView(rilCells.getContext());
     	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     	            newAsu.setText(String.valueOf(cellInfoCdma.getCellSignalStrength().getAsuLevel()));
     	            row.addView(newAsu);
     	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -777,29 +792,29 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	            TableRow row = new TableRow(rilCells.getContext());
 	            TextView newMcc = new TextView(rilCells.getContext());
 	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     			newMcc.setText(rilCells.getContext().getString(R.string.value_none));
 	            row.addView(newMcc);
 	            TextView newMnc = new TextView(rilCells.getContext());
 	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     			newMnc.setText(rilCells.getContext().getString(R.string.value_none));
 	            row.addView(newMnc);
 	            TextView newLac = new TextView(rilCells.getContext());
 	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     			newLac.setText(String.valueOf(cell.getLac()));
 	            TextView newCid = new TextView(rilCells.getContext());
 	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
+	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     			newCid.setText(String.valueOf(cell.getCid()));
 	            row.addView(newCid);
 	            row.addView(newLac);
-	            TextView newAsu = new TextView(rilCells.getContext());
-	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Large);
-	            newAsu.setText(String.valueOf(cell.getRssi()));
-	            row.addView(newAsu);
+	            TextView newDbm = new TextView(rilCells.getContext());
+	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+	            newDbm.setText(String.valueOf(cell.getRssi() * 2 - 113));
+	            row.addView(newDbm);
 	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
  			}
  		}
@@ -884,6 +899,11 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
             
             // Initialize controls
             gpsRootLayout = (LinearLayout) rootView.findViewById(R.id.gpsRootLayout);
+            gpsStatusView = new GpsStatusView(rootView.getContext());
+            gpsStatusView.setRelativeSize(0.9f);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+            gpsRootLayout.addView(gpsStatusView, 0, params);
         	gpsLat = (TextView) rootView.findViewById(R.id.gpsLat);
         	gpsLon = (TextView) rootView.findViewById(R.id.gpsLon);
         	orDeclination = (TextView) rootView.findViewById(R.id.orDeclination);
@@ -895,12 +915,6 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         	gpsOrientation = (TextView) rootView.findViewById(R.id.gpsOrientation);
         	gpsSats = (TextView) rootView.findViewById(R.id.gpsSats);
         	gpsTtff = (TextView) rootView.findViewById(R.id.gpsTtff);
-        	
-            gpsStatusView = new GpsStatusView(rootView.getContext());
-            gpsStatusView.setRelativeSize(0.9f);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.CENTER_HORIZONTAL;
-            gpsRootLayout.addView(gpsStatusView, 0, params);
         	
         	isGpsViewReady = true;
         	

@@ -420,7 +420,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="vertical" >
 
             <TextView
@@ -430,36 +430,28 @@
                 android:text="@string/title_sensors_orAzimuth"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/orAzimuth"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:weightSum="2" >
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/orAzimuth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <LinearLayout
-            android:id="@+id/orAccuracyContainer"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
+                <TextView
+                    android:id="@+id/orAziText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/value_none"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_sensors_orAziText"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/orAziText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
 
         </LinearLayout>
 

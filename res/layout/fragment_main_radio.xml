@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
-        android:weightSum="24" >
+        android:weightSum="25" >
 
         <LinearLayout
             android:layout_width="0dp"
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
         
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
         
@@ -112,20 +112,20 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:orientation="vertical" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_radio_asu"
+                android:text="@string/title_radio_level"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
@@ -160,7 +160,7 @@
         android:layout_height="wrap_content"
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
-        android:weightSum="24" >
+        android:weightSum="25" >
 
         <LinearLayout
             android:layout_width="0dp"
@@ -181,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
@@ -204,7 +204,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
@@ -227,20 +227,20 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:orientation="vertical" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_radio_asu"
+                android:text="@string/title_radio_level"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
@@ -249,7 +249,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 android:text="@string/value_none"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </LinearLayout>
 
@@ -274,19 +274,19 @@
         android:layout_height="wrap_content"
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
-        android:weightSum="21" >
+        android:weightSum="17" >
 
         <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="17"
-                android:text="@string/title_radio_mac"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="14"
+            android:text="@string/title_radio_mac"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+                android:layout_weight="3"
                 android:text="@string/title_radio_level"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
