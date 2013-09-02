@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.lsrntools.widgets;
+package com.vonglasow.michael.satstat.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;

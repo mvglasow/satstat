@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.lsrntools;
+package com.vonglasow.michael.satstat;
 
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -25,6 +25,7 @@ import android.text.util.Linkify;
 import android.widget.TextView;
 import android.app.ActionBar;
 import android.app.Activity;
+import com.vonglasow.michael.satstat.R;
 
 public class AboutActivity extends Activity {
 

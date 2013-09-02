@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.lsrntools;
+package com.vonglasow.michael.satstat;
 
 import java.util.List;
 import java.util.Locale;
@@ -84,9 +84,10 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import com.vonglasow.michael.lsrntools.LoggerService;
-import com.vonglasow.michael.lsrntools.widgets.GpsStatusView;
-import com.vonglasow.michael.lsrntools.widgets.SquareView;
+
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.widgets.GpsStatusView;
+import com.vonglasow.michael.satstat.widgets.SquareView;
 
 public class MainActivity extends FragmentActivity implements GpsStatus.Listener, LocationListener, SensorEventListener {
 
@@ -384,16 +385,6 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        menu_action_record = menu.findItem(R.id.action_record);
-        menu_action_stop_record = menu.findItem(R.id.action_stop_record);
-        
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (LoggerService.class.getName().equals(service.service.getClassName())) {
-                menu_action_record.setVisible(false);
-                menu_action_stop_record.setVisible(true);
-            }
-        }
         
         return true;
     }
@@ -484,23 +475,6 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     public boolean onOptionsItemSelected(MenuItem item) {
     	Intent logIntent;
     	switch (item.getItemId()) {
-    	case R.id.action_record:
-    		//start logging            
-    		//start log
-    		logIntent = new Intent(this, LoggerService.class);
-    		logIntent.setAction(LoggerService.ACTION_START);
-    		startService (logIntent);
-    		menu_action_stop_record.setVisible(true);
-    		menu_action_record.setVisible(false);
-    		return true;
-    	case R.id.action_stop_record:
-    		//stop logging            
-    		logIntent = new Intent(this, LoggerService.class);
-    		logIntent.setAction(LoggerService.ACTION_STOP);
-    		startService (logIntent);
-    		menu_action_record.setVisible(true);
-    		menu_action_stop_record.setVisible(false);
-    		return true;
     	case R.id.action_about:
     		startActivity(new Intent(this, AboutActivity.class));
     		return true;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vonglasow.michael.lsrntools"
+    package="com.vonglasow.michael.satstat"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,8 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.vonglasow.michael.lsrntools.MainActivity"
+            android:name="com.vonglasow.michael.satstat.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,13 +29,8 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name="com.vonglasow.michael.lsrntools.LoggerService"
-            android:exported="false" >
-        </service>
-
         <activity
-            android:name="com.vonglasow.michael.lsrntools.AboutActivity"
+            android:name="com.vonglasow.michael.satstat.AboutActivity"
             android:label="@string/title_activity_about" android:parentActivityName=".MainActivity">
         </activity>
     </application>

@@ -1,25 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item 
-        android:id="@+id/action_record" 
-        android:title="@string/action_record" 
-        android:showAsAction="ifRoom|withText" 
-        android:icon="@drawable/ic_action_record">
-        
-    </item>
-    <item android:id="@+id/action_stop_record" 
-        android:title="@string/action_stop_record" 
-        android:showAsAction="ifRoom|withText" 
-        android:icon="@drawable/ic_action_stop"
-        android:visible="false">
-        
-    </item>
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
-    
     <item android:id="@+id/action_about" android:title="@string/action_about"></item>
     
 

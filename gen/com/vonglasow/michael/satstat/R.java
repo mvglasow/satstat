@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.vonglasow.michael.lsrntools;
+package com.vonglasow.michael.satstat;
 
 public final class R {
     public static final class attr {
@@ -46,10 +46,7 @@ public final class R {
         public static final int accX=0x7f090038;
         public static final int accY=0x7f090039;
         public static final int accZ=0x7f09003a;
-        public static final int action_about=0x7f090069;
-        public static final int action_record=0x7f090066;
-        public static final int action_settings=0x7f090068;
-        public static final int action_stop_record=0x7f090067;
+        public static final int action_about=0x7f090066;
         public static final int gpsAccuracy=0x7f090015;
         public static final int gpsAlt=0x7f09000c;
         public static final int gpsBearing=0x7f09000f;
