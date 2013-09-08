@@ -83,6 +83,7 @@
     <string name="title_radio_bsid">BSID</string>
     <string name="title_radio_wifi">WiFi</string>
     <string name="title_radio_mac">BSSID (MAC)</string>
+    <string name="title_radio_channel">Ch</string>
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">About</string>
     <string name="about_text">Location, Sensor and Radio Network Status

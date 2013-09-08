@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -212,6 +214,21 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	private WakeLock wl;
 	*/
 	
+	@SuppressWarnings("boxing")
+	private final static ArrayList<Integer> channelsFrequency = new ArrayList<Integer>(
+	        Arrays.asList(0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447,
+	                2452, 2457, 2462, 2467, 2472, 2484));
+
+	public static Integer getFrequencyFromChannel(int channel) {
+	    return channelsFrequency.get(channel);
+	}
+
+	public static int getChannelFromFrequency(int frequency) {
+	    return channelsFrequency.indexOf(Integer.valueOf(frequency));
+	}
+
+
+	
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
@@ -271,6 +288,11 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 			            newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 		    			newMac.setText(result.BSSID);
 		    			row1.addView(newMac);
+			            TextView newCh = new TextView(wifiAps.getContext());
+			            newCh.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+			            newCh.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
+			            newCh.setText(String.valueOf(getChannelFromFrequency(result.frequency)));
+			            row1.addView(newCh);
 			            TextView newLevel = new TextView(wifiAps.getContext());
 			            newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
 			            newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
@@ -684,7 +706,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     	            row.addView(newCid);
     	            row.addView(newLac);
     	            TextView newDbm = new TextView(rilCells.getContext());
-    	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+    	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
     	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     	            newDbm.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getDbm()));
     	            row.addView(newDbm);
@@ -708,7 +730,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     	            newBsid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getBasestationId()));
     	            row.addView(newBsid);
     	            TextView newAsu = new TextView(rilCells.getContext());
-    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
     	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
     	            newAsu.setText(String.valueOf(cellInfoCdma.getCellSignalStrength().getAsuLevel()));
     	            row.addView(newAsu);
