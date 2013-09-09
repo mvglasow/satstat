@@ -19,6 +19,10 @@
 
 package com.vonglasow.michael.satstat.widgets;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,6 +45,10 @@ public class GpsStatusView extends SquareView {
 	//FIXME: these two should be DPI-dependent, this is OK for MDPI
 	private int gridStrokeWidth = 2;
 	private float snrScale = 0.2f;
+	
+	// Compensation for display rotation. Use Surface.ROTATION_* as index (0, 90, 180, 270 deg).
+	@SuppressWarnings("boxing")
+	private final static Integer zeroYaw[] = {0, 90, 180, 270};
 	
 	public GpsStatusView(Context context) {
 		super(context);
@@ -105,7 +113,7 @@ public class GpsStatusView extends SquareView {
 		//Log.d("GpsStatusView", String.format("Drawing on a %dx%d canvas", w, h));
 
 		canvas.translate(cx, cy);
-		canvas.rotate(-mYaw);
+		canvas.rotate(-mYaw - zeroYaw[((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation()]);
 		
 		Path northArrow = new Path();
 		northArrow.moveTo(-8,  -h * 0.30f);
