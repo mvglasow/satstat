@@ -233,9 +233,14 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
 	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+		/*
+		// Requires API level 17. Many phones don't implement this method at all and will return null,
+		// the ones that do implement it return only certain cell types (none that we support at this point).
+		//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 	 			showCellInfo(cellInfo);
 	 	}
+	 	*/
 	 	
 		public void onCellLocationChanged (CellLocation location) {
 			if (isRadioViewReady) {
@@ -367,6 +372,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.activity_main);
 
 
@@ -519,7 +525,11 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     protected void onResume() {
         super.onResume();
         //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        if (mLocationManager.getAllProviders().indexOf(LocationManager.GPS_PROVIDER) >= 0) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        } else {
+            Log.w("MainActivity", "No GPS location provider found. GPS data display will not be available.");
+        }
         mLocationManager.addGpsStatusListener(this);
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
@@ -678,6 +688,10 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	 * 
 	 * @param cells The list of cells passed to {@link PhoneStateListener.onCellInfoChanged} or returned by {@link TelephonyManager.getAllCellInfo}
 	 */
+	/*
+	// Requires API level 17. Many phones don't implement this method at all and will return null,
+	// the ones that do implement it return only certain cell types (none that we support at this point).
+	//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
 	protected static void showCellInfo (List <CellInfo> cells) {
  		if ((isRadioViewReady) && (cells != null)) {
  			rilCells.removeAllViews();
@@ -739,6 +753,7 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
  			}
  		}
 	}
+	*/
 	
 	/**
 	 * Updates the info display for the current radio cell. Called by {@link PhoneStateListener.onCellLocationChanged}
@@ -1030,10 +1045,14 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 			showNeighboringCellInfo(neighboringCells);
 			
-			//this is not implemented on some versions (at least 4.2.2) and will return null 
-        	List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-        	showCellInfo(allCells);
-        	
+			/*
+			// Requires API level 17. Many phones don't implement this method at all and will return null,
+			// the ones that do implement it return only certain cell types (none that we support at this point).
+			//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
+			List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
+			showCellInfo(allCells);
+			*/
+
         	mWifiManager.startScan();
         	
             return rootView;
