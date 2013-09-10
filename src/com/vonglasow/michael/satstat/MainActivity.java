@@ -19,19 +19,25 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -56,6 +62,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
@@ -91,7 +98,7 @@ import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 import com.vonglasow.michael.satstat.widgets.SquareView;
 
-public class MainActivity extends FragmentActivity implements GpsStatus.Listener, LocationListener, SensorEventListener {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, SensorEventListener, ViewPager.OnPageChangeListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -373,8 +380,23 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        final ActionBar actionBar = getActionBar();
+        
         setContentView(R.layout.activity_main);
-
+        
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+        /*
+        Configuration config = getResources().getConfiguration();
+        if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            actionBar.setDisplayShowHomeEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
+        } else {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(true);
+        }
+        */
+        setEmbeddedTabs(actionBar, true);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
@@ -383,7 +405,17 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOnPageChangeListener(this);
         
+        // Add tabs, specifying the tab's text and TabListener
+        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+            actionBar.addTab(
+                    actionBar.newTab()
+                            //.setText(mSectionsPagerAdapter.getPageTitle(i))
+                            .setIcon(mSectionsPagerAdapter.getPageIcon(i))
+                            .setTabListener(this));
+        }
+
         // Get system services for event delivery
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
@@ -510,6 +542,25 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
     		return super.onOptionsItemSelected(item);
     	}
     }
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+        // When swiping between pages, select the
+        // corresponding tab.
+        getActionBar().setSelectedNavigationItem(position);
+	}
 
     /**
      * Called when a location provider is disabled. Does nothing.
@@ -755,6 +806,51 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
 	}
 	*/
 	
+
+
+	@Override
+	public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
+        // probably ignore this event
+	}
+
+	@Override
+	public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+        // show the given tab
+        // When the tab is selected, switch to the
+        // corresponding page in the ViewPager.
+        mViewPager.setCurrentItem(tab.getPosition());
+	}
+
+	@Override
+	public void onTabUnselected(Tab tab, android.app.FragmentTransaction ft) {
+        // hide the given tab (ignore this event)
+	}
+    
+	private void setEmbeddedTabs(Object actionBar, Boolean embed_tabs) {
+	    try {
+	    	/*
+	        if (actionBar instanceof ActionBarWrapper) {
+	            // ICS and forward
+	            try {
+	                Field actionBarField = actionBar.getClass()
+	                        .getDeclaredField("mActionBar");
+	                actionBarField.setAccessible(true);
+	                actionBar = actionBarField.get(actionBar);
+	            } catch (Exception e) {
+	                Log.e("", "Error enabling embedded tabs", e);
+	            }
+	        }
+	        */
+	        Method setHasEmbeddedTabsMethod = actionBar.getClass()
+	                .getDeclaredMethod("setHasEmbeddedTabs", boolean.class);
+	        setHasEmbeddedTabsMethod.setAccessible(true);
+	        setHasEmbeddedTabsMethod.invoke(actionBar, embed_tabs);
+	    } catch (Exception e) {
+	        Log.e("", "Error marking actionbar embedded", e);
+	    }
+	}
+
 	/**
 	 * Updates the info display for the current radio cell. Called by {@link PhoneStateListener.onCellLocationChanged}
 	 * or after explicitly getting the location by calling {@link TelephonyManager.getCellLocation}.
@@ -873,6 +969,19 @@ public class MainActivity extends FragmentActivity implements GpsStatus.Listener
         public int getCount() {
             // Show 3 total pages.
             return 3;
+        }
+
+        public Drawable getPageIcon(int position) {
+            Locale l = Locale.getDefault();
+            switch (position) {
+                case 0:
+                    return getResources().getDrawable(R.drawable.ic_action_gps);
+                case 1:
+                    return getResources().getDrawable(R.drawable.ic_action_sensor);
+                case 2:
+                    return getResources().getDrawable(R.drawable.ic_action_radio);
+            }
+            return null;
         }
 
         @Override
