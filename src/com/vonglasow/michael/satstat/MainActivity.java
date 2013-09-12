@@ -657,7 +657,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					break;
 	            case Sensor.TYPE_ORIENTATION:
 	            	mOrLast = event.timestamp / 1000;
-	            	gpsStatusView.setYaw(event.values[0]);
 		            orAzimuth.setText(String.format("%.0f%s", event.values[0], getString(R.string.unit_degree)));
 		            orAziText.setText(formatOrientation(event.values[0]));
 		            orPitch.setText(String.format("%.0f%s", event.values[1], getString(R.string.unit_degree)));
@@ -707,6 +706,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            	break;
             }
     	}
+		if (isGpsViewReady && isRateElapsed) {
+			switch (event.sensor.getType()) {
+            case Sensor.TYPE_ORIENTATION:
+                    gpsStatusView.setYaw(event.values[0]);
+				break;
+			}
+		}
     }
     	
     /**
@@ -1040,6 +1046,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
             return rootView;
         }
+        
+        @Override
+        public void onDestroyView() {
+        	super.onDestroyView();
+        	isGpsViewReady = false;
+        }
     }
 
 
@@ -1107,6 +1119,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             return rootView;
         }
+        
+        @Override
+        public void onDestroyView() {
+        	super.onDestroyView();
+        	isSensorViewReady = false;
+        }
     }
 
 
@@ -1165,6 +1183,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	mWifiManager.startScan();
         	
             return rootView;
+        }
+        
+        @Override
+        public void onDestroyView() {
+        	super.onDestroyView();
+        	isRadioViewReady = false;
         }
     }
 }
