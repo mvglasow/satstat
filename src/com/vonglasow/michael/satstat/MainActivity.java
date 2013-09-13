@@ -93,6 +93,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
@@ -535,6 +536,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public boolean onOptionsItemSelected(MenuItem item) {
     	Intent logIntent;
     	switch (item.getItemId()) {
+    	case R.id.action_agps:
+    		mLocationManager.sendExtraCommand("gps", "force_xtra_injection", null);
+    		mLocationManager.sendExtraCommand("gps", "force_time_injection", null);
+    		Toast.makeText(this, getString(R.string.status_agps), Toast.LENGTH_SHORT).show();
+    		return true;
     	case R.id.action_about:
     		startActivity(new Intent(this, AboutActivity.class));
     		return true;
