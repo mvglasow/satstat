@@ -42,7 +42,6 @@ public class SquareView extends View {
 	@Override
 	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
 		int mSize = (int) (Math.min(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec)) * mRelativeSize);
-		Log.d("SquareView", String.format("Measuring SquareView, requested w=0x%x, h=0x%x, size w=%d, h=%d, sizing to %d", widthMeasureSpec, heightMeasureSpec, getMeasuredWidth(), getMeasuredHeight(), mSize));
 		setMeasuredDimension(mSize, mSize);
 	}
 	
