@@ -136,7 +136,7 @@ public class GpsStatusView extends SquareView {
 		
 		if (mSats != null) {
 			for (GpsSatellite sat : mSats) {
-				drawSat(canvas, sat.getPrn(), sat.getAzimuth(), sat.getElevation(), sat.getSnr(), sat.usedInFix());
+				if (sat.hasEphemeris()) drawSat(canvas, sat.getPrn(), sat.getAzimuth(), sat.getElevation(), sat.getSnr(), sat.usedInFix());
 			}
 		}
 	}
