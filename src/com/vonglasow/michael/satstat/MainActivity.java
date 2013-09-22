@@ -21,12 +21,12 @@ package com.vonglasow.michael.satstat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActivityManager;
@@ -222,20 +222,78 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private WakeLock wl;
 	*/
 	
-	@SuppressWarnings("boxing")
-	private final static ArrayList<Integer> channelsFrequency = new ArrayList<Integer>(
-	        Arrays.asList(0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447,
-	                2452, 2457, 2462, 2467, 2472, 2484));
+	@SuppressLint("UseSparseArrays")
+	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
+		/*
+		 * Required for serializable objects
+		 */
+		private static final long serialVersionUID = 6793015643527778045L;
 
-	public static Integer getFrequencyFromChannel(int channel) {
-	    return channelsFrequency.get(channel);
-	}
-
-	public static int getChannelFromFrequency(int frequency) {
-	    return channelsFrequency.indexOf(Integer.valueOf(frequency));
-	}
-
-
+		{
+			// 2.4 GHz (802.11 b/g/n)
+			this.put(2412, 1);
+			this.put(2417, 2);
+			this.put(2422, 3);
+			this.put(2427, 4);
+			this.put(2432, 5);
+			this.put(2437, 6);
+			this.put(2442, 7);
+			this.put(2447, 8);
+			this.put(2452, 9);
+			this.put(2457, 10);
+			this.put(2462, 11);
+			this.put(2467, 12);
+			this.put(2472, 13);
+			this.put(2484, 14);
+			
+			//5 GHz (802.11 a/h/j/n/ac)
+			this.put(4915, 183);
+			this.put(4920, 184);
+			this.put(4925, 185);
+			this.put(4935, 187);
+			this.put(4940, 188);
+			this.put(4945, 189);
+			this.put(4960, 192);
+			this.put(4980, 196);
+			
+			this.put(5035, 7);
+			this.put(5040, 8);
+			this.put(5045, 9);
+			this.put(5055, 11);
+			this.put(5060, 12);
+			this.put(5080, 16);
+			
+			this.put(5170, 34);
+			this.put(5180, 36);
+			this.put(5190, 38);
+			this.put(5200, 40);
+			this.put(5210, 42);
+			this.put(5220, 44);
+			this.put(5230, 46);
+			this.put(5240, 48);
+			this.put(5260, 52);
+			this.put(5280, 56);
+			this.put(5300, 60);
+			this.put(5320, 64);
+			
+			this.put(5500, 100);
+			this.put(5520, 104);
+			this.put(5540, 108);
+			this.put(5560, 112);
+			this.put(5580, 116);
+			this.put(5600, 120);
+			this.put(5620, 124);
+			this.put(5640, 128);
+			this.put(5660, 132);
+			this.put(5680, 136);
+			this.put(5700, 140);
+			this.put(5745, 149);
+			this.put(5765, 153);
+			this.put(5785, 157);
+			this.put(5805, 161);
+			this.put(5825, 165);
+		}
+	};
 	
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 
@@ -304,7 +362,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			            TextView newCh = new TextView(wifiAps.getContext());
 			            newCh.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
 			            newCh.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-			            newCh.setText(String.valueOf(getChannelFromFrequency(result.frequency)));
+			            newCh.setText(getChannelFromFrequency(result.frequency));
 			            row1.addView(newCh);
 			            TextView newLevel = new TextView(wifiAps.getContext());
 			            newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
@@ -372,6 +430,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 																			getString(R.string.value_N);
     }
 	
+    
+    /**
+     * Gets the WiFi channel number for a frequency
+     * @param frequency The frequency in MHz
+     * @return The channel number corresponding to {@code frequency}
+     */
+	public static String getChannelFromFrequency(int frequency) {
+		if (channelsFrequency.containsKey(frequency)) {
+			return String.valueOf(channelsFrequency.get(frequency));
+		}
+		else {
+			return "?";
+		}
+	}
+
+
     /**
      * Called when a sensor's accuracy has changed. Does nothing.
      */
