@@ -136,7 +136,9 @@ public class GpsStatusView extends SquareView {
 		
 		if (mSats != null) {
 			for (GpsSatellite sat : mSats) {
-				if ((sat.getAzimuth() == 0) && (sat.getElevation() == 0)) {
+				float azDelta = Math.abs((sat.getAzimuth() + 180) % 360 -180);
+				float eleDelta = Math.abs((sat.getAzimuth() + 90) % 180 - 90);
+				if ((azDelta < 5) && (eleDelta < 5)) {
 					Log.d("GpsStatusView", String.format("Satellite %d, snr=%f, azimuth=%f, elevation=%f, almanac=%b, ephemeris=%b, used=%b", sat.getPrn(), sat.getSnr(), sat.getAzimuth(), sat.getElevation(), sat.hasAlmanac(), sat.hasEphemeris(), sat.usedInFix()));
 				}
 				drawSat(canvas, sat.getPrn(), sat.getAzimuth(), sat.getElevation(), sat.getSnr(), sat.usedInFix());
