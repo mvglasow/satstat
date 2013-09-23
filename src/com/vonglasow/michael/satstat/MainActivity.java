@@ -1106,7 +1106,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             // Initialize controls
             gpsRootLayout = (LinearLayout) rootView.findViewById(R.id.gpsRootLayout);
             gpsStatusView = new GpsStatusView(rootView.getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
             params.weight = 1;
             gpsRootLayout.addView(gpsStatusView, 0, params);
