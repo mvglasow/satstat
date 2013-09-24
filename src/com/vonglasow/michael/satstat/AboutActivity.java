@@ -19,6 +19,10 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.text.util.Linkify;
@@ -37,8 +41,26 @@ public class AboutActivity extends Activity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
+		TextView aboutBuild = (TextView) findViewById(R.id.aboutBuild);
+		
+		InputStream buildInStream = getResources().openRawResource(R.raw.build);
+		ByteArrayOutputStream buildOutStream = new ByteArrayOutputStream();
+		
+		int i;
+		try {
+			i = buildInStream.read();
+			while (i != -1) {
+				buildOutStream.write(i);
+				i = buildInStream.read();
+			}
+			buildInStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		aboutBuild.setText(buildOutStream.toString());
+		
 		TextView aboutText = (TextView) findViewById(R.id.aboutText);
-		aboutText.setMovementMethod(new ScrollingMovementMethod());
+		//aboutText.setMovementMethod(new ScrollingMovementMethod());
 		Linkify.addLinks(aboutText, Linkify.WEB_URLS);
 	}
 
