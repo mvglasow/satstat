@@ -35,6 +35,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -222,7 +223,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private WakeLock wl;
 	*/
 	
-	@SuppressLint("UseSparseArrays")
+	/**
+	 * Converts screen rotation to orientation
+	 */
+	private final static Integer orFromRot[] = {
+		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
+		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE};
+
+    @SuppressLint("UseSparseArrays")
 	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
 		/*
 		 * Required for serializable objects
@@ -697,6 +707,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		switch (event.sensor.getType()) {
 			case Sensor.TYPE_ACCELEROMETER:
 				isRateElapsed = (event.timestamp / 1000) - mAccLast >= iSensorRate;
+				// if Z acceleration is greater than X/Y combined, lock rotation, else unlock
+				if (Math.pow(event.values[2], 2) > Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2)) {
+					// workaround (SCREEN_ORIENTATION_LOCK is unsupported on API < 18)
+					setRequestedOrientation(orFromRot[this.getWindowManager().getDefaultDisplay().getRotation()]);
+				} else {
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+				}
 				break;
 			case Sensor.TYPE_ORIENTATION:
 				isRateElapsed = (event.timestamp / 1000) - mOrLast >= iSensorRate;
