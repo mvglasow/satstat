@@ -2,32 +2,32 @@
 <resources>
 
     <string name="app_name">SatStat</string>
-    <string name="action_settings">Configuration</string>
-    <string name="action_record">Enregistrement</string>
-    <string name="action_stop_record">Stopper l\'enregistrement</string>
-    <string name="action_agps">Recharger les données AGPS</string>
-    <string name="action_about">A propos</string>
+    <string name="action_settings">Configurazione</string>
+    <string name="action_record">Registra</string>
+    <string name="action_stop_record">Termina registrazione</string>
+    <string name="action_agps">Ricarico dati AGPS</string>
+    <string name="action_about">A proposito</string>
     <string name="dot">&#x2b1b;</string>
     <string name="dotSpace">&#x2b1b;&#x00a0;</string>
-    <string name="error_write_file">Erreur lors de l\'écriture du fichier</string>
-    <string name="error_ext_storage">Stockage externe non disponible</string>
-    <string name="info_start_rec">Début d\'enregistrement</string>
-    <string name="notify_record_title">Enregistrement des données du capteur</string>
-    <string name="notify_record_body">Appuyer pour stopper l\'enregistrement</string>
-    <string name="status_agps">Demande de chargement des données AGPS</string>
+    <string name="error_write_file">Erreur lors de l\'écriture du fichier</string><!-- FIXME -->
+    <string name="error_ext_storage">Memoria esterna non disponibile</string>
+    <string name="info_start_rec">Registrazione iniziata</string>
+    <string name="notify_record_title">Registrazione dati</string>
+    <string name="notify_record_body">Tocca per terminare la registrazione</string>
+    <string name="status_agps">Richiesto ricarico dati AGPS</string>
     <string name="title_section1">GPS</string>
-    <string name="title_section2">Capteurs</string>
+    <string name="title_section2">Sensori</string>
     <string name="title_section3">Radio</string>
-    <string name="title_gps_lat">Latitude</string>
-    <string name="title_gps_lon">Longitude</string>
+    <string name="title_gps_lat">Latitudine</string>
+    <string name="title_gps_lon">Longitudine</string>
     <string name="title_gps_decl">Decl.</string>
-    <string name="title_gps_speed">Vitesse</string>
-    <string name="title_gps_alt">Altitude</string>
-    <string name="title_gps_time">Otention du dernier Fix</string>
-    <string name="title_gps_bear">Bearing</string>
+    <string name="title_gps_speed">Velocità</string>
+    <string name="title_gps_alt">Altitudine</string>
+    <string name="title_gps_time">Ultima posizione ricevuta</string>
+    <string name="title_gps_bear">Rotta</string>
     <string name="title_gps_orient">Orientation</string>
-    <string name="title_gps_acc">Erreur</string>
-    <string name="title_gps_sats">Satellites</string>
+    <string name="title_gps_acc">Errore</string>
+    <string name="title_gps_sats">Satelliti</string>
     <string name="title_gps_ttff">TTFF (s)</string>
     <string name="value_none">–</string>
     <string name="value_N">N</string>
@@ -46,33 +46,33 @@
     <string name="value_WNW">ONO</string>
     <string name="value_NW">NO</string>
     <string name="value_NNW">NNO</string>
-    <string name="title_sensor_acc">Accélération et gravité</string>
+    <string name="title_sensor_acc">Accelerazione e gravità</string>
     <string name="title_sensors_accTotal">Σg (m/s²)</string>
     <string name="title_sensors_accX">gx (m/s²)</string>
     <string name="title_sensors_accY">gy (m/s²)</string>
     <string name="title_sensors_accZ">gz (m/s²)</string>
-    <string name="title_sensor_rot">Rotation</string>
+    <string name="title_sensor_rot">Rotazione</string>
     <string name="title_sensors_rotTotal">Σω (rad/s)</string>
     <string name="title_sensors_rotX">ωx (rad/s)</string>
     <string name="title_sensors_rotY">ωy (rad/s)</string>
     <string name="title_sensors_rotZ">ωz (rad/s)</string>
-    <string name="title_sensor_or">Orientation</string>
+    <string name="title_sensor_or">Orientamento</string>
     <string name="title_sensors_orAzimuth">Azimuth</string>
     <string name="title_sensors_orAziText">Orientation</string>
-    <string name="title_sensors_orPitch">Pitch</string>
-    <string name="title_sensors_orRoll">Roll</string>
-    <string name="title_sensor_mag">Champ magnétique</string>
+    <string name="title_sensors_orPitch">Becch.</string>
+    <string name="title_sensors_orRoll">Rollio</string>
+    <string name="title_sensor_mag">Campo magnetico</string>
     <string name="title_sensors_magTotal">ΣB (µT)</string>
     <string name="title_sensors_magX">Bx (µT)</string>
     <string name="title_sensors_magY">By (µT)</string>
     <string name="title_sensors_magZ">Bz (µT)</string>
-    <string name="title_sensor_met">Météorologie</string>
+    <string name="title_sensor_met">Meteorologia</string>
     <string name="title_sensors_metTemp">&#x00a0;°C</string>
     <string name="title_sensors_metPressure">&#x00a0;hPa</string>
-    <string name="title_sensors_metHumid">Humidité relative (%)</string>
-    <string name="title_sensor_misc">Divers</string>
+    <string name="title_sensors_metHumid">Umidità relativa (%)</string>
+    <string name="title_sensor_misc">Diversi</string>
     <string name="title_sensors_light">&#x00a0;lux</string>
-    <string name="title_sensors_proximity">Proximité (cm)</string>
+    <string name="title_sensors_proximity">Prossimità (cm)</string>
     <string name="title_radio_gsm">GSM</string>
     <string name="title_radio_mcc">MCC</string>
     <string name="title_radio_mnc">MNC</string>
@@ -85,31 +85,31 @@
     <string name="title_radio_bsid">BSID</string>
     <string name="title_radio_wifi">WiFi</string>
     <string name="title_radio_mac">BSSID (MAC)</string>
-    <string name="title_radio_channel">Ch</string>
+    <string name="title_radio_channel">C</string>
     <string name="title_radio_level">dBm</string>
-    <string name="title_activity_about">A propos</string>
+    <string name="title_activity_about">A proposito</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
-    <string name="about_text">Si quelque chose ne fonctionne pas comme il le devrait,
-        ou si vous avez une idée pour rendre l\'application meilleure, vous pouvez
-        soumettre vos idées à l\'adresse:
+    <string name="about_text">Se qualcosa non funziona come dovrebbe,
+        ovvero se hai un\'idea come migliorare ancora quest\'applicazione,
+        segnalalo a:
 		\nhttps://github.com/mvglasow/satstat/issues
 		\n
 		\nCopyright &#169; 2013 Michael von Glasow
 		\n
-		\nCe programme est un logiciel libre; vous pouvez le redistribuer ou le
-        modifier suivant les termes de la GNU General Public License telle que publiée
-        par la Free Software Foundation; soit la version 3 de la licence,
-        soit (à votre gré) toute version ultérieure.
+		\nThis program is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
 		\n
-		\nCe programme est distribué dans l\'espoir qu\'il sera utile, mais SANS
-        AUCUNE GARANTIE; pas même la garantie implicite de COMMERCIABILISABILITÉ
-        ni d\'ADÉQUATION à UN OBJECTIF PARTICULIER. Consultez la GNU General Public
-        License pour plus de détails.
+		\nThis program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+		GNU General Public License for more details.
 		\n
-		\nVous devez avoir reçu une copie de la GNU General Public License en même
-        temps que ce programme; si ce n\'est pas le cas, consultez http://www.gnu.org/licenses.
+		\nYou should have received a copy of the GNU General Public License
+		along with this program. If not, see http://www.gnu.org/licenses/.
 		\n
-		\nLe code source de cette application est disponible à l\'adresse:
+		\nIl codice sorgente di quest\'applicazione si trova a:
 		\nhttps://github.com/mvglasow/satstat</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>

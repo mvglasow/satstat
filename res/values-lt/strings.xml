@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SatStat</string>
+    <string name="action_settings">Nustatymai</string>
+    <string name="action_record">Įrašyti</string>
+    <string name="action_stop_record">Pabaigti įrašymą</string>
+    <string name="action_agps">Atnaujinti AGPS duomenis</string>
+    <string name="action_about">Apie</string>
+    <string name="dot">&#x2b1b;</string>
+    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
+    <string name="error_write_file">Error writing to file</string>
+    <string name="error_ext_storage">External storage not available</string>
+    <string name="info_start_rec">Started recording</string>
+    <string name="notify_record_title">Recording sensor data</string>
+    <string name="notify_record_body">Touch to stop recording</string>
+    <string name="status_agps">AGPS duomenų atnaujinimo užklausa išsiųsta</string>
+    <string name="title_section1">GPS</string>
+    <string name="title_section2">Jutikliai</string>
+    <string name="title_section3">Tinklai</string>
+    <string name="title_gps_lat">Platuma</string>
+    <string name="title_gps_lon">Ilguma</string>
+    <string name="title_gps_decl">Dekl.</string>
+    <string name="title_gps_speed">Greitis</string>
+    <string name="title_gps_alt">Aukštis</string>
+    <string name="title_gps_time">Paskutinis padėties nustatymas</string>
+    <string name="title_gps_bear">Kryptis</string>
+    <string name="title_gps_orient">Orientation</string>
+    <string name="title_gps_acc">Tiksl.</string>
+    <string name="title_gps_sats">Palydovai</string>
+    <string name="title_gps_ttff">TTFF (s)</string>
+    <string name="value_none">–</string>
+    <string name="value_N">Š</string>
+    <string name="value_NNE">ŠŠR</string>
+    <string name="value_NE">ŠR</string>
+    <string name="value_ENE">RŠR</string>
+    <string name="value_E">R</string>
+    <string name="value_ESE">RPR</string>
+    <string name="value_SE">PR</string>
+    <string name="value_SSE">PPR</string>
+    <string name="value_S">P</string>
+    <string name="value_SSW">PPV</string>
+    <string name="value_SW">PV</string>
+    <string name="value_WSW">VPV</string>
+    <string name="value_W">V</string>
+    <string name="value_WNW">VŠV</string>
+    <string name="value_NW">ŠV</string>
+    <string name="value_NNW">ŠŠV</string>
+    <string name="title_sensor_acc">Pagreitis ir gravitacija</string>
+    <string name="title_sensors_accTotal">Σg (m/s²)</string>
+    <string name="title_sensors_accX">gx (m/s²)</string>
+    <string name="title_sensors_accY">gy (m/s²)</string>
+    <string name="title_sensors_accZ">gz (m/s²)</string>
+    <string name="title_sensor_rot">Sukimas</string>
+    <string name="title_sensors_rotTotal">Σω (rad/s)</string>
+    <string name="title_sensors_rotX">ωx (rad/s)</string>
+    <string name="title_sensors_rotY">ωy (rad/s)</string>
+    <string name="title_sensors_rotZ">ωz (rad/s)</string>
+    <string name="title_sensor_or">Orientacija</string>
+    <string name="title_sensors_orAzimuth">Azimutas</string>
+    <string name="title_sensors_orAziText">Orientation</string>
+    <string name="title_sensors_orPitch">Išilginė</string>
+    <string name="title_sensors_orRoll">Šoninė</string>
+    <string name="title_sensor_mag">Magnetinis laukas</string>
+    <string name="title_sensors_magTotal">ΣB (µT)</string>
+    <string name="title_sensors_magX">Bx (µT)</string>
+    <string name="title_sensors_magY">By (µT)</string>
+    <string name="title_sensors_magZ">Bz (µT)</string>
+    <string name="title_sensor_met">Meteorologija</string>
+    <string name="title_sensors_metTemp">&#x00a0;°C</string>
+    <string name="title_sensors_metPressure">&#x00a0;hPa</string>
+    <string name="title_sensors_metHumid">Santyk. drėgnumas (%)</string>
+    <string name="title_sensor_misc">Įvairūs</string>
+    <string name="title_sensors_light">&#x00a0;lux</string>
+    <string name="title_sensors_proximity">Artumas (cm)</string>
+    <string name="title_radio_gsm">GSM</string>
+    <string name="title_radio_mcc">MCC</string>
+    <string name="title_radio_mnc">MNC</string>
+    <string name="title_radio_cellid">Cell ID</string>
+    <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_asu">ASU</string>
+    <string name="title_radio_cdma">CDMA</string>
+    <string name="title_radio_sid">SID</string>
+    <string name="title_radio_nid">NID</string>
+    <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_wifi">WiFi</string>
+    <string name="title_radio_mac">BSSID (MAC)</string>
+    <string name="title_radio_channel">K.</string>
+    <string name="title_radio_level">dBm</string>
+    <string name="title_activity_about">Apie</string>
+    <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_text">Jeigu kažkas neveikia kaip turėtų, ar jeigu turite
+        mintį kaip dar tobulinti šią programėlę, prašome pranešti čia:
+		\nhttps://github.com/mvglasow/satstat/issues
+		\n
+		\nCopyright &#169; 2013 Michael von Glasow
+		\n
+		\nThis program is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+		\n
+		\nThis program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+		GNU General Public License for more details.
+		\n
+		\nYou should have received a copy of the GNU General Public License
+		along with this program. If not, see http://www.gnu.org/licenses/.
+		\n
+		\nŠios programėlės išeitinis kodas yra čia:
+		\nhttps://github.com/mvglasow/satstat</string>
+    <string name="unit_degree">°</string>
+    <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_meter">&#x00a0;m</string>
+</resources>

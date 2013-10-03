@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SatStat</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_record">Aufzeichnen</string>
+    <string name="action_stop_record">Aufzeichnung beenden</string>
+    <string name="action_agps">AGPS-Daten neu laden</string>
+    <string name="action_about">Info</string>
+    <string name="dot">&#x2b1b;</string>
+    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
+    <string name="error_write_file">Fehler beim Schreiben in Datei</string>
+    <string name="error_ext_storage">Externer Speicher nicht verfügbar</string>
+    <string name="info_start_rec">Aufzeichnung gestartet</string>
+    <string name="notify_record_title">Sensordaten werden aufgezeichnet</string>
+    <string name="notify_record_body">Zum Beenden berühren</string>
+    <string name="status_agps">Aktualisierung der AGPS-Daten angefordert</string>
+    <string name="title_section1">GPS</string>
+    <string name="title_section2">Sensoren</string>
+    <string name="title_section3">Funknetze</string>
+    <string name="title_gps_lat">Breite</string>
+    <string name="title_gps_lon">Länge</string>
+    <string name="title_gps_decl">Dekl.</string>
+    <string name="title_gps_speed">Geschw.</string>
+    <string name="title_gps_alt">Meereshöhe</string>
+    <string name="title_gps_time">Letzte Positionsbestimmung</string>
+    <string name="title_gps_bear">Kurs</string>
+    <string name="title_gps_orient">Orientation</string>
+    <string name="title_gps_acc">Fehler</string>
+    <string name="title_gps_sats">Satelliten</string>
+    <string name="title_gps_ttff">TTFF (s)</string>
+    <string name="value_none">–</string>
+    <string name="value_N">N</string>
+    <string name="value_NNE">NNO</string>
+    <string name="value_NE">NO</string>
+    <string name="value_ENE">ONO</string>
+    <string name="value_E">O</string>
+    <string name="value_ESE">OSO</string>
+    <string name="value_SE">SO</string>
+    <string name="value_SSE">SSO</string>
+    <string name="value_S">S</string>
+    <string name="value_SSW">SSW</string>
+    <string name="value_SW">SW</string>
+    <string name="value_WSW">WSW</string>
+    <string name="value_W">W</string>
+    <string name="value_WNW">WNW</string>
+    <string name="value_NW">NW</string>
+    <string name="value_NNW">NNW</string>
+    <string name="title_sensor_acc">Beschleunigung/Schwerkraft</string>
+    <string name="title_sensors_accTotal">Σg (m/s²)</string>
+    <string name="title_sensors_accX">gx (m/s²)</string>
+    <string name="title_sensors_accY">gy (m/s²)</string>
+    <string name="title_sensors_accZ">gz (m/s²)</string>
+    <string name="title_sensor_rot">Rotation</string>
+    <string name="title_sensors_rotTotal">Σω (rad/s)</string>
+    <string name="title_sensors_rotX">ωx (rad/s)</string>
+    <string name="title_sensors_rotY">ωy (rad/s)</string>
+    <string name="title_sensors_rotZ">ωz (rad/s)</string>
+    <string name="title_sensor_or">Lage</string>
+    <string name="title_sensors_orAzimuth">Azimut</string>
+    <string name="title_sensors_orAziText">Orientation</string>
+    <string name="title_sensors_orPitch">Nick</string>
+    <string name="title_sensors_orRoll">Roll</string>
+    <string name="title_sensor_mag">Magnetfeld</string>
+    <string name="title_sensors_magTotal">ΣB (µT)</string>
+    <string name="title_sensors_magX">Bx (µT)</string>
+    <string name="title_sensors_magY">By (µT)</string>
+    <string name="title_sensors_magZ">Bz (µT)</string>
+    <string name="title_sensor_met">Meteorologie</string>
+    <string name="title_sensors_metTemp">&#x00a0;°C</string>
+    <string name="title_sensors_metPressure">&#x00a0;hPa</string>
+    <string name="title_sensors_metHumid">Rel. Luftfeuchte (%)</string>
+    <string name="title_sensor_misc">Verschiedene</string>
+    <string name="title_sensors_light">&#x00a0;lux</string>
+    <string name="title_sensors_proximity">Abstand (cm)</string>
+    <string name="title_radio_gsm">GSM</string>
+    <string name="title_radio_mcc">MCC</string>
+    <string name="title_radio_mnc">MNC</string>
+    <string name="title_radio_cellid">Cell ID</string>
+    <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_asu">ASU</string>
+    <string name="title_radio_cdma">CDMA</string>
+    <string name="title_radio_sid">SID</string>
+    <string name="title_radio_nid">NID</string>
+    <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_wifi">WiFi</string>
+    <string name="title_radio_mac">BSSID (MAC)</string>
+    <string name="title_radio_channel">K.</string>
+    <string name="title_radio_level">dBm</string>
+    <string name="title_activity_about">Info</string>
+    <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_text">Wenn etwas nicht so funktioniert, wie es sollte, oder
+        wenn Sie Verbesserungsvorschläge haben, melden Sie diese bitte unter:
+		\nhttps://github.com/mvglasow/satstat/issues
+		\n
+		\nCopyright &#169; 2013 Michael von Glasow
+		\n
+		\nDieses Programm ist Freie Software: Sie können es unter den Bedingungen
+		der GNU General Public License, wie von der Free Software Foundation,
+		Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+		veröffentlichten Version, weiterverbreiten und/oder modifizieren.
+		\n
+		\nDieses Programm wird in der Hoffnung, dass es nützlich sein wird, aber
+		OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite
+		Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+		Siehe die GNU General Public License für weitere Details.
+		\n
+		\nSie sollten eine Kopie der GNU General Public License zusammen mit diesem
+		Programm erhalten haben. Wenn nicht, siehe http://www.gnu.org/licenses/.
+		\n
+		\nDer Quellcode für diese Applikation ist unter:
+		\nhttps://github.com/mvglasow/satstat</string>
+    <string name="unit_degree">°</string>
+    <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_meter">&#x00a0;m</string>
+</resources>
