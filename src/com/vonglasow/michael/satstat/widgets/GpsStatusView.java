@@ -118,7 +118,7 @@ public class GpsStatusView extends SquareView {
 		Path northArrow = new Path();
 		northArrow.moveTo(-8,  -h * 0.30f);
 		northArrow.lineTo(8, -h * 0.30f);
-		northArrow.lineTo(0,  -h * 0.45f);
+		northArrow.lineTo(0,  -h * 0.45f - gridStrokeWidth * 2);
 		northArrow.close();
 		
 		gridBorderPaint.setStrokeWidth(w * 0.075f);
@@ -128,11 +128,11 @@ public class GpsStatusView extends SquareView {
 		canvas.drawLine(-w * 0.45f, 0, w * 0.45f, 0, gridPaint);
 		canvas.drawLine(0, -h * 0.45f, 0, h * 0.45f, gridPaint);
 		
-		canvas.drawPath(northArrow, northPaint);
-		
 		canvas.drawCircle(0,  0,  w * 0.45f, gridPaint);
 		canvas.drawCircle(0,  0,  w * 0.30f, gridPaint);
 		canvas.drawCircle(0,  0,  w * 0.15f, gridPaint);
+		
+		canvas.drawPath(northArrow, northPaint);
 		
 		if (mSats != null) {
 			for (GpsSatellite sat : mSats) {
