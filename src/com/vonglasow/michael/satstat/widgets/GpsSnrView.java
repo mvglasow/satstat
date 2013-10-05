@@ -42,7 +42,6 @@ public class GpsSnrView extends View {
 	private Paint gridPaintStrong;
 
 	//FIXME: should be DPI-dependent, this is OK for MDPI
-	//FIXME: deal with gridStrokeWidth equal to one physical pixel
 	private int gridStrokeWidth = 2;
 
 	// Which satellites to draw
@@ -159,9 +158,9 @@ public class GpsSnrView extends View {
 			}
 		}
 		// draw the grid on top, with an auxiliary line every 4 sats
-		canvas.drawLine(gridStrokeWidth / 2, 0, gridStrokeWidth / 2, h, gridPaintStrong);
+		canvas.drawLine((float) gridStrokeWidth / 2, 0, (float) gridStrokeWidth / 2, h, gridPaintStrong);
 		for (int i = 4; i < getNumBars(); i+=4) {
-			int x = gridStrokeWidth / 2
+			float x = (float) gridStrokeWidth / 2
 					+ i * (w - gridStrokeWidth) / getNumBars();
 			Paint paint = gridPaint;
 			switch(i) {
@@ -186,8 +185,8 @@ public class GpsSnrView extends View {
 			}
 			canvas.drawLine(x, 0, x, h, paint);
 		}
-		canvas.drawLine(w - gridStrokeWidth / 2, h, w - gridStrokeWidth / 2, 0, gridPaintStrong);
-		canvas.drawLine(0, h - gridStrokeWidth / 2, w, h - gridStrokeWidth / 2, gridPaintStrong);
+		canvas.drawLine(w - (float) gridStrokeWidth / 2, h, w - (float) gridStrokeWidth / 2, 0, gridPaintStrong);
+		canvas.drawLine(0, h - (float) gridStrokeWidth / 2, w, h - (float) gridStrokeWidth / 2, gridPaintStrong);
 	}
 
 	public void showSats(Iterable<GpsSatellite> sats) {
