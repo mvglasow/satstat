@@ -97,6 +97,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 import com.vonglasow.michael.satstat.widgets.SquareView;
 
@@ -150,6 +151,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static boolean isGpsViewReady = false;
 	protected static LinearLayout gpsRootLayout;
 	protected static GpsStatusView gpsStatusView;
+	protected static GpsSnrView gpsSnrView;
 	protected static TextView gpsLat;
 	protected static TextView gpsLon;
 	protected static TextView orDeclination;
@@ -539,19 +541,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public void onGpsStatusChanged (int event) {
     	if (isGpsViewReady) {
-	    	GpsStatus status = mLocationManager.getGpsStatus(null);
-	    	int satsInView = 0;
-	    	int satsUsed = 0;
-	    	Iterable<GpsSatellite> sats = status.getSatellites();
-	    	for (GpsSatellite sat : sats) {
-	    		satsInView++;
-	    		if (sat.usedInFix()) {
-	    			satsUsed++;
-	    		}
-	    	}
-	    	gpsSats.setText(String.valueOf(satsUsed) + "/" + String.valueOf(satsInView));
-	    	gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
-	    	gpsStatusView.showSats(sats);
+    		GpsStatus status = mLocationManager.getGpsStatus(null);
+    		int satsInView = 0;
+    		int satsUsed = 0;
+    		Iterable<GpsSatellite> sats = status.getSatellites();
+    		for (GpsSatellite sat : sats) {
+    			satsInView++;
+    			if (sat.usedInFix()) {
+    				satsUsed++;
+    			}
+    		}
+    		gpsSats.setText(String.valueOf(satsUsed) + "/" + String.valueOf(satsInView));
+    		gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
+    		gpsStatusView.showSats(sats);
+    		gpsSnrView.showSats(sats);
     	}
     }
     
@@ -1122,6 +1125,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             
             // Initialize controls
             gpsRootLayout = (LinearLayout) rootView.findViewById(R.id.gpsRootLayout);
+            gpsSnrView = (GpsSnrView) rootView.findViewById(R.id.gpsSnrView);
             gpsStatusView = new GpsStatusView(rootView.getContext());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;

@@ -329,6 +329,13 @@
                 android:text="@string/value_none"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
+
     </LinearLayout>
+
+    <com.vonglasow.michael.satstat.widgets.GpsSnrView
+        android:id="@+id/gpsSnrView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
 
 </LinearLayout>
