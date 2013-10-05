@@ -93,7 +93,7 @@ public class GpsStatusView extends SquareView {
 	 * Draws a satellite in the sky grid.
 	 */
 	private void drawSat(Canvas canvas, int prn, float azimuth, float elevation, float snr, boolean used) {
-		int w = canvas.getWidth();
+		int w = getWidth();
 
 		float r = (90 - elevation) * w / 200;
 		float x = (float) (r * Math.sin(azimuth * Math.PI / 180));
