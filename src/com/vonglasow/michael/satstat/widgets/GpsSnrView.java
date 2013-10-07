@@ -142,14 +142,16 @@ public class GpsSnrView extends View {
 		if (mSats != null) {
 			// iterate through list to find out how many bars to draw
 			for (GpsSatellite sat : mSats) {
-				if (sat.getSnr() <= 32) {
+				int prn = sat.getPrn();
+				if (prn <= 32) {
 					draw32 = true;
-				} else if (sat.getSnr() <= 64) {
+				} else if (prn <= 64) {
+					Log.wtf(TAG, String.format("Got satellite with PRN %d, which should not be happening", prn));
 					draw64 = true;
-				} else if (sat.getSnr() <= 88) {
+				} else if (prn <= 88) {
 					draw88 = true;
 				} else {
-					Log.w(TAG, String.format("Got satellite with PNR %d, possibly unsupported system", sat.getSnr()));
+					Log.w(TAG, String.format("Got satellite with PRN %d, possibly unsupported system", prn));
 				}
 			}
 			// then draw the bars
