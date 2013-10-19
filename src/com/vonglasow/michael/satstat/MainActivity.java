@@ -133,6 +133,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private Sensor mPressureSensor;
 	private Sensor mHumiditySensor;
 	private Sensor mTempSensor;
+    private byte mAccSensorRes;
+    private byte mGyroSensorRes;
+    private byte mMagSensorRes;
+    private byte mLightSensorRes;
+    private byte mProximitySensorRes;
+    private byte mPressureSensorRes;
+    private byte mHumiditySensorRes;
+    private byte mTempSensorRes;
 	private long mOrLast = 0;
 	private long mAccLast = 0;
 	private long mGyroLast = 0;
@@ -517,8 +525,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mTempSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-    	
-		// SCREEN_BRIGHT_WAKE_LOCK is deprecated
+
+        mAccSensorRes = (mAccSensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mAccSensor.getResolution())), 0) : 0;
+        mGyroSensorRes = (mGyroSensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mGyroSensor.getResolution())), 0) : 0;
+        mMagSensorRes = (mMagSensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mMagSensor.getResolution())), 0) : 0;
+        mLightSensorRes = (mLightSensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mLightSensor.getResolution())), 0) : 0;
+        mProximitySensorRes = (mProximitySensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mProximitySensor.getResolution())), 0) : 0;
+        mPressureSensorRes = (mPressureSensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mPressureSensor.getResolution())), 0) : 0;
+        mHumiditySensorRes = (mHumiditySensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mHumiditySensor.getResolution())), 0) : 0;
+        mTempSensorRes = (mTempSensor != null) ? (byte) Math.max(Math.ceil(
+                (float) -Math.log10(mTempSensor.getResolution())), 0) : 0;
+
+        // SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Sensor Monitor");
@@ -749,10 +774,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             switch (event.sensor.getType()) {  
 	            case Sensor.TYPE_ACCELEROMETER:
 	            	mAccLast = event.timestamp / 1000;
-		            accX.setText(String.format("%.3f", event.values[0]));
-		            accY.setText(String.format("%.3f", event.values[1]));
-		            accZ.setText(String.format("%.3f", event.values[2]));
-					accTotal.setText(String.format("%.3f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+		            accX.setText(String.format("%." + mAccSensorRes + "f", event.values[0]));
+		            accY.setText(String.format("%." + mAccSensorRes + "f", event.values[1]));
+		            accZ.setText(String.format("%." + mAccSensorRes + "f", event.values[2]));
+					accTotal.setText(String.format("%." + mAccSensorRes + "f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 					accStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 					break;
 	            case Sensor.TYPE_ORIENTATION:
@@ -765,43 +790,43 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					break;
 	            case Sensor.TYPE_GYROSCOPE:
 	            	mGyroLast = event.timestamp / 1000;
-		            rotX.setText(String.format("%.4f", event.values[0]));
-		            rotY.setText(String.format("%.4f", event.values[1]));
-		            rotZ.setText(String.format("%.4f", event.values[2]));
-					rotTotal.setText(String.format("%.4f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+		            rotX.setText(String.format("%." + mGyroSensorRes + "f", event.values[0]));
+		            rotY.setText(String.format("%." + mGyroSensorRes + "f", event.values[1]));
+		            rotZ.setText(String.format("%." + mGyroSensorRes + "f", event.values[2]));
+					rotTotal.setText(String.format("%." + mGyroSensorRes + "f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 					rotStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 					break;
 	            case Sensor.TYPE_MAGNETIC_FIELD:
 	            	mMagLast = event.timestamp / 1000;
-		            magX.setText(String.format("%.2f", event.values[0]));
-		            magY.setText(String.format("%.2f", event.values[1]));
-		            magZ.setText(String.format("%.2f", event.values[2]));
-					magTotal.setText(String.format("%.2f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
+		            magX.setText(String.format("%." + mMagSensorRes + "f", event.values[0]));
+		            magY.setText(String.format("%." + mMagSensorRes + "f", event.values[1]));
+		            magZ.setText(String.format("%." + mMagSensorRes + "f", event.values[2]));
+					magTotal.setText(String.format("%." + mMagSensorRes + "f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
 					magStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_LIGHT:
 	            	mLightLast = event.timestamp / 1000;
-	            	light.setText(String.format("%.1f", event.values[0]));
+	            	light.setText(String.format("%." + mLightSensorRes + "f", event.values[0]));
 					lightStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_PROXIMITY:
 	            	mProximityLast = event.timestamp / 1000;
-	            	proximity.setText(String.format("%.0f", event.values[0]));
+	            	proximity.setText(String.format("%." + mProximitySensorRes + "f", event.values[0]));
 					proximityStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_PRESSURE:
 	            	mPressureLast = event.timestamp / 1000;
-	            	metPressure.setText(String.format("%.0f", event.values[0]));
+	            	metPressure.setText(String.format("%." + mPressureSensorRes + "f", event.values[0]));
 					pressureStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_RELATIVE_HUMIDITY:
 	            	mHumidityLast = event.timestamp / 1000;
-	            	metHumid.setText(String.format("%.0f", event.values[0]));
+	            	metHumid.setText(String.format("%." + mHumiditySensorRes + "f", event.values[0]));
 					humidStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
 	            case Sensor.TYPE_AMBIENT_TEMPERATURE:
 	            	mTempLast = event.timestamp / 1000;
-	            	metTemp.setText(String.format("%.0f", event.values[0]));
+	            	metTemp.setText(String.format("%." + mTempSensorRes + "f", event.values[0]));
 					tempStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
 	            	break;
             }
