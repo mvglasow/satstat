@@ -22,18 +22,24 @@ package com.vonglasow.michael.satstat.widgets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.vonglasow.michael.satstat.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.location.GpsSatellite;
 import android.util.AttributeSet;
 import android.util.Log;
 
 public class GpsStatusView extends SquareView {
 	private float mYaw = 0;
+	private float mRotation = 0;
+	private int mW = 0;
+	private int mH = 0;
 	private Iterable<GpsSatellite> mSats;
 	
 	private Paint activePaint;
@@ -41,6 +47,13 @@ public class GpsStatusView extends SquareView {
 	private Paint northPaint;
 	private Paint gridPaint;
 	private Paint gridBorderPaint;
+	private Paint labelPaint;
+	private Path northArrow = new Path();
+	private Path labelPathN = new Path();
+	private Path labelPathE = new Path();
+	private Path labelPathS = new Path();
+	private Path labelPathW = new Path();
+
 	
 	//FIXME: these two should be DPI-dependent, this is OK for MDPI
 	private int gridStrokeWidth = 2;
@@ -82,20 +95,23 @@ public class GpsStatusView extends SquareView {
 		gridBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		gridBorderPaint.setColor(Color.parseColor("#50FF8800"));
 		gridBorderPaint.setStyle(Paint.Style.STROKE);
-		//gridBorderPaint.setStrokeWidth(gridStrokeWidth);
 		
 		northPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		northPaint.setColor(Color.parseColor("#FFCC0000"));
 		northPaint.setStyle(Paint.Style.FILL);
+		
+		labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		labelPaint.setColor(Color.parseColor("#FFFF8800"));
+		labelPaint.setStyle(Paint.Style.FILL);
+		labelPaint.setTextAlign(Paint.Align.CENTER);
 	}
 	
 	/*
 	 * Draws a satellite in the sky grid.
 	 */
 	private void drawSat(Canvas canvas, int prn, float azimuth, float elevation, float snr, boolean used) {
-		int w = getWidth();
 
-		float r = (90 - elevation) * w / 200;
+		float r = (90 - elevation) * mW * 0.9f / 200;
 		float x = (float) (r * Math.sin(azimuth * Math.PI / 180));
 		float y = (float) -(r * Math.cos(azimuth * Math.PI / 180));
 		
@@ -104,35 +120,36 @@ public class GpsStatusView extends SquareView {
 	
 	@Override
 	protected void onDraw(Canvas canvas) {
-		//don't use Canvas.getWidth() and Canvas.getHeight() here, they may return incorrect values
-		int w = getWidth();
-		int h = getHeight();
-		int cx = w / 2;
-		int cy = h / 2;
+		int cx = mW / 2;
+		int cy = mH / 2;
 
 		//Log.d("GpsStatusView", String.format("Drawing on a %dx%d canvas", w, h));
 
 		canvas.translate(cx, cy);
-		canvas.rotate(-mYaw - zeroYaw[((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation()]);
+		canvas.rotate(-mRotation);
 		
-		Path northArrow = new Path();
-		northArrow.moveTo(-8,  -h * 0.30f);
-		northArrow.lineTo(8, -h * 0.30f);
-		northArrow.lineTo(0,  -h * 0.45f - gridStrokeWidth * 2);
-		northArrow.close();
+		canvas.drawCircle(0, 0, mW * 0.37125f, gridBorderPaint);
 		
-		gridBorderPaint.setStrokeWidth(w * 0.075f);
+		canvas.drawLine(-mW * 0.405f, 0, mW * 0.405f, 0, gridPaint);
+		canvas.drawLine(0, -mH * 0.405f, 0, mH * 0.405f, gridPaint);
 		
-		canvas.drawCircle(0, 0, w * 0.4125f, gridBorderPaint);
-		
-		canvas.drawLine(-w * 0.45f, 0, w * 0.45f, 0, gridPaint);
-		canvas.drawLine(0, -h * 0.45f, 0, h * 0.45f, gridPaint);
-		
-		canvas.drawCircle(0,  0,  w * 0.45f, gridPaint);
-		canvas.drawCircle(0,  0,  w * 0.30f, gridPaint);
-		canvas.drawCircle(0,  0,  w * 0.15f, gridPaint);
+		canvas.drawCircle(0,  0,  mW * 0.405f, gridPaint);
+		canvas.drawCircle(0,  0,  mW * 0.27f, gridPaint);
+		canvas.drawCircle(0,  0,  mW * 0.135f, gridPaint);
 		
 		canvas.drawPath(northArrow, northPaint);
+		
+		canvas.drawTextOnPath(((Activity) getContext()).getString(R.string.value_N),
+				labelPathN, 0, -labelPaint.descent(), labelPaint);
+
+		canvas.drawTextOnPath(((Activity) getContext()).getString(R.string.value_S),
+				labelPathS, 0, -labelPaint.descent(), labelPaint);
+
+		canvas.drawTextOnPath(((Activity) getContext()).getString(R.string.value_E),
+				labelPathE, 0, -labelPaint.descent(), labelPaint);
+
+		canvas.drawTextOnPath(((Activity) getContext()).getString(R.string.value_W),
+				labelPathW, 0, -labelPaint.descent(), labelPaint);
 		
 		if (mSats != null) {
 			for (GpsSatellite sat : mSats) {
@@ -146,8 +163,50 @@ public class GpsStatusView extends SquareView {
 		}
 	}
 	
+	@Override
+	protected void onSizeChanged (int w, int h, int oldw, int oldh) {
+		mW = w;
+		mH = h;
+		refreshGeometries();
+	}
+	
+	public void refreshGeometries() {
+		gridBorderPaint.setStrokeWidth(mW * 0.0625f);
+		
+		northArrow.reset();
+		northArrow.moveTo(-8, - mH * 0.27f);
+		northArrow.lineTo(8, - mH * 0.27f);
+		northArrow.lineTo(0, - mH * 0.405f - gridStrokeWidth * 2);
+		northArrow.close();
+
+		labelPaint.setTextSize(mH * 0.045f);
+		
+		float offsetX = mW * 0.0275f * (float) Math.cos(Math.toRadians(mRotation + 90));
+		float offsetY = mW * 0.0275f * (float) Math.sin(Math.toRadians(mRotation + 90));
+		float relX = mW * (float) Math.cos(Math.toRadians(mRotation));
+		float relY = mH * (float) Math.sin(Math.toRadians(mRotation));
+		
+		labelPathN.reset();
+		labelPathN.moveTo(offsetX - relX, - mH * 0.4275f + offsetY - relY);
+		labelPathN.rLineTo(2 * relX, 2 * relY);
+		
+		labelPathE.reset();
+		labelPathE.moveTo(mW * 0.4275f + offsetX - relX, offsetY - relY);
+		labelPathE.rLineTo(2 * relX, 2 * relY);
+		
+		labelPathS.reset();
+		labelPathS.moveTo(offsetX - relX, mH * 0.4275f + offsetY - relY);
+		labelPathS.rLineTo(2 * relX, 2 * relY);
+		
+		labelPathW.reset();
+		labelPathW.moveTo(- mW * 0.4275f + offsetX - relX, offsetY - relY);
+		labelPathW.rLineTo(2 * relX, 2 * relY);
+	}
+	
 	public void setYaw(float yaw) {
 		mYaw = yaw;
+		mRotation = mYaw + zeroYaw[((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation()];
+		refreshGeometries();
 		invalidate();
 	}
 	
