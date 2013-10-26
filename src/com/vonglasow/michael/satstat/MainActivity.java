@@ -133,14 +133,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private Sensor mPressureSensor;
 	private Sensor mHumiditySensor;
 	private Sensor mTempSensor;
-    private byte mAccSensorRes;
-    private byte mGyroSensorRes;
-    private byte mMagSensorRes;
-    private byte mLightSensorRes;
-    private byte mProximitySensorRes;
-    private byte mPressureSensorRes;
-    private byte mHumiditySensorRes;
-    private byte mTempSensorRes;
+	
+	/*
+	 *  Maximum resolutions for sensors, expressed as number of decimals. These
+	 *  values were chosen based on screen real estate and significance. They
+	 *  may be lowered if actual precision is lower, but will not be increased
+	 *  even if sensors are capable of delivering higher precision.
+	 */
+    private byte mAccSensorRes = 3;
+    private byte mGyroSensorRes = 4;
+    private byte mMagSensorRes = 2;
+    private byte mLightSensorRes = 1;
+    private byte mProximitySensorRes = 1;
+    private byte mPressureSensorRes = 0;
+    private byte mHumiditySensorRes = 0;
+    private byte mTempSensorRes = 1;
+    
 	private long mOrLast = 0;
 	private long mAccLast = 0;
 	private long mGyroLast = 0;
@@ -526,22 +534,30 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
-        mAccSensorRes = (mAccSensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mAccSensor.getResolution())), 0) : 0;
-        mGyroSensorRes = (mGyroSensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mGyroSensor.getResolution())), 0) : 0;
-        mMagSensorRes = (mMagSensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mMagSensor.getResolution())), 0) : 0;
-        mLightSensorRes = (mLightSensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mLightSensor.getResolution())), 0) : 0;
-        mProximitySensorRes = (mProximitySensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mProximitySensor.getResolution())), 0) : 0;
-        mPressureSensorRes = (mPressureSensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mPressureSensor.getResolution())), 0) : 0;
-        mHumiditySensorRes = (mHumiditySensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mHumiditySensor.getResolution())), 0) : 0;
-        mTempSensorRes = (mTempSensor != null) ? (byte) Math.max(Math.ceil(
-                (float) -Math.log10(mTempSensor.getResolution())), 0) : 0;
+        mAccSensorRes = (byte) Math.min(mAccSensorRes,
+        		(mAccSensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mAccSensor.getResolution())), 0) : 0);
+        mGyroSensorRes = (byte) Math.min(mGyroSensorRes,
+        		(mGyroSensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mGyroSensor.getResolution())), 0) : 0);
+        mMagSensorRes = (byte) Math.min(mMagSensorRes,
+        		(mMagSensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mMagSensor.getResolution())), 0) : 0);
+        mLightSensorRes = (byte) Math.min(mLightSensorRes,
+        		(mLightSensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mLightSensor.getResolution())), 0) : 0);
+        mProximitySensorRes = (byte) Math.min(mProximitySensorRes,
+        		(mProximitySensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mProximitySensor.getResolution())), 0) : 0);
+        mPressureSensorRes = (byte) Math.min(mPressureSensorRes,
+        		(mPressureSensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mPressureSensor.getResolution())), 0) : 0);
+        mHumiditySensorRes = (byte) Math.min(mHumiditySensorRes,
+        		(mHumiditySensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mHumiditySensor.getResolution())), 0) : 0);
+        mTempSensorRes = (byte) Math.min(mTempSensorRes,
+        		(mTempSensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(mTempSensor.getResolution())), 0) : 0);
 
         // SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
