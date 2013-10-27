@@ -113,4 +113,8 @@
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
+    <string name="pref_notify">GPS status notification</string>
+    <string name="pref_notify_summary">Notify me when an application gets its location from GPS</string>
+    <string name="title_activity_settings">Settings</string>
+
 </resources>

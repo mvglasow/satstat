@@ -35,6 +35,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -57,6 +58,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 //import android.os.PowerManager;
 //import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
@@ -519,6 +521,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setTabListener(this));
         }
 
+        // See if we need to start the service
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean notify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, true);
+        if (notify) {
+        	boolean isRunning = false;
+        	ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        	for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+        		if (PasvLocListenerService.class.getName().equals(service.service.getClassName())) {
+        			isRunning = true;
+        		}
+        	}
+        	if (!isRunning) {
+        		Intent startServiceIntent = new Intent(this, PasvLocListenerService.class);
+        		this.startService(startServiceIntent);
+        	}
+        }
+
         // Get system services for event delivery
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
@@ -668,6 +687,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		mLocationManager.sendExtraCommand("gps", "force_xtra_injection", null);
     		mLocationManager.sendExtraCommand("gps", "force_time_injection", null);
     		Toast.makeText(this, getString(R.string.status_agps), Toast.LENGTH_SHORT).show();
+    		return true;
+    	case R.id.action_settings:
+    		startActivity(new Intent(this, SettingsActivity.class));
     		return true;
     	case R.id.action_about:
     		startActivity(new Intent(this, AboutActivity.class));
