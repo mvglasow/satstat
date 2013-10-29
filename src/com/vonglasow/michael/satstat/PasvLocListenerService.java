@@ -27,6 +27,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -35,8 +37,9 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
-public class PasvLocListenerService extends Service implements LocationListener, OnSharedPreferenceChangeListener {
+public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
 
 	// The unique ID for the notification
 	private static final int ONGOING_NOTIFICATION = 1;
@@ -64,11 +67,38 @@ public class PasvLocListenerService extends Service implements LocationListener,
 	public void onDestroy() {
 		mNotificationManager.cancel(ONGOING_NOTIFICATION);		
 		mLocationManager.removeUpdates(this);
+    	mLocationManager.removeGpsStatusListener(this);
 		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
+	public void onGpsStatusChanged(int event) {
+		GpsStatus status = mLocationManager.getGpsStatus(null);
+		int satsUsed = 0;
+		Iterable<GpsSatellite> sats = status.getSatellites();
+		for (GpsSatellite sat : sats) {
+			if (sat.usedInFix()) {
+				satsUsed++;
+			}
+		}
+		if (satsUsed == 0) {
+			mNotificationManager.cancel(ONGOING_NOTIFICATION);
+		}
+	}
+
+	@Override
 	public void onLocationChanged(Location location) {
+		if (!location.getProvider().equals(LocationManager.GPS_PROVIDER)) return;
+		GpsStatus status = mLocationManager.getGpsStatus(null);
+		int satsInView = 0;
+		int satsUsed = 0;
+		Iterable<GpsSatellite> sats = status.getSatellites();
+		for (GpsSatellite sat : sats) {
+			satsInView++;
+			if (sat.usedInFix()) {
+				satsUsed++;
+			}
+		}
 		double lat = Math.abs(location.getLatitude());
 		double lon = Math.abs(location.getLongitude());
 		String ns = (location.getLatitude() > 0)?
@@ -98,6 +128,9 @@ public class PasvLocListenerService extends Service implements LocationListener,
 					location.getAccuracy(),
 					getString(R.string.unit_meter));
 		}
+		text = text + (text.equals("")?"":", ") + String.format("%d/%d", 
+				satsUsed,
+				satsInView);
 		mBuilder.setContentTitle(title);
 		mBuilder.setContentText(text);
 
@@ -137,7 +170,9 @@ public class PasvLocListenerService extends Service implements LocationListener,
 			Log.w("PasvLocListenerService", "No passive location provider found. Data display will not be available.");
 		}
 
-		mBuilder = new NotificationCompat.Builder(this)
+        mLocationManager.addGpsStatusListener(this);
+
+        mBuilder = new NotificationCompat.Builder(this)
 		.setSmallIcon(R.drawable.ic_stat_notify_location)
 		.setContentTitle(getString(R.string.value_none))
 		.setContentText(getString(R.string.value_none))
@@ -163,7 +198,6 @@ public class PasvLocListenerService extends Service implements LocationListener,
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
-
 	}
 
 }
