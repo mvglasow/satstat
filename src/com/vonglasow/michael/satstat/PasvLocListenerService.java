@@ -153,7 +153,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY)) {
-			boolean notify = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, true);
+			boolean notify = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, false);
 			if (!notify) {
 				stopSelf();
 			}

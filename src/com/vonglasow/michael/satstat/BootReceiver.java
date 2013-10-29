@@ -30,7 +30,7 @@ public class BootReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-		boolean notify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, true);
+		boolean notify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, false);
 		if (notify) {
 			Intent startServiceIntent = new Intent(context, PasvLocListenerService.class);
 			context.startService(startServiceIntent);

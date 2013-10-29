@@ -523,7 +523,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
         // See if we need to start the service
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean notify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, true);
+        boolean notify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, false);
         if (notify) {
         	boolean isRunning = false;
         	ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
