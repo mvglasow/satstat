@@ -90,7 +90,7 @@
     <string name="title_activity_about">Apie</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
     <string name="about_text">Jeigu kažkas neveikia kaip turėtų, ar jeigu turite
-        mintį kaip dar tobulinti šią programėlę, prašome pranešti čia:
+        mintį kaip dar tobulinti šią programą, prašome pranešti čia:
 		\nhttps://github.com/mvglasow/satstat/issues
 		\n
 		\nCopyright &#169; 2013 Michael von Glasow
@@ -108,9 +108,12 @@
 		\nYou should have received a copy of the GNU General Public License
 		along with this program. If not, see http://www.gnu.org/licenses/.
 		\n
-		\nŠios programėlės išeitinis kodas yra čia:
+		\nŠios programos išeitinis kodas yra čia:
 		\nhttps://github.com/mvglasow/satstat</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
+    <string name="pref_notify">GPS status įspėjimas</string>
+    <string name="pref_notify_summary">Pranešti, kai programa nustatys mano vietovę naudodama GPS</string>
+    <string name="title_activity_settings">Nustatymai</string>
 </resources>
