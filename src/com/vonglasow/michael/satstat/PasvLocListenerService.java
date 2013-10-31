@@ -23,8 +23,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.support.v4.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.GpsSatellite;
@@ -37,7 +39,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
 
@@ -48,6 +49,14 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private NotificationCompat.Builder mBuilder;
 	private NotificationManager mNotificationManager;
 	private SharedPreferences mSharedPreferences;
+	private BroadcastReceiver mGpsStatusReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context c, Intent intent) {
+			if (!intent.getBooleanExtra("enabled", true)) {
+				mNotificationManager.cancel(ONGOING_NOTIFICATION);
+			}
+		}
+	};
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -61,11 +70,14 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		registerReceiver(mGpsStatusReceiver, new IntentFilter("android.location.GPS_ENABLED_CHANGE"));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter("android.location.GPS_FIX_CHANGE"));
 	}
 
 	@Override
 	public void onDestroy() {
-		mNotificationManager.cancel(ONGOING_NOTIFICATION);		
+		mNotificationManager.cancel(ONGOING_NOTIFICATION);
+		unregisterReceiver(mGpsStatusReceiver);
 		mLocationManager.removeUpdates(this);
     	mLocationManager.removeGpsStatusListener(this);
 		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
@@ -197,7 +209,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
 	}
 
 }
