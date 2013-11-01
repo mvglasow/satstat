@@ -116,5 +116,6 @@
     <string name="pref_notify">GPS status notification</string>
     <string name="pref_notify_summary">Notify me when an application gets my location from GPS</string>
     <string name="title_activity_settings">Settings</string>
-
+    <string name="notify_nolocation_title">Searching for location</string>
+    <string name="notify_nolocation_body">Touch to view status</string>
 </resources>

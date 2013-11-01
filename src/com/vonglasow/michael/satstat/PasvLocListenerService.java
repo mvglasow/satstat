@@ -44,6 +44,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	// The unique ID for the notification
 	private static final int ONGOING_NOTIFICATION = 1;
+	
+	private static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
+	private static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
 
 	private LocationManager mLocationManager;
 	private NotificationCompat.Builder mBuilder;
@@ -52,8 +55,12 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private BroadcastReceiver mGpsStatusReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c, Intent intent) {
-			if (!intent.getBooleanExtra("enabled", true)) {
+			if (intent.getAction().equals(GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
 				mNotificationManager.cancel(ONGOING_NOTIFICATION);
+			} else if (intent.getAction().equals(GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
+				// this will be taken care of in onLocationChanged
+			} else {
+				showStatusNoLocation();
 			}
 		}
 	};
@@ -70,8 +77,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		registerReceiver(mGpsStatusReceiver, new IntentFilter("android.location.GPS_ENABLED_CHANGE"));
-		registerReceiver(mGpsStatusReceiver, new IntentFilter("android.location.GPS_FIX_CHANGE"));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter(GPS_ENABLED_CHANGE));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter(GPS_FIX_CHANGE));
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			}
 		}
 		if (satsUsed == 0) {
-			mNotificationManager.cancel(ONGOING_NOTIFICATION);
+			showStatusNoLocation();
 		}
 	}
 
@@ -143,6 +150,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		text = text + (text.equals("")?"":", ") + String.format("%d/%d", 
 				satsUsed,
 				satsInView);
+		mBuilder.setSmallIcon(R.drawable.ic_stat_notify_location);
 		mBuilder.setContentTitle(title);
 		mBuilder.setContentText(text);
 
@@ -211,4 +219,11 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
 
+	public void showStatusNoLocation() {
+		mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
+		mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
+		mBuilder.setContentText(getString(R.string.notify_nolocation_body));
+		
+		mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());
+	}
 }
