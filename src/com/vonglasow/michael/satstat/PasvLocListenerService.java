@@ -46,8 +46,15 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	// The unique ID for the notification
 	private static final int ONGOING_NOTIFICATION = 1;
 	
+	// GPS status values
+	private static final int GPS_INACTIVE = 0;
+	private static final int GPS_SEARCH = 1;
+	private static final int GPS_FIX = 2;
+	
 	private static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	private static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
+	
+	private int mStatus = GPS_INACTIVE;
 	
 	private boolean mNotifyFix = false;
 	private boolean mNotifySearch = false;
@@ -61,12 +68,15 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		public void onReceive(Context c, Intent intent) {
 			if (intent.getAction().equals(GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
 				// GPS_ENABLED_CHANGE, enabled=false: GPS disabled, dismiss notification
+				mStatus = GPS_INACTIVE;
 				mNotificationManager.cancel(ONGOING_NOTIFICATION);
 			} else if (intent.getAction().equals(GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
 				// GPS_FIX_CHANGE, enabled=true: GPS got fix, will be taken care of in onLocationChanged
+				mStatus = GPS_FIX;
 			} else {
 				// GPS_ENABLED_CHANGE, enabled=true: GPS enabled
 				// GPS_FIX_CHANGE, enabled=false: GPS lost fix
+				mStatus = GPS_SEARCH;
 				showStatusNoLocation();
 			}
 		}
@@ -108,6 +118,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			}
 		}
 		if (satsUsed == 0) {
+			if (mStatus != GPS_INACTIVE)
+				mStatus = GPS_SEARCH;
 			showStatusNoLocation();
 		}
 	}
@@ -115,7 +127,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	@Override
 	public void onLocationChanged(Location location) {
 		if (!location.getProvider().equals(LocationManager.GPS_PROVIDER)) return;
-		if (mNotifyFix) {
+		if (mNotifyFix && (mStatus != GPS_INACTIVE)) {
+			mStatus = GPS_FIX;
 			GpsStatus status = mLocationManager.getGpsStatus(null);
 			int satsInView = 0;
 			int satsUsed = 0;
@@ -235,7 +248,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	}
 
 	public void showStatusNoLocation() {
-		if (mNotifySearch) {
+		if (mNotifySearch && (mStatus != GPS_INACTIVE)) {
 			mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
 			mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
 			mBuilder.setContentText(getString(R.string.notify_nolocation_body));
