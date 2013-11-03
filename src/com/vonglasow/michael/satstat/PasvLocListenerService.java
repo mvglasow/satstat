@@ -39,6 +39,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
 
@@ -47,6 +48,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	
 	private static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	private static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
+	
+	private boolean mNotifyFix = false;
+	private boolean mNotifySearch = false;
 
 	private LocationManager mLocationManager;
 	private NotificationCompat.Builder mBuilder;
@@ -56,10 +60,13 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		@Override
 		public void onReceive(Context c, Intent intent) {
 			if (intent.getAction().equals(GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
+				// GPS_ENABLED_CHANGE, enabled=false: GPS disabled, dismiss notification
 				mNotificationManager.cancel(ONGOING_NOTIFICATION);
 			} else if (intent.getAction().equals(GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
-				// this will be taken care of in onLocationChanged
+				// GPS_FIX_CHANGE, enabled=true: GPS got fix, will be taken care of in onLocationChanged
 			} else {
+				// GPS_ENABLED_CHANGE, enabled=true: GPS enabled
+				// GPS_FIX_CHANGE, enabled=false: GPS lost fix
 				showStatusNoLocation();
 			}
 		}
@@ -108,53 +115,57 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	@Override
 	public void onLocationChanged(Location location) {
 		if (!location.getProvider().equals(LocationManager.GPS_PROVIDER)) return;
-		GpsStatus status = mLocationManager.getGpsStatus(null);
-		int satsInView = 0;
-		int satsUsed = 0;
-		Iterable<GpsSatellite> sats = status.getSatellites();
-		for (GpsSatellite sat : sats) {
-			satsInView++;
-			if (sat.usedInFix()) {
-				satsUsed++;
+		if (mNotifyFix) {
+			GpsStatus status = mLocationManager.getGpsStatus(null);
+			int satsInView = 0;
+			int satsUsed = 0;
+			Iterable<GpsSatellite> sats = status.getSatellites();
+			for (GpsSatellite sat : sats) {
+				satsInView++;
+				if (sat.usedInFix()) {
+					satsUsed++;
+				}
 			}
+			double lat = Math.abs(location.getLatitude());
+			double lon = Math.abs(location.getLongitude());
+			String ns = (location.getLatitude() > 0)?
+					getString(R.string.value_N):
+						(location.getLatitude() < 0)?
+								getString(R.string.value_S):"";
+			String ew = (location.getLongitude() > 0)?
+					getString(R.string.value_E):
+						(location.getLongitude() < 0)?
+								getString(R.string.value_W):"";
+			String title = String.format("%.5f%s%s %.5f%s%s",
+					lat, getString(R.string.unit_degree), ns,
+					lon, getString(R.string.unit_degree), ew);
+			String text = "";
+			if (location.hasAltitude()) {
+				text = text + String.format("%.0f%s",
+						location.getAltitude(),
+						getString(R.string.unit_meter));
+			}
+			if (location.hasSpeed()) {
+				text = text + (text.equals("")?"":", ") + String.format("%.0f%s",
+						(location.getSpeed() * 3.6),
+						getString(R.string.unit_km_h));
+			}
+			if (location.hasAccuracy()) {
+				text = text + (text.equals("")?"":", ") + String.format("\u03b5 = %.0f%s",
+						location.getAccuracy(),
+						getString(R.string.unit_meter));
+			}
+			text = text + (text.equals("")?"":", ") + String.format("%d/%d",
+					satsUsed,
+					satsInView);
+			mBuilder.setSmallIcon(R.drawable.ic_stat_notify_location);
+			mBuilder.setContentTitle(title);
+			mBuilder.setContentText(text);
+	
+			mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());
+		} else {
+			mNotificationManager.cancel(ONGOING_NOTIFICATION);
 		}
-		double lat = Math.abs(location.getLatitude());
-		double lon = Math.abs(location.getLongitude());
-		String ns = (location.getLatitude() > 0)?
-				getString(R.string.value_N):
-					(location.getLatitude() < 0)?
-							getString(R.string.value_S):"";
-		String ew = (location.getLongitude() > 0)?
-				getString(R.string.value_E):
-					(location.getLongitude() < 0)?
-							getString(R.string.value_W):"";
-		String title = String.format("%.5f%s%s %.5f%s%s", 
-				lat, getString(R.string.unit_degree), ns,
-				lon, getString(R.string.unit_degree), ew);
-		String text = "";
-		if (location.hasAltitude()) {
-			text = text + String.format("%.0f%s", 
-					location.getAltitude(),
-					getString(R.string.unit_meter));
-		}
-		if (location.hasSpeed()) {
-			text = text + (text.equals("")?"":", ") + String.format("%.0f%s", 
-					(location.getSpeed() * 3.6),
-					getString(R.string.unit_km_h));
-		}
-		if (location.hasAccuracy()) {
-			text = text + (text.equals("")?"":", ") + String.format("\u03b5 = %.0f%s", 
-					location.getAccuracy(),
-					getString(R.string.unit_meter));
-		}
-		text = text + (text.equals("")?"":", ") + String.format("%d/%d", 
-				satsUsed,
-				satsInView);
-		mBuilder.setSmallIcon(R.drawable.ic_stat_notify_location);
-		mBuilder.setContentTitle(title);
-		mBuilder.setContentText(text);
-
-		mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());		
 	}
 
 	@Override
@@ -172,9 +183,10 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY)) {
-			boolean notify = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, false);
-			if (!notify) {
+		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY_FIX) || key.equals(SettingsActivity.KEY_PREF_NOTIFY_SEARCH)) {
+			mNotifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
+			mNotifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
+			if (!(mNotifyFix || mNotifySearch)) {
 				stopSelf();
 			}
 		}
@@ -183,6 +195,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+		mNotifyFix = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
+		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
 
 		if (mLocationManager.getAllProviders().indexOf(LocationManager.PASSIVE_PROVIDER) >= 0) {
 			mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
@@ -220,10 +235,14 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	}
 
 	public void showStatusNoLocation() {
-		mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
-		mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
-		mBuilder.setContentText(getString(R.string.notify_nolocation_body));
-		
-		mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());
+		if (mNotifySearch) {
+			mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
+			mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
+			mBuilder.setContentText(getString(R.string.notify_nolocation_body));
+			
+			mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());
+		} else {
+			mNotificationManager.cancel(ONGOING_NOTIFICATION);
+		}
 	}
 }

@@ -35,7 +35,8 @@ import android.support.v4.app.NavUtils;
 
 public class SettingsActivity extends Activity implements OnSharedPreferenceChangeListener{
 
-	public static final String KEY_PREF_NOTIFY = "pref_notify";
+	public static final String KEY_PREF_NOTIFY_FIX = "pref_notify_fix";
+	public static final String KEY_PREF_NOTIFY_SEARCH = "pref_notify_search";
 
 	private SharedPreferences mSharedPreferences;
 
@@ -65,9 +66,10 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY)) {
-			boolean notify = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY, false);
-			if (notify) {
+		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY_FIX) || key.equals(SettingsActivity.KEY_PREF_NOTIFY_SEARCH)) {
+			boolean notifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
+			boolean notifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
+			if (notifyFix || notifySearch) {
 				Intent startServiceIntent = new Intent(this, PasvLocListenerService.class);
 				this.startService(startServiceIntent);
 			} else {
