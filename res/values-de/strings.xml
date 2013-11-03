@@ -113,7 +113,11 @@
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
-    <string name="pref_notify">GPS-Statushinweis</string>
+    <string name="pref_notify">GPS-Standorthinweis</string>
     <string name="pref_notify_summary">Benachrichtigen, wenn eine Applikation meinen Standort mit GPS bestimmt hat</string>
+    <string name="pref_search">Hinweis bei GPS-Suche</string>
+    <string name="pref_search_summary">Benachrichtigen, wenn eine Applikation versucht, meinen Standort zu bestimmen</string>
     <string name="title_activity_settings">Einstellungen</string>
+    <string name="notify_nolocation_title">Standort wird gesucht</string>
+    <string name="notify_nolocation_body">Berühren, um Status zu sehen</string>
 </resources>

@@ -114,7 +114,11 @@
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
-    <string name="pref_notify">Notificació d\'estat GPS</string>
+    <string name="pref_notify">Notificació d\'ubicació GPS</string>
     <string name="pref_notify_summary">Notifica\'m quan una aplicació obtingui la meva ubicació desde GPS</string>
+    <string name="pref_search">Notificació de recerca GPS</string>
+    <string name="pref_search_summary">Notifica\'m quan una aplicació cerqui la meva ubicació</string>
     <string name="title_activity_settings">Configuració</string>
+    <string name="notify_nolocation_title">S\'està cercant l\'ubicació</string>
+    <string name="notify_nolocation_body">Toca per veure l\'estat</string>
 </resources>

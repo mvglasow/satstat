@@ -113,7 +113,11 @@
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
-    <string name="pref_notify">GPS status įspėjimas</string>
+    <string name="pref_notify">GPS vietovės įspėjimas</string>
     <string name="pref_notify_summary">Pranešti, kai programa nustatys mano vietovę naudodama GPS</string>
+    <string name="pref_search">GPS paieškos įspėjimas</string>
+    <string name="pref_search_summary">Pranešti, kai programa ieškos mano vietovės naudodama GPS</string>
     <string name="title_activity_settings">Nustatymai</string>
+    <string name="notify_nolocation_title">Ieškoma vietovė</string>
+    <string name="notify_nolocation_body">Palieskite, norėdami žiūrėti padėtį</string>
 </resources>
