@@ -69,10 +69,7 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY_FIX) || key.equals(SettingsActivity.KEY_PREF_NOTIFY_SEARCH)) {
 			boolean notifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
 			boolean notifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
-			if (notifyFix || notifySearch) {
-				Intent startServiceIntent = new Intent(this, PasvLocListenerService.class);
-				this.startService(startServiceIntent);
-			} else {
+			if (!(notifyFix || notifySearch)) {
 				Intent stopServiceIntent = new Intent(this, PasvLocListenerService.class);
 				this.stopService(stopServiceIntent);
 			}

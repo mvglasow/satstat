@@ -19,13 +19,15 @@
 
 package com.vonglasow.michael.satstat;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-public class BootReceiver extends BroadcastReceiver {
+public class GpsEventReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -33,8 +35,19 @@ public class BootReceiver extends BroadcastReceiver {
 		boolean notifyFix = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
 		boolean notifySearch = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
 		if (notifyFix || notifySearch) {
-			Intent startServiceIntent = new Intent(context, PasvLocListenerService.class);
-			context.startService(startServiceIntent);
+			boolean isRunning = false;
+			ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+				if (PasvLocListenerService.class.getName().equals(service.service.getClassName())) {
+					isRunning = true;
+				}
+			}
+			if (!isRunning) {
+				Intent startServiceIntent = new Intent(context, PasvLocListenerService.class);
+				startServiceIntent.setAction(intent.getAction());
+				startServiceIntent.putExtras(intent.getExtras());
+				context.startService(startServiceIntent);
+			}
 		}
 	}
 

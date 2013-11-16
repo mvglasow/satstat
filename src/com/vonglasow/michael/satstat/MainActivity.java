@@ -521,24 +521,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setTabListener(this));
         }
 
-        // See if we need to start the service
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean notifyFix = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
-		boolean notifySearch = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
-        if (notifyFix || notifySearch) {
-        	boolean isRunning = false;
-        	ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        	for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-        		if (PasvLocListenerService.class.getName().equals(service.service.getClassName())) {
-        			isRunning = true;
-        		}
-        	}
-        	if (!isRunning) {
-        		Intent startServiceIntent = new Intent(this, PasvLocListenerService.class);
-        		this.startService(startServiceIntent);
-        	}
-        }
-
         // Get system services for event delivery
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);

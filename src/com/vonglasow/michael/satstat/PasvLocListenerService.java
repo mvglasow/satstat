@@ -66,10 +66,11 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private BroadcastReceiver mGpsStatusReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c, Intent intent) {
+			if (intent.getAction() == null) return;
 			if (intent.getAction().equals(GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
 				// GPS_ENABLED_CHANGE, enabled=false: GPS disabled, dismiss notification
 				mStatus = GPS_INACTIVE;
-				mNotificationManager.cancel(ONGOING_NOTIFICATION);
+				stopForeground(true);
 			} else if (intent.getAction().equals(GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
 				// GPS_FIX_CHANGE, enabled=true: GPS got fix, will be taken care of in onLocationChanged
 				mStatus = GPS_FIX;
@@ -100,7 +101,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	@Override
 	public void onDestroy() {
-		mNotificationManager.cancel(ONGOING_NOTIFICATION);
+		stopForeground(true);
 		unregisterReceiver(mGpsStatusReceiver);
 		mLocationManager.removeUpdates(this);
     	mLocationManager.removeGpsStatusListener(this);
@@ -175,9 +176,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			mBuilder.setContentTitle(title);
 			mBuilder.setContentText(text);
 	
-			mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());
+			startForeground(ONGOING_NOTIFICATION, mBuilder.build());
 		} else {
-			mNotificationManager.cancel(ONGOING_NOTIFICATION);
+			stopForeground(true);
 		}
 	}
 
@@ -239,6 +240,10 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 						);
 
 		mBuilder.setContentIntent(mainPendingIntent);
+		
+		// if we were started through a broadcast, mGpsStatusReceiver had
+		// no way of picking it up, so we need to forward it manually
+		mGpsStatusReceiver.onReceive(this, intent);
 
 		return START_STICKY;
 	}
@@ -253,9 +258,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
 			mBuilder.setContentText(getString(R.string.notify_nolocation_body));
 			
-			mNotificationManager.notify(ONGOING_NOTIFICATION, mBuilder.build());
+			startForeground(ONGOING_NOTIFICATION, mBuilder.build());
 		} else {
-			mNotificationManager.cancel(ONGOING_NOTIFICATION);
+			stopForeground(true);
 		}
 	}
 }
