@@ -66,7 +66,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private BroadcastReceiver mGpsStatusReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c, Intent intent) {
-			if (intent.getAction() == null) return;
+			if (intent == null) return;
 			if (intent.getAction().equals(GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
 				// GPS_ENABLED_CHANGE, enabled=false: GPS disabled, dismiss notification
 				mStatus = GPS_INACTIVE;
