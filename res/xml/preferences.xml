@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <CheckBoxPreference android:summary="@string/pref_notify_summary" android:defaultValue="false" android:title="@string/pref_notify" android:key="pref_notify_fix"/>
-    <CheckBoxPreference android:summary="@string/pref_search_summary" android:defaultValue="false" android:title="@string/pref_search" android:key="pref_notify_search"/>
+    <PreferenceCategory android:title="@string/pref_notifications">
+        <CheckBoxPreference android:summary="@string/pref_notify_summary" android:defaultValue="false" android:title="@string/pref_notify" android:key="pref_notify_fix"/>
+        <CheckBoxPreference android:summary="@string/pref_search_summary" android:defaultValue="false" android:title="@string/pref_search" android:key="pref_notify_search"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_agps">
+        <CheckBoxPreference android:title="@string/pref_wifi" android:key="pref_update_wifi" android:summary="@string/pref_wifi_summary"/>
+        <ListPreference android:key="pref_update_freq" android:title="@string/pref_freq" android:summary="%s" android:entries="@array/prefs_freq_keys" android:entryValues="@array/prefs_freq_values" android:defaultValue="1"/>
+        <Preference android:key="pref_update_last" android:title="@string/pref_lastupdate" android:defaultValue="0"/>
+    </PreferenceCategory>
     
 
 </PreferenceScreen>

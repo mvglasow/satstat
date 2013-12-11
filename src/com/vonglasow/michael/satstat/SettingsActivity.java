@@ -20,6 +20,9 @@
 package com.vonglasow.michael.satstat;
 
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.app.ActionBar;
@@ -37,6 +40,9 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 
 	public static final String KEY_PREF_NOTIFY_FIX = "pref_notify_fix";
 	public static final String KEY_PREF_NOTIFY_SEARCH = "pref_notify_search";
+	public static final String KEY_PREF_UPDATE_WIFI = "pref_update_wifi";
+	public static final String KEY_PREF_UPDATE_FREQ = "pref_update_freq";
+	public static final String KEY_PREF_UPDATE_LAST = "pref_update_last";
 
 	private SharedPreferences mSharedPreferences;
 
@@ -61,6 +67,11 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 	protected void onResume() {
 		super.onResume();
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		
+		SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
+		Preference prefUpdateLast = sf.findPreference(KEY_PREF_UPDATE_LAST);
+        final long value = mSharedPreferences.getLong(KEY_PREF_UPDATE_LAST, 0);
+        prefUpdateLast.setSummary(String.format(getString(R.string.pref_lastupdate_summary), value));
 	}
 
 	@Override
@@ -73,6 +84,18 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 				Intent stopServiceIntent = new Intent(this, PasvLocListenerService.class);
 				this.stopService(stopServiceIntent);
 			}
+		} else if (key.equals(SettingsActivity.KEY_PREF_UPDATE_FREQ)) {
+			// this piece of code is necessary because Android has no way
+			// of updating the preference summary automatically. I am
+			// told the absence of such functionality is a feature...
+			SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
+			ListPreference prefUpdateFreq = (ListPreference) sf.findPreference(KEY_PREF_UPDATE_FREQ);
+            final String value = sharedPreferences.getString(key, key);
+            final int index = prefUpdateFreq.findIndexOfValue(value);            
+            if (index >= 0) {
+                final String summary = (String)prefUpdateFreq.getEntries()[index];         
+                prefUpdateFreq.setSummary(summary);
+            }
 		}
 	}
 
