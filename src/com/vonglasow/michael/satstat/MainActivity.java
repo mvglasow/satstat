@@ -474,6 +474,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return "?";
 		}
 	}
+	
+	
+	/**
+	 * Gets the number of decimal digits to show when displaying sensor values, based on sensor accuracy.
+	 * @param sensor The sensor
+	 * @param maxDecimals The maximum number of decimals to display, even if the sensor's accuracy is higher
+	 * @return
+	 */
+	public static byte getSensorDecimals(Sensor sensor, byte maxDecimals) {
+		if (sensor == null) return 0;
+		float res = sensor.getResolution();
+		if (res == 0) return maxDecimals;
+        return (byte) Math.min(maxDecimals,
+        		(sensor != null) ? (byte) Math.max(Math.ceil(
+        				(float) -Math.log10(sensor.getResolution())), 0) : 0);
+	}
 
 
     /**
@@ -536,30 +552,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
-        mAccSensorRes = (byte) Math.min(mAccSensorRes,
-        		(mAccSensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mAccSensor.getResolution())), 0) : 0);
-        mGyroSensorRes = (byte) Math.min(mGyroSensorRes,
-        		(mGyroSensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mGyroSensor.getResolution())), 0) : 0);
-        mMagSensorRes = (byte) Math.min(mMagSensorRes,
-        		(mMagSensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mMagSensor.getResolution())), 0) : 0);
-        mLightSensorRes = (byte) Math.min(mLightSensorRes,
-        		(mLightSensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mLightSensor.getResolution())), 0) : 0);
-        mProximitySensorRes = (byte) Math.min(mProximitySensorRes,
-        		(mProximitySensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mProximitySensor.getResolution())), 0) : 0);
-        mPressureSensorRes = (byte) Math.min(mPressureSensorRes,
-        		(mPressureSensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mPressureSensor.getResolution())), 0) : 0);
-        mHumiditySensorRes = (byte) Math.min(mHumiditySensorRes,
-        		(mHumiditySensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mHumiditySensor.getResolution())), 0) : 0);
-        mTempSensorRes = (byte) Math.min(mTempSensorRes,
-        		(mTempSensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(mTempSensor.getResolution())), 0) : 0);
+        mAccSensorRes = getSensorDecimals(mAccSensor, mAccSensorRes);
+        mGyroSensorRes = getSensorDecimals(mGyroSensor, mGyroSensorRes);
+        mMagSensorRes = getSensorDecimals(mMagSensor, mMagSensorRes);
+        mLightSensorRes = getSensorDecimals(mLightSensor, mLightSensorRes);
+        mProximitySensorRes = getSensorDecimals(mProximitySensor, mProximitySensorRes);
+        mPressureSensorRes = getSensorDecimals(mPressureSensor, mPressureSensorRes);
+        mHumiditySensorRes = getSensorDecimals(mHumiditySensor, mHumiditySensorRes);
+        mTempSensorRes = getSensorDecimals(mTempSensor, mTempSensorRes);
 
         // SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
