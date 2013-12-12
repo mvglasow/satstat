@@ -664,11 +664,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	Intent logIntent;
     	switch (item.getItemId()) {
     	case R.id.action_agps:
+    		//FIXME: we might want to suppress this when no network is available
+    		//if (Context.getSystemService(Context.CONNECTIVITY_SERVICE).getActiveNetworkInfo() = null) return;
+    		//if (!Context.getSystemService(Context.CONNECTIVITY_SERVICE).getActiveNetworkInfo().isConnected()) return;
+    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    		SharedPreferences.Editor spEditor = sharedPref.edit();
+    		spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
     		mLocationManager.sendExtraCommand("gps", "force_xtra_injection", null);
     		mLocationManager.sendExtraCommand("gps", "force_time_injection", null);
+    		spEditor.commit();
     		Toast.makeText(this, getString(R.string.status_agps), Toast.LENGTH_SHORT).show();
     		return true;
     	case R.id.action_settings:

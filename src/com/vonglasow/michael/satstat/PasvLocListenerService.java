@@ -51,9 +51,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private static final int GPS_SEARCH = 1;
 	private static final int GPS_FIX = 2;
 	
-	private static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
-	private static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
-	
 	private int mStatus = GPS_INACTIVE;
 	
 	private boolean mNotifyFix = false;
@@ -67,11 +64,11 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		@Override
 		public void onReceive(Context c, Intent intent) {
 			if (intent == null) return;
-			if (intent.getAction().equals(GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
+			if (intent.getAction().equals(GpsEventReceiver.GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
 				// GPS_ENABLED_CHANGE, enabled=false: GPS disabled, dismiss notification
 				mStatus = GPS_INACTIVE;
 				stopForeground(true);
-			} else if (intent.getAction().equals(GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
+			} else if (intent.getAction().equals(GpsEventReceiver.GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
 				// GPS_FIX_CHANGE, enabled=true: GPS got fix, will be taken care of in onLocationChanged
 				mStatus = GPS_FIX;
 			} else {
@@ -95,8 +92,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		registerReceiver(mGpsStatusReceiver, new IntentFilter(GPS_ENABLED_CHANGE));
-		registerReceiver(mGpsStatusReceiver, new IntentFilter(GPS_FIX_CHANGE));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_ENABLED_CHANGE));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_FIX_CHANGE));
 	}
 
 	@Override

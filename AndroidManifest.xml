@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application
@@ -46,6 +47,8 @@
             <intent-filter>
                 <action android:name="android.location.GPS_ENABLED_CHANGE"/>
                 <action android:name="android.location.GPS_FIX_CHANGE"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
             </intent-filter>
         </receiver>
         <service android:name="PasvLocListenerService" android:exported="false" android:stopWithTask="false"></service>
