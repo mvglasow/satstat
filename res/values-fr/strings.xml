@@ -121,4 +121,20 @@
     <string name="title_activity_settings">Configuration</string>
     <string name="notify_nolocation_title">Recherche de position</string>
     <string name="notify_nolocation_body">Appuyez pour voir l\'état</string>
+    <string name="pref_notifications">Notifications</string>
+    <string name="pref_agps">Mise à jour AGPS</string>
+    <string name="pref_wifi">A la connexion WiFi</string>
+    <string name="pref_wifi_summary">Recharger données AGPS lorsque mon appareil se connecte à un réseau WiFi</string>
+    <string name="pref_freq">Fréquence</string>
+    <string-array name="prefs_freq_keys">
+        <item >Chaque fois</item>
+        <item >Une fois par jour</item>
+        <item >Une fois chaque 2 jours</item>
+        <item >Une fois chaque 3 jours</item>
+        <item >Une fois chaque 4 jours</item>
+        <item >Une fois chaque 5 jours</item>
+        <item >Une fois chaque 6 jours</item>
+        <item >Une fois par semaine</item>
+    </string-array>
+    <string name="pref_lastupdate">Dernière mise à jour</string>
 </resources>

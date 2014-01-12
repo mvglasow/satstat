@@ -121,4 +121,20 @@
     <string name="title_activity_settings">Configuració</string>
     <string name="notify_nolocation_title">S\'està cercant l\'ubicació</string>
     <string name="notify_nolocation_body">Toca per veure l\'estat</string>
+    <string name="pref_notifications">Notificaciones</string>
+    <string name="pref_agps">Actualització dades AGPS</string>
+    <string name="pref_wifi">En connexion WiFi</string>
+    <string name="pref_wifi_summary">Actualitza dades AGPS quan el meu dispositiu es connecta amb una xarxa WiFi</string>
+    <string name="pref_freq">Freqüència</string>
+    <string-array name="prefs_freq_keys">
+        <item >Cada cop</item>
+        <item >Un cop cada dia</item>
+        <item >Un cop cada 2 dies</item>
+        <item >Un cop cada 3 dies</item>
+        <item >Un cop cada 4 dies</item>
+        <item >Un cop cada 5 dies</item>
+        <item >Un cop cada 6 dies</item>
+        <item >Un cop cada setmana</item>
+    </string-array>
+    <string name="pref_lastupdate">Última actualització</string>
 </resources>

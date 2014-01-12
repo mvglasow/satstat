@@ -120,4 +120,20 @@
     <string name="title_activity_settings">Nustatymai</string>
     <string name="notify_nolocation_title">Ieškoma vietovė</string>
     <string name="notify_nolocation_body">Palieskite, norėdami žiūrėti padėtį</string>
+    <string name="pref_notifications">Pranešimai</string>
+    <string name="pref_agps">AGPS duomenų atnaujinimas</string>
+    <string name="pref_wifi">Prisijungus prie WiFi tinklo</string>
+    <string name="pref_wifi_summary">Atnaujinti AGPS duomenis, kai mano įranga prisijungs prie WiFi tinklo</string>
+    <string name="pref_freq">Atnaujinimų dažnis</string>
+    <string-array name="prefs_freq_keys">
+        <item >Kiekvieną kartą</item>
+        <item >Vieną kartą kasdien</item>
+        <item >Vieną kartą kas 2 dienas</item>
+        <item >Vieną kartą kas 3 dienas</item>
+        <item >Vieną kartą kas 4 dienas</item>
+        <item >Vieną kartą kas 5 dienas</item>
+        <item >Vieną kartą kas 6 dienas</item>
+        <item >Vieną kartą kas savaitę</item>
+    </string-array>
+    <string name="pref_lastupdate">Paskutinkart atnaujinta</string>
 </resources>

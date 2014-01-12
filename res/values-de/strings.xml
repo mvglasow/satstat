@@ -120,4 +120,20 @@
     <string name="title_activity_settings">Einstellungen</string>
     <string name="notify_nolocation_title">Standort wird gesucht</string>
     <string name="notify_nolocation_body">Berühren, um Status zu sehen</string>
+    <string name="pref_notifications">Benachrichtigungen</string>
+    <string name="pref_agps">AGPS-Aktualisierung</string>
+    <string name="pref_wifi">Bei WiFi-Verbindung</string>
+    <string name="pref_wifi_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem WiFi-Netzwerk verbindet</string>
+    <string name="pref_freq">Aktualisierungsintervall</string>
+    <string-array name="prefs_freq_keys">
+        <item >Jedes Mal</item>
+        <item >Einmal täglich</item>
+        <item >Einmal alle 2 Tage</item>
+        <item >Einmal alle 3 Tage</item>
+        <item >Einmal alle 4 Tage</item>
+        <item >Einmal alle 5 Tage</item>
+        <item >Einmal alle 6 Tage</item>
+        <item >Einmal pro Woche</item>
+    </string-array>
+    <string name="pref_lastupdate">Letzte Aktualisierung</string>
 </resources>
