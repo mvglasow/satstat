@@ -22,7 +22,7 @@
     <string name="title_gps_lon">Länge</string>
     <string name="title_gps_decl">Dekl.</string>
     <string name="title_gps_speed">Geschw.</string>
-    <string name="title_gps_alt">Meereshöhe</string>
+    <string name="title_gps_alt">Höhe</string>
     <string name="title_gps_time">Letzte Positionsbestimmung</string>
     <string name="title_gps_bear">Kurs</string>
     <string name="title_gps_orient">Orientation</string>
