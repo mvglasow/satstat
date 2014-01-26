@@ -37,6 +37,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 
 	public static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	public static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
+	public static final long MILLIS_PER_DAY = 86400000;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -65,9 +66,9 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			if (!netinfo.isConnected()) return;
 			//Toast.makeText(context, "WiFi is connected", Toast.LENGTH_SHORT).show();
 			long last = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_LAST, 0);
-			long freq = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_FREQ, 0);
+			long freq = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));
 			long now = System.currentTimeMillis();
-			if (last + freq > now) return;
+			if (last + freq * MILLIS_PER_DAY > now) return;
 			SharedPreferences.Editor spEditor = sharedPref.edit();
 			spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
 			LocationManager locman = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
