@@ -240,6 +240,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TableLayout wifiAps;
 	
 	private static List <ScanResult> scanResults = null;
+	private static String selectedBSSID = "";
 	protected static Handler wifiTimehandler = null;
 	protected static Runnable wifiTimeRunnable = null;
 	private static final int WIFI_REFRESH_DELAY = 1000; //the time between two requests for WLAN rescan.
@@ -387,12 +388,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	};
 
+	private final void onWifiEntryClick(String BSSID) {
+		selectedBSSID = BSSID;
+		refreshWifiResults();
+	}
+
 	private final void addWifiResult(ScanResult result) {
+		final ScanResult r = result;
+		android.view.View.OnClickListener clis = new android.view.View.OnClickListener () {
+
+			@Override
+			public void onClick(View v) {
+				onWifiEntryClick(r.BSSID);
+			}
+		};
+
 		TableRow row0 = new TableRow(wifiAps.getContext());
 		View divider = new View(wifiAps.getContext());
 		divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1, 1));
 		divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
 		row0.addView(divider);
+		row0.setOnClickListener(clis);
 		wifiAps.addView(row0, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
 		TableRow row1 = new TableRow(wifiAps.getContext());
@@ -412,6 +428,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 		newLevel.setText(String.valueOf(result.level));
 		row1.addView(newLevel);
+		row1.setOnClickListener(clis);
 		wifiAps.addView(row1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
 		TableRow row2 = new TableRow(wifiAps.getContext());
@@ -420,14 +437,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
 		newSSID.setText(result.SSID);
 		row2.addView(newSSID);
+		row2.setOnClickListener(clis);
 		wifiAps.addView(row2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
 	private final void refreshWifiResults() {
 		if (scanResults != null) {
 			wifiAps.removeAllViews();
+			//add the selected network first
 			for (ScanResult result : scanResults) {
-				addWifiResult(result);
+				if (result.BSSID.equals(selectedBSSID)) {
+					addWifiResult(result);
+				}
+			}
+			for (ScanResult result : scanResults) {
+				if (!result.BSSID.equals(selectedBSSID)) {
+					addWifiResult(result);	
+				}
 			}
 		}
 	}
