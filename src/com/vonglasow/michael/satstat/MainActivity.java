@@ -57,6 +57,7 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 //import android.os.PowerManager;
@@ -238,6 +239,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TableLayout rilCdmaCells;
 	protected static TableLayout wifiAps;
 	
+	private static List <ScanResult> scanResults = null;
+	protected static Handler wifiTimehandler = null;
+	protected static Runnable wifiTimeRunnable = null;
+	private static final int WIFI_REFRESH_DELAY = 1000; //the time between two requests for WLAN rescan.
 	/*
 	private PowerManager pm;
 	private WakeLock wl;
@@ -371,45 +376,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		@Override
 		public void onReceive(Context c, Intent intent) {
 			if (intent.getAction() == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
-				List <ScanResult> scanResults = mWifiManager.getScanResults();
-		 		if ((isRadioViewReady) && (scanResults != null)) {
-		 			wifiAps.removeAllViews();
-		 			for (ScanResult result : scanResults) {
-			            TableRow row0 = new TableRow(wifiAps.getContext());
-			            View divider = new View(wifiAps.getContext());
-			            divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1, 1));
-			            divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
-			            row0.addView(divider);
-			            wifiAps.addView(row0, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			            
-			            TableRow row1 = new TableRow(wifiAps.getContext());
-			            //row.setPadding(0, (int) getResources().getDimension(R.dimen.activity_horizontal_margin), 0, 0);
-			            TextView newMac = new TextView(wifiAps.getContext());
-			            newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 14));
-			            newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-		    			newMac.setText(result.BSSID);
-		    			row1.addView(newMac);
-			            TextView newCh = new TextView(wifiAps.getContext());
-			            newCh.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-			            newCh.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-			            newCh.setText(getChannelFromFrequency(result.frequency));
-			            row1.addView(newCh);
-			            TextView newLevel = new TextView(wifiAps.getContext());
-			            newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-			            newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-			            newLevel.setText(String.valueOf(result.level));
-			            row1.addView(newLevel);
-			            wifiAps.addView(row1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-			            TableRow row2 = new TableRow(wifiAps.getContext());
-			            TextView newSSID = new TextView(wifiAps.getContext());
-			            newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 17));
-			            newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
-			            newSSID.setText(result.SSID);
-			            row2.addView(newSSID);
-			            wifiAps.addView(row2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		 			}
-		 		}
+				scanResults = mWifiManager.getScanResults();
+				if (isRadioViewReady) {
+					refreshWifiResults();
+				}
 			} else {
 				//something has changed about WiFi setup, rescan
 				mWifiManager.startScan();
@@ -417,6 +387,50 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	};
 
+	private final void addWifiResult(ScanResult result) {
+		TableRow row0 = new TableRow(wifiAps.getContext());
+		View divider = new View(wifiAps.getContext());
+		divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1, 1));
+		divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
+		row0.addView(divider);
+		wifiAps.addView(row0, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+		TableRow row1 = new TableRow(wifiAps.getContext());
+		//row.setPadding(0, (int) getResources().getDimension(R.dimen.activity_horizontal_margin), 0, 0);
+		TextView newMac = new TextView(wifiAps.getContext());
+		newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 14));
+		newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
+		newMac.setText(result.BSSID);
+		row1.addView(newMac);
+		TextView newCh = new TextView(wifiAps.getContext());
+		newCh.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+		newCh.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
+		newCh.setText(getChannelFromFrequency(result.frequency));
+		row1.addView(newCh);
+		TextView newLevel = new TextView(wifiAps.getContext());
+		newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+		newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
+		newLevel.setText(String.valueOf(result.level));
+		row1.addView(newLevel);
+		wifiAps.addView(row1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+		TableRow row2 = new TableRow(wifiAps.getContext());
+		TextView newSSID = new TextView(wifiAps.getContext());
+		newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 17));
+		newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
+		newSSID.setText(result.SSID);
+		row2.addView(newSSID);
+		wifiAps.addView(row2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	}
+
+	private final void refreshWifiResults() {
+		if (scanResults != null) {
+			wifiAps.removeAllViews();
+			for (ScanResult result : scanResults) {
+				addWifiResult(result);
+			}
+		}
+	}
 	
     /**
      * Converts an accuracy value into a color identifier.
@@ -560,6 +574,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mPressureSensorRes = getSensorDecimals(mPressureSensor, mPressureSensorRes);
         mHumiditySensorRes = getSensorDecimals(mHumiditySensor, mHumiditySensorRes);
         mTempSensorRes = getSensorDecimals(mTempSensor, mTempSensorRes);
+
+        wifiTimehandler = new Handler();
+        wifiTimeRunnable = new Runnable() {
+
+            @Override
+            public void run() {
+                mWifiManager.startScan();
+                wifiTimehandler.postDelayed(this, WIFI_REFRESH_DELAY);
+            }
+        };
 
         // SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
@@ -750,6 +774,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         // A connection to the supplicant has been established or the connection to the supplicant has been lost.
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+
+        wifiTimehandler.postDelayed(wifiTimeRunnable, WIFI_REFRESH_DELAY);
     }
 
     /**
@@ -879,6 +905,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	mSensorManager.unregisterListener(this);
         mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
         unregisterReceiver(mWifiScanReceiver);
+        wifiTimehandler.removeCallbacks(wifiTimeRunnable);
         super.onStop();
     }
     
