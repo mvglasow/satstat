@@ -1,13 +1,30 @@
+var images = new Array(); // array of images for thumbs and slide show
+var index = 0; //current mage in slide show
+
 function bodyLoad() {
-    nav_buttons();
+    var containers = document.getElementsByClassName("screenshots");
+    if (containers.length > 0) {
+        var container = containers[0];
+        for (i = 0; i < images.length; i++) {
+            var newImageElement = document.createElement("img");
+            newImageElement.setAttribute("src", images[i].src);
+            //TODO: set alt text
+            newImageElement.setAttribute("onclick", "javascript:startSlideShow('" + i + "')");
+            container.appendChild(newImageElement);
+        };
+    };
+    displayNavButtons();
 };
 
 function bodyResize() {
-    //FIXME: "scroll backward" if we have room for more screenshots
-    nav_buttons();
+    //FIXME: "scroll backward" if we gained room for more screenshots in thumbs list
+    displayNavButtons();
+    if (document.getElementById("slideshow").style.display != "none") {
+        resizeSlideShow();
+    }
 };
 
-function nav_back() {
+function scrollBack() {
     var containers = document.getElementsByClassName("screenshots");
     if (containers.length > 0) {
         var container = containers[0];
@@ -21,11 +38,11 @@ function nav_back() {
                 }
             };
         };
-        nav_buttons();
+        displayNavButtons();
     };
 };
 
-function nav_forward() {
+function scrollForward() {
     var containers = document.getElementsByClassName("screenshots");
     if (containers.length > 0) {
         var container = containers[0];
@@ -42,11 +59,11 @@ function nav_forward() {
                 }
             };
         };
-        nav_buttons();
+        displayNavButtons();
     };
 };
 
-function nav_buttons() {
+function displayNavButtons() {
     var containers = document.getElementsByClassName("screenshots");
     if (containers.length > 0) {
         var container = containers[0];
@@ -66,5 +83,52 @@ function nav_buttons() {
             forwardButton.style.display = "none";
         };
         
+    };
+};
+
+function resizeSlideShow() {
+    //TODO
+    //get viewport dimensions
+    //set width and height for div id=slideshow_image (pixels)
+};
+
+function startSlideShow(newIndex) {
+    var slideshow = document.getElementById("slideshow"); 
+    resizeSlideShow();
+    index = newIndex;
+    updateSlideShow();
+    slideshow.style.display = "block";
+};
+
+function closeSlideShow() {
+    document.getElementById("slideshow").style.display = "none";
+};
+
+function showPrev() {
+    if (index > 0) {
+        index--;
+    };
+    updateSlideShow();
+};
+
+function showNext() {
+    if (index < images.length - 1) {
+        index++;
+    };
+    updateSlideShow();
+};
+
+function updateSlideShow() {
+    var imageObj = document.getElementById("slideshow_image_obj");
+    imageObj.src = images[index].src;
+    if (index == 0) {
+        document.getElementById("slideshow_prev").style.display = "none";
+    } else {
+        document.getElementById("slideshow_prev").style.display = "block";
+    };
+    if (index == images.length - 1) {
+        document.getElementById("slideshow_next").style.display = "none";
+    } else {
+        document.getElementById("slideshow_next").style.display = "block";
     };
 };
