@@ -91,7 +91,7 @@ header h2 {
   z-index: 20;
   min-height: 100%;
   min-width: 100%;
-  height: 50%;
+  height: 100%;
   width: 100%;
   max-height: 100%;
   max-width: 100%;
@@ -120,8 +120,10 @@ header h2 {
 
 #slideshow_image {
   display: table-cell;
-  height: 500px; /* demo only */
-  width: 1000px; /* demo only */
+  min-height: 144px;
+  min-width: 144px;
+  height: 150px; /* will be overridden by JavaScript */
+  width: 300px; /* will be overridden by JavaScript */
   vertical-align: middle;
 }
 
@@ -129,7 +131,7 @@ header h2 {
   display: inline;
   max-height: 100%;
   max-width: 100%;
-  padding: 32px;
+  padding: 32px 46px;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -140,6 +142,7 @@ header h2 {
   right: 0px;
   height: 30px;
   width: 30px;
+  margin: 8px;
   cursor: pointer;
 }
 
@@ -149,6 +152,7 @@ header h2 {
   top: 50%;
   height: 30px;
   width: 30px;
+  margin: -15px 8px 8px 8px;
   cursor: pointer;
 }
 
@@ -158,6 +162,7 @@ header h2 {
   top: 50%;
   height: 30px;
   width: 30px;
+  margin: -15px 8px 8px 8px;
   cursor: pointer;
 }
 
@@ -235,6 +240,7 @@ header h2 {
   padding-left: 6px;
   padding-right: 6px;
   max-height: 285px;
+  cursor: pointer;
 }
 
 a.navbutton {
@@ -288,11 +294,11 @@ a.navbutton span {
 }
 
 #nav_back span {
-  background: transparent url(../images/nav_back.png) 4px 50% no-repeat;
+  background: transparent url(../images/go-previous.png) 1px 50% no-repeat;
 }
 
 #nav_forward span {
-  background: transparent url(../images/nav_forward.png) 4px 50% no-repeat;
+  background: transparent url(../images/go-next.png) 1px 50% no-repeat;
 }
 
 a.button {

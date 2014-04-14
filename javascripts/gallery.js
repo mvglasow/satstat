@@ -87,9 +87,28 @@ function displayNavButtons() {
 };
 
 function resizeSlideShow() {
-    //TODO
-    //get viewport dimensions
-    //set width and height for div id=slideshow_image (pixels)
+    var browser = "";
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf("opera") != -1) {
+        browser = "opera";
+    } else if (ua.indexOf("msie") != -1) {
+        browser = "msie";
+    } else if (ua.indexOf("safari") != -1) {
+        browser = "safari";
+    } else if (ua.indexOf("mozilla") != -1) {
+        if (ua.indexOf("firefox") != -1) {
+            browser = "firefox";
+        } else {
+            browser = "mozilla";
+        }
+    }
+    var viewportElement = (browser == "msie" &&
+      document.compatMode != 'CSS1Compat') ? document.body :
+      document.documentElement;
+    slideshowImage = document.getElementById("slideshow_image");
+    slideshowImage.style.width = viewportElement.clientWidth + "px";
+    slideshowImage.style.maxWidth = viewportElement.clientWidth + "px";
+    slideshowImage.style.height = viewportElement.clientHeight + "px";
 };
 
 function startSlideShow(newIndex) {
