@@ -2,7 +2,7 @@
    v2.0 | 20110126
    License: none (public domain)
 */
-@import url(http://fonts.googleapis.com/css?family=Roboto:900,400);
+@import url(http://fonts.googleapis.com/css?family=Roboto:300,500,700,900);
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -31,6 +31,7 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+    font-weight: 300;
 }
 ol, ul {
 	list-style: none;
@@ -190,6 +191,47 @@ header h2 {
   height: 45px;
 }
 
+#navbar_wrapper {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+#navbar {
+  display: table;
+  table-layout: fixed;
+  height: 34px;
+  width: 100%;
+  border-top: solid 1px #d9d9d9;
+  border-bottom: solid 2px #bdbdbd;
+}
+
+#navbar a {
+  display: table-cell;
+  height: 23px;
+  vertical-align: middle;
+  text-align: center;
+  text-transform: uppercase;
+  color: #6d6d6d;
+  font-weight: 500;
+  padding-top: 4px;
+}
+
+#navbar a[href] {
+  padding-bottom: 4px;
+  border-bottom: hidden;
+}
+
+#navbar a:hover {
+  padding-bottom: 0px;
+  border-bottom: solid 4px #bdbdbd;
+}
+
+#navbar a:not([href]) {
+  padding-bottom: 0px;
+  border-bottom: solid 4px #bdbdbd;
+}
+
 #downloads {
   margin-bottom: 40px;
 }
@@ -232,7 +274,6 @@ header h2 {
   overflow: hidden;
   overflow-x: hidden;
   overflow-y: hidden;
-  //white-space: nowrap;
 }
 
 .screenshots img {
@@ -513,11 +554,11 @@ footer {
   padding-top: 20px;
   padding-bottom: 30px;
   font-size: 13px;
-  color: #aaa;
 }
 
 footer a {
   color: #666;
+  font-weight: 500;
 }
 footer a:hover {
   color: #444;
