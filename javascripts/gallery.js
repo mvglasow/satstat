@@ -106,17 +106,21 @@ function resizeSlideShow() {
       document.compatMode != 'CSS1Compat') ? document.body :
       document.documentElement;
     slideshowImage = document.getElementById("slideshow_image");
-    slideshowImage.style.width = viewportElement.clientWidth + "px";
-    slideshowImage.style.maxWidth = viewportElement.clientWidth + "px";
-    slideshowImage.style.height = viewportElement.clientHeight + "px";
+    //slideshowImage.style.width = viewportElement.clientWidth + "px";
+    //slideshowImage.style.maxWidth = viewportElement.clientWidth + "px";
+    //slideshowImage.style.height = viewportElement.clientHeight + "px";
+    slideshowBg = document.getElementById("slideshow_bg");
+    slideshowImage.style.width = slideshowBg.clientWidth + "px";
+    slideshowImage.style.maxWidth = slideshowBg.clientWidth + "px";
+    slideshowImage.style.height = slideshowBg.clientHeight + "px";
 };
 
 function startSlideShow(newIndex) {
     var slideshow = document.getElementById("slideshow"); 
-    resizeSlideShow();
     index = newIndex;
     updateSlideShow();
     slideshow.style.display = "block";
+    resizeSlideShow();
 };
 
 function closeSlideShow() {
