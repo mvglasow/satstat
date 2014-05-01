@@ -336,7 +336,14 @@
         android:layout_height="wrap_content"
         android:baselineAligned="true"
         android:measureWithLargestChild="false"
-        android:weightSum="19" >
+        android:weightSum="22" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:layout_width="0dp"
@@ -361,12 +368,13 @@
 
         </LinearLayout>
 
-    <TableLayout
+    <LinearLayout
         android:id="@+id/wifiAps"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
-    </TableLayout>
+    </LinearLayout>
     
 </LinearLayout>
 </ScrollView>

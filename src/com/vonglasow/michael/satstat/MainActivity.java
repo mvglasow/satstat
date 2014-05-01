@@ -93,6 +93,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -241,7 +243,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TextView rilCdmaType;
 	protected static TextView rilCdmaAsu;
 	protected static TableLayout rilCdmaCells;
-	protected static TableLayout wifiAps;
+	protected static LinearLayout wifiAps;
 	
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
@@ -407,42 +409,71 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		};
 
-		TableRow row0 = new TableRow(wifiAps.getContext());
 		View divider = new View(wifiAps.getContext());
-		divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1, 1));
+		divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1));
 		divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
-		row0.addView(divider);
-		row0.setOnClickListener(clis);
-		wifiAps.addView(row0, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-		TableRow row1 = new TableRow(wifiAps.getContext());
-		//row.setPadding(0, (int) getResources().getDimension(R.dimen.activity_horizontal_margin), 0, 0);
+		divider.setOnClickListener(clis);
+		wifiAps.addView(divider);
+		
+		LinearLayout wifiLayout = new LinearLayout(wifiAps.getContext());
+		wifiLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		wifiLayout.setOrientation(LinearLayout.HORIZONTAL);
+		wifiLayout.setWeightSum(22);
+		wifiLayout.setMeasureWithLargestChildEnabled(false);
+		
+		ImageView wifiType = new ImageView(wifiAps.getContext());
+		wifiType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT, 3));
+		if (WifiCapabilities.isAdhoc(result)) {
+			wifiType.setImageResource(R.drawable.ic_content_wifi_adhoc);
+		} else if ((WifiCapabilities.isEnterprise(result)) || (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.EAP)) {
+			wifiType.setImageResource(R.drawable.ic_content_wifi_eap);
+		} else if (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.PSK) {
+			wifiType.setImageResource(R.drawable.ic_content_wifi_psk);
+		} else if (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.WEP) {
+			wifiType.setImageResource(R.drawable.ic_content_wifi_wep);
+		} else if (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.OPEN) {
+			wifiType.setImageResource(R.drawable.ic_content_wifi_open);
+		} else {
+			wifiType.setImageResource(R.drawable.ic_content_wifi_unknown);
+		}
+		
+		wifiType.setScaleType(ScaleType.CENTER);
+		wifiLayout.addView(wifiType);
+		
+		TableLayout wifiDetails = new TableLayout(wifiAps.getContext());
+		wifiDetails.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
+		TableRow innerRow1 = new TableRow(wifiAps.getContext());
 		TextView newMac = new TextView(wifiAps.getContext());
 		newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 14));
 		newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 		newMac.setText(result.BSSID);
-		row1.addView(newMac);
+		innerRow1.addView(newMac);
 		TextView newCh = new TextView(wifiAps.getContext());
 		newCh.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
 		newCh.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 		newCh.setText(getChannelFromFrequency(result.frequency));
-		row1.addView(newCh);
+		innerRow1.addView(newCh);
 		TextView newLevel = new TextView(wifiAps.getContext());
 		newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
 		newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
 		newLevel.setText(String.valueOf(result.level));
-		row1.addView(newLevel);
-		row1.setOnClickListener(clis);
-		wifiAps.addView(row1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		innerRow1.addView(newLevel);
+		innerRow1.setOnClickListener(clis);
+		wifiDetails.addView(innerRow1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-		TableRow row2 = new TableRow(wifiAps.getContext());
+		TableRow innerRow2 = new TableRow(wifiAps.getContext());
 		TextView newSSID = new TextView(wifiAps.getContext());
 		newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
 		newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
 		newSSID.setText(result.SSID);
-		row2.addView(newSSID);
-		row2.setOnClickListener(clis);
-		wifiAps.addView(row2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		innerRow2.addView(newSSID);
+		innerRow2.setOnClickListener(clis);
+		wifiDetails.addView(innerRow2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+		wifiLayout.addView(wifiDetails);
+		wifiLayout.setOnClickListener(clis);
+		wifiAps.addView(wifiLayout);
+		
 		/*
 		TableRow row3 = new TableRow(wifiAps.getContext());
 		TextView newCaps = new TextView(wifiAps.getContext());
@@ -1426,7 +1457,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	rilCdmaAsu = (TextView) rootView.findViewById(R.id.rilCdmaAsu);
         	rilCdmaCells = (TableLayout) rootView.findViewById(R.id.rilCdmaCells);
         	
-        	wifiAps = (TableLayout) rootView.findViewById(R.id.wifiAps);
+        	wifiAps = (LinearLayout) rootView.findViewById(R.id.wifiAps);
 
         	rilGsmLayout.setVisibility(View.GONE);
         	rilCdmaLayout.setVisibility(View.GONE);
