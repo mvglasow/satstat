@@ -21,4 +21,8 @@
     <color name="accLow">#CC0000</color>
     <color name="accUnreliable">#9933CC</color>
 
+    <color name="gen2">#669900</color>
+    <color name="gen3">#33B5E5</color>
+    <color name="gen4">#9933CC</color>
+    
 </resources>

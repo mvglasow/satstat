@@ -226,6 +226,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TextView proximity;
 
 	protected static boolean isRadioViewReady = false;
+	protected static LinearLayout rilGsmLayout;
+	protected static TextView rilType;
 	protected static TextView rilMcc;
 	protected static TextView rilMnc;
 	protected static TextView rilCellId;
@@ -235,6 +237,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TextView rilSid;
 	protected static TextView rilNid;
 	protected static TextView rilBsid;
+	protected static LinearLayout rilCdmaLayout;
+	protected static TextView rilCdmaType;
 	protected static TextView rilCdmaAsu;
 	protected static TableLayout rilCdmaCells;
 	protected static TableLayout wifiAps;
@@ -433,12 +437,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		TableRow row2 = new TableRow(wifiAps.getContext());
 		TextView newSSID = new TextView(wifiAps.getContext());
-		newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 17));
+		newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
 		newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
 		newSSID.setText(result.SSID);
 		row2.addView(newSSID);
 		row2.setOnClickListener(clis);
 		wifiAps.addView(row2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		/*
+		TableRow row3 = new TableRow(wifiAps.getContext());
+		TextView newCaps = new TextView(wifiAps.getContext());
+		newCaps.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
+		newCaps.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
+		newCaps.setText(WifiCapabilities.getScanResultSecurity(result));
+		//newCaps.setText(result.capabilities);
+		row3.addView(newCaps);
+		row3.setOnClickListener(clis);
+		wifiAps.addView(row3, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		*/
 	}
 
 	private final void refreshWifiResults() {
@@ -513,6 +528,37 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		else {
 			return "?";
 		}
+	}
+	
+	
+    /**
+     * Gets the display color for a phone network type
+     * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
+     * @return The color in which to display the indicator
+     */
+	public static int getColorFromNetworkType(int networkType) {
+    	switch (networkType) {
+    	case TelephonyManager.NETWORK_TYPE_CDMA:
+    	case TelephonyManager.NETWORK_TYPE_EDGE:
+    	case TelephonyManager.NETWORK_TYPE_GPRS:
+    	case TelephonyManager.NETWORK_TYPE_IDEN:
+    		return(R.color.gen2);
+    	case TelephonyManager.NETWORK_TYPE_1xRTT:
+    	case TelephonyManager.NETWORK_TYPE_EHRPD:
+    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
+    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
+    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
+    	case TelephonyManager.NETWORK_TYPE_HSDPA:
+    	case TelephonyManager.NETWORK_TYPE_HSPA:
+    	case TelephonyManager.NETWORK_TYPE_HSPAP:
+    	case TelephonyManager.NETWORK_TYPE_HSUPA:
+    	case TelephonyManager.NETWORK_TYPE_UMTS:
+    		return(R.color.gen3);
+    	case TelephonyManager.NETWORK_TYPE_LTE:
+    		return(R.color.gen4);
+    	default:
+    		return(android.R.color.transparent);
+    	}
 	}
 	
 	
@@ -1072,6 +1118,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (isRadioViewReady) {
             if (location instanceof GsmCellLocation) {
 	            String networkOperator = mTelephonyManager.getNetworkOperator();
+	            rilType.setTextColor(rilType.getContext().getResources().getColor(getColorFromNetworkType(mTelephonyManager.getNetworkType())));
 	             
 	            int cid = ((GsmCellLocation) location).getCid();
 	            int lac = ((GsmCellLocation) location).getLac();
@@ -1085,13 +1132,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            }
 	            rilCellId.setText(String.valueOf(cid));
 	            rilLac.setText(String.valueOf(lac));
+	            rilGsmLayout.setVisibility(View.VISIBLE);
             } else if (location instanceof CdmaCellLocation) {
+	            rilCdmaType.setTextColor(rilCdmaType.getContext().getResources().getColor(getColorFromNetworkType(mTelephonyManager.getNetworkType())));
             	int sid = ((CdmaCellLocation) location).getSystemId();
             	int nid = ((CdmaCellLocation) location).getNetworkId();
             	int bsid = ((CdmaCellLocation) location).getBaseStationId();
             	rilSid.setText(String.valueOf(sid));
             	rilNid.setText(String.valueOf(nid));
             	rilBsid.setText(String.valueOf(bsid));
+	            rilCdmaLayout.setVisibility(View.VISIBLE);
             }
 		}
 	}
@@ -1108,6 +1158,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
  			rilCells.removeAllViews();
  			for (NeighboringCellInfo cell : neighboringCells) {
 	            TableRow row = new TableRow(rilCells.getContext());
+	            TextView newType = new TextView(rilCells.getContext());
+	            newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+	            newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+	            newType.setText(rilCells.getContext().getString(R.string.smallDot));
+	            newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromNetworkType(cell.getNetworkType())));
+	            row.addView(newType);
 	            TextView newMcc = new TextView(rilCells.getContext());
 	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
 	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
@@ -1353,6 +1409,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             View rootView = inflater.inflate(R.layout.fragment_main_radio, container, false);
             
             // Initialize controls
+        	rilGsmLayout = (LinearLayout) rootView.findViewById(R.id.rilGsmLayout);
+        	rilType = (TextView) rootView.findViewById(R.id.rilType);
         	rilMcc = (TextView) rootView.findViewById(R.id.rilMcc);
         	rilMnc = (TextView) rootView.findViewById(R.id.rilMnc);
         	rilCellId = (TextView) rootView.findViewById(R.id.rilCellId);
@@ -1360,6 +1418,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	rilAsu = (TextView) rootView.findViewById(R.id.rilAsu);
         	rilCells = (TableLayout) rootView.findViewById(R.id.rilCells);
         	
+        	rilCdmaLayout = (LinearLayout) rootView.findViewById(R.id.rilCdmaLayout);
+        	rilCdmaType = (TextView) rootView.findViewById(R.id.rilCdmaType);
         	rilSid = (TextView) rootView.findViewById(R.id.rilSid); 
         	rilNid = (TextView) rootView.findViewById(R.id.rilNid);
         	rilBsid = (TextView) rootView.findViewById(R.id.rilBsid);
@@ -1368,6 +1428,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	wifiAps = (TableLayout) rootView.findViewById(R.id.wifiAps);
 
+        	rilGsmLayout.setVisibility(View.GONE);
+        	rilCdmaLayout.setVisibility(View.GONE);
+        	
         	isRadioViewReady = true;
         	
         	//get current phone info (first update won't fire until the cell actually changes)
