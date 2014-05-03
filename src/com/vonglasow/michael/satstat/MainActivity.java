@@ -1007,7 +1007,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	mLocationManager.removeGpsStatusListener(this);
     	mSensorManager.unregisterListener(this);
         mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
-        unregisterReceiver(mWifiScanReceiver);
+        try {
+        	unregisterReceiver(mWifiScanReceiver);
+        } catch (IllegalArgumentException e) {
+        	// sometimes the receiver isn't registered, make sure we don't crash
+        	Log.d(this.getLocalClassName(), "WifiScanReceiver was never registered, caught exception");
+        }
         wifiTimehandler.removeCallbacks(wifiTimeRunnable);
         super.onStop();
     }
