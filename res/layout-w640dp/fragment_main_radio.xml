@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="55" >
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="28"
+            android:orientation="vertical"
+            android:paddingRight="@dimen/activity_vertical_margin" >
+            
+            <!-- left pane: cell networks -->
+			<LinearLayout
+			    android:id="@+id/rilGsmLayout"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="vertical" >
+			
+			    <TextView
+			        android:id="@+id/rotHeader"
+			        style="?android:attr/listSeparatorTextViewStyle"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="@string/title_radio_gsm" />
+			
+			    <LinearLayout
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:baselineAligned="true"
+			        android:measureWithLargestChild="false"
+			        android:weightSum="28" >
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="2"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView190"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text=""
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilType"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+				            android:text="@string/smallDot"
+				            android:textColor="@android:color/transparent"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="3"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView19"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_mcc"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilMcc"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="3"
+			            android:orientation="vertical"
+			            android:weightSum="3" >
+			
+			            <TextView
+			                android:id="@+id/textView21"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_mnc"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilMnc"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			        
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="7"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView3"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_lac"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilLac"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			        
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="9"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView23"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_cellid"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilCellId"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="4"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_level"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilAsu"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        </LinearLayout>
+			
+			    <TableLayout
+			        android:id="@+id/rilCells"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content" >
+			
+			    </TableLayout>
+			
+			</LinearLayout>
+		
+			<LinearLayout
+			    android:id="@+id/rilCdmaLayout"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="vertical">
+			    
+			    <TextView
+			        android:id="@+id/textView5"
+			        style="?android:attr/listSeparatorTextViewStyle"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text="@string/title_radio_cdma" />
+			
+			    <LinearLayout
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:baselineAligned="true"
+			        android:measureWithLargestChild="false"
+			        android:weightSum="28" >
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="2"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView191"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text=""
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilCdmaType"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+				            android:text="@string/smallDot"
+				            android:textColor="@android:color/transparent"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="5"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView22"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_sid"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilSid"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="5"
+			            android:orientation="vertical">
+			
+			            <TextView
+			                android:id="@+id/textView25"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_nid"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilNid"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="12"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:id="@+id/textView24"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_bsid"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilBsid"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="4"
+			            android:orientation="vertical" >
+			
+			            <TextView
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_level"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			            <TextView
+			                android:id="@+id/rilCdmaAsu"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxLines="2"
+			                android:text="@string/value_none"
+			                android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+			        </LinearLayout>
+			
+			        </LinearLayout>
+			
+			    <TableLayout
+			        android:id="@+id/rilCdmaCells"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content" >
+			
+			    </TableLayout>
+			</LinearLayout>
+            
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="27"
+            android:orientation="vertical">
+            
+            <!-- right pane: WiFi networks -->
+		    <TextView
+		        android:id="@+id/textView4"
+		        style="?android:attr/listSeparatorTextViewStyle"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/title_radio_wifi" />
+		
+		    <LinearLayout
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:baselineAligned="true"
+		        android:measureWithLargestChild="false"
+		        android:weightSum="22" >
+		
+		        <TextView
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="3"
+		            android:text=""
+		            android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		        <TextView
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="14"
+		            android:text="@string/title_radio_mac"
+		            android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		        <TextView
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="2"
+		            android:text="@string/title_radio_channel"
+		            android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		            <TextView
+		                android:layout_width="0dp"
+		                android:layout_height="wrap_content"
+		                android:layout_weight="3"
+		                android:text="@string/title_radio_level"
+		                android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		        </LinearLayout>
+		
+		    <LinearLayout
+		        android:id="@+id/wifiAps"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical" >
+		
+		    </LinearLayout>
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+
+</ScrollView>
