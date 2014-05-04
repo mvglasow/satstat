@@ -149,4 +149,6 @@
     </string-array>
     <string name="pref_lastupdate">Last update</string>
     <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
+    <string name="pref_networks">Networks</string>
+    <string name="pref_networks_summary">Refresh AGPS data when my device connects to one of the selected networks</string>
 </resources>

@@ -19,6 +19,10 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -41,6 +45,9 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 	public static final String KEY_PREF_NOTIFY_FIX = "pref_notify_fix";
 	public static final String KEY_PREF_NOTIFY_SEARCH = "pref_notify_search";
 	public static final String KEY_PREF_UPDATE_WIFI = "pref_update_wifi";
+	public static final String KEY_PREF_UPDATE_NETWORKS = "pref_update_networks";
+	public static final String KEY_PREF_UPDATE_NETWORKS_WIFI = Integer.toString(ConnectivityManager.TYPE_WIFI);
+	public static final String KEY_PREF_UPDATE_NETWORKS_MOBILE = Integer.toString(ConnectivityManager.TYPE_MOBILE);
 	public static final String KEY_PREF_UPDATE_FREQ = "pref_update_freq";
 	public static final String KEY_PREF_UPDATE_LAST = "pref_update_last";
 
@@ -61,6 +68,18 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 		.commit();
 
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // some logic to use the pre-1.7 setting KEY_PREF_UPDATE_WIFI as a
+		// fallback if KEY_PREF_UPDATE_NETWORKS is not set
+		if (!mSharedPreferences.contains(KEY_PREF_UPDATE_NETWORKS)) {
+			Set<String> fallbackUpdateNetworks = new HashSet<String>();
+			if (mSharedPreferences.getBoolean(KEY_PREF_UPDATE_WIFI, false)) {
+				fallbackUpdateNetworks.add(KEY_PREF_UPDATE_NETWORKS_WIFI);
+			}
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putStringSet(KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
+			spEditor.commit();
+		}
 	}
 
 	@Override
