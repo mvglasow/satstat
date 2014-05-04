@@ -24,6 +24,8 @@ import java.util.Set;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -40,7 +42,10 @@ public class GpsEventReceiver extends BroadcastReceiver {
 
 	public static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	public static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
+	public static final String AGPS_DATA_EXPIRED = "com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED";
 	public static final long MILLIS_PER_DAY = 86400000;
+	
+	private static Intent mAgpsIntent = new Intent(AGPS_DATA_EXPIRED);;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -80,14 +85,17 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			if (!netinfo.isConnected()) return;
 			//Toast.makeText(context, "WiFi is connected", Toast.LENGTH_SHORT).show();
 			Log.i(this.getClass().getSimpleName(), "WiFi is connected");
-			refreshAgps(context, sharedPref);
-		} else if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION )) {
-			//FIXME: just for testing
+			refreshAgps(context, true);
+		} else if ((intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION )) ||
+				(intent.getAction().equals(AGPS_DATA_EXPIRED))) {
+			boolean isAgpsExpired = false;
+			if (intent.getAction().equals(AGPS_DATA_EXPIRED)) {
+				Log.i(this.getClass().getSimpleName(), "AGPS data expired, checking available networks");
+				isAgpsExpired = true;
+			}
 			NetworkInfo netinfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
 			if (netinfo == null) return;
 			if (!netinfo.isConnected()) return;
-			//String msg = String.format("Connected, network type: %s", netinfo.getTypeName());
-			//Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 			String type;
 			if ((netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) || (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
 				type = Integer.toString(netinfo.getType());
@@ -96,37 +104,56 @@ public class GpsEventReceiver extends BroadcastReceiver {
 				type = SettingsActivity.KEY_PREF_UPDATE_NETWORKS_MOBILE;
 			}
 			if (!updateNetworks.contains(type)) return;
-			Log.i(this.getClass().getSimpleName(), "Network of type " + netinfo.getTypeName() + " is connected");
-			refreshAgps(context, sharedPref);
+			if (!isAgpsExpired)
+				Log.i(this.getClass().getSimpleName(), "Network of type " + netinfo.getTypeName() + " is connected");
+			// Enforce the update interval if we were called by a network event
+			// but not if we were called by a timer, because in that case the
+			// check has already been done. (I am somewhat paranoid and don't
+			// count on alarms not going off a few milliseconds too early.)
+			refreshAgps(context, !isAgpsExpired);
 		}
 	}
 	
 	/**
 	 * Refreshes AGPS data if necessary.
 	 * 
-	 * This method checks when the last AGPS data refresh took place and
-	 * determines if the data is stale by adding the refresh interval specified
-	 * in the user preferences and comparing the result against the current
-	 * time. If the result is less than current time, AGPS data is considered
-	 * stale and a refresh is requested.
+	 * This method requests a refresh of the AGPS data. It optionally does so
+	 * only after checking when the AGPS data was last refreshed and
+	 * determining if it is stale by adding the refresh interval specified in
+	 * the user preferences and comparing the result against the current time.
+	 * If the result is less than current time, AGPS data is considered stale
+	 * and a refresh is requested.
 	 * 
 	 * @param context A {@link Context} to be passed to {@link LocationManager}.
-	 * @param sharedPref A previously initialized {@link SharedPreference} from
-	 * which to retrieve the time of the last AGPS update. After requesting an
-	 * update, the current time will be stored in the same location.
+	 * @param enforceInterval If true, prevents updates when the interval has
+	 * not yet expired. If false, updates are permitted at any time. This is to
+	 * prevent race conditions if alarms fire off too early.
 	 */
-	private void refreshAgps(Context context, SharedPreferences sharedPref) {
+	static void refreshAgps(Context context, boolean enforceInterval) {
+		AlarmManager alm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		PendingIntent pi = PendingIntent.getBroadcast(context, 0, mAgpsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		alm.cancel(pi);
+
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 		long last = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_LAST, 0);
 		long freq = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));
 		long now = System.currentTimeMillis();
-		if (last + freq * MILLIS_PER_DAY > now) return;
+		if (enforceInterval && (last + freq * MILLIS_PER_DAY > now)) return;
 		SharedPreferences.Editor spEditor = sharedPref.edit();
 		spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
 		LocationManager locman = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		Log.i(this.getClass().getSimpleName(), "AGPS data is stale, requesting update");
+		Log.i(GpsEventReceiver.class.getSimpleName(), "Requesting AGPS data update");
 		locman.sendExtraCommand("gps", "force_xtra_injection", null);
 		locman.sendExtraCommand("gps", "force_time_injection", null);
 		spEditor.commit();
+		
+		if (freq > 0) {
+			// if an update interval is set, prepare an alarm to trigger a new
+			// update when it elapses (if no interval is set, do nothing as we
+			// cannot determine a point in time for re-running the update)
+			long next = now + freq;
+			alm.set(AlarmManager.RTC, next, pi);
+		}
 	}
 
 }

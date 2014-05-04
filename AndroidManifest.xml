@@ -49,6 +49,7 @@
                 <action android:name="android.location.GPS_FIX_CHANGE"/>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
                 <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED"/>
             </intent-filter>
         </receiver>
         <service android:name="PasvLocListenerService" android:exported="false" android:stopWithTask="false"></service>
