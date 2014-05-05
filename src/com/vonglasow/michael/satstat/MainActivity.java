@@ -794,8 +794,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	switch (item.getItemId()) {
     	case R.id.action_agps:
     		Log.i(this.getLocalClassName(), "User requested AGPS data update");
-    		GpsEventReceiver.refreshAgps(this, false);
-    		Toast.makeText(this, getString(R.string.status_agps), Toast.LENGTH_SHORT).show();
+    		GpsEventReceiver.refreshAgps(this, false, true);
     		return true;
     	case R.id.action_settings:
     		startActivity(new Intent(this, SettingsActivity.class));

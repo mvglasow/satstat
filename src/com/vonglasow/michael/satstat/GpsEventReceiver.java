@@ -34,6 +34,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -85,7 +86,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			if (!netinfo.isConnected()) return;
 			//Toast.makeText(context, "WiFi is connected", Toast.LENGTH_SHORT).show();
 			Log.i(this.getClass().getSimpleName(), "WiFi is connected");
-			refreshAgps(context, true);
+			refreshAgps(context, true, false);
 		} else if ((intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION )) ||
 				(intent.getAction().equals(AGPS_DATA_EXPIRED))) {
 			boolean isAgpsExpired = false;
@@ -110,7 +111,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			// but not if we were called by a timer, because in that case the
 			// check has already been done. (I am somewhat paranoid and don't
 			// count on alarms not going off a few milliseconds too early.)
-			refreshAgps(context, !isAgpsExpired);
+			refreshAgps(context, !isAgpsExpired, false);
 		}
 	}
 	
@@ -128,32 +129,93 @@ public class GpsEventReceiver extends BroadcastReceiver {
 	 * @param enforceInterval If true, prevents updates when the interval has
 	 * not yet expired. If false, updates are permitted at any time. This is to
 	 * prevent race conditions if alarms fire off too early.
+	 * @param wantFeedback Whether to display a toast informing the user about
+	 * the success of the operation.
 	 */
-	static void refreshAgps(Context context, boolean enforceInterval) {
-		AlarmManager alm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		PendingIntent pi = PendingIntent.getBroadcast(context, 0, mAgpsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		alm.cancel(pi);
-
+	static void refreshAgps(Context context, boolean enforceInterval, boolean wantFeedback) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 		long last = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_LAST, 0);
 		long freq = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));
 		long now = System.currentTimeMillis();
 		if (enforceInterval && (last + freq * MILLIS_PER_DAY > now)) return;
-		SharedPreferences.Editor spEditor = sharedPref.edit();
-		spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
-		LocationManager locman = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		Log.i(GpsEventReceiver.class.getSimpleName(), "Requesting AGPS data update");
-		locman.sendExtraCommand("gps", "force_xtra_injection", null);
-		locman.sendExtraCommand("gps", "force_time_injection", null);
-		spEditor.commit();
 		
-		if (freq > 0) {
-			// if an update interval is set, prepare an alarm to trigger a new
-			// update when it elapses (if no interval is set, do nothing as we
-			// cannot determine a point in time for re-running the update)
-			long next = now + freq;
-			alm.set(AlarmManager.RTC, next, pi);
-		}
+		new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freq);
 	}
+	
+	private static class AgpsUpdateTask extends AsyncTask<Object, Void, Integer> {
+		Context mContext;
+		boolean mWantFeedback = false;
+		
+		public AgpsUpdateTask(boolean wantFeedback) {
+			super();
+			mWantFeedback = wantFeedback;
+		}
+
+		/**
+		 * @param args[0] A {@link Context} for connecting to the various system services
+		 * @param args[1] The {@link Intent} to raise when the next update is due
+		 * @param args[2] A {@link SharedPreferences} instance in which the timestamp of the update will be stored
+		 * @param args[3] The update frequency, of type {@link Long}
+		 */
+		@Override
+		protected Integer doInBackground(Object... args) {
+			mContext = (Context) args[0];
+			Intent agpsIntent = (Intent) args[1];
+			SharedPreferences sharedPref = (SharedPreferences) args[2];
+			long freq = (Long) args[3];
+			
+			int nc = WifiCapabilities.getNetworkConnectivity();
+			if (nc == WifiCapabilities.NETWORK_CAPTIVE_PORTAL) {
+				// portale cattivo che non ci permette di scaricare i dati AGPS
+				Log.i(GpsEventReceiver.class.getSimpleName(), "Captive portal detected, cannot update AGPS data");
+				return nc;
+			} else if (nc == WifiCapabilities.NETWORK_ERROR) {
+				Log.i(GpsEventReceiver.class.getSimpleName(), "No network available, cannot update AGPS data");
+				return nc;
+			}
+			
+			AlarmManager alm = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+			PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, agpsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			alm.cancel(pi);
+
+			SharedPreferences.Editor spEditor = sharedPref.edit();
+			spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
+			LocationManager locman = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+			Log.i(GpsEventReceiver.class.getSimpleName(), "Requesting AGPS data update");
+			locman.sendExtraCommand("gps", "force_xtra_injection", null);
+			locman.sendExtraCommand("gps", "force_time_injection", null);
+			spEditor.commit();
+			
+			if (freq > 0) {
+				// if an update interval is set, prepare an alarm to trigger a new
+				// update when it elapses (if no interval is set, do nothing as we
+				// cannot determine a point in time for re-running the update)
+				long next = System.currentTimeMillis() + freq;
+				alm.set(AlarmManager.RTC, next, pi);
+			}
+
+			return nc;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			if ((mContext == null) || !mWantFeedback) return;
+			String message = "";
+			switch (result) {
+			case WifiCapabilities.NETWORK_AVAILABLE:
+				message = mContext.getString(R.string.status_agps);
+				break;
+			case WifiCapabilities.NETWORK_CAPTIVE_PORTAL:
+				message = mContext.getString(R.string.status_agps_captive);
+				break;
+			case WifiCapabilities.NETWORK_ERROR:
+				message = mContext.getString(R.string.status_agps_error);
+				break;
+			}
+			Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+		}
+
+	}
+
 
 }

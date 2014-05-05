@@ -1,6 +1,6 @@
 /*
  * Copyright © 2014 Michael von Glasow.
- * Portions copyright © 2007 The Android Open Source Project
+ * Portions copyright © 2007, 2012 The Android Open Source Project
  * 
  * This file is part of LSRN Tools.
  *
@@ -20,7 +20,13 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import android.net.wifi.ScanResult;
+import android.provider.Settings;
+import android.util.Log;
 
 public abstract class WifiCapabilities {
 
@@ -55,6 +61,13 @@ public abstract class WifiCapabilities {
     public static final int PRIVATE_KEY = 4;
     public static final int MAX_ENTRPRISE_FIELD = 5;
     
+    public static final String CAPTIVE_PORTAL_SERVER = "clients3.google.com";
+    private static final int SOCKET_TIMEOUT_MS = 10000;
+    
+    public static final int NETWORK_AVAILABLE = 0;
+    public static final int NETWORK_CAPTIVE_PORTAL = 1;
+    public static final int NETWORK_ERROR = 2;
+    
     /**
      * @return The security of a given {@link ScanResult}.
      */
@@ -82,5 +95,53 @@ public abstract class WifiCapabilities {
      */
     public static boolean isEnterprise(ScanResult scanResult) {
         return scanResult.capabilities.contains(ENTERPRISE_CAPABILITY);
+    }
+    
+    /**
+     * Checks if an unrestricted Internet connection is available.
+     * 
+     * This method detects captive portals (also known as walled gardens),
+     * which redirect Web traffic to a sign-in page as long as the user has not
+     * provided any credentials. It does so by connecting to a particular
+     * Web address, which will respond with HTTP status code 204 (no content)
+     * and an empty result body. If a different response (such as a document
+     * or redirection) is obtained, it will assume the presence of a captive
+     * portal.
+     * 
+     * Once the user has signed into a captive portal, it will not be reported
+     * as such, provided the portal grants transparent Internet access to
+     * signed-in users.
+     * 
+     * Since this method involves a network operation, it cannot be called from
+     * the main UI thread. Consider instead creating an {@link AsyncTask}
+     * around it.
+     * @return NETWORK_AVAILABLE if we have unrestricted network access,
+     * NETWORK_CAPTIVE_PORTAL if we are behind a captive portal or
+     * NETWORK_ERROR if a network error occurred during the check, which
+     * happens if no network is available.
+     */
+    public static int getNetworkConnectivity() {
+        HttpURLConnection urlConnection = null;
+
+        String mUrl = "http://" + CAPTIVE_PORTAL_SERVER + "/generate_204";
+        Log.d(WifiCapabilities.class.getSimpleName(), "Checking " + mUrl + " to see if we're behind a captive portal");
+        try {
+            URL url = new URL(mUrl);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setInstanceFollowRedirects(false);
+            urlConnection.setConnectTimeout(SOCKET_TIMEOUT_MS);
+            urlConnection.setReadTimeout(SOCKET_TIMEOUT_MS);
+            urlConnection.setUseCaches(false);
+            urlConnection.getInputStream();
+            // we got a valid response, but not from the real google
+            return (urlConnection.getResponseCode() != 204)?NETWORK_CAPTIVE_PORTAL:NETWORK_AVAILABLE;
+        } catch (IOException e) {
+            Log.d(WifiCapabilities.class.getSimpleName(), "Probably not a portal: exception " + e);
+            return NETWORK_ERROR;
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
     }
 }

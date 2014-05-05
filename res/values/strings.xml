@@ -16,6 +16,8 @@
     <string name="notify_record_title">Recording sensor data</string>
     <string name="notify_record_body">Touch to stop recording</string>
     <string name="status_agps">AGPS data reload requested</string>
+    <string name="status_agps_captive">Can\'t refresh data – open web browser, sign into the network and retry</string>
+    <string name="status_agps_error">No network available, can\'t reload AGPS data</string>
     <string name="title_section1">GPS</string>
     <string name="title_section2">Sensors</string>
     <string name="title_section3">Radio</string>
@@ -94,7 +96,7 @@
 		app even greater, please report it at:
 		\nhttps://github.com/mvglasow/satstat/issues
 		\n
-		\nCopyright &#169; 2013 Michael von Glasow
+		\nCopyright &#169; 2013, 2014 Michael von Glasow
 		\n
 		\nThis program is free software: you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
