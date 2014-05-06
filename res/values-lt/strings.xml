@@ -15,6 +15,8 @@
     <string name="notify_record_title">Recording sensor data</string>
     <string name="notify_record_body">Touch to stop recording</string>
     <string name="status_agps">AGPS duomenų atnaujinimo užklausa išsiųsta</string>
+    <string name="status_agps_captive">Negalima atnaujinti duomenų – paleiskite naršyklę, prisijunkite prie tinklo ir bandykite dar kartą</string>
+    <string name="status_agps_error">Joks galimas tinklas, negalima atnaujinti AGPS duomenų</string>
     <string name="title_section1">GPS</string>
     <string name="title_section2">Jutikliai</string>
     <string name="title_section3">Tinklai</string>
@@ -93,7 +95,7 @@
         mintį kaip dar tobulinti šią programą, prašome pranešti čia:
 		\nhttps://github.com/mvglasow/satstat/issues
 		\n
-		\nCopyright &#169; 2013 Michael von Glasow
+		\nCopyright &#169; 2013, 2014 Michael von Glasow
 		\n
 		\nThis program is free software: you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
@@ -136,4 +138,6 @@
         <item >Vieną kartą kas savaitę</item>
     </string-array>
     <string name="pref_lastupdate">Paskutinkart atnaujinta</string>
+    <string name="pref_networks">Tinklai</string>
+    <string name="pref_networks_summary">Atnaujinti AGPS duomenis, kai mano įranga prisijungs prie vieno iš išrinktųjų tinklų</string>
 </resources>
