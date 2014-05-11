@@ -23,8 +23,10 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 import android.annotation.SuppressLint;
@@ -39,9 +41,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -105,6 +105,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
@@ -115,6 +116,7 @@ import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Circle;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 
@@ -264,7 +266,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	protected static boolean isMapViewReady = false;
 	protected static MapView mapMap;
-	//FIXME: further map view fields
+	protected static HashMap<String, Circle> mapCircles;
+	protected static HashMap<String, Marker> mapMarkers;
+	//TODO: further map view fields
 	
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
@@ -656,6 +660,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
         /**/
         setEmbeddedTabs(actionBar, true);
+        
+        //parse list of location providers
+        //FIXME: do that later (after initializing map view)
+        //FIXME: when do we register the location providers?
+        updateLocationProviders(this);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
@@ -757,6 +766,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public void onLocationChanged(Location location) {
     	// Called when a new location is found by the location provider.
+    	//TODO: filter location providers, update map view
     	if (isGpsViewReady) {
 	    	if (location.hasAccuracy()) {
 	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
@@ -1245,6 +1255,66 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
  			}
  		}
 	}
+	
+	
+	/**
+	 * Makes internal update when the user's selection of location providers has changed.
+	 * @param context
+	 */
+	protected void updateLocationProviders(Context context) {
+		//TODO: OnPreferencesChangedListener (which handles registration changes in location providers)
+		//TODO: what do we do for providers with no accuracy?
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+		Set<String> providers = sharedPref.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+		
+        mapCircles = new HashMap<String, Circle>();
+        mapMarkers = new HashMap<String, Marker>();
+        
+        for (String pr : providers) {
+        	//TODO: maintain list of Locations for each provider
+        	
+        	// Circle layer
+        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
+        	fill.setColor(Color.parseColor("#4D33B5E5")); //FIXME: different colors
+            fill.setStyle(Style.FILL);
+            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
+            stroke.setColor(Color.parseColor("#FF33B5E5")); //FIXME: different colors
+            stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
+            stroke.setStyle(Style.STROKE);
+            Circle circle = new Circle(new LatLong(0, 0), 0, fill, stroke); //FIXME: use stored Location
+            //Circle circle = new Circle(null, 0, fill, stroke);  //TODO: will this work?
+            circle.setVisible(false);
+            mapCircles.put(pr, circle);
+            
+            // Marker layer
+            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_stat_notify_location); //FIXME: different icons
+            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+            Marker marker = new Marker(new LatLong(0, 0), bitmap, 0, -bitmap.getHeight() / 2); //FIXME: use stored Location
+            marker.setVisible(false);
+            mapMarkers.put(pr, marker);
+        }
+        
+        // add marker layers
+        if (isMapViewReady) {
+            Layers layers = mapMap.getLayerManager().getLayers();
+        	
+        	// remove all layers other than tile render layer from map
+            for (int i = 0; i < layers.size(); )
+            	if (layers.get(i) instanceof TileRendererLayer)
+            		i++;
+            	else
+            		layers.remove(i);
+            
+            // add the new layers
+            for (Circle c : mapCircles.values())
+            	layers.add(c);
+            for (Marker m : mapMarkers.values())
+            	layers.add(m);
+        }
+        
+        //import org.mapsforge.core.util.MercatorProjection;
+        //MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
+	}
     
 
     /**
@@ -1566,6 +1636,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Layers layers = layerManager.getLayers();
             layers.clear();
             
+            mapCircles = new HashMap<String, Circle>();
+            mapMarkers = new HashMap<String, Marker>();
+            
+            // TODO: create markers (fill/stroke paints and bitmaps) for each selected location provider
+            
             //FIXME: temporary test code
             mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
             mapMap.getModel().mapViewPosition.setZoomLevel((byte) 17);
@@ -1575,22 +1650,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             //tileRendererLayer.setTextScale(1.5f);
             layers.add(tileRendererLayer);
             
-            // add GPS marker layer
-            //FIXME: class member, visibility
-            Paint blueFill = AndroidGraphicFactory.INSTANCE.createPaint();
-            blueFill.setColor(Color.parseColor("#4C33B5E5"));
-            blueFill.setStyle(Style.FILL);
-            Paint blueStroke = AndroidGraphicFactory.INSTANCE.createPaint();
-            blueStroke.setColor(Color.parseColor("#FF33B5E5"));
-            blueStroke.setStrokeWidth(2);
-            blueStroke.setStyle(Style.STROKE);
-            Circle mapGpsCircle = new Circle(new LatLong(48.1380, 11.5745), 
-            		10,
-            		blueFill,
-            		blueStroke);
-            layers.add(mapGpsCircle);
-
-        	
+            //for each item in mapCircle, mapMarkers: layers.add(item)
+            
         	isMapViewReady = true;
         	
             return rootView;
