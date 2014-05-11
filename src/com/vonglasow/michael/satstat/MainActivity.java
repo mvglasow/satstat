@@ -19,6 +19,7 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -38,7 +39,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -57,6 +60,7 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -100,6 +104,19 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.LayerManager;
+import org.mapsforge.map.layer.Layers;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.overlay.Circle;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.rendertheme.InternalRenderTheme;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
@@ -244,6 +261,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TextView rilCdmaAsu;
 	protected static TableLayout rilCdmaCells;
 	protected static LinearLayout wifiAps;
+	
+	protected static boolean isMapViewReady = false;
+	protected static MapView mapMap;
+	//FIXME: further map view fields
 	
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
@@ -624,16 +645,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
-        /*
+        /**/
         Configuration config = getResources().getConfiguration();
         if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            actionBar.setDisplayShowHomeEnabled(false);
+            //actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowTitleEnabled(false);
         } else {
-            actionBar.setDisplayShowHomeEnabled(true);
+            //actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(true);
         }
-        */
+        /**/
         setEmbeddedTabs(actionBar, true);
 
         // Create the adapter that will return a fragment for each of the three
@@ -653,6 +674,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setIcon(mSectionsPagerAdapter.getPageIcon(i))
                             .setTabListener(this));
         }
+        
+        // This is needed by the mapsforge library.
+        AndroidGraphicFactory.createInstance(this.getApplication());
 
         // Get system services for event delivery
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -1249,6 +1273,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             case 2:
                 fragment = new RadioSectionFragment();
                 return fragment;
+            case 3:
+                fragment = new MapSectionFragment();
+                return fragment;
             	/*
                 fragment = new DummySectionFragment();
                 Bundle args = new Bundle();
@@ -1263,7 +1290,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
         public Drawable getPageIcon(int position) {
@@ -1275,6 +1302,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return getResources().getDrawable(R.drawable.ic_action_sensor);
                 case 2:
                     return getResources().getDrawable(R.drawable.ic_action_radio);
+                case 3:
+                    return getResources().getDrawable(R.drawable.ic_action_map);
             }
             return null;
         }
@@ -1289,6 +1318,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
+                case 3:
+                    return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;
         }
@@ -1486,6 +1517,89 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public void onDestroyView() {
         	super.onDestroyView();
         	isRadioViewReady = false;
+        }
+    }
+    
+    
+    /**
+     * The fragment which displays the map view.
+     */
+    public static class MapSectionFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        public static final String ARG_SECTION_NUMBER = "section_number";
+
+        public MapSectionFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
+            
+            // Initialize controls
+            mapMap = new MapView(rootView.getContext());
+            ((LinearLayout) rootView).addView(mapMap, 0);
+
+            mapMap.setClickable(true);
+            mapMap.getMapScaleBar().setVisible(true);
+            mapMap.setBuiltInZoomControls(true);
+            mapMap.getMapZoomControls().setZoomLevelMin((byte) 10);
+            mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
+            
+            TileCache tileCache = AndroidUtil.createTileCache(rootView.getContext(), "mapcache",
+            		mapMap.getModel().displayModel.getTileSize(), 1f, 
+            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
+            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
+            		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
+            /*
+            // code for 0.4.0 snapshot
+            TileCache firstLevelTileCache = new InMemoryTileCache(32);
+            File cacheDirectory = rootView.getContext().getDir("mapcache", Context.MODE_PRIVATE);
+            TileCache secondLevelTileCache = new FileSystemTileCache(1024, cacheDirectory, AndroidGraphicFactory.INSTANCE);
+            TileCache tileCache = new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
+            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapMap.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
+            */
+            LayerManager layerManager = mapMap.getLayerManager();
+            Layers layers = layerManager.getLayers();
+            layers.clear();
+            
+            //FIXME: temporary test code
+            mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
+            mapMap.getModel().mapViewPosition.setZoomLevel((byte) 17);
+            tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
+            tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
+            
+            //tileRendererLayer.setTextScale(1.5f);
+            layers.add(tileRendererLayer);
+            
+            // add GPS marker layer
+            //FIXME: class member, visibility
+            Paint blueFill = AndroidGraphicFactory.INSTANCE.createPaint();
+            blueFill.setColor(Color.parseColor("#4C33B5E5"));
+            blueFill.setStyle(Style.FILL);
+            Paint blueStroke = AndroidGraphicFactory.INSTANCE.createPaint();
+            blueStroke.setColor(Color.parseColor("#FF33B5E5"));
+            blueStroke.setStrokeWidth(2);
+            blueStroke.setStyle(Style.STROKE);
+            Circle mapGpsCircle = new Circle(new LatLong(48.1380, 11.5745), 
+            		10,
+            		blueFill,
+            		blueStroke);
+            layers.add(mapGpsCircle);
+
+        	
+        	isMapViewReady = true;
+        	
+            return rootView;
+        }
+        
+        @Override
+        public void onDestroyView() {
+        	super.onDestroyView();
+        	isMapViewReady = false;
         }
     }
 }

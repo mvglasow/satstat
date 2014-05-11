@@ -21,6 +21,7 @@
     <string name="title_section1">GPS</string>
     <string name="title_section2">Sensors</string>
     <string name="title_section3">Radio</string>
+    <string name="title_section4">Map</string>
     <string name="title_gps_lat">Latitude</string>
     <string name="title_gps_lon">Longitude</string>
     <string name="title_gps_decl">Decl.</string>
@@ -153,4 +154,7 @@
     <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Networks</string>
     <string name="pref_networks_summary">Refresh AGPS data when my device connects to one of the selected networks</string>
+    <string name="pref_loc_prov_cat">Location Providers</string>
+    <string name="pref_loc_prov_title">Location Providers</string>
+    <string name="pref_loc_prov_summary">Choose providers used to get my location</string>
 </resources>

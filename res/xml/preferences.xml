@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/pref_loc_prov_cat">
+        <com.vonglasow.michael.satstat.widgets.LocProviderPreference android:key="pref_loc_prov" android:title="@string/pref_loc_prov_title" android:summary="@string/pref_loc_prov_summary" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_notifications">
         <CheckBoxPreference android:summary="@string/pref_notify_summary" android:defaultValue="false" android:title="@string/pref_notify" android:key="pref_notify_fix"/>
         <CheckBoxPreference android:summary="@string/pref_search_summary" android:defaultValue="false" android:title="@string/pref_search" android:key="pref_notify_search"/>
