@@ -777,6 +777,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onLocationChanged(Location location) {
     	// Called when a new location is found by the location provider.
     	// update map view
+        //Log.d("MainActivity", "Location update from " + location.getProvider());
     	if ((providerLocations.containsKey(location.getProvider())) && (isMapViewReady)) {
     		boolean showMarkers = false;
     		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
@@ -1224,8 +1225,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             		Location location = new Location("");
             		providerLocations.put(pr, location);
             	}
-            	if (!isStopped)
+            	if (!isStopped) {
             		mLocationManager.requestLocationUpdates(pr, 0, 0, this);
+                    Log.d("MainActivity", "Registered with provider: " + pr);
+            	}
             } else {
                 Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
             }
