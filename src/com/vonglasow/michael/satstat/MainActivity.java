@@ -39,6 +39,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -63,6 +64,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.ListPreference;
 import android.preference.PreferenceManager;
 //import android.os.PowerManager;
 //import android.os.PowerManager.WakeLock;
@@ -121,11 +123,12 @@ import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.SettingsActivity.SettingsFragment;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 import com.vonglasow.michael.satstat.widgets.SquareView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, SensorEventListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener, ViewPager.OnPageChangeListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -141,6 +144,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    
+    /**
+     * Whether the activity is stopped. 
+     */
+    boolean isStopped;
     
 	//The rate in microseconds at which we would like to receive updates from the sensors.
 	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
@@ -268,8 +276,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static MapView mapMap;
 	protected static HashMap<String, Circle> mapCircles;
 	protected static HashMap<String, Marker> mapMarkers;
-	//TODO: further map view fields
 	
+	protected static HashMap<String, Location> providerLocations; 
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
 	protected static Handler wifiTimehandler = null;
@@ -288,6 +296,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE};
+
+	private static SharedPreferences mSharedPreferences;
 
     @SuppressLint("UseSparseArrays")
 	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
@@ -643,6 +653,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         final ActionBar actionBar = getActionBar();
         
         setContentView(R.layout.activity_main);
@@ -661,11 +673,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         /**/
         setEmbeddedTabs(actionBar, true);
         
-        //parse list of location providers
-        //FIXME: do that later (after initializing map view)
-        //FIXME: when do we register the location providers?
-        updateLocationProviders(this);
-
+        providerLocations = new HashMap<String, Location>();
+        
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -766,8 +775,33 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public void onLocationChanged(Location location) {
     	// Called when a new location is found by the location provider.
-    	//TODO: filter location providers, update map view
-    	if (isGpsViewReady) {
+    	// update map view
+    	if ((providerLocations.containsKey(location.getProvider())) && (isMapViewReady)) {
+    		boolean showMarkers = false;
+    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
+    		
+    		//TODO: move locations into view and zoom out as needed
+    		//FIXME: this is very crude code
+    		mapMap.getModel().mapViewPosition.setCenter(latLong);
+            
+            //TODO: see if circle gets too small to be displayed and, if so, set showMarkers
+    		//import org.mapsforge.core.util.MercatorProjection;
+            //MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
+    		
+    		mapCircles.get(location.getProvider()).setLatLong(latLong);
+    		mapMarkers.get(location.getProvider()).setLatLong(latLong);
+    		if (location.hasAccuracy()) {
+    			mapCircles.get(location.getProvider()).setVisible(true);
+    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
+    			mapMarkers.get(location.getProvider()).setVisible(showMarkers);
+    		} else {
+    			mapCircles.get(location.getProvider()).setVisible(false);
+    			mapMarkers.get(location.getProvider()).setVisible(true);
+    		}
+    	}
+    	
+    	// update GPS view
+    	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
 	    	if (location.hasAccuracy()) {
 	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
 	    	} else {
@@ -873,12 +907,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onResume() {
         super.onResume();
-        //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-        if (mLocationManager.getAllProviders().indexOf(LocationManager.GPS_PROVIDER) >= 0) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        } else {
-            Log.w("MainActivity", "No GPS location provider found. GPS data display will not be available.");
-        }
+        isStopped = false;
+        registerLocationProviders(this);
         mLocationManager.addGpsStatusListener(this);
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
@@ -1022,6 +1052,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
     }
     	
+	/**
+	 * Called when preferences are changed.
+	 * 
+	 * This method processes changed to KEY_PREF_LOC_PROV, the list of selected
+	 * location providers. When called, it will unregister for all location 
+	 * updates and re-register for updates from the selected location providers.
+	 * (This includes unregistering and immediately re-registering for those
+	 * providers which remain selected – this is due to the fact that Android
+	 * does not support unregistering from a single location provider.) 
+	 */
+    @Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
+			// user selected or deselected location providers, refresh list
+			registerLocationProviders(this);
+			updateLocationProviders(this);
+		}
+	}
+
     /**
      * Called when a location provider's status changes. Does nothing.
      */
@@ -1029,6 +1079,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     @Override
     protected void onStop() {
+    	isStopped = true;
     	mLocationManager.removeUpdates(this);
     	mLocationManager.removeGpsStatusListener(this);
     	mSensorManager.unregisterListener(this);
@@ -1134,7 +1185,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	@Override
 	public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
-		// TODO Auto-generated method stub
         // show the given tab
         // When the tab is selected, switch to the
         // corresponding page in the ViewPager.
@@ -1144,6 +1194,40 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
 	public void onTabUnselected(Tab tab, android.app.FragmentTransaction ft) {
         // hide the given tab (ignore this event)
+	}
+    
+	/**
+	 * Registers for updates with selected location providers.
+	 * @param context
+	 */
+	protected void registerLocationProviders(Context context) {
+		Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+		List<String> allProviders = mLocationManager.getAllProviders();
+		
+		mLocationManager.removeUpdates(this);
+		
+		for (String pr : providerLocations.keySet())
+			if (!providers.contains(pr))
+				providerLocations.remove(pr);
+		
+		// make sure GPS is always selected
+		if (!providers.contains(LocationManager.GPS_PROVIDER))
+			providers.add(LocationManager.GPS_PROVIDER);
+		
+        for (String pr : providers) {
+            if (allProviders.indexOf(pr) >= 0) {
+            	if (!providerLocations.containsKey(pr)) {
+            		Location location = new Location("");
+            		providerLocations.put(pr, location);
+            	}
+            	if (!isStopped)
+            		mLocationManager.requestLocationUpdates(pr, 0, 0, this);
+            } else {
+                Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
+            }
+
+        }
+        
 	}
     
 	private void setEmbeddedTabs(Object actionBar, Boolean embed_tabs) {
@@ -1261,17 +1345,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Makes internal update when the user's selection of location providers has changed.
 	 * @param context
 	 */
-	protected void updateLocationProviders(Context context) {
-		//TODO: OnPreferencesChangedListener (which handles registration changes in location providers)
+	protected static void updateLocationProviders(Context context) {
 		//TODO: what do we do for providers with no accuracy?
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-		Set<String> providers = sharedPref.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+		Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
 		
         mapCircles = new HashMap<String, Circle>();
         mapMarkers = new HashMap<String, Marker>();
         
         for (String pr : providers) {
-        	//TODO: maintain list of Locations for each provider
+        	LatLong latLong;
+        	float acc;
+        	if (providerLocations.get(pr) != null) {
+        		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
+        				providerLocations.get(pr).getLatitude());
+        		if (providerLocations.get(pr).hasAccuracy())
+        			acc = providerLocations.get(pr).getAccuracy();
+        		else
+        			acc = 0;
+        	} else {
+        		latLong = new LatLong(0, 0);
+        		acc = 0;
+        	}
         	
         	// Circle layer
         	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
@@ -1281,15 +1375,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             stroke.setColor(Color.parseColor("#FF33B5E5")); //FIXME: different colors
             stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
             stroke.setStyle(Style.STROKE);
-            Circle circle = new Circle(new LatLong(0, 0), 0, fill, stroke); //FIXME: use stored Location
-            //Circle circle = new Circle(null, 0, fill, stroke);  //TODO: will this work?
+            Circle circle = new Circle(latLong, acc, fill, stroke);
             circle.setVisible(false);
             mapCircles.put(pr, circle);
             
             // Marker layer
             Drawable drawable = context.getResources().getDrawable(R.drawable.ic_stat_notify_location); //FIXME: different icons
             Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-            Marker marker = new Marker(new LatLong(0, 0), bitmap, 0, -bitmap.getHeight() / 2); //FIXME: use stored Location
+            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() / 2);
             marker.setVisible(false);
             mapMarkers.put(pr, marker);
         }
@@ -1311,9 +1404,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             for (Marker m : mapMarkers.values())
             	layers.add(m);
         }
-        
-        //import org.mapsforge.core.util.MercatorProjection;
-        //MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
 	}
     
 
@@ -1639,8 +1729,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapCircles = new HashMap<String, Circle>();
             mapMarkers = new HashMap<String, Marker>();
             
-            // TODO: create markers (fill/stroke paints and bitmaps) for each selected location provider
-            
             //FIXME: temporary test code
             mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
             mapMap.getModel().mapViewPosition.setZoomLevel((byte) 17);
@@ -1654,6 +1742,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             
         	isMapViewReady = true;
         	
+            //parse list of location providers
+            updateLocationProviders(rootView.getContext());
+
             return rootView;
         }
         
