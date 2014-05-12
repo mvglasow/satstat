@@ -22,6 +22,7 @@ package com.vonglasow.michael.satstat;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1206,9 +1207,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 		mLocationManager.removeUpdates(this);
 		
+		ArrayList<String> removedProviders = new ArrayList<String>();
 		for (String pr : providerLocations.keySet())
 			if (!providers.contains(pr))
-				providerLocations.remove(pr);
+				removedProviders.add(pr);
+		for (String pr: removedProviders)
+			providerLocations.remove(pr);
 		
 		// make sure GPS is always selected
 		if (!providers.contains(LocationManager.GPS_PROVIDER))
