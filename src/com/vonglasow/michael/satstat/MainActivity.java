@@ -1434,30 +1434,30 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public void updateMap() {
 		// move locations into view and zoom out as needed
 		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
-		if (dimension == null)
-			return;
+		if (dimension == null) return;
 		int tileSize = mapMap.getModel().displayModel.getTileSize();
 		BoundingBox bb = null;
-		for (Circle c : mapCircles.values()) {
-			double lat = c.getPosition().latitude;
-			double lon = c.getPosition().longitude;
-			double yRadius = (c.getRadius() * 360.0f) / EARTH_CIRCUMFERENCE;
-			double xRadius = yRadius * Math.abs(Math.cos(lat));
-			
-			double minLon = Math.max(lon - xRadius, -180);
-			double maxLon = Math.min(lon + xRadius, 180);
-			double minLat = Math.max(lat - yRadius, -90);
-			double maxLat = Math.min(lat + yRadius, 90);
-			
-			if (bb != null) {
-				minLat = Math.min(bb.minLatitude, minLat);
-				maxLat = Math.max(bb.maxLatitude, maxLat);
-				minLon = Math.min(bb.minLongitude, minLon);
-				maxLon = Math.max(bb.maxLongitude, maxLon);
+		for (Location l : providerLocations.values())
+			if ((l != null) && (l.getProvider() != "")) {
+				double lat = l.getLatitude();
+				double lon = l.getLongitude();
+				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / EARTH_CIRCUMFERENCE):0;
+				double xRadius = l.hasAccuracy()?(yRadius * Math.abs(Math.cos(lat))):0;
+				
+				double minLon = Math.max(lon - xRadius, -180);
+				double maxLon = Math.min(lon + xRadius, 180);
+				double minLat = Math.max(lat - yRadius, -90);
+				double maxLat = Math.min(lat + yRadius, 90);
+				
+				if (bb != null) {
+					minLat = Math.min(bb.minLatitude, minLat);
+					maxLat = Math.max(bb.maxLatitude, maxLat);
+					minLon = Math.min(bb.minLongitude, minLon);
+					maxLon = Math.max(bb.maxLongitude, maxLon);
+				}
+				bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
 			}
-			bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
-			
-		}
+		if (bb == null) return;
 		byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
 		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel())
 			mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
