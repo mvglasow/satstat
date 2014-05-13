@@ -759,6 +759,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onDestroy() {
 		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+		super.onDestroy();
     }
     
     /**
