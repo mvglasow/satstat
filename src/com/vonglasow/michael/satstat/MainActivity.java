@@ -111,7 +111,12 @@ import android.widget.Toast;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
+import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.core.util.LatLongUtils;
+import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
@@ -131,6 +136,7 @@ import com.vonglasow.michael.satstat.widgets.SquareView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener, ViewPager.OnPageChangeListener {
 
+	public static double EARTH_CIRCUMFERENCE = 40000000; // meters
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -655,6 +661,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onCreate(savedInstanceState);
         
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         final ActionBar actionBar = getActionBar();
         
@@ -749,6 +756,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         return true;
     }
     
+    @Override
+    protected void onDestroy() {
+		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+    }
+    
     /**
      * Called when the status of the GPS changes. Updates GPS display.
      */
@@ -782,13 +794,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		boolean showMarkers = false;
     		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
     		
-    		//TODO: move locations into view and zoom out as needed
-    		//FIXME: this is very crude code
-    		mapMap.getModel().mapViewPosition.setCenter(latLong);
-            
-            //TODO: see if circle gets too small to be displayed and, if so, set showMarkers
-    		//import org.mapsforge.core.util.MercatorProjection;
-            //MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
+    		providerLocations.put(location.getProvider(), new Location(location));
     		
     		mapCircles.get(location.getProvider()).setLatLong(latLong);
     		mapMarkers.get(location.getProvider()).setLatLong(latLong);
@@ -800,6 +806,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     			mapCircles.get(location.getProvider()).setVisible(false);
     			mapMarkers.get(location.getProvider()).setVisible(true);
     		}
+    		
+    		// move locations into view and zoom out as needed
+    		updateMap();
     	}
     	
     	// update GPS view
@@ -1067,6 +1076,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		Log.d("MainActivity", "Shared preference " + key + " changed");
 		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
@@ -1203,7 +1213,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param context
 	 */
 	protected void registerLocationProviders(Context context) {
-		Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>()));
 		List<String> allProviders = mLocationManager.getAllProviders();
 		
 		mLocationManager.removeUpdates(this);
@@ -1214,10 +1224,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				removedProviders.add(pr);
 		for (String pr: removedProviders)
 			providerLocations.remove(pr);
-		
-		// make sure GPS is always selected
-		if (!providers.contains(LocationManager.GPS_PROVIDER))
-			providers.add(LocationManager.GPS_PROVIDER);
 		
         for (String pr : providers) {
             if (allProviders.indexOf(pr) >= 0) {
@@ -1232,9 +1238,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             } else {
                 Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
             }
-
         }
-        
+		
+		// if GPS is not selected, request location updates but don't store location
+		if ((!providers.contains(LocationManager.GPS_PROVIDER)) && (!isStopped) && (allProviders.indexOf(LocationManager.GPS_PROVIDER) >= 0))
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 	}
     
 	private void setEmbeddedTabs(Object actionBar, Boolean embed_tabs) {
@@ -1362,6 +1370,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         for (String pr : providers) {
         	LatLong latLong;
         	float acc;
+        	boolean visible;
         	if (providerLocations.get(pr) != null) {
         		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
         				providerLocations.get(pr).getLatitude());
@@ -1369,9 +1378,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         			acc = providerLocations.get(pr).getAccuracy();
         		else
         			acc = 0;
+        		visible = true;
         	} else {
         		latLong = new LatLong(0, 0);
         		acc = 0;
+        		visible = false;
         	}
         	
         	// Circle layer
@@ -1383,7 +1394,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
             stroke.setStyle(Style.STROKE);
             Circle circle = new Circle(latLong, acc, fill, stroke);
-            circle.setVisible(false);
+            circle.setVisible(visible);
             mapCircles.put(pr, circle);
             
             // Marker layer
@@ -1400,10 +1411,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	// remove all layers other than tile render layer from map
             for (int i = 0; i < layers.size(); )
-            	if (layers.get(i) instanceof TileRendererLayer)
+            	if (layers.get(i) instanceof TileRendererLayer) {
+            		Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
             		i++;
-            	else
+            	} else {
+            		Log.d("MainActivity", "Layer " + i + " is " + layers.get(i).getClass().getSimpleName() + " layer, removing");
             		layers.remove(i);
+            	}
             
             // add the new layers
             for (Circle c : mapCircles.values())
@@ -1411,6 +1425,50 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             for (Marker m : mapMarkers.values())
             	layers.add(m);
         }
+	}
+	
+	
+	/**
+	 * Updates the map view so that all markers are visible.
+	 */
+	public void updateMap() {
+		// move locations into view and zoom out as needed
+		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
+		if (dimension == null)
+			return;
+		int tileSize = mapMap.getModel().displayModel.getTileSize();
+		BoundingBox bb = null;
+		for (Circle c : mapCircles.values()) {
+			double lat = c.getPosition().latitude;
+			double lon = c.getPosition().longitude;
+			double yRadius = (c.getRadius() * 360.0f) / EARTH_CIRCUMFERENCE;
+			double xRadius = yRadius * Math.abs(Math.cos(lat));
+			
+			double minLon = Math.max(lon - xRadius, -180);
+			double maxLon = Math.min(lon + xRadius, 180);
+			double minLat = Math.max(lat - yRadius, -90);
+			double maxLat = Math.min(lat + yRadius, 90);
+			
+			if (bb != null) {
+				minLat = Math.min(bb.minLatitude, minLat);
+				maxLat = Math.max(bb.maxLatitude, maxLat);
+				minLon = Math.min(bb.minLongitude, minLon);
+				maxLon = Math.max(bb.maxLongitude, maxLon);
+			}
+			bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
+			
+		}
+		byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
+		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel())
+			mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
+		
+		// TODO: move only if bb is not entirely visible
+		//BoundingBox limit = mapMap.getModel().mapViewPosition.getMapLimit();
+		//if (!(limit.contains(new LatLong(bb.minLatitude, bb.minLongitude)) && limit.contains(new LatLong(bb.maxLatitude, bb.maxLongitude))))
+			mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
+			
+        //TODO: see if circle gets too small to be displayed and, if so, set showMarkers
+        //MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
 	}
     
 
@@ -1736,16 +1794,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapCircles = new HashMap<String, Circle>();
             mapMarkers = new HashMap<String, Marker>();
             
-            //FIXME: temporary test code
+            //FIXME: remember last center and zoom and use that (else default zoom is 17)
             mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
             mapMap.getModel().mapViewPosition.setZoomLevel((byte) 17);
+            
+            //FIXME: have user select map file
             tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
+            
             tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
             
             //tileRendererLayer.setTextScale(1.5f);
             layers.add(tileRendererLayer);
-            
-            //for each item in mapCircle, mapMarkers: layers.add(item)
             
         	isMapViewReady = true;
         	
