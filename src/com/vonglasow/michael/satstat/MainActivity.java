@@ -115,6 +115,7 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.core.model.Point;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -127,6 +128,7 @@ import org.mapsforge.map.layer.overlay.Circle;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
+import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.SettingsActivity.SettingsFragment;
@@ -790,26 +792,29 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onLocationChanged(Location location) {
     	// Called when a new location is found by the location provider.
     	// update map view
-        //Log.d("MainActivity", "Location update from " + location.getProvider());
-    	if ((providerLocations.containsKey(location.getProvider())) && (isMapViewReady)) {
-    		boolean showMarkers = false;
-    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
-    		
+    	if (providerLocations.containsKey(location.getProvider())) {
     		providerLocations.put(location.getProvider(), new Location(location));
     		
-    		mapCircles.get(location.getProvider()).setLatLong(latLong);
-    		mapMarkers.get(location.getProvider()).setLatLong(latLong);
-    		if (location.hasAccuracy()) {
-    			mapCircles.get(location.getProvider()).setVisible(true);
-    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
-    			mapMarkers.get(location.getProvider()).setVisible(showMarkers);
-    		} else {
-    			mapCircles.get(location.getProvider()).setVisible(false);
-    			mapMarkers.get(location.getProvider()).setVisible(true);
-    		}
-    		
-    		// move locations into view and zoom out as needed
-    		updateMap();
+    		if (isMapViewReady) {
+	    		boolean showMarkers = false;
+	    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
+	    		
+	    		mapCircles.get(location.getProvider()).setLatLong(latLong);
+	    		mapMarkers.get(location.getProvider()).setLatLong(latLong);
+	    		if (location.hasAccuracy()) {
+	    			mapCircles.get(location.getProvider()).setVisible(true);
+	    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
+	    			mapMarkers.get(location.getProvider()).setVisible(showMarkers);
+	    		} else {
+	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
+	    			mapCircles.get(location.getProvider()).setVisible(false);
+	    			mapMarkers.get(location.getProvider()).setVisible(true);
+	    		}
+	    		
+	    		// move locations into view and zoom out as needed
+	    		updateMap();
+    		} else
+        		Log.d("MainActivity", "Location update from " + location.getProvider() + " received but map view is not ready, skipping");
     	}
     	
     	// update GPS view
@@ -1077,7 +1082,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		Log.d("MainActivity", "Shared preference " + key + " changed");
+		//Log.d("MainActivity", "Shared preference " + key + " changed");
 		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
@@ -1413,10 +1418,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	// remove all layers other than tile render layer from map
             for (int i = 0; i < layers.size(); )
             	if (layers.get(i) instanceof TileRendererLayer) {
-            		Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
+            		//Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
             		i++;
             	} else {
-            		Log.d("MainActivity", "Layer " + i + " is " + layers.get(i).getClass().getSimpleName() + " layer, removing");
+            		//Log.d("MainActivity", "Layer " + i + " is " + layers.get(i).getClass().getSimpleName() + " layer, removing");
             		layers.remove(i);
             	}
             
@@ -1463,9 +1468,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel())
 			mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
 		
-		// TODO: move only if bb is not entirely visible
-		//BoundingBox limit = mapMap.getModel().mapViewPosition.getMapLimit();
-		//if (!(limit.contains(new LatLong(bb.minLatitude, bb.minLongitude)) && limit.contains(new LatLong(bb.maxLatitude, bb.maxLongitude))))
+		MapViewProjection proj = new MapViewProjection(mapMap);
+		Point nw = proj.toPixels(new LatLong(bb.maxLatitude, bb.minLongitude));
+		Point se = proj.toPixels(new LatLong(bb.minLatitude, bb.maxLongitude));
+		
+		// move only if bb is not entirely visible
+		if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height))
 			mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
 			
         //TODO: see if circle gets too small to be displayed and, if so, set showMarkers
@@ -1791,9 +1799,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             LayerManager layerManager = mapMap.getLayerManager();
             Layers layers = layerManager.getLayers();
             layers.clear();
-            
-            mapCircles = new HashMap<String, Circle>();
-            mapMarkers = new HashMap<String, Marker>();
             
             //FIXME: remember last center and zoom and use that (else default zoom is 17)
             mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
