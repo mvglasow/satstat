@@ -61,6 +61,8 @@ public class GpsEventReceiver extends BroadcastReceiver {
 		Set<String> updateNetworks = sharedPref.getStringSet(SettingsActivity.KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
 		
 		if (intent.getAction().equals(GPS_ENABLED_CHANGE) || intent.getAction().equals(GPS_ENABLED_CHANGE)) {
+			//FIXME: why are we checking for the same intent twice? Should on of them be GPS_FIX_CHANGE?
+			// an application has connected to GPS or disconnected from it, check if notification needs updating
 			boolean notifyFix = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
 			boolean notifySearch = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
 			if (notifyFix || notifySearch) {
@@ -80,6 +82,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			}
 		} else if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION) 
 				&& updateNetworks.contains(SettingsActivity.KEY_PREF_UPDATE_NETWORKS_WIFI)) {
+			// change in WiFi connectivity, check if we are connected and need to refresh AGPS
 			//FIXME: KEY_PREF_UPDATE_WIFI as fallback only
 			NetworkInfo netinfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 			if (netinfo == null) return;
@@ -89,6 +92,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			refreshAgps(context, true, false);
 		} else if ((intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION )) ||
 				(intent.getAction().equals(AGPS_DATA_EXPIRED))) {
+			// change in network connectivity or AGPS expiration timer fired
 			boolean isAgpsExpired = false;
 			if (intent.getAction().equals(AGPS_DATA_EXPIRED)) {
 				Log.i(this.getClass().getSimpleName(), "AGPS data expired, checking available networks");
@@ -135,11 +139,12 @@ public class GpsEventReceiver extends BroadcastReceiver {
 	static void refreshAgps(Context context, boolean enforceInterval, boolean wantFeedback) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 		long last = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_LAST, 0);
-		long freq = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));
+		long freqDays = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));
 		long now = System.currentTimeMillis();
-		if (enforceInterval && (last + freq * MILLIS_PER_DAY > now)) return;
+		if (enforceInterval && (last + freqDays * MILLIS_PER_DAY > now)) return;
+		//Log.d(GpsEventReceiver.class.getSimpleName(), String.format("refreshAgps, enforceInterval: %b, wantFeedback: %b", enforceInterval, wantFeedback));
 		
-		new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freq);
+		new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freqDays * MILLIS_PER_DAY);
 	}
 	
 	private static class AgpsUpdateTask extends AsyncTask<Object, Void, Integer> {
@@ -155,14 +160,14 @@ public class GpsEventReceiver extends BroadcastReceiver {
 		 * @param args[0] A {@link Context} for connecting to the various system services
 		 * @param args[1] The {@link Intent} to raise when the next update is due
 		 * @param args[2] A {@link SharedPreferences} instance in which the timestamp of the update will be stored
-		 * @param args[3] The update frequency, of type {@link Long}
+		 * @param args[3] The update frequency, of type {@link Long}, in milliseconds
 		 */
 		@Override
 		protected Integer doInBackground(Object... args) {
 			mContext = (Context) args[0];
 			Intent agpsIntent = (Intent) args[1];
 			SharedPreferences sharedPref = (SharedPreferences) args[2];
-			long freq = (Long) args[3];
+			long freqMillis = (Long) args[3];
 			
 			int nc = WifiCapabilities.getNetworkConnectivity();
 			if (nc == WifiCapabilities.NETWORK_CAPTIVE_PORTAL) {
@@ -186,12 +191,13 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			locman.sendExtraCommand("gps", "force_time_injection", null);
 			spEditor.commit();
 			
-			if (freq > 0) {
+			if (freqMillis > 0) {
 				// if an update interval is set, prepare an alarm to trigger a new
 				// update when it elapses (if no interval is set, do nothing as we
 				// cannot determine a point in time for re-running the update)
-				long next = System.currentTimeMillis() + freq;
+				long next = System.currentTimeMillis() + freqMillis;
 				alm.set(AlarmManager.RTC, next, pi);
+				Log.i(GpsEventReceiver.class.getSimpleName(), String.format("Next update due %1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS (after %2$d ms)", next, freqMillis));
 			}
 
 			return nc;
