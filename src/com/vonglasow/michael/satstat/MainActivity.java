@@ -813,8 +813,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		
 	    		// move locations into view and zoom out as needed
 	    		updateMap();
-    		} else
-        		Log.d("MainActivity", "Location update from " + location.getProvider() + " received but map view is not ready, skipping");
+    		}
     	}
     	
     	// update GPS view
