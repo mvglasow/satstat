@@ -93,13 +93,18 @@ import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -282,7 +287,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static LinearLayout wifiAps;
 	
 	protected static boolean isMapViewReady = false;
+	protected static boolean isMapViewAttached = true;
 	protected static MapView mapMap;
+	protected static ImageButton mapReattach;
 	protected static HashMap<String, Circle> mapCircles;
 	protected static HashMap<String, Marker> mapMarkers;
 	
@@ -1436,7 +1443,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	/**
 	 * Updates the map view so that all markers are visible.
 	 */
-	public void updateMap() {
+	public static void updateMap() {
+		// do nothing if the map view is not attached
+		if (!isMapViewAttached) return;
 		// move locations into view and zoom out as needed
 		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
 		if (dimension == null) return;
@@ -1476,7 +1485,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
 			
         //TODO: see if circle gets too small to be displayed and, if so, set showMarkers
-        //MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
+        //(do this in zoom event handler, not here, so it will also work after a user-initiated zoom)
+		//MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
 	}
     
 
@@ -1772,9 +1782,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
             
+            mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
+            
+            mapReattach.setVisibility(View.GONE);
+            
+    		OnClickListener clis = new OnClickListener () {
+    			@Override
+    			public void onClick(View v) {
+    				if (v == mapReattach) {
+    					isMapViewAttached = true;
+    					if (isMapViewReady) {
+    						mapReattach.setVisibility(View.GONE);
+    						updateMap();
+    					}
+    				}
+    			}
+    		};
+            mapReattach.setOnClickListener(clis);
+            
             // Initialize controls
             mapMap = new MapView(rootView.getContext());
-            ((LinearLayout) rootView).addView(mapMap, 0);
+            ((FrameLayout) rootView).addView(mapMap, 0);
 
             mapMap.setClickable(true);
             mapMap.getMapScaleBar().setVisible(true);
@@ -1811,11 +1839,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             //tileRendererLayer.setTextScale(1.5f);
             layers.add(tileRendererLayer);
             
+            GestureDetector gd = new GestureDetector(rootView.getContext(), 
+            	new GestureDetector.SimpleOnGestureListener() {
+	            	public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+	            		mapReattach.setVisibility(View.VISIBLE);
+	            		isMapViewAttached = false;
+	            		return false;
+	            	}
+            	}
+            );
+            
+            mapMap.setGestureDetector(gd);
+
         	isMapViewReady = true;
         	
             //parse list of location providers
             updateLocationProviders(rootView.getContext());
-
+            
             return rootView;
         }
         
