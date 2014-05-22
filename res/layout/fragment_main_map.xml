@@ -15,4 +15,9 @@
         android:layout_marginTop="12dp"
         android:src="@drawable/ic_action_gps" />
 
+    	<!--
+        android:background="#AA000000"
+        android:padding="3dp"
+        -->
+    
 </FrameLayout>
