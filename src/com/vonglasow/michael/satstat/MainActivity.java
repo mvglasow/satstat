@@ -803,7 +803,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		providerLocations.put(location.getProvider(), new Location(location));
     		
     		if (isMapViewReady) {
-	    		boolean showMarkers = false;
+    			boolean showMarkers = true;//boolean showMarkers = false;
+    			//TODO: move <overlay>.setVisible() stuff into separate method
 	    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
 	    		
 	    		mapCircles.get(location.getProvider()).setLatLong(latLong);
@@ -1410,9 +1411,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapCircles.put(pr, circle);
             
             // Marker layer
-            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_stat_notify_location); //FIXME: different icons
+            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_context_marker_blue); //FIXME: different icons
             Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() / 2);
+            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
             marker.setVisible(false);
             mapMarkers.put(pr, marker);
         }

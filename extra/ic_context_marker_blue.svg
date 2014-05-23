@@ -14,7 +14,10 @@
    id="svg2996"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="ic_context_marker_red.svg">
+   sodipodi:docname="ic_context_marker_blue.svg"
+   inkscape:export-filename="/home/michael/src/lsrntools/res/drawable-xhdpi/ic_context_marker_blue.png"
+   inkscape:export-xdpi="60"
+   inkscape:export-ydpi="60">
   <defs
      id="defs2998" />
   <sodipodi:namedview
@@ -25,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="6.6145833"
-     inkscape:cx="24.037795"
+     inkscape:cx="24.340157"
      inkscape:cy="48"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -74,7 +77,7 @@
        sodipodi:cy="23"
        sodipodi:rx="6"
        sodipodi:ry="6"
-       d="m 42,23 a 6,6 0 1 1 -12,0 6,6 0 1 1 12,0 z"
+       d="m 42,23 c 0,3.313708 -2.686292,6 -6,6 -3.313708,0 -6,-2.686292 -6,-6 0,-3.313708 2.686292,-6 6,-6 3.313708,0 6,2.686292 6,6 z"
        transform="matrix(1.3999999,0,0,1.3999999,-2.3999958,-60.199999)" />
   </g>
 </svg>
