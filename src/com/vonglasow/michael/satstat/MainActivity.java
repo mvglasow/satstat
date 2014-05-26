@@ -43,6 +43,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.GeomagneticField;
@@ -144,6 +146,31 @@ import com.vonglasow.michael.satstat.widgets.SquareView;
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener, ViewPager.OnPageChangeListener {
 
 	public static double EARTH_CIRCUMFERENCE = 40000000; // meters
+	
+	/*
+	 * Indices into style arrays
+	 */
+	private static final int STYLE_MARKER = 0;
+	private static final int STYLE_STROKE = 1;
+	private static final int STYLE_FILL = 2;
+	
+	/*
+	 * Styles for location providers
+	 */
+	private static final String [] LOCATION_PROVIDER_STYLES = {
+		"location_provider_blue",
+		"location_provider_purple",
+		"location_provider_green",
+		"location_provider_orange",
+		"location_provider_red"
+	};
+	
+	/*
+	 * Gray style for inactive location providers
+	 */
+	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
+	
+	
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -1399,11 +1426,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	}
         	
         	// Circle layer
+        	Resources res = context.getResources();
+        	//Log.d("MainActivity", "Looking for resource " + context.getPackageName() + ":array/" + LOCATION_PROVIDER_STYLES[0]);
+        	TypedArray style = res.obtainTypedArray(res.getIdentifier(LOCATION_PROVIDER_STYLES[0], "array", context.getPackageName())); //FIXME: different styles
         	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
-        	fill.setColor(Color.parseColor("#4D33B5E5")); //FIXME: different colors
+        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
             fill.setStyle(Style.FILL);
             Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
-            stroke.setColor(Color.parseColor("#FF33B5E5")); //FIXME: different colors
+        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
             stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
             stroke.setStyle(Style.STROKE);
             Circle circle = new Circle(latLong, acc, fill, stroke);
@@ -1411,11 +1441,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapCircles.put(pr, circle);
             
             // Marker layer
-            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_context_marker_blue); //FIXME: different icons
+            Drawable drawable = style.getDrawable(STYLE_MARKER); //FIXME: different icons
             Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
             Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
             marker.setVisible(false);
             mapMarkers.put(pr, marker);
+            style.recycle();
         }
         
         // add marker layers

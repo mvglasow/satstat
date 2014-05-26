@@ -25,4 +25,47 @@
     <color name="gen3">#33B5E5</color>
     <color name="gen4">#9933CC</color>
     
+    <color name="circle_blue_stroke">#FF33B5E5</color>
+    <color name="circle_blue_fill">#4D33B5E5</color>
+    <color name="circle_purple_stroke">#FF9933CC</color>
+    <color name="circle_purple_fill">#4D9933CC</color>
+    <color name="circle_green_stroke">#FF669900</color>
+    <color name="circle_green_fill">#4D669900</color>
+    <color name="circle_orange_stroke">#FFFF8800</color>
+    <color name="circle_orange_fill">#4DFF8800</color>
+    <color name="circle_red_stroke">#FFCC0000</color>
+    <color name="circle_red_fill">#4DCC0000</color>
+    <color name="circle_gray_stroke">#FFA6ACA9</color>
+    <color name="circle_gray_fill">#FF33B5E5</color>
+    <array name="location_provider_blue">
+        <item>@drawable/ic_context_marker_blue</item>
+        <item>@color/circle_blue_stroke</item>
+        <item>@color/circle_blue_fill</item>
+    </array>
+    <array name="location_provider_purple">
+        <item>@drawable/ic_context_marker_purple</item>
+        <item>@color/circle_purple_stroke</item>
+        <item>@color/circle_purple_fill</item>
+    </array>
+    <array name="location_provider_green">
+        <item>@drawable/ic_context_marker_green</item>
+        <item>@color/circle_green_stroke</item>
+        <item>@color/circle_green_fill</item>
+    </array>
+    <array name="location_provider_orange">
+        <item>@drawable/ic_context_marker_orange</item>
+        <item>@color/circle_orange_stroke</item>
+        <item>@color/circle_orange_fill</item>
+    </array>
+    <array name="location_provider_red">
+        <item>@drawable/ic_context_marker_red</item>
+        <item>@color/circle_red_stroke</item>
+        <item>@color/circle_red_fill</item>
+    </array>
+    <array name="location_provider_gray">
+        <item>@drawable/ic_context_marker_gray</item>
+        <item>@color/circle_gray_stroke</item>
+        <item>@color/circle_gray_fill</item>
+    </array>
+    
 </resources>
