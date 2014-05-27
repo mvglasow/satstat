@@ -855,7 +855,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		providerLocations.put(location.getProvider(), new Location(location));
     		
     		if (isMapViewReady) {
-    			boolean showMarkers = true;//boolean showMarkers = false;
     			//TODO: move <overlay>.setVisible() stuff into separate method
 	    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
 	    		
@@ -864,12 +863,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		if (location.hasAccuracy()) {
 	    			mapCircles.get(location.getProvider()).setVisible(true);
 	    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
-	    			mapMarkers.get(location.getProvider()).setVisible(showMarkers);
 	    		} else {
 	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
 	    			mapCircles.get(location.getProvider()).setVisible(false);
-	    			mapMarkers.get(location.getProvider()).setVisible(true);
 	    		}
+    			mapMarkers.get(location.getProvider()).setVisible(true);
 	    		
 	    		// move locations into view and zoom out as needed
 	    		updateMap();
@@ -1483,8 +1481,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	// Circle layer
         	Resources res = context.getResources();
-        	//Log.d("MainActivity", "Looking for resource " + context.getPackageName() + ":array/" + LOCATION_PROVIDER_STYLES[0]);
-        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName())); //FIXME: different styles
+        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
         	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
         	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
             fill.setStyle(Style.FILL);
@@ -1497,15 +1494,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapCircles.put(pr, circle);
             
             // Marker layer
-            Drawable drawable = style.getDrawable(STYLE_MARKER); //FIXME: different icons
+            Drawable drawable = style.getDrawable(STYLE_MARKER);
             Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
             Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
-            marker.setVisible(false);
+            marker.setVisible(visible);
             mapMarkers.put(pr, marker);
             style.recycle();
         }
         
-        // add marker layers
+        // add overlays
         if (isMapViewReady) {
             Layers layers = mapMap.getLayerManager().getLayers();
         	
@@ -1616,10 +1613,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// move only if bb is not entirely visible
 		if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height))
 			mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
-			
-        //TODO: see if circle gets too small to be displayed and, if so, set showMarkers
-        //(do this in zoom event handler, not here, so it will also work after a user-initiated zoom)
-		//MercatorProjection.metersToPixels(this.radius, latitude, zoomLevel, displayModel.getTileSize());
 	}
     
 
