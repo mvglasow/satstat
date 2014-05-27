@@ -132,6 +132,10 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
+import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
+import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Circle;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
@@ -329,6 +333,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static boolean isMapViewReady = false;
 	protected static boolean isMapViewAttached = true;
 	protected static MapView mapMap;
+	protected static TileDownloadLayer mapDownloadLayer = null;
 	protected static ImageButton mapReattach;
 	protected static HashMap<String, Circle> mapCircles;
 	protected static HashMap<String, Marker> mapMarkers;
@@ -964,6 +969,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // corresponding tab.
         getActionBar().setSelectedNavigationItem(position);
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if ((isMapViewReady) && (mapDownloadLayer != null))
+        	mapDownloadLayer.onPause();
+	}
 
     /**
      * Called when a location provider is disabled. Does nothing.
@@ -1006,6 +1018,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
 
         wifiTimehandler.postDelayed(wifiTimeRunnable, WIFI_REFRESH_DELAY);
+        
+        if ((isMapViewReady) && (mapDownloadLayer != null))
+        	mapDownloadLayer.onResume();
     }
 
     /**
@@ -1496,7 +1511,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	// remove all layers other than tile render layer from map
             for (int i = 0; i < layers.size(); )
-            	if (layers.get(i) instanceof TileRendererLayer) {
+            	if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
             		//Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
             		i++;
             	} else {
@@ -1931,16 +1946,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             TileCache tileCache = AndroidUtil.createTileCache(rootView.getContext(), "mapcache",
             		mapMap.getModel().displayModel.getTileSize(), 1f, 
             		mapMap.getModel().frameBufferModel.getOverdrawFactor());
-            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
-            		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
-            /*
-            // code for 0.4.0 snapshot
-            TileCache firstLevelTileCache = new InMemoryTileCache(32);
-            File cacheDirectory = rootView.getContext().getDir("mapcache", Context.MODE_PRIVATE);
-            TileCache secondLevelTileCache = new FileSystemTileCache(1024, cacheDirectory, AndroidGraphicFactory.INSTANCE);
-            TileCache tileCache = new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
-            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapMap.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
-            */
+
             LayerManager layerManager = mapMap.getLayerManager();
             Layers layers = layerManager.getLayers();
             layers.clear();
@@ -1949,6 +1955,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
             mapMap.getModel().mapViewPosition.setZoomLevel((byte) 17);
             
+            /*
+            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
+            		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
+
             //FIXME: have user select map file
             tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
             
@@ -1956,6 +1966,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             
             //tileRendererLayer.setTextScale(1.5f);
             layers.add(tileRendererLayer);
+            */
+            
+            OnlineTileSource onlineTileSource = new OnlineTileSource(new String[]{
+            		"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
+            		}, 80);
+            onlineTileSource.setName("MapQuest")
+            	.setAlpha(false)
+	            .setBaseUrl("/tiles/1.0.0/map/")
+	            .setExtension("png")
+	            .setParallelRequestsLimit(8)
+	            .setProtocol("http")
+	            .setTileSize(256)
+	            .setZoomLevelMax((byte) 18)
+	            .setZoomLevelMin((byte) 0);
+	        
+            mapDownloadLayer = new TileDownloadLayer(tileCache,
+            		mapMap.getModel().mapViewPosition, onlineTileSource,
+            		AndroidGraphicFactory.INSTANCE);
+            layers.add(mapDownloadLayer);
+            mapDownloadLayer.onResume();
             
             GestureDetector gd = new GestureDetector(rootView.getContext(), 
             	new GestureDetector.SimpleOnGestureListener() {
