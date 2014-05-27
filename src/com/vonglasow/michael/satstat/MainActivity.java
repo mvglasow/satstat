@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -159,16 +160,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	private static final String [] LOCATION_PROVIDER_STYLES = {
 		"location_provider_blue",
-		"location_provider_purple",
 		"location_provider_green",
 		"location_provider_orange",
+		"location_provider_purple",
 		"location_provider_red"
 	};
+	
+	/*
+	 * Blue style: default for network location provider
+	 */
+	private static final String LOCATION_PROVIDER_BLUE = "location_provider_blue";
+	
+	/*
+	 * Red style: default for GPS location provider
+	 */
+	private static final String LOCATION_PROVIDER_RED = "location_provider_red";
 	
 	/*
 	 * Gray style for inactive location providers
 	 */
 	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
+	
+	private static List<String> mAvailableProviderStyles;
 	
 	
     /**
@@ -195,7 +208,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
 	private static final int iSensorRate = 200000; //Default is 20,000 for accel, 5,000 for gyro
 
-	private LocationManager mLocationManager;
+	private static LocationManager mLocationManager;
 	private SensorManager mSensorManager;
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
@@ -321,6 +334,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static HashMap<String, Marker> mapMarkers;
 	
 	protected static HashMap<String, Location> providerLocations; 
+	protected static HashMap<String, String> providerStyles;
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
 	protected static Handler wifiTimehandler = null;
@@ -719,6 +733,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         providerLocations = new HashMap<String, Location>();
         
+        mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
+        
+        providerStyles = new HashMap<String, String>();
+        
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -773,6 +791,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 wifiTimehandler.postDelayed(this, WIFI_REFRESH_DELAY);
             }
         };
+        
+        updateLocationProviderStyles();
 
         // SCREEN_BRIGHT_WAKE_LOCK is deprecated
     	/*
@@ -1404,10 +1424,31 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		//TODO: what do we do for providers with no accuracy?
 		Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
 		
+		updateLocationProviderStyles();
+		
         mapCircles = new HashMap<String, Circle>();
         mapMarkers = new HashMap<String, Marker>();
         
         for (String pr : providers) {
+        	String styleName = providerStyles.get(pr);
+        	if (styleName == null) {
+        		/*
+        		 * Not sure if this ever happens but I can't rule it out. Scenarios I can think of:
+        		 * - A custom location provider which identifies itself as "passive"
+        		 * - A combination of the following:
+        		 *   - Passive location provider is selected
+        		 *   - A new provider is added while we're running (so it's not in our list)
+        		 *   - Another app starts using the new provider
+        		 *   - The passive location provider forwards us an update from the new provider
+        		 */
+        		if (mAvailableProviderStyles.isEmpty())
+            		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
+        		styleName = mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + pr, mAvailableProviderStyles.get(0));
+        		  		providerStyles.put(pr, styleName);
+				SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+				spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + pr, styleName);
+				spEditor.commit();
+        	}
         	LatLong latLong;
         	float acc;
         	boolean visible;
@@ -1428,7 +1469,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	// Circle layer
         	Resources res = context.getResources();
         	//Log.d("MainActivity", "Looking for resource " + context.getPackageName() + ":array/" + LOCATION_PROVIDER_STYLES[0]);
-        	TypedArray style = res.obtainTypedArray(res.getIdentifier(LOCATION_PROVIDER_STYLES[0], "array", context.getPackageName())); //FIXME: different styles
+        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName())); //FIXME: different styles
         	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
         	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
             fill.setStyle(Style.FILL);
@@ -1469,6 +1510,51 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             for (Marker m : mapMarkers.values())
             	layers.add(m);
         }
+	}
+	
+	
+	/**
+	 * Updates the list of styles to use for the location providers.
+	 * 
+	 * This method updates the internal list of styles to use for displaying
+	 * locations on the map, assigning a style to each location provider.
+	 * Styles that are defined in {@link SharedPreferences} are preserved. If
+	 * none are defined, the GPS location provider is assigned the red style
+	 * and the network location provider is assigned the blue style. The
+	 * passive location provider is not assigned a style, as it does not send
+	 * any locations of its own. Other location providers are assigned one of
+	 * the following styles: green, orange, purple. If there are more location
+	 * providers than styles, the same style (including red and blue) can be
+	 * assigned to multiple providers. The mapping is written to 
+	 * SharedPreferences so that it will be preserved even as available
+	 * location providers change.
+	 */
+	public static void updateLocationProviderStyles() {
+        List<String> allProviders = mLocationManager.getAllProviders();
+        allProviders.remove(LocationManager.PASSIVE_PROVIDER);
+        if (allProviders.contains(LocationManager.GPS_PROVIDER)) {
+        	providerStyles.put(LocationManager.GPS_PROVIDER, 
+        			mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_RED));
+        	mAvailableProviderStyles.remove(LOCATION_PROVIDER_RED);
+        	allProviders.remove(LocationManager.GPS_PROVIDER);
+        }
+        if (allProviders.contains(LocationManager.NETWORK_PROVIDER)) {
+        	providerStyles.put(LocationManager.NETWORK_PROVIDER, 
+        			mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.NETWORK_PROVIDER, LOCATION_PROVIDER_BLUE));
+        	mAvailableProviderStyles.remove(LOCATION_PROVIDER_BLUE);
+        	allProviders.remove(LocationManager.NETWORK_PROVIDER);
+        }
+        for (String prov : allProviders) {
+        	if (mAvailableProviderStyles.isEmpty())
+        		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
+      		providerStyles.put(prov,
+       				mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, mAvailableProviderStyles.get(0)));
+       		mAvailableProviderStyles.remove(providerStyles.get(prov));
+        };
+		SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+		for (String prov : providerStyles.keySet())
+			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, providerStyles.get(prov));
+		spEditor.commit();
 	}
 	
 	

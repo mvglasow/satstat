@@ -51,6 +51,7 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 	public static final String KEY_PREF_UPDATE_FREQ = "pref_update_freq";
 	public static final String KEY_PREF_UPDATE_LAST = "pref_update_last";
 	public static final String KEY_PREF_LOC_PROV = "pref_loc_prov";
+	public static final String KEY_PREF_LOC_PROV_STYLE = "pref_loc_prov_style.";
 
 	private SharedPreferences mSharedPreferences;
 
