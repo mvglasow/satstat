@@ -1944,9 +1944,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Layers layers = layerManager.getLayers();
             layers.clear();
             
-            //FIXME: remember last center and zoom and use that (else default zoom is 17)
+            //FIXME: remember last center and zoom and use that (else default zoom is 16)
             mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
-            mapMap.getModel().mapViewPosition.setZoomLevel((byte) 17);
+            mapMap.getModel().mapViewPosition.setZoomLevel((byte) 16);
             
             /*
             TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
