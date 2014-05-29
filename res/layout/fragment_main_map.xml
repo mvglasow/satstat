@@ -19,5 +19,15 @@
         android:background="#AA000000"
         android:padding="3dp"
         -->
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:background="@color/halo"
+        android:text="@string/mapquest_attribution"
+        android:textAppearance="?android:attr/textAppearanceSmallInverse"
+        android:textSize="10dp" />
     
 </FrameLayout>

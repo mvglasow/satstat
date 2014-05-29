@@ -36,7 +36,7 @@
     <color name="circle_red_stroke">#FFCC0000</color>
     <color name="circle_red_fill">#4DCC0000</color>
     <color name="circle_gray_stroke">#FFA6ACA9</color>
-    <color name="circle_gray_fill">#FF33B5E5</color>
+    <color name="circle_gray_fill">#4DA6ACA9</color>
     <array name="location_provider_blue">
         <item>@drawable/ic_context_marker_blue</item>
         <item>@color/circle_blue_stroke</item>
@@ -67,5 +67,6 @@
         <item>@color/circle_gray_stroke</item>
         <item>@color/circle_gray_fill</item>
     </array>
+    <color name="halo">#B2FFFFFF</color>
     
 </resources>
