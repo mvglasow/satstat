@@ -334,6 +334,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static boolean isMapViewAttached = true;
 	protected static MapView mapMap;
 	protected static TileDownloadLayer mapDownloadLayer = null;
+	protected static TileCache mapTileCache = null;
 	protected static ImageButton mapReattach;
 	protected static HashMap<String, Circle> mapCircles;
 	protected static HashMap<String, Marker> mapMarkers;
@@ -1936,9 +1937,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapMap.getMapZoomControls().setZoomLevelMin((byte) 10);
             mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
             
-            TileCache tileCache = AndroidUtil.createTileCache(rootView.getContext(), "mapcache",
-            		mapMap.getModel().displayModel.getTileSize(), 1f, 
-            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
+            if (mapTileCache == null)
+	            mapTileCache = AndroidUtil.createTileCache(rootView.getContext(), "mapcache",
+	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
+	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
 
             LayerManager layerManager = mapMap.getLayerManager();
             Layers layers = layerManager.getLayers();
@@ -1974,7 +1976,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            .setZoomLevelMax((byte) 18)
 	            .setZoomLevelMin((byte) 0);
 	        
-            mapDownloadLayer = new TileDownloadLayer(tileCache,
+            mapDownloadLayer = new TileDownloadLayer(mapTileCache,
             		mapMap.getModel().mapViewPosition, onlineTileSource,
             		AndroidGraphicFactory.INSTANCE);
             layers.add(mapDownloadLayer);
