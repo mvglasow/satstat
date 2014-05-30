@@ -13,7 +13,8 @@
         android:layout_gravity="top|right"
         android:layout_marginRight="12dp"
         android:layout_marginTop="12dp"
-        android:src="@drawable/ic_action_gps" />
+        android:background="@android:drawable/btn_default"
+        android:src="@drawable/ic_btn_reattach" />
 
     	<!--
         android:background="#AA000000"
