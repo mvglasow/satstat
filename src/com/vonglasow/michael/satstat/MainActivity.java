@@ -1746,8 +1746,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (dimension == null) return;
 		int tileSize = mapMap.getModel().displayModel.getTileSize();
 		BoundingBox bb = null;
+		BoundingBox bb2 = null;
 		for (Location l : providerLocations.values())
-			if ((l != null) && (l.getProvider() != "") && !isLocationStale(l)) {
+			if ((l != null) && (l.getProvider() != "")) {
 				double lat = l.getLatitude();
 				double lon = l.getLongitude();
 				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / EARTH_CIRCUMFERENCE):0;
@@ -1758,14 +1759,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				double minLat = Math.max(lat - yRadius, -90);
 				double maxLat = Math.min(lat + yRadius, 90);
 				
-				if (bb != null) {
-					minLat = Math.min(bb.minLatitude, minLat);
-					maxLat = Math.max(bb.maxLatitude, maxLat);
-					minLon = Math.min(bb.minLongitude, minLon);
-					maxLon = Math.max(bb.maxLongitude, maxLon);
+				if (!isLocationStale(l)) {
+					// location is up to date, add to main BoundingBox
+					if (bb != null) {
+						minLat = Math.min(bb.minLatitude, minLat);
+						maxLat = Math.max(bb.maxLatitude, maxLat);
+						minLon = Math.min(bb.minLongitude, minLon);
+						maxLon = Math.max(bb.maxLongitude, maxLon);
+					}
+					bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
+				} else {
+					// location is stale, add to stale BoundingBox
+					if (bb2 != null) {
+						minLat = Math.min(bb2.minLatitude, minLat);
+						maxLat = Math.max(bb2.maxLatitude, maxLat);
+						minLon = Math.min(bb2.minLongitude, minLon);
+						maxLon = Math.max(bb2.maxLongitude, maxLon);
+					}
+					bb2 = new BoundingBox(minLat, minLon, maxLat, maxLon);
 				}
-				bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
 			}
+		if (bb == null) bb = bb2; // all locations are stale, center to them
 		if (bb == null) return;
 		byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
 		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel())
