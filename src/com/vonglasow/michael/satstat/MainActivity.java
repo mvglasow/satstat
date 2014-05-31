@@ -185,6 +185,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
 	
+	private static final String KEY_LOCATION_STALE = "isStale";
+	
 	private static List<String> mAvailableProviderStyles;
 	
 	
@@ -339,8 +341,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static HashMap<String, Circle> mapCircles;
 	protected static HashMap<String, Marker> mapMarkers;
 	
-	protected static HashMap<String, Location> providerLocations; 
+	/**
+	 * Cached map of locations reported by the providers.
+	 * 
+	 * The keys correspond to the provider names as defined by LocationManager.
+	 * The entries are {@link Location} instances. For valid and recent
+	 * locations these are copies of the locations supplied by
+	 * {@link LocationManager}. Invalid locations, intended as placeholders,
+	 * have an empty provider string and should not be processed. Stale
+	 * locations have isStale entry in their extras set to true. They can be
+	 * processed but may require special handling.
+	 */
+	protected static HashMap<String, Location> providerLocations;
+	
 	protected static HashMap<String, String> providerStyles;
+	protected static HashMap<String, String> providerAppliedStyles;
+	protected static Handler providerInvalidationHandler = null;
+	protected static HashMap<String, Runnable> providerInvalidators;
+	private static final int PROVIDER_EXPIRATION_DELAY = 2000; // the time after which a location is considered stale 
+	
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
 	protected static Handler wifiTimehandler = null;
@@ -620,6 +639,88 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	}
 	}
 	
+	
+	/**
+	 * Applies a style to the map overlays associated with a given location provider.
+	 * 
+	 * This method changes the style (effectively, the color) of the circle and
+	 * marker overlays. Its main purpose is to switch the color of the overlays
+	 * between gray and the provider color.
+	 * 
+	 * @param context The context of the caller
+	 * @param provider The name of the location provider, as returned by
+	 * {@link LocationProvider.getName()}.
+	 * @param styleName The name of the style to apply. If it is null, the
+	 * default style for the provider as returned by 
+	 * assignLocationProviderStyle() is applied. 
+	 */
+	protected static void applyLocationProviderStyle(Context context, String provider, String styleName) {
+		String sn = (styleName != null)?styleName:assignLocationProviderStyle(provider);
+		
+		Boolean needsRedraw = !sn.equals(providerAppliedStyles.get(provider));
+		
+    	Resources res = context.getResources();
+    	TypedArray style = res.obtainTypedArray(res.getIdentifier(sn, "array", context.getPackageName()));
+    	
+    	// Circle layer
+    	Circle circle = mapCircles.get(provider);
+    	if (circle != null) {
+    		circle.getPaintFill().setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
+    		circle.getPaintStroke().setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
+    		if (needsRedraw && circle.isVisible())
+    			circle.requestRedraw();
+    		//Log.d("MainActivity", "Set color for " + provider + " circle to " + sn);
+    	}
+    	
+    	//Marker layer
+    	Marker marker = mapMarkers.get(provider);
+    	if (marker != null) {
+            Drawable drawable = style.getDrawable(STYLE_MARKER);
+            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+            marker.setBitmap(bitmap);
+            if (needsRedraw && marker.isVisible())
+            	marker.requestRedraw();
+    		//Log.d("MainActivity", "Set color for " + provider + " marker to " + sn);
+    	}
+    	
+    	providerAppliedStyles.put(provider, sn);
+        style.recycle();
+	}
+	
+	
+	/**
+	 * Returns the map overlay style to use for a given location provider.
+	 * 
+	 * This method first checks if a style has already been assigned to the
+	 * location provider. In that case the already assigned style is returned.
+	 * Otherwise a new style is assigned and the assignment is stored
+	 * internally and written to SharedPreferences.
+	 * @param provider
+	 * @return The style to use for non-stale locations
+	 */
+	protected static String assignLocationProviderStyle(String provider) {
+    	String styleName = providerStyles.get(provider);
+    	if (styleName == null) {
+    		/*
+    		 * Not sure if this ever happens but I can't rule it out. Scenarios I can think of:
+    		 * - A custom location provider which identifies itself as "passive"
+    		 * - A combination of the following:
+    		 *   - Passive location provider is selected
+    		 *   - A new provider is added while we're running (so it's not in our list)
+    		 *   - Another app starts using the new provider
+    		 *   - The passive location provider forwards us an update from the new provider
+    		 */
+    		if (mAvailableProviderStyles.isEmpty())
+        		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
+    		styleName = mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, mAvailableProviderStyles.get(0));
+    		  		providerStyles.put(provider, styleName);
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, styleName);
+			spEditor.commit();
+    	}
+		return styleName;
+	}
+
     /**
      * Converts a bearing (in degrees) into a directional name.
      */
@@ -705,6 +806,30 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		(sensor != null) ? (byte) Math.max(Math.ceil(
         				(float) -Math.log10(sensor.getResolution())), 0) : 0);
 	}
+	
+	
+	/**
+	 * Determines if a location is stale.
+	 * 
+	 * A location is considered stale if its Extras have an isStale key set to
+	 * True. A location without this key is not considered stale.
+	 * 
+	 * @param location
+	 * @return True if stale, False otherwise
+	 */
+	public static boolean isLocationStale(Location location) {
+		Bundle extras = location.getExtras();
+		if (extras == null)
+			return false;
+		return extras.getBoolean(KEY_LOCATION_STALE);
+	}
+	
+	
+	public static void markLocationAsStale(Location location) {
+		if (location.getExtras() == null)
+			location.setExtras(new Bundle());
+		location.getExtras().putBoolean(KEY_LOCATION_STALE, true);
+	}
 
 
     /**
@@ -742,6 +867,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
         
         providerStyles = new HashMap<String, String>();
+        providerAppliedStyles = new HashMap<String, String>();
+        
+        providerInvalidationHandler = new Handler();
+        providerInvalidators = new HashMap<String, Runnable>(); 
         
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
@@ -828,52 +957,68 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Called when the status of the GPS changes. Updates GPS display.
      */
     public void onGpsStatusChanged (int event) {
-    	if (isGpsViewReady) {
-    		GpsStatus status = mLocationManager.getGpsStatus(null);
-    		int satsInView = 0;
-    		int satsUsed = 0;
-    		Iterable<GpsSatellite> sats = status.getSatellites();
-    		for (GpsSatellite sat : sats) {
-    			satsInView++;
-    			if (sat.usedInFix()) {
-    				satsUsed++;
-    			}
-    		}
+		GpsStatus status = mLocationManager.getGpsStatus(null);
+		int satsInView = 0;
+		int satsUsed = 0;
+		Iterable<GpsSatellite> sats = status.getSatellites();
+		for (GpsSatellite sat : sats) {
+			satsInView++;
+			if (sat.usedInFix()) {
+				satsUsed++;
+			}
+		}
+
+		if (isGpsViewReady) {
     		gpsSats.setText(String.valueOf(satsUsed) + "/" + String.valueOf(satsInView));
     		gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
     		gpsStatusView.showSats(sats);
     		gpsSnrView.showSats(sats);
     	}
+    	
+		if ((isMapViewReady) && (satsUsed == 0)) {
+			Location location = providerLocations.get(LocationManager.GPS_PROVIDER);
+			if (location != null)
+				markLocationAsStale(location);
+			applyLocationProviderStyle(this, LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_GRAY);
+		}
     }
     
     /**
-     * Called when the location changes. Updates GPS display.
+     * Called when a new location is found by a registered location provider.
+     * Stores the location and updates GPS display and map view.
      */
     public void onLocationChanged(Location location) {
-    	// Called when a new location is found by the location provider.
-    	// update map view
-    	if (providerLocations.containsKey(location.getProvider())) {
+    	if (providerLocations.containsKey(location.getProvider()))
     		providerLocations.put(location.getProvider(), new Location(location));
+    	
+    	// update map view
+		if (isMapViewReady) {
+    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
     		
-    		if (isMapViewReady) {
-    			//TODO: move <overlay>.setVisible() stuff into separate method
-	    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
-	    		
-	    		mapCircles.get(location.getProvider()).setLatLong(latLong);
-	    		mapMarkers.get(location.getProvider()).setLatLong(latLong);
-	    		if (location.hasAccuracy()) {
-	    			mapCircles.get(location.getProvider()).setVisible(true);
-	    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
-	    		} else {
-	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
-	    			mapCircles.get(location.getProvider()).setVisible(false);
-	    		}
-    			mapMarkers.get(location.getProvider()).setVisible(true);
-	    		
-	    		// move locations into view and zoom out as needed
-	    		updateMap();
+    		//Log.d("MainActivity", location.getProvider() + " " + latLong.toString());
+    		
+    		mapCircles.get(location.getProvider()).setLatLong(latLong);
+    		mapMarkers.get(location.getProvider()).setLatLong(latLong);
+    		if (location.hasAccuracy()) {
+    			mapCircles.get(location.getProvider()).setVisible(true);
+    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
+    		} else {
+    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
+    			mapCircles.get(location.getProvider()).setVisible(false);
     		}
-    	}
+			mapMarkers.get(location.getProvider()).setVisible(true);
+			
+			applyLocationProviderStyle(this, location.getProvider(), null);
+			
+			Runnable invalidator = providerInvalidators.get(location.getProvider());
+			if (invalidator != null) {
+				providerInvalidationHandler.removeCallbacks(invalidator);
+				providerInvalidationHandler.postDelayed(invalidator, PROVIDER_EXPIRATION_DELAY);
+			}
+    		
+    		// move locations into view and zoom out as needed
+    		updateMap();
+		}
     	
     	// update GPS view
     	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
@@ -1177,6 +1322,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	Log.d(this.getLocalClassName(), "WifiScanReceiver was never registered, caught exception");
         }
         wifiTimehandler.removeCallbacks(wifiTimeRunnable);
+        // we'll just skip that so locations will get invalidated in any case
+        //providerInvalidationHandler.removeCallbacksAndMessages(null);
         super.onStop();
     }
     
@@ -1431,11 +1578,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	
 	/**
-	 * Makes internal update when the user's selection of location providers has changed.
+	 * Updates internal data structures when the user's selection of location providers has changed.
 	 * @param context
 	 */
 	protected static void updateLocationProviders(Context context) {
-		//TODO: what do we do for providers with no accuracy?
 		Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
 		
 		updateLocationProviderStyles();
@@ -1443,30 +1589,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mapCircles = new HashMap<String, Circle>();
         mapMarkers = new HashMap<String, Marker>();
         
+        ArrayList<String> removedProviders = new ArrayList<String>();
+		for (String pr : providerInvalidators.keySet())
+			if (!providers.contains(pr))
+				removedProviders.add(pr);
+		for (String pr: removedProviders)
+			providerInvalidators.remove(pr);
+		
+        Log.d("MainActivity", "Provider location cache: " + providerLocations.keySet().toString());
+        
         for (String pr : providers) {
-        	String styleName = providerStyles.get(pr);
-        	if (styleName == null) {
-        		/*
-        		 * Not sure if this ever happens but I can't rule it out. Scenarios I can think of:
-        		 * - A custom location provider which identifies itself as "passive"
-        		 * - A combination of the following:
-        		 *   - Passive location provider is selected
-        		 *   - A new provider is added while we're running (so it's not in our list)
-        		 *   - Another app starts using the new provider
-        		 *   - The passive location provider forwards us an update from the new provider
-        		 */
-        		if (mAvailableProviderStyles.isEmpty())
-            		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
-        		styleName = mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + pr, mAvailableProviderStyles.get(0));
-        		  		providerStyles.put(pr, styleName);
-				SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-				spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + pr, styleName);
-				spEditor.commit();
-        	}
+        	String styleName = assignLocationProviderStyle(pr);
         	LatLong latLong;
         	float acc;
         	boolean visible;
-        	if (providerLocations.get(pr) != null) {
+        	if ((providerLocations.get(pr) != null) && (providerLocations.get(pr).getProvider() != "")) {
         		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
         				providerLocations.get(pr).getLatitude());
         		if (providerLocations.get(pr).hasAccuracy())
@@ -1474,10 +1611,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		else
         			acc = 0;
         		visible = true;
+        		if (isLocationStale(providerLocations.get(pr)))
+        			styleName = LOCATION_PROVIDER_GRAY;
+        		Log.d("MainActivity", pr + " has " + latLong.toString());
         	} else {
         		latLong = new LatLong(0, 0);
         		acc = 0;
         		visible = false;
+        		Log.d("MainActivity", pr + " has no location, hiding");
         	}
         	
         	// Circle layer
@@ -1501,6 +1642,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             marker.setVisible(visible);
             mapMarkers.put(pr, marker);
             style.recycle();
+            
+            // no invalidator for GPS, which is invalidated through GPS status
+            if ((!pr.equals(LocationManager.GPS_PROVIDER)) && (providerInvalidators.get(pr)) == null) {
+            	final String provider = pr;
+            	final Context ctx = context;
+            	providerInvalidators.put(pr, new Runnable() {
+            		private String mProvider = provider;
+            		
+            		@Override
+            		public void run() {
+            			if (isMapViewReady) {
+	            			Location location = providerLocations.get(mProvider);
+	            			if (location != null)
+	            				markLocationAsStale(location);
+	            			applyLocationProviderStyle(ctx, mProvider, LOCATION_PROVIDER_GRAY);
+            			}
+            		}
+            	});
+            }
         }
         
         // add overlays
@@ -1522,6 +1682,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             	layers.add(c);
             for (Marker m : mapMarkers.values())
             	layers.add(m);
+            
+            // move layers into view
+            updateMap();
         }
 	}
 	
@@ -1543,6 +1706,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * location providers change.
 	 */
 	public static void updateLocationProviderStyles() {
+		//FIXME: move code into assignLocationProviderStyle and use that
         List<String> allProviders = mLocationManager.getAllProviders();
         allProviders.remove(LocationManager.PASSIVE_PROVIDER);
         if (allProviders.contains(LocationManager.GPS_PROVIDER)) {
@@ -1583,7 +1747,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		int tileSize = mapMap.getModel().displayModel.getTileSize();
 		BoundingBox bb = null;
 		for (Location l : providerLocations.values())
-			if ((l != null) && (l.getProvider() != "")) {
+			if ((l != null) && (l.getProvider() != "") && !isLocationStale(l)) {
 				double lat = l.getLatitude();
 				double lon = l.getLongitude();
 				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / EARTH_CIRCUMFERENCE):0;
