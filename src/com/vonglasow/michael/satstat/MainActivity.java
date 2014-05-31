@@ -713,7 +713,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		if (mAvailableProviderStyles.isEmpty())
         		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
     		styleName = mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, mAvailableProviderStyles.get(0));
-    		  		providerStyles.put(provider, styleName);
+    		providerStyles.put(provider, styleName);
 			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
 			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, styleName);
 			spEditor.commit();
@@ -2090,6 +2090,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
             
             mapReattach.setVisibility(View.GONE);
+            isMapViewAttached = true;
             
     		OnClickListener clis = new OnClickListener () {
     			@Override
@@ -2124,9 +2125,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Layers layers = layerManager.getLayers();
             layers.clear();
             
-            //FIXME: remember last center and zoom and use that (else default zoom is 16)
-            mapMap.getModel().mapViewPosition.setCenter(new LatLong(48.1380, 11.5745));
-            mapMap.getModel().mapViewPosition.setZoomLevel((byte) 16);
+            float lat = mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LAT, 360.0f);
+            float lon = mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LON, 360.0f);
+            
+            if ((lat < 360.0f) && (lon < 360.0f)) {
+                mapMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
+            }
+            
+            int zoom = mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
+            mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
             
             /*
             TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
@@ -2182,6 +2189,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         @Override
         public void onDestroyView() {
+        	LatLong center = mapMap.getModel().mapViewPosition.getCenter();
+        	byte zoom = mapMap.getModel().mapViewPosition.getZoomLevel();
+        	
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LAT, (float) center.latitude);
+			spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LON, (float) center.longitude);
+			spEditor.putInt(SettingsActivity.KEY_PREF_MAP_ZOOM, zoom);
+			spEditor.commit();
+
         	super.onDestroyView();
         	isMapViewReady = false;
         }
