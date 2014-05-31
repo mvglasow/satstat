@@ -657,7 +657,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static void applyLocationProviderStyle(Context context, String provider, String styleName) {
 		String sn = (styleName != null)?styleName:assignLocationProviderStyle(provider);
 		
-		Boolean needsRedraw = !sn.equals(providerAppliedStyles.get(provider));
+		Boolean isStyleChanged = !sn.equals(providerAppliedStyles.get(provider));
+		Boolean needsRedraw = false;
 		
     	Resources res = context.getResources();
     	TypedArray style = res.obtainTypedArray(res.getIdentifier(sn, "array", context.getPackageName()));
@@ -667,8 +668,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	if (circle != null) {
     		circle.getPaintFill().setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
     		circle.getPaintStroke().setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
-    		if (needsRedraw && circle.isVisible())
-    			circle.requestRedraw();
+    		needsRedraw = isStyleChanged && circle.isVisible();
     		//Log.d("MainActivity", "Set color for " + provider + " circle to " + sn);
     	}
     	
@@ -678,11 +678,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Drawable drawable = style.getDrawable(STYLE_MARKER);
             Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
             marker.setBitmap(bitmap);
-            if (needsRedraw && marker.isVisible())
-            	marker.requestRedraw();
+            needsRedraw = needsRedraw || (isStyleChanged && marker.isVisible());
     		//Log.d("MainActivity", "Set color for " + provider + " marker to " + sn);
     	}
     	
+    	if (needsRedraw)
+    		mapMap.getLayerManager().redrawLayers();
     	providerAppliedStyles.put(provider, sn);
         style.recycle();
 	}
@@ -1016,7 +1017,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				providerInvalidationHandler.postDelayed(invalidator, PROVIDER_EXPIRATION_DELAY);
 			}
     		
-    		// move locations into view and zoom out as needed
+    		// redraw, move locations into view and zoom out as needed
     		updateMap();
 		}
     	
@@ -1739,9 +1740,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Updates the map view so that all markers are visible.
 	 */
 	public static void updateMap() {
-		// do nothing if the map view is not attached
-		if (!isMapViewAttached) return;
+		// if the map view is not attached, just trigger a redraw
+		if (!isMapViewAttached) {
+			mapMap.getLayerManager().redrawLayers();
+			return;
+		}
 		// move locations into view and zoom out as needed
+		boolean needsRedraw = false;
 		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
 		if (dimension == null) return;
 		int tileSize = mapMap.getModel().displayModel.getTileSize();
@@ -1782,16 +1787,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (bb == null) bb = bb2; // all locations are stale, center to them
 		if (bb == null) return;
 		byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
-		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel())
+		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel()) {
 			mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
+		} else {
+			needsRedraw = true;
+		}
 		
 		MapViewProjection proj = new MapViewProjection(mapMap);
 		Point nw = proj.toPixels(new LatLong(bb.maxLatitude, bb.minLongitude));
 		Point se = proj.toPixels(new LatLong(bb.minLatitude, bb.maxLongitude));
 		
 		// move only if bb is not entirely visible
-		if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height))
+		if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height)) {
 			mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
+		} else {
+			needsRedraw = true;
+		}
+		if (needsRedraw)
+			mapMap.getLayerManager().redrawLayers();
 	}
     
 
