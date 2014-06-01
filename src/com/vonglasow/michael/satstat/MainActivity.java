@@ -1740,15 +1740,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * Updates the map view so that all markers are visible.
 	 */
 	public static void updateMap() {
-		// if the map view is not attached, just trigger a redraw
-		if (!isMapViewAttached) {
+		boolean needsRedraw = false;
+		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
+		// just trigger a redraw if we're not going to pan or zoom
+		if ((dimension == null) || (!isMapViewAttached)) {
 			mapMap.getLayerManager().redrawLayers();
 			return;
 		}
 		// move locations into view and zoom out as needed
-		boolean needsRedraw = false;
-		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
-		if (dimension == null) return;
 		int tileSize = mapMap.getModel().displayModel.getTileSize();
 		BoundingBox bb = null;
 		BoundingBox bb2 = null;
@@ -1785,23 +1784,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				}
 			}
 		if (bb == null) bb = bb2; // all locations are stale, center to them
-		if (bb == null) return;
-		byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
-		if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel()) {
-			mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
-		} else {
+		if (bb == null) {
 			needsRedraw = true;
-		}
-		
-		MapViewProjection proj = new MapViewProjection(mapMap);
-		Point nw = proj.toPixels(new LatLong(bb.maxLatitude, bb.minLongitude));
-		Point se = proj.toPixels(new LatLong(bb.minLatitude, bb.maxLongitude));
-		
-		// move only if bb is not entirely visible
-		if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height)) {
-			mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
 		} else {
-			needsRedraw = true;
+			byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
+			if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel()) {
+				mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
+			} else {
+				needsRedraw = true;
+			}
+			
+			MapViewProjection proj = new MapViewProjection(mapMap);
+			Point nw = proj.toPixels(new LatLong(bb.maxLatitude, bb.minLongitude));
+			Point se = proj.toPixels(new LatLong(bb.minLatitude, bb.maxLongitude));
+			
+			// move only if bb is not entirely visible
+			if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height)) {
+				mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
+			} else {
+				needsRedraw = true;
+			}
 		}
 		if (needsRedraw)
 			mapMap.getLayerManager().redrawLayers();
