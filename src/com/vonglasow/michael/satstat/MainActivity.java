@@ -1676,9 +1676,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
 	            mapMarkers.put(pr, marker);
 	            layers.add(marker);
-	            marker.setLatLong(latLong); // FIXME: does this help?
 	            marker.setVisible(visible);
-	            marker.requestRedraw(); // FIXME: does this help?
 	            style.recycle();
 	        }
         }
