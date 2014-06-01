@@ -1639,7 +1639,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        	boolean visible;
 	        	if ((providerLocations.get(pr) != null) && (providerLocations.get(pr).getProvider() != "")) {
 	        		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
-	        				providerLocations.get(pr).getLatitude());
+	        				providerLocations.get(pr).getLongitude());
 	        		if (providerLocations.get(pr).hasAccuracy())
 	        			acc = providerLocations.get(pr).getAccuracy();
 	        		else
