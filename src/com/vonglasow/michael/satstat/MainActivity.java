@@ -1583,110 +1583,108 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param context
 	 */
 	protected static void updateLocationProviders(Context context) {
-		Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
-		
-		updateLocationProviderStyles();
-		
-        mapCircles = new HashMap<String, Circle>();
-        mapMarkers = new HashMap<String, Marker>();
-        
-        ArrayList<String> removedProviders = new ArrayList<String>();
-		for (String pr : providerInvalidators.keySet())
-			if (!providers.contains(pr))
-				removedProviders.add(pr);
-		for (String pr: removedProviders)
-			providerInvalidators.remove(pr);
-		
-        Log.d("MainActivity", "Provider location cache: " + providerLocations.keySet().toString());
-        
-        for (String pr : providers) {
-        	String styleName = assignLocationProviderStyle(pr);
-        	LatLong latLong;
-        	float acc;
-        	boolean visible;
-        	if ((providerLocations.get(pr) != null) && (providerLocations.get(pr).getProvider() != "")) {
-        		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
-        				providerLocations.get(pr).getLatitude());
-        		if (providerLocations.get(pr).hasAccuracy())
-        			acc = providerLocations.get(pr).getAccuracy();
-        		else
-        			acc = 0;
-        		visible = true;
-        		if (isLocationStale(providerLocations.get(pr)))
-        			styleName = LOCATION_PROVIDER_GRAY;
-        		Log.d("MainActivity", pr + " has " + latLong.toString());
-        	} else {
-        		latLong = new LatLong(0, 0);
-        		acc = 0;
-        		visible = false;
-        		Log.d("MainActivity", pr + " has no location, hiding");
-        	}
-        	
-        	// Circle layer
-        	Resources res = context.getResources();
-        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
-        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
-        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
-            fill.setStyle(Style.FILL);
-            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
-        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
-            stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
-            stroke.setStyle(Style.STROKE);
-            Circle circle = new Circle(latLong, acc, fill, stroke);
-            circle.setVisible(visible);
-            mapCircles.put(pr, circle);
-            
-            // Marker layer
-            Drawable drawable = style.getDrawable(STYLE_MARKER);
-            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
-            marker.setVisible(visible);
-            mapMarkers.put(pr, marker);
-            style.recycle();
-            
-            // no invalidator for GPS, which is invalidated through GPS status
-            if ((!pr.equals(LocationManager.GPS_PROVIDER)) && (providerInvalidators.get(pr)) == null) {
-            	final String provider = pr;
-            	final Context ctx = context;
-            	providerInvalidators.put(pr, new Runnable() {
-            		private String mProvider = provider;
-            		
-            		@Override
-            		public void run() {
-            			if (isMapViewReady) {
-	            			Location location = providerLocations.get(mProvider);
-	            			if (location != null)
-	            				markLocationAsStale(location);
-	            			applyLocationProviderStyle(ctx, mProvider, LOCATION_PROVIDER_GRAY);
-            			}
-            		}
-            	});
-            }
-        }
-        
         // add overlays
         if (isMapViewReady) {
-            Layers layers = mapMap.getLayerManager().getLayers();
-        	
-        	// remove all layers other than tile render layer from map
-            for (int i = 0; i < layers.size(); )
-            	if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
-            		//Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
-            		i++;
-            	} else {
-            		//Log.d("MainActivity", "Layer " + i + " is " + layers.get(i).getClass().getSimpleName() + " layer, removing");
-            		layers.remove(i);
-            	}
-            
-            // add the new layers
-            for (Circle c : mapCircles.values())
-            	layers.add(c);
-            for (Marker m : mapMarkers.values())
-            	layers.add(m);
-            
-            // move layers into view
-            updateMap();
+			Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+			
+			updateLocationProviderStyles();
+			
+	        mapCircles = new HashMap<String, Circle>();
+	        mapMarkers = new HashMap<String, Marker>();
+	        
+	        ArrayList<String> removedProviders = new ArrayList<String>();
+			for (String pr : providerInvalidators.keySet())
+				if (!providers.contains(pr))
+					removedProviders.add(pr);
+			for (String pr: removedProviders)
+				providerInvalidators.remove(pr);
+			
+	        Log.d("MainActivity", "Provider location cache: " + providerLocations.keySet().toString());
+	        
+	        Layers layers = mapMap.getLayerManager().getLayers();
+	    	
+	    	// remove all layers other than tile render layer from map
+	        for (int i = 0; i < layers.size(); )
+	        	if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
+	        		//Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
+	        		i++;
+	        	} else {
+	        		//Log.d("MainActivity", "Layer " + i + " is " + layers.get(i).getClass().getSimpleName() + " layer, removing");
+	        		layers.remove(i);
+	        	}
+	        
+	        for (String pr : providers) {
+	            // no invalidator for GPS, which is invalidated through GPS status
+	            if ((!pr.equals(LocationManager.GPS_PROVIDER)) && (providerInvalidators.get(pr)) == null) {
+	            	final String provider = pr;
+	            	final Context ctx = context;
+	            	providerInvalidators.put(pr, new Runnable() {
+	            		private String mProvider = provider;
+	            		
+	            		@Override
+	            		public void run() {
+	            			if (isMapViewReady) {
+		            			Location location = providerLocations.get(mProvider);
+		            			if (location != null)
+		            				markLocationAsStale(location);
+		            			applyLocationProviderStyle(ctx, mProvider, LOCATION_PROVIDER_GRAY);
+	            			}
+	            		}
+	            	});
+	            }
+	            
+	        	String styleName = assignLocationProviderStyle(pr);
+	        	LatLong latLong;
+	        	float acc;
+	        	boolean visible;
+	        	if ((providerLocations.get(pr) != null) && (providerLocations.get(pr).getProvider() != "")) {
+	        		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
+	        				providerLocations.get(pr).getLatitude());
+	        		if (providerLocations.get(pr).hasAccuracy())
+	        			acc = providerLocations.get(pr).getAccuracy();
+	        		else
+	        			acc = 0;
+	        		visible = true;
+	        		if (isLocationStale(providerLocations.get(pr)))
+	        			styleName = LOCATION_PROVIDER_GRAY;
+	        		Log.d("MainActivity", pr + " has " + latLong.toString());
+	        	} else {
+	        		latLong = new LatLong(0, 0);
+	        		acc = 0;
+	        		visible = false;
+	        		Log.d("MainActivity", pr + " has no location, hiding");
+	        	}
+	        	
+	        	// Circle layer
+	        	Resources res = context.getResources();
+	        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
+	        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
+	        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
+	            fill.setStyle(Style.FILL);
+	            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
+	        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
+	            stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
+	            stroke.setStyle(Style.STROKE);
+	            Circle circle = new Circle(latLong, acc, fill, stroke);
+	            mapCircles.put(pr, circle);
+	            layers.add(circle);
+	            circle.setVisible(visible);
+	            
+	            // Marker layer
+	            Drawable drawable = style.getDrawable(STYLE_MARKER);
+	            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+	            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
+	            mapMarkers.put(pr, marker);
+	            layers.add(marker);
+	            marker.setLatLong(latLong); // FIXME: does this help?
+	            marker.setVisible(visible);
+	            marker.requestRedraw(); // FIXME: does this help?
+	            style.recycle();
+	        }
         }
+        
+        // move layers into view
+        updateMap();
 	}
 	
 	
