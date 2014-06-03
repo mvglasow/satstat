@@ -2128,7 +2128,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
             
             if (mapTileCache == null)
-	            mapTileCache = AndroidUtil.createTileCache(rootView.getContext(), "mapcache",
+	            mapTileCache = AndroidUtil.createTileCache(rootView.getContext(), "MapQuest",
 	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
 	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
 
