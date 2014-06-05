@@ -989,7 +989,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Stores the location and updates GPS display and map view.
      */
     public void onLocationChanged(Location location) {
-    	if (providerLocations.containsKey(location.getProvider()))
+    	// some providers may report NaN for latitude and longitude:
+    	// if that happens, do not process this location and mark any previous
+    	// location from that provider as stale
+		if (Double.isNaN(location.getLatitude()) || Double.isNaN(location.getLongitude())) {
+			markLocationAsStale(providerLocations.get(location.getProvider()));
+			if (isMapViewReady)
+				applyLocationProviderStyle(this, location.getProvider(), LOCATION_PROVIDER_GRAY);
+			return;
+		}
+
+		if (providerLocations.containsKey(location.getProvider()))
     		providerLocations.put(location.getProvider(), new Location(location));
     	
     	// update map view
