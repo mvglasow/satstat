@@ -166,6 +166,6 @@
     <string name="pref_map">Map</string>
     <string name="pref_loc_prov">Location Providers</string>
     <string name="pref_loc_prov_summary">Choose location providers to display</string>
-    <string name="osm_atribution">© OpenStreetMap</string>
+    <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
 </resources>
