@@ -91,27 +91,36 @@
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">Info</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
-    <string name="about_text">Wenn etwas nicht so funktioniert, wie es sollte, oder
+    <string name="about_text">&lt;p&gt;
+        Wenn etwas nicht so funktioniert, wie es sollte, oder
         wenn Sie Verbesserungsvorschläge haben, melden Sie diese bitte unter:
-		\nhttps://github.com/mvglasow/satstat/issues
-		\n
-		\nCopyright &#169; 2013, 2014 Michael von Glasow
-		\n
-		\nDieses Programm ist Freie Software: Sie können es unter den Bedingungen
-		der GNU General Public License, wie von der Free Software Foundation,
-		Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
-		veröffentlichten Version, weiterverbreiten und/oder modifizieren.
-		\n
-		\nDieses Programm wird in der Hoffnung, dass es nützlich sein wird, aber
-		OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite
-		Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
-		Siehe die GNU General Public License für weitere Details.
-		\n
-		\nSie sollten eine Kopie der GNU General Public License zusammen mit diesem
-		Programm erhalten haben. Wenn nicht, siehe http://www.gnu.org/licenses/.
-		\n
-		\nDer Quellcode für diese Applikation ist unter:
-		\nhttps://github.com/mvglasow/satstat</string>
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
+        &lt;/p&gt;&lt;p&gt;
+        Copyright &#169; 2013, 2014 Michael von Glasow
+        &lt;/p&gt;&lt;p&gt;
+        Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+        der GNU General Public License, wie von der Free Software Foundation,
+        Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+        veröffentlichten Version, weiterverbreiten und/oder modifizieren.
+        &lt;/p&gt;&lt;p&gt;
+        Dieses Programm wird in der Hoffnung, dass es nützlich sein wird, aber
+        OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite
+        Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+        Siehe die GNU General Public License für weitere Details.
+        &lt;/p&gt;&lt;p&gt;
+        Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+        Programm erhalten haben. Wenn nicht, siehe
+        &lt;a href="http://www.gnu.org/licenses/"&gt;http://www.gnu.org/licenses/&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Map data and information provided by MapQuest, 
+        &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; 
+        and contributors, 
+        &lt;a href="http://wiki.openstreetmap.org/wiki/Legal_FAQ#3a._I_would_like_to_use_OpenStreetMap_maps._How_should_I_credit_you.3F"&gt;ODbL&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Der Quellcode für diese Applikation ist unter:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>

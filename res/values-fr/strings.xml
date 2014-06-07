@@ -91,28 +91,32 @@
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">A propos</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
-    <string name="about_text">Si quelque chose ne fonctionne pas comme il le devrait,
+    <string name="about_text">&lt;p&gt;
+        Si quelque chose ne fonctionne pas comme il le devrait,
         ou si vous avez une idée pour rendre l\'application meilleure, vous pouvez
         soumettre vos idées à l\'adresse:
-		\nhttps://github.com/mvglasow/satstat/issues
-		\n
-		\nCopyright &#169; 2013, 2014 Michael von Glasow
-		\n
-		\nCe programme est un logiciel libre; vous pouvez le redistribuer ou le
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
+        &lt;/p&gt;&lt;p&gt;
+        Copyright &#169; 2013, 2014 Michael von Glasow
+        &lt;/p&gt;&lt;p&gt;
+        Ce programme est un logiciel libre; vous pouvez le redistribuer ou le
         modifier suivant les termes de la GNU General Public License telle que publiée
         par la Free Software Foundation; soit la version 3 de la licence,
         soit (à votre gré) toute version ultérieure.
-		\n
-		\nCe programme est distribué dans l\'espoir qu\'il sera utile, mais SANS
+        &lt;/p&gt;&lt;p&gt;
+        Ce programme est distribué dans l\'espoir qu\'il sera utile, mais SANS
         AUCUNE GARANTIE; pas même la garantie implicite de COMMERCIABILISABILITÉ
         ni d\'ADÉQUATION à UN OBJECTIF PARTICULIER. Consultez la GNU General Public
         License pour plus de détails.
-		\n
-		\nVous devez avoir reçu une copie de la GNU General Public License en même
-        temps que ce programme; si ce n\'est pas le cas, consultez http://www.gnu.org/licenses.
-		\n
-		\nLe code source de cette application est disponible à l\'adresse:
-		\nhttps://github.com/mvglasow/satstat</string>
+        &lt;/p&gt;&lt;p&gt;
+        Vous devez avoir reçu une copie de la GNU General Public License en même
+        temps que ce programme; si ce n\'est pas le cas, consultez 
+        &lt;a href="http://www.gnu.org/licenses/"&gt;http://www.gnu.org/licenses/&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Le code source de cette application est disponible à l\'adresse:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
