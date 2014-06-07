@@ -95,6 +95,7 @@ import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
 import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -102,10 +103,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -209,6 +212,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Whether the activity is stopped. 
      */
     boolean isStopped;
+    
+    /**
+     * Whether we are running on a wide-screen device
+     */
+    boolean isWideScreen;
     
 	//The rate in microseconds at which we would like to receive updates from the sensors.
 	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
@@ -371,13 +379,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	*/
 	
 	/**
-	 * Converts screen rotation to orientation
+	 * Converts screen rotation to orientation for devices with a naturally tall screen.
 	 */
-	private final static Integer orFromRot[] = {
+	private final static Integer OR_FROM_ROT_TALL[] = {
 		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
 		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE};
+
+	/**
+	 * Converts screen rotation to orientation for devices with a naturally wide screen.
+	 */
+	private final static Integer OR_FROM_ROT_WIDE[] = {
+		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT};
 
 	private static SharedPreferences mSharedPreferences;
 
@@ -851,8 +868,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
-        /**/
+        // Find out default screen orientation
         Configuration config = getResources().getConfiguration();
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        int rot = wm.getDefaultDisplay().getRotation();
+        isWideScreen = (config.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+        	       (rot == Surface.ROTATION_0 || rot == Surface.ROTATION_180) ||
+        	       config.orientation == Configuration.ORIENTATION_PORTRAIT &&
+        	       (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270));
+        Log.d("MainActivity", "isWideScreen=" + Boolean.toString(isWideScreen));
+        
+        // compact action bar
         if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
             //actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowTitleEnabled(false);
@@ -860,7 +886,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             //actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(true);
         }
-        /**/
         setEmbeddedTabs(actionBar, true);
         
         providerLocations = new HashMap<String, Location>();
@@ -1191,7 +1216,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// if Z acceleration is greater than X/Y combined, lock rotation, else unlock
 				if (Math.pow(event.values[2], 2) > Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2)) {
 					// workaround (SCREEN_ORIENTATION_LOCK is unsupported on API < 18)
-					setRequestedOrientation(orFromRot[this.getWindowManager().getDefaultDisplay().getRotation()]);
+					if (isWideScreen)
+						setRequestedOrientation(OR_FROM_ROT_WIDE[this.getWindowManager().getDefaultDisplay().getRotation()]);
+					else
+						setRequestedOrientation(OR_FROM_ROT_TALL[this.getWindowManager().getDefaultDisplay().getRotation()]);
 				} else {
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 				}
