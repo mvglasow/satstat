@@ -392,9 +392,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	private final static Integer OR_FROM_ROT_WIDE[] = {
 		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
-		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
-		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT};
+		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
 
 	private static SharedPreferences mSharedPreferences;
 
