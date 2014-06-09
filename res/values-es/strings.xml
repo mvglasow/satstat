@@ -150,4 +150,7 @@
     <string name="pref_lastupdate">Última actualización</string>
     <string name="pref_networks">Redes</string>
     <string name="pref_networks_summary">Actualizar dados AGPS al establecer una conexión a una de las redes seleccionadas</string>
+    <string name="pref_map">Mapa</string>
+    <string name="pref_loc_prov">Fuentes de ubicación</string>
+    <string name="pref_loc_prov_summary">Mostrar las fuentes de ubicación seleccionadas en el mapa</string>
 </resources>

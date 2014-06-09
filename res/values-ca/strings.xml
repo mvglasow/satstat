@@ -150,4 +150,7 @@
     <string name="pref_lastupdate">Última actualització</string>
     <string name="pref_networks">Xarxes</string>
     <string name="pref_networks_summary">Actualitza dades AGPS quan el meu dispositiu es connecta amb una de les xarxes seleccionades</string>
+    <string name="pref_map">Mapa</string>
+    <string name="pref_loc_prov">Fonts d\'ubicació</string>
+    <string name="pref_loc_prov_summary">Mostra les fonts d\'ubicació seleccionades al mapa</string>
 </resources>

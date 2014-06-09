@@ -145,4 +145,7 @@
     <string name="pref_lastupdate">Dernière mise à jour</string>
     <string name="pref_networks">Réseaux</string>
     <string name="pref_networks_summary">Recharger données AGPS lorsque mon appareil se connecte à un des réseaux selectionnés</string>
+    <string name="pref_map">Carte</string>
+    <string name="pref_loc_prov">Sources de localisation</string>
+    <string name="pref_loc_prov_summary">Montrer les sources de localisation selectionnées sur la carte</string>
 </resources>

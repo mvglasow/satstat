@@ -149,4 +149,7 @@
     <string name="pref_lastupdate">Paskutinkart atnaujinta</string>
     <string name="pref_networks">Tinklai</string>
     <string name="pref_networks_summary">Atnaujinti AGPS duomenis, kai mano įranga prisijungs prie vieno iš išrinktųjų tinklų</string>
+    <string name="pref_map">Žemėlapis</string>
+    <string name="pref_loc_prov">Vietovės šaltiniai</string>
+    <string name="pref_loc_prov_summary">Nurodyti išrinktuosius vietovės šaltinius žemėlapyje</string>
 </resources>

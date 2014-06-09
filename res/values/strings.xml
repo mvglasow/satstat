@@ -164,8 +164,8 @@
     <string name="pref_networks">Networks</string>
     <string name="pref_networks_summary">Refresh AGPS data when my device connects to one of the selected networks</string>
     <string name="pref_map">Map</string>
-    <string name="pref_loc_prov">Location Providers</string>
-    <string name="pref_loc_prov_summary">Choose location providers to display</string>
+    <string name="pref_loc_prov">Location Sources</string>
+    <string name="pref_loc_prov_summary">Show selected location sources on the map</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
 </resources>

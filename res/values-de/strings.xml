@@ -149,4 +149,7 @@
     <string name="pref_lastupdate">Letzte Aktualisierung</string>
     <string name="pref_networks">Netze</string>
     <string name="pref_networks_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem der ausgewählten Netzwerke verbindet</string>
+    <string name="pref_map">Karte</string>
+    <string name="pref_loc_prov">Standortquellen</string>
+    <string name="pref_loc_prov_summary">Ausgewählte Standortquellen auf der Karte anzeigen</string>
 </resources>
