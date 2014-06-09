@@ -493,13 +493,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 	*/
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			if (isRadioViewReady) {
-				showCellLocation(location);
-				if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
-					//this may not be supported on some devices
-					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-					showNeighboringCellInfo(neighboringCells);
-				}
+			showCellLocation(location);
+			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
+				//this may not be supported on some devices
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				showNeighboringCellInfo(neighboringCells);
 			}
 		}
 		
@@ -1420,7 +1418,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	// sometimes the receiver isn't registered, make sure we don't crash
         	Log.d(this.getLocalClassName(), "WifiScanReceiver was never registered, caught exception");
         }
-        networkTimehandler.removeCallbacks(wifiTimeRunnable);
+        networkTimehandler.removeCallbacks(networkTimeRunnable);
         wifiTimehandler.removeCallbacks(wifiTimeRunnable);
         // we'll just skip that so locations will get invalidated in any case
         //providerInvalidationHandler.removeCallbacksAndMessages(null);
@@ -1597,6 +1595,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param location The location passed to {@link PhoneStateListener.onCellLocationChanged} or returned by {@link TelephonyManager.getCellLocation}
 	 */
 	protected static void showCellLocation (CellLocation location) {
+		networkTimehandler.removeCallbacks(networkTimeRunnable);
 		if (isRadioViewReady) {
 			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
 			if ((netinfo == null) 
@@ -1692,6 +1691,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
 	 */
 	protected static void showNetworkTypeGsm (int networkType) {
+		if (networkType != mLastNetworkType)
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
 		mLastNetworkType = networkType;
 		if (isRadioViewReady) {
 	        rilType.setTextColor(rilType.getContext().getResources().getColor(getColorFromNetworkType(networkType)));
@@ -1707,6 +1708,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
 	 */
 	protected static void showNetworkTypeCdma (int networkType) {
+		if (networkType != mLastNetworkType)
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
 		mLastNetworkType = networkType;
 		if (isRadioViewReady) {
 	        rilCdmaType.setTextColor(rilCdmaType.getContext().getResources().getColor(getColorFromNetworkType(networkType)));
