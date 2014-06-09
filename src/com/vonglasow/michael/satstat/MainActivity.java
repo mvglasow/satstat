@@ -87,6 +87,7 @@ import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
+import static android.telephony.PhoneStateListener.LISTEN_DATA_CONNECTION_STATE;
 import static android.telephony.PhoneStateListener.LISTEN_NONE;
 import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import android.telephony.SignalStrength;
@@ -493,6 +494,33 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					showNeighboringCellInfo(neighboringCells);
 				}
 			}
+		}
+		
+		public void onDataConnectionStateChanged (int state, int networkType) {
+			Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType) + ", state=" + Integer.toString(state));
+	    	switch (networkType) {
+	    	case TelephonyManager.NETWORK_TYPE_CDMA:
+	    	case TelephonyManager.NETWORK_TYPE_IDEN:
+	    	case TelephonyManager.NETWORK_TYPE_1xRTT:
+	    	case TelephonyManager.NETWORK_TYPE_EHRPD:
+	    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
+	    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
+	    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
+	    		showNetworkTypeCdma(networkType);
+	    		break;
+	    	case TelephonyManager.NETWORK_TYPE_EDGE:
+	    	case TelephonyManager.NETWORK_TYPE_GPRS:
+	    	case TelephonyManager.NETWORK_TYPE_HSDPA:
+	    	case TelephonyManager.NETWORK_TYPE_HSPA:
+	    	case TelephonyManager.NETWORK_TYPE_HSPAP:
+	    	case TelephonyManager.NETWORK_TYPE_HSUPA:
+	    	case TelephonyManager.NETWORK_TYPE_UMTS:
+	    		showNetworkTypeGsm(networkType);
+	    		break;
+	    	case TelephonyManager.NETWORK_TYPE_LTE:
+	    	default:
+	    		Log.w("MainActivity", "Network type changed but I don't know where to display it");
+	    	}
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
@@ -1182,7 +1210,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mSensorManager.registerListener(this, mPressureSensor, iSensorRate);
         mSensorManager.registerListener(this, mHumiditySensor, iSensorRate);
         mSensorManager.registerListener(this, mTempSensor, iSensorRate);
-        mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_SIGNAL_STRENGTHS));
+        mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
         
         // register for certain WiFi events indicating that new networks may be in range
         // An access point scan has completed, and results are available.
@@ -1539,7 +1567,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (isRadioViewReady) {
             if (location instanceof GsmCellLocation) {
 	            String networkOperator = mTelephonyManager.getNetworkOperator();
-	            rilType.setTextColor(rilType.getContext().getResources().getColor(getColorFromNetworkType(mTelephonyManager.getNetworkType())));
+	            showNetworkTypeGsm(mTelephonyManager.getNetworkType());
 	             
 	            int cid = ((GsmCellLocation) location).getCid();
 	            int lac = ((GsmCellLocation) location).getLac();
@@ -1555,7 +1583,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            rilLac.setText(String.valueOf(lac));
 	            rilGsmLayout.setVisibility(View.VISIBLE);
             } else if (location instanceof CdmaCellLocation) {
-	            rilCdmaType.setTextColor(rilCdmaType.getContext().getResources().getColor(getColorFromNetworkType(mTelephonyManager.getNetworkType())));
+	            showNetworkTypeCdma(mTelephonyManager.getNetworkType());
             	int sid = ((CdmaCellLocation) location).getSystemId();
             	int nid = ((CdmaCellLocation) location).getNetworkId();
             	int bsid = ((CdmaCellLocation) location).getBaseStationId();
@@ -1613,6 +1641,34 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
  			}
  		}
+	}
+	
+
+	/**
+	 * Updates the network type indicator for the current GSM cell. Called by
+	 * {@link showCellLocation(CellLocation)} or
+	 * {@link andriod.telephony.PhoneStateListener.onDataConnectionChanged(int, int)}.
+	 * 
+	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
+	 */
+	protected static void showNetworkTypeGsm (int networkType) {
+		if (isRadioViewReady) {
+	        rilType.setTextColor(rilType.getContext().getResources().getColor(getColorFromNetworkType(networkType)));
+		}
+	}
+	
+	
+	/**
+	 * Updates the network type indicator for the current CDMA cell. Called by
+	 * {@link showCellLocation(CellLocation)} or
+	 * {@link andriod.telephony.PhoneStateListener.onDataConnectionChanged(int, int)}.
+	 * 
+	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
+	 */
+	protected static void showNetworkTypeCdma (int networkType) {
+		if (isRadioViewReady) {
+	        rilCdmaType.setTextColor(rilCdmaType.getContext().getResources().getColor(getColorFromNetworkType(networkType)));
+		}
 	}
 	
 	
