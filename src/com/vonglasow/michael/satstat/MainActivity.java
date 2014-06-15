@@ -958,7 +958,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         networkTimeRunnable = new Runnable() {
         	@Override
         	public void run() {
-        		//FIXME: poll network type and display
 	            int newNetworkType = mTelephonyManager.getNetworkType();
 	            if (newNetworkType != mLastNetworkType)
 	            	onNetworkTypeChanged(newNetworkType);
