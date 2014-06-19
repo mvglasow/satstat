@@ -150,6 +150,7 @@ import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.SettingsActivity.SettingsFragment;
+import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 import com.vonglasow.michael.satstat.widgets.SquareView;
@@ -2266,7 +2267,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
             
             if (mapTileCache == null)
-	            mapTileCache = AndroidUtil.createTileCache(rootView.getContext(), "MapQuest",
+	            mapTileCache = PersistentTileCache.createTileCache(rootView.getContext(), "MapQuest",
 	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
 	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
 
