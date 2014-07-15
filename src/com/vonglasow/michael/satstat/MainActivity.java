@@ -86,6 +86,8 @@ import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoLte;
+import android.telephony.CellInfoWcdma;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
@@ -152,6 +154,10 @@ import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.SettingsActivity.SettingsFragment;
+import com.vonglasow.michael.satstat.data.CellTower;
+import com.vonglasow.michael.satstat.data.CellTowerListCdma;
+import com.vonglasow.michael.satstat.data.CellTowerListGsm;
+import com.vonglasow.michael.satstat.data.CellTowerListLte;
 import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
@@ -264,6 +270,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private long mPressureLast = 0;
 	private long mHumidityLast = 0;
 	private long mTempLast = 0;
+	
+	private static CellTower mServingCell;
+	private static CellTowerListGsm mCellsGsm = new CellTowerListGsm();
+	private static CellTowerListCdma mCellsCdma = new CellTowerListCdma();
+	private static CellTowerListLte mCellsLte = new CellTowerListLte();
+	
 	private static TelephonyManager mTelephonyManager;
 	private static ConnectivityManager mConnectivityManager;
 	private static WifiManager mWifiManager;
@@ -488,21 +500,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
 		// Requires API level 17. Many phones don't implement this method at all and will return null,
 		// the ones that do implement it return only certain cell types (none that we support at this point).
-		//FIXME: add LTE display
 		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
-			showCellInfo(cellInfo);
+			if (cellInfo != null) {
+				mCellsGsm.updateAll(cellInfo);
+				mCellsCdma.updateAll(cellInfo);
+				mCellsLte.updateAll(cellInfo);
+			}
+			//TODO: refresh cell list(s)
+			showCellInfo(cellInfo); //TODO: will be obsolete soon
 	 	}
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			showCellLocation(location);
+			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
+			String networkOperator = mTelephonyManager.getNetworkOperator();
+			if (location instanceof GsmCellLocation)
+				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
+			else if (location instanceof CdmaCellLocation)
+				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
+			
+			showCellLocation(location); //TODO: will be obsolete soon
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
 				//this may not be supported on some devices
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				showNeighboringCellInfo(neighboringCells);
+				if (neighboringCells != null)
+					mCellsGsm.updateAll(networkOperator, neighboringCells);
+				showNeighboringCellInfo(neighboringCells); //TODO: will be obsolete soon
 			}
+			//TODO: refresh cell list(s)
 		}
 		
 		public void onDataConnectionStateChanged (int state, int networkType) {
@@ -510,17 +539,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
+			int pt = mTelephonyManager.getPhoneType();
 			if (isRadioViewReady) {
-				int pt = mTelephonyManager.getPhoneType();
 				if (pt == PHONE_TYPE_GSM) {
 					rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength() * 2 - 113));
 					//this may not be supported on some devices
+					String networkOperator = mTelephonyManager.getNetworkOperator();
 					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-					showNeighboringCellInfo(neighboringCells);
+					mCellsGsm.remove(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
+					if (neighboringCells != null)
+						for (NeighboringCellInfo nci : neighboringCells)
+							mCellsGsm.update(networkOperator, nci);
+					showNeighboringCellInfo(neighboringCells); //TODO: will be obsolete soon
 				} else if (pt == PHONE_TYPE_CDMA) {
 					rilCdmaAsu.setText(String.valueOf(signalStrength.getCdmaDbm()));
 				}
 			}
+			if (mServingCell != null)
+				if (pt == PHONE_TYPE_GSM)
+					mServingCell.setDbm(signalStrength.getGsmSignalStrength() * 2 - 113);
+				else if (pt == PHONE_TYPE_CDMA)
+					mServingCell.setDbm(signalStrength.getCdmaDbm());
+			//TODO: refresh cell list(s)
 		}
 	};
 	
@@ -1167,6 +1207,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
     protected static void onNetworkTypeChanged(int networkType) {
 		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
+		if (networkType != mLastNetworkType)
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
+		mLastNetworkType = networkType;
+		if (mServingCell != null)
+			mServingCell.setNetworkType(networkType);
+		//TODO: refresh display
     	switch (networkType) {
     	case TelephonyManager.NETWORK_TYPE_CDMA:
     	case TelephonyManager.NETWORK_TYPE_IDEN:
@@ -1175,7 +1221,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	case TelephonyManager.NETWORK_TYPE_EVDO_0:
     	case TelephonyManager.NETWORK_TYPE_EVDO_A:
     	case TelephonyManager.NETWORK_TYPE_EVDO_B:
-    		showNetworkTypeCdma(networkType);
+    		showNetworkTypeCdma(networkType); //TODO: will be obsolete soon
     		break;
     	case TelephonyManager.NETWORK_TYPE_EDGE:
     	case TelephonyManager.NETWORK_TYPE_GPRS:
@@ -1184,7 +1230,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	case TelephonyManager.NETWORK_TYPE_HSPAP:
     	case TelephonyManager.NETWORK_TYPE_HSUPA:
     	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		showNetworkTypeGsm(networkType);
+    		showNetworkTypeGsm(networkType); //TODO: will be obsolete soon
     		break;
     	case TelephonyManager.NETWORK_TYPE_LTE:
     	default:
@@ -2162,7 +2208,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public RadioSectionFragment() {
         }
 
-        @Override
+		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+		@Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_radio, container, false);
@@ -2194,19 +2241,37 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	//get current phone info (first update won't fire until the cell actually changes)
             CellLocation cellLocation = mTelephonyManager.getCellLocation();
-            showCellLocation(cellLocation);
+			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
+			String networkOperator = mTelephonyManager.getNetworkOperator();
+			if (cellLocation instanceof GsmCellLocation)
+				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
+			else if (cellLocation instanceof CdmaCellLocation)
+				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
+            showCellLocation(cellLocation); //TODO: will be obsolete soon
             
 			//this is not supported on some phones (returns an empty list)
 			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-			showNeighboringCellInfo(neighboringCells);
+			if (neighboringCells != null) {
+				mCellsGsm.updateAll(networkOperator, neighboringCells);
+			}
+			showNeighboringCellInfo(neighboringCells); //TODO: will be obsolete soon
 			
-			/*
 			// Requires API level 17. Many phones don't implement this method at all and will return null,
 			// the ones that do implement it return only certain cell types (none that we support at this point).
-			//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
-			List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-			showCellInfo(allCells);
-			*/
+			//FIXME: add LTE display
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
+				if (allCells != null) {
+					mCellsGsm.updateAll(allCells);
+					mCellsCdma.updateAll(allCells);
+					mCellsLte.updateAll(allCells);
+				}
+				showCellInfo(allCells); //TODO: will be obsolete soon
+			}
+			
+			//TODO: refresh cell list(s)
 
         	mWifiManager.startScan();
         	
