@@ -2,6 +2,7 @@ package com.vonglasow.michael.satstat.data;
 
 public class CellTowerGsm extends CellTower {
 	public static String FAMILY = "gsm";
+	public static int MAX_2G_CID = 65535;
 	
 	private int cid;
 	private int lac;
@@ -13,7 +14,7 @@ public class CellTowerGsm extends CellTower {
 		this.mcc = mcc;
 		this.mnc = mnc;
 		this.lac = lac;
-		this.cid = cid;
+		this.setCid(cid);
 	}
 	
 	public int getCid() {
@@ -51,6 +52,8 @@ public class CellTowerGsm extends CellTower {
 	
 	public void setCid(int cid) {
 		this.cid = cid;
+		if (cid > MAX_2G_CID)
+			this.generation = 3;
 	}
 	
 	public void setLac(int lac) {
