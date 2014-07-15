@@ -1,8 +1,11 @@
 package com.vonglasow.michael.satstat.data;
 
+import java.util.List;
+
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.telephony.CellIdentityCdma;
+import android.telephony.CellInfo;
 import android.telephony.CellInfoCdma;
 import android.telephony.cdma.CdmaCellLocation;
 
@@ -60,5 +63,25 @@ public class CellTowerListCdma extends CellTowerList<CellTowerCdma> {
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		result.setServing(cell.isRegistered());
 		return result;
+	}
+	
+	/**
+	 * Adds or updates a list of cell towers.
+	 * <p>
+	 * This method first calls {@link #removeSource(int)} with
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#SOURCE_CELL_INFO} as
+	 * its argument. Then it iterates through all entries in {@code cells} and
+	 * updates each entry that is of type {@link android.telephony.CellInfoCdma}
+	 * by calling {@link #update(CellInfoCdma)}, passing that entry as the
+	 * argument.
+	 */
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+	public void updateAll(List<CellInfo> cells) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
+			return;
+		this.remove(CellTower.SOURCE_CELL_INFO);
+		for (CellInfo cell : cells)
+			if (cell instanceof CellInfoCdma)
+				this.update((CellInfoCdma) cell);
 	}
 }

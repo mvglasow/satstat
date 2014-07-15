@@ -1,9 +1,12 @@
 package com.vonglasow.michael.satstat.data;
 
+import java.util.List;
+
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityWcdma;
+import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoWcdma;
 import android.telephony.NeighboringCellInfo;
@@ -120,5 +123,43 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		result.setGeneration(3);
 		result.setServing(cell.isRegistered());
 		return result;
+	}
+	
+	/**
+	 * Adds or updates a list of cell towers.
+	 * <p>
+	 * This method first calls {@link #removeSource(int)} with
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#SOURCE_CELL_INFO} as
+	 * its argument. Then it iterates through all entries in {@code cells} and
+	 * updates each entry that is of type {@link android.telephony.CellInfoGsm}
+	 * or {@link android.telephony.CellInfoWcdma} by calling
+	 * {@link #update(CellInfoGsm)} or {@link #update(CellInfoWcdma)}
+	 * (depending on type), passing that entry as the argument.
+	 */
+	public void updateAll(List<CellInfo> cells) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
+			return;
+		this.remove(CellTower.SOURCE_CELL_INFO);
+		for (CellInfo cell : cells)
+			if (cell instanceof CellInfoGsm)
+				this.update((CellInfoGsm) cell);
+			else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
+				if (cell instanceof CellInfoWcdma)
+					this.update((CellInfoWcdma) cell);
+	}
+	
+	/**
+	 * Adds or updates a list of cell towers.
+	 * <p>
+	 * This method first calls {@link #removeSource(int)} with
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#SOURCE_NEIGHBORING_CELL_INFO}
+	 * as its argument. Then it iterates through all entries in {@code cells}
+	 * and updates each entry by calling {@link #update(NeighboringCellInfo)},
+	 * passing that entry as the argument.
+	 */
+	public void updateAll(String networkOperator, List<NeighboringCellInfo> cells) {
+		this.remove(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
+		for (NeighboringCellInfo cell : cells)
+			this.update(networkOperator, cell);
 	}
 }
