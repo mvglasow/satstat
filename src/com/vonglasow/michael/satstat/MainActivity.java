@@ -525,6 +525,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				if (neighboringCells != null)
 					mCellsGsm.updateAll(networkOperator, neighboringCells);
 			}
+			
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
+			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
+			if ((netinfo == null) 
+					|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
+					|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI))
+				networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+
 			showCells();
 		}
 		
