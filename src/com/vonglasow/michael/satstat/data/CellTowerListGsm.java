@@ -11,6 +11,7 @@ import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoWcdma;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
 public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
@@ -60,6 +61,7 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	public CellTowerGsm update(String networkOperator, NeighboringCellInfo cell) {
 		int mcc = Integer.parseInt(networkOperator.substring(0, 3));
 		int mnc = Integer.parseInt(networkOperator.substring(3));
+		Log.d(this.getClass().getName(), String.format("New NeighboringCellInfo: network=%s, lac=%d, cid=%d, psc=%d", networkOperator, cell.getLac(), cell.getCid(), cell.getPsc()));
 		CellTowerGsm result = this.get(mcc, mnc, cell.getLac(), cell.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(mcc, mnc, cell.getLac(), cell.getCid());
@@ -87,6 +89,7 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 			return null;
 		CellIdentityGsm cid = cell.getCellIdentity();
+		Log.d(this.getClass().getName(), String.format("New CellInfoGsm: mcc=%d, mnc=%d, lac=%d, cid=%d, psc=%d", cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc()));
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
@@ -115,6 +118,7 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) 
 			return null;
 		CellIdentityWcdma cid = cell.getCellIdentity();
+		Log.d(this.getClass().getName(), String.format("New CellInfoWcdma: mcc=%d, mnc=%d, lac=%d, cid=%d, psc=%d", cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc()));
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
