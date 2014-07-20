@@ -41,6 +41,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			result = new CellTowerGsm(mcc, mnc, location.getLac(), location.getCid());
 			this.put(result.getText(), result);
 		}
+		if (location.getPsc() != -1)
+			result.setGeneration(3);
 		result.setCellLocation(true);
 		return result;
 	}

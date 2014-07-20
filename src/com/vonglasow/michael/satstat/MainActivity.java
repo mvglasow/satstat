@@ -155,9 +155,12 @@ import org.mapsforge.map.util.MapViewProjection;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.SettingsActivity.SettingsFragment;
 import com.vonglasow.michael.satstat.data.CellTower;
+import com.vonglasow.michael.satstat.data.CellTowerCdma;
+import com.vonglasow.michael.satstat.data.CellTowerGsm;
 import com.vonglasow.michael.satstat.data.CellTowerListCdma;
 import com.vonglasow.michael.satstat.data.CellTowerListGsm;
 import com.vonglasow.michael.satstat.data.CellTowerListLte;
+import com.vonglasow.michael.satstat.data.CellTowerLte;
 import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
@@ -343,19 +346,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	protected static boolean isRadioViewReady = false;
 	protected static LinearLayout rilGsmLayout;
-	protected static TextView rilType;
-	protected static TextView rilMcc;
-	protected static TextView rilMnc;
-	protected static TextView rilCellId;
-	protected static TextView rilLac;
-	protected static TextView rilAsu;
 	protected static TableLayout rilCells;
-	protected static TextView rilSid;
-	protected static TextView rilNid;
-	protected static TextView rilBsid;
 	protected static LinearLayout rilCdmaLayout;
-	protected static TextView rilCdmaType;
-	protected static TextView rilCdmaAsu;
 	protected static TableLayout rilCdmaCells;
 	protected static LinearLayout wifiAps;
 	
@@ -390,7 +382,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
 	protected static Handler networkTimehandler = null;
-	protected static int mLastNetworkType; //the last observed (and displayed) network type
+	protected static int mLastNetworkType = TelephonyManager.NETWORK_TYPE_UNKNOWN; //the last observed (and displayed) network type
+	protected static int mLastCellDbm;
 	protected static Runnable networkTimeRunnable = null;
 	private static final int NETWORK_REFRESH_DELAY = 1000; //the polling interval for the network type
 	protected static Handler wifiTimehandler = null;
@@ -509,29 +502,30 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mCellsCdma.updateAll(cellInfo);
 				mCellsLte.updateAll(cellInfo);
 			}
-			//TODO: refresh cell list(s)
-			showCellInfo(cellInfo); //TODO: will be obsolete soon
+			showCells();
 	 	}
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
-			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
-			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
 			String networkOperator = mTelephonyManager.getNetworkOperator();
 			if (location instanceof GsmCellLocation)
 				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
 			else if (location instanceof CdmaCellLocation)
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
+			if ((mLastNetworkType != TelephonyManager.NETWORK_TYPE_UNKNOWN) && (mServingCell != null) && (mServingCell.getGeneration() == 0))
+				mServingCell.setNetworkType(mLastNetworkType);
+			if ((mLastCellDbm != 0) && (mServingCell != null) && (mServingCell.getDbm() == 0))
+				mServingCell.setDbm(mLastCellDbm);
 			
-			showCellLocation(location); //TODO: will be obsolete soon
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
 				//this may not be supported on some devices
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 				if (neighboringCells != null)
 					mCellsGsm.updateAll(networkOperator, neighboringCells);
-				showNeighboringCellInfo(neighboringCells); //TODO: will be obsolete soon
 			}
-			//TODO: refresh cell list(s)
+			showCells();
 		}
 		
 		public void onDataConnectionStateChanged (int state, int networkType) {
@@ -540,27 +534,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
 			int pt = mTelephonyManager.getPhoneType();
-			if (isRadioViewReady) {
-				if (pt == PHONE_TYPE_GSM) {
-					rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength() * 2 - 113));
-					//this may not be supported on some devices
-					String networkOperator = mTelephonyManager.getNetworkOperator();
-					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-					mCellsGsm.remove(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
-					if (neighboringCells != null)
-						for (NeighboringCellInfo nci : neighboringCells)
-							mCellsGsm.update(networkOperator, nci);
-					showNeighboringCellInfo(neighboringCells); //TODO: will be obsolete soon
-				} else if (pt == PHONE_TYPE_CDMA) {
-					rilCdmaAsu.setText(String.valueOf(signalStrength.getCdmaDbm()));
-				}
-			}
-			if (mServingCell != null)
-				if (pt == PHONE_TYPE_GSM)
-					mServingCell.setDbm(signalStrength.getGsmSignalStrength() * 2 - 113);
-				else if (pt == PHONE_TYPE_CDMA)
-					mServingCell.setDbm(signalStrength.getCdmaDbm());
-			//TODO: refresh cell list(s)
+			if (pt == PHONE_TYPE_GSM) {
+				mLastCellDbm = signalStrength.getGsmSignalStrength() * 2 - 113;
+				mCellsGsm.remove(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
+				//this may not be supported on some devices
+				String networkOperator = mTelephonyManager.getNetworkOperator();
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				if (neighboringCells != null)
+					for (NeighboringCellInfo nci : neighboringCells)
+						mCellsGsm.update(networkOperator, nci);
+			} else if (pt == PHONE_TYPE_CDMA)
+				mLastCellDbm = signalStrength.getCdmaDbm();
+			if ((mServingCell != null) && (mLastCellDbm != 0))
+				mServingCell.setDbm(mLastCellDbm);
+			showCells();
 		}
 	};
 	
@@ -830,6 +817,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		else {
 			return "?";
 		}
+	}
+	
+
+    /**
+     * Gets the display color for a phone network generation.
+     * @param generation The network generation, i.e. {@code 2}, {@code 3} or {@code 4} for any flavor of 2G, 3G or 4G, or {@code 0} for unknown
+     * @return The color in which to display the indicator. If {@code generation} is {@code 0} or not a valid generation, the color returned will be transparent.
+     */
+	public static int getColorFromGeneration(int generation) {
+    	switch (generation) {
+    	case 2:
+    		return(R.color.gen2);
+    	case 3:
+    		return(R.color.gen3);
+    	case 4:
+    		return(R.color.gen4);
+    	default:
+    		return(android.R.color.transparent);
+    	}
 	}
 	
 	
@@ -1212,30 +1218,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mLastNetworkType = networkType;
 		if (mServingCell != null)
 			mServingCell.setNetworkType(networkType);
-		//TODO: refresh display
-    	switch (networkType) {
-    	case TelephonyManager.NETWORK_TYPE_CDMA:
-    	case TelephonyManager.NETWORK_TYPE_IDEN:
-    	case TelephonyManager.NETWORK_TYPE_1xRTT:
-    	case TelephonyManager.NETWORK_TYPE_EHRPD:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
-    		showNetworkTypeCdma(networkType); //TODO: will be obsolete soon
-    		break;
-    	case TelephonyManager.NETWORK_TYPE_EDGE:
-    	case TelephonyManager.NETWORK_TYPE_GPRS:
-    	case TelephonyManager.NETWORK_TYPE_HSDPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPAP:
-    	case TelephonyManager.NETWORK_TYPE_HSUPA:
-    	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		showNetworkTypeGsm(networkType); //TODO: will be obsolete soon
-    		break;
-    	case TelephonyManager.NETWORK_TYPE_LTE:
-    	default:
-    		Log.w("MainActivity", "Network type changed but I don't know where to display it");
-    	}
+		showCells();
     }
 
 	@Override
@@ -1561,210 +1544,188 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        Log.e("", "Error marking actionbar embedded", e);
 	    }
 	}
-
+	
 	/**
-	 * Updates the list of cells in range. Called by {@link PhoneStateListener.onCellInfoChanged}
-	 * or after explicitly getting the location by calling {@link TelephonyManager.getAllCellInfo}.
-	 * 
-	 * @param cells The list of cells passed to {@link PhoneStateListener.onCellInfoChanged} or returned by {@link TelephonyManager.getAllCellInfo}
+	 * Updates the list of cells in range.
+	 * <p>
+	 * This method is automatically called by
+	 * {@link PhoneStateListener#onCellInfoChanged(List)}
+	 * and {@link PhoneStateListener.onCellLocationChanged}. It must be called
+	 * manually whenever {@link #mCellsCdma}, {@link #mCellsGsm}, 
+	 * {@link #mCellsLte} or one of their values are modified, typically after
+	 * calling {@link android.telephony.TelephonyManager#getAllCellInfo()},
+	 * {@link android.telephony.TelephonyManager#getCellLocation()} or
+	 * {@link android.telephony.TelephonyManager#getNeighboringCellInfo()}. 
 	 */
-	// Requires API level 17. Many phones don't implement this method at all and will return null,
-	// the ones that do implement it return only certain cell types (none that we support at this point).
-	//FIXME: add LTE display
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-	protected static void showCellInfo (List <CellInfo> cells) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
+	protected static void showCells() {
+		if (!isRadioViewReady)
 			return;
- 		if ((isRadioViewReady) && (cells != null)) {
- 			rilCells.removeAllViews();
- 			for (CellInfo cell : cells) {
-        		if (cell instanceof CellInfoGsm) {
-        			CellInfoGsm cellInfoGsm = (CellInfoGsm) cell;
-    	            TableRow row = new TableRow(rilCells.getContext());
-    	            TextView newMcc = new TextView(rilCells.getContext());
-    	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-    	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newMcc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMcc()));
-    	            row.addView(newMcc);
-    	            TextView newMnc = new TextView(rilCells.getContext());
-    	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-    	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
-    	            row.addView(newMnc);
-    	            TextView newLac = new TextView(rilCells.getContext());
-    	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
-    	            TextView newCid = new TextView(rilCells.getContext());
-    	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-    	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newCid.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
-    	            row.addView(newCid);
-    	            row.addView(newLac);
-    	            TextView newDbm = new TextView(rilCells.getContext());
-    	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-    	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newDbm.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getDbm()));
-    	            row.addView(newDbm);
-    	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        		} else if (cell instanceof CellInfoCdma) {
-        			CellInfoCdma cellInfoCdma = (CellInfoCdma) cell;
-    	            TableRow row = new TableRow(rilCells.getContext());
-    	            TextView newSid = new TextView(rilCells.getContext());
-    	            newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-    	            newSid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newSid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getSystemId()));
-    	            row.addView(newSid);
-    	            TextView newNid = new TextView(rilCells.getContext());
-    	            newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-    	            newNid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newNid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getNetworkId()));
-    	            row.addView(newNid);
-    	            TextView newBsid = new TextView(rilCells.getContext());
-    	            newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-    	            newBsid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newBsid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getBasestationId()));
-    	            row.addView(newBsid);
-    	            TextView newAsu = new TextView(rilCells.getContext());
-    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newAsu.setText(String.valueOf(cellInfoCdma.getCellSignalStrength().getAsuLevel()));
-    	            row.addView(newAsu);
-    	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        		}
- 			}
- 		}
-	}
-	
-	/**
-	 * Updates the info display for the current radio cell. Called by {@link PhoneStateListener.onCellLocationChanged}
-	 * or after explicitly getting the location by calling {@link TelephonyManager.getCellLocation}.
-	 * 
-	 * @param location The location passed to {@link PhoneStateListener.onCellLocationChanged} or returned by {@link TelephonyManager.getCellLocation}
-	 */
-	protected static void showCellLocation (CellLocation location) {
-		networkTimehandler.removeCallbacks(networkTimeRunnable);
-		if (isRadioViewReady) {
-			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
-			if ((netinfo == null) 
-					|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
-					|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
-				networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
-			}
-			
-            if (location instanceof GsmCellLocation) {
-	            String networkOperator = mTelephonyManager.getNetworkOperator();
-	            showNetworkTypeGsm(mTelephonyManager.getNetworkType());
-	             
-	            int cid = ((GsmCellLocation) location).getCid();
-	            int lac = ((GsmCellLocation) location).getLac();
-	            
-	            if (networkOperator.length() >= 3) {
-		            rilMcc.setText(networkOperator.substring(0, 3));
-		            rilMnc.setText(networkOperator.substring(3));
-	            } else {
-	            	rilMcc.setText(rilMcc.getContext().getString(R.string.value_none));
-		            rilMnc.setText(rilMnc.getContext().getString(R.string.value_none));
-	            }
-	            rilCellId.setText(String.valueOf(cid));
-	            rilLac.setText(String.valueOf(lac));
-	            rilGsmLayout.setVisibility(View.VISIBLE);
-            } else if (location instanceof CdmaCellLocation) {
-	            showNetworkTypeCdma(mTelephonyManager.getNetworkType());
-            	int sid = ((CdmaCellLocation) location).getSystemId();
-            	int nid = ((CdmaCellLocation) location).getNetworkId();
-            	int bsid = ((CdmaCellLocation) location).getBaseStationId();
-            	rilSid.setText(String.valueOf(sid));
-            	rilNid.setText(String.valueOf(nid));
-            	rilBsid.setText(String.valueOf(bsid));
-	            rilCdmaLayout.setVisibility(View.VISIBLE);
-            }
+		
+		if ((mCellsGsm == null) || (mCellsGsm.isEmpty()))
+			rilGsmLayout.setVisibility(View.GONE);
+		else {
+			rilGsmLayout.setVisibility(View.VISIBLE);
+			rilCells.removeAllViews();
+			if (mCellsGsm.containsValue(mServingCell))
+				showCellGsm((CellTowerGsm) mServingCell);
+			for (CellTowerGsm cell : mCellsGsm.values())
+				if (cell != mServingCell)
+					showCellGsm(cell);
+		}
+		
+		if ((mCellsCdma == null) || (mCellsCdma.isEmpty()))
+			rilCdmaLayout.setVisibility(View.GONE);
+		else {
+			rilCdmaLayout.setVisibility(View.VISIBLE);
+			rilCdmaCells.removeAllViews();
+			if (mCellsCdma.containsValue(mServingCell))
+				showCellCdma((CellTowerCdma) mServingCell);
+			for (CellTowerCdma cell : mCellsCdma.values())
+				if (cell != mServingCell)
+					showCellCdma(cell);
+		}
+		
+		if ((mCellsLte == null) || (mCellsLte.isEmpty())) {
+			// rilLteLayout.setVisibility(View.GONE);
+		} else {
+			// rilLteLayout.setVisibility(View.VISIBLE);
+			// rilLteCells.removeAllViews();
+			if (mCellsLte.containsValue(mServingCell))
+				showCellLte((CellTowerLte) mServingCell);
+			for (CellTowerLte cell : mCellsLte.values())
+				if (cell != mServingCell)
+					showCellLte(cell);
 		}
 	}
 	
-	//FIXME: don't repeat active cell in list (we're already displaying it above)
-	/**
-	 * Updates the list of cells in range. Called after explicitly getting a
-	 * list of neighboring cells by calling {@link TelephonyManager.getNeighboringCellInfo}.
-	 * 
-	 * @param neighboringCells The list of cells returned by {@link TelephonyManager.getNeighboringCellInfo}
-	 */
-	protected static void showNeighboringCellInfo (List <NeighboringCellInfo> neighboringCells) {
- 		if ((isRadioViewReady) && (neighboringCells != null)) {
- 			rilCells.removeAllViews();
- 			for (NeighboringCellInfo cell : neighboringCells) {
-	            TableRow row = new TableRow(rilCells.getContext());
-	            TextView newType = new TextView(rilCells.getContext());
-	            newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-	            newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-	            newType.setText(rilCells.getContext().getString(R.string.smallDot));
-	            newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromNetworkType(cell.getNetworkType())));
-	            row.addView(newType);
-	            TextView newMcc = new TextView(rilCells.getContext());
-	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newMcc.setText(rilCells.getContext().getString(R.string.value_none));
-	            row.addView(newMcc);
-	            TextView newMnc = new TextView(rilCells.getContext());
-	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newMnc.setText(rilCells.getContext().getString(R.string.value_none));
-	            row.addView(newMnc);
-	            TextView newLac = new TextView(rilCells.getContext());
-	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newLac.setText(String.valueOf(cell.getLac()));
-	            TextView newCid = new TextView(rilCells.getContext());
-	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newCid.setText(String.valueOf(cell.getCid()));
-	            row.addView(newCid);
-	            row.addView(newLac);
-	            TextView newDbm = new TextView(rilCells.getContext());
-	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-	            newDbm.setText(String.valueOf(cell.getRssi() * 2 - 113));
-	            row.addView(newDbm);
-	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
- 			}
- 		}
+	protected static void showCellCdma(CellTowerCdma cell) {
+        TableRow row = new TableRow(rilCdmaCells.getContext());
+        row.setWeightSum(26);
+        
+        TextView newType = new TextView(rilCdmaCells.getContext());
+        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+        newType.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newType.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
+        newType.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
+        row.addView(newType);
+        
+        TextView newSid = new TextView(rilCdmaCells.getContext());
+        newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 6));
+        newSid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newSid.setText(String.format("%03d", cell.getSid()));
+        row.addView(newSid);
+        
+        TextView newNid = new TextView(rilCdmaCells.getContext());
+        newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+        newNid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newNid.setText(String.format("%02d", cell.getNid()));
+        row.addView(newNid);
+        
+        TextView newBsid = new TextView(rilCdmaCells.getContext());
+        newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+        newBsid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newBsid.setText(String.valueOf(cell.getBsid()));
+        row.addView(newBsid);
+        
+        TextView newDbm = new TextView(rilCdmaCells.getContext());
+        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+        newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newDbm.setText(String.valueOf(cell.getDbm()));
+        row.addView(newDbm);
+        
+        rilCdmaCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 	
+	protected static void showCellGsm(CellTowerGsm cell) {
+        TableRow row = new TableRow(rilCells.getContext());
+        row.setWeightSum(26);
+        
+        TextView newType = new TextView(rilCells.getContext());
+        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+        newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
+        newType.setText(rilCells.getContext().getResources().getString(R.string.smallDot));
+        row.addView(newType);
+        
+        TextView newMcc = new TextView(rilCells.getContext());
+        newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newMcc.setText(String.format("%03d", cell.getMcc()));
+        row.addView(newMcc);
+        
+        TextView newMnc = new TextView(rilCells.getContext());
+        newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+		newMnc.setText(String.format("%02d", cell.getMnc()));
+        row.addView(newMnc);
+        
+        TextView newLac = new TextView(rilCells.getContext());
+        newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+        newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+		newLac.setText(String.valueOf(cell.getLac()));
+        row.addView(newLac);
+        
+        TextView newCid = new TextView(rilCells.getContext());
+        newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+        newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+		newCid.setText(String.valueOf(cell.getCid()));
+        row.addView(newCid);
+        
+        TextView newDbm = new TextView(rilCells.getContext());
+        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+        newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newDbm.setText(String.valueOf(cell.getDbm()));
+        row.addView(newDbm);
+        
+        rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	}
+	
+	protected static void showCellLte(CellTowerLte cell) {
+		/*
+        TableRow row = new TableRow(rilLteCells.getContext());
+        row.setWeightSum(26);
+        
+        TextView newType = new TextView(rilLteCells.getContext());
+        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+        newType.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newType.setTextColor(rilLteCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
+        newType.setText(rilLteCells.getContext().getResources().getString(R.string.smallDot));
+        row.addView(newType);
+        
+        TextView newMcc = new TextView(rilLteCells.getContext());
+        newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMcc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newMcc.setText(String.format("%03d", cell.getMcc()));
+        row.addView(newMcc);
+        
+        TextView newMnc = new TextView(rilLteCells.getContext());
+        newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMnc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+		newMnc.setText(String.format("%02d", cell.getMnc()));
+        row.addView(newMnc);
+        
+        TextView newTac = new TextView(rilLteCells.getContext());
+        newTac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+        newTac.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newTac.setText(String.valueOf(cell.getTac()));
+        row.addView(newTac);
+        
+        TextView newCi = new TextView(rilLteCells.getContext());
+        newCi.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+        newCi.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+		newCi.setText(String.valueOf(cell.getCi()));
+        row.addView(newCi);
+        
+        TextView newDbm = new TextView(rilLteCells.getContext());
+        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+        newDbm.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newDbm.setText(String.valueOf(cell.getDbm()));
+        row.addView(newDbm);
+        
+        rilLteCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        */
+	}
 
-	/**
-	 * Updates the network type indicator for the current GSM cell. Called by
-	 * {@link showCellLocation(CellLocation)} or
-	 * {@link onNetworkTypeChanged(int)}.
-	 * 
-	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
-	 */
-	protected static void showNetworkTypeGsm (int networkType) {
-		if (networkType != mLastNetworkType)
-			networkTimehandler.removeCallbacks(networkTimeRunnable);
-		mLastNetworkType = networkType;
-		if (isRadioViewReady) {
-	        rilType.setTextColor(rilType.getContext().getResources().getColor(getColorFromNetworkType(networkType)));
-		}
-	}
-	
-	
-	/**
-	 * Updates the network type indicator for the current CDMA cell. Called by
-	 * {@link showCellLocation(CellLocation)} or
-	 * {@link onNetworkTypeChanged(int)}.
-	 * 
-	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
-	 */
-	protected static void showNetworkTypeCdma (int networkType) {
-		if (networkType != mLastNetworkType)
-			networkTimehandler.removeCallbacks(networkTimeRunnable);
-		mLastNetworkType = networkType;
-		if (isRadioViewReady) {
-	        rilCdmaType.setTextColor(rilCdmaType.getContext().getResources().getColor(getColorFromNetworkType(networkType)));
-		}
-	}
-	
-	
 	/**
 	 * Updates internal data structures when the user's selection of location providers has changed.
 	 * @param context
@@ -2216,20 +2177,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             
             // Initialize controls
         	rilGsmLayout = (LinearLayout) rootView.findViewById(R.id.rilGsmLayout);
-        	rilType = (TextView) rootView.findViewById(R.id.rilType);
-        	rilMcc = (TextView) rootView.findViewById(R.id.rilMcc);
-        	rilMnc = (TextView) rootView.findViewById(R.id.rilMnc);
-        	rilCellId = (TextView) rootView.findViewById(R.id.rilCellId);
-        	rilLac = (TextView) rootView.findViewById(R.id.rilLac);
-        	rilAsu = (TextView) rootView.findViewById(R.id.rilAsu);
         	rilCells = (TableLayout) rootView.findViewById(R.id.rilCells);
         	
         	rilCdmaLayout = (LinearLayout) rootView.findViewById(R.id.rilCdmaLayout);
-        	rilCdmaType = (TextView) rootView.findViewById(R.id.rilCdmaType);
-        	rilSid = (TextView) rootView.findViewById(R.id.rilSid); 
-        	rilNid = (TextView) rootView.findViewById(R.id.rilNid);
-        	rilBsid = (TextView) rootView.findViewById(R.id.rilBsid);
-        	rilCdmaAsu = (TextView) rootView.findViewById(R.id.rilCdmaAsu);
         	rilCdmaCells = (TableLayout) rootView.findViewById(R.id.rilCdmaCells);
         	
         	wifiAps = (LinearLayout) rootView.findViewById(R.id.wifiAps);
@@ -2249,18 +2199,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
 			else if (cellLocation instanceof CdmaCellLocation)
 				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
-            showCellLocation(cellLocation); //TODO: will be obsolete soon
             
 			//this is not supported on some phones (returns an empty list)
 			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 			if (neighboringCells != null) {
 				mCellsGsm.updateAll(networkOperator, neighboringCells);
 			}
-			showNeighboringCellInfo(neighboringCells); //TODO: will be obsolete soon
 			
 			// Requires API level 17. Many phones don't implement this method at all and will return null,
 			// the ones that do implement it return only certain cell types (none that we support at this point).
-			//FIXME: add LTE display
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
 				if (allCells != null) {
@@ -2268,10 +2215,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					mCellsCdma.updateAll(allCells);
 					mCellsLte.updateAll(allCells);
 				}
-				showCellInfo(allCells); //TODO: will be obsolete soon
 			}
 			
-			//TODO: refresh cell list(s)
+			showCells();
 
         	mWifiManager.startScan();
         	
