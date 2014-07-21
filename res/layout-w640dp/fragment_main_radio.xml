@@ -36,7 +36,7 @@
 			        android:layout_height="wrap_content"
 			        android:baselineAligned="true"
 			        android:measureWithLargestChild="false"
-			        android:weightSum="26" >
+			        android:weightSum="29" >
 			
 			        <LinearLayout
 			            android:layout_width="0dp"
@@ -112,6 +112,19 @@
 			                android:text="@string/title_radio_cellid"
 			                android:textAppearance="?android:attr/textAppearanceSmall" />
 			
+			        </LinearLayout>
+			
+			        <LinearLayout
+			            android:layout_width="0dp"
+			            android:layout_height="fill_parent"
+			            android:layout_weight="3"
+			            android:orientation="vertical" >
+		
+			            <TextView
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/title_radio_psc"
+			                android:textAppearance="?android:attr/textAppearanceSmall" />
 			        </LinearLayout>
 			
 			        <LinearLayout

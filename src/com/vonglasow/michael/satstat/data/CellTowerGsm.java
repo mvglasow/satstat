@@ -3,18 +3,21 @@ package com.vonglasow.michael.satstat.data;
 public class CellTowerGsm extends CellTower {
 	public static String FAMILY = "gsm";
 	public static int MAX_2G_CID = 65535;
+	public static int UNKNOWN = -1;
 	
 	private int cid;
 	private int lac;
 	private int mcc;
 	private int mnc;
+	private int psc;
 	
-	public CellTowerGsm(int mcc, int mnc, int lac, int cid) {
+	public CellTowerGsm(int mcc, int mnc, int lac, int cid, int psc) {
 		super();
 		this.mcc = mcc;
 		this.mnc = mnc;
 		this.lac = lac;
 		this.setCid(cid);
+		this.setPsc(psc);
 	}
 	
 	public int getCid() {
@@ -31,6 +34,10 @@ public class CellTowerGsm extends CellTower {
 	
 	public int getMnc() {
 		return this.mnc;
+	}
+
+	public int getPsc() {
+		return this.psc;
 	}
 
 	/**
@@ -66,5 +73,13 @@ public class CellTowerGsm extends CellTower {
 	
 	public void setMnc(int mnc) {
 		this.mnc = mnc;
+	}
+	
+	public void setPsc(int psc) {
+		if ((psc != Integer.MAX_VALUE) && (psc != -1)) {
+			this.psc = psc;
+			this.generation = 3;
+		} else
+			this.psc = UNKNOWN;
 	}
 }

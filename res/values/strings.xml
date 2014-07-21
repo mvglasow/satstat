@@ -82,6 +82,7 @@
     <string name="title_radio_mnc">MNC</string>
     <string name="title_radio_cellid">Cell ID</string>
     <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_psc">PSC</string>
     <string name="title_radio_asu">ASU</string>
     <string name="title_radio_cdma">CDMA</string>
     <string name="title_radio_sid">SID</string>

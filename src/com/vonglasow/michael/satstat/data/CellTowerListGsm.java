@@ -39,9 +39,10 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		int mnc = Integer.parseInt(networkOperator.substring(3));
 		CellTowerGsm result = this.get(mcc, mnc, location.getLac(), location.getCid());
 		if (result == null) {
-			result = new CellTowerGsm(mcc, mnc, location.getLac(), location.getCid());
+			result = new CellTowerGsm(mcc, mnc, location.getLac(), location.getCid(), location.getPsc());
 			this.put(result.getText(), result);
-		}
+		} else
+			result.setPsc(location.getPsc());
 		if (location.getPsc() != -1)
 			result.setGeneration(3);
 		result.setCellLocation(true);
@@ -64,9 +65,10 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		Log.d(this.getClass().getName(), String.format("New NeighboringCellInfo: network=%s, lac=%d, cid=%d, psc=%d", networkOperator, cell.getLac(), cell.getCid(), cell.getPsc()));
 		CellTowerGsm result = this.get(mcc, mnc, cell.getLac(), cell.getCid());
 		if (result == null) {
-			result = new CellTowerGsm(mcc, mnc, cell.getLac(), cell.getCid());
+			result = new CellTowerGsm(mcc, mnc, cell.getLac(), cell.getCid(), cell.getPsc());
 			this.put(result.getText(), result);
-		}
+		} else
+			result.setPsc(cell.getPsc());
 		result.setNeighboringCellInfo(true);
 		result.setDbm(cell.getRssi() * 2 - 113);
 		result.setNetworkType(cell.getNetworkType());
@@ -92,9 +94,10 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		Log.d(this.getClass().getName(), String.format("New CellInfoGsm: mcc=%d, mnc=%d, lac=%d, cid=%d, psc=%d", cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc()));
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
 		if (result == null) {
-			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
+			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc());
 			this.put(result.getText(), result);
-		}
+		} else
+			result.setPsc(cid.getPsc());
 		result.setCellInfo(true);
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -121,9 +124,10 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		Log.d(this.getClass().getName(), String.format("New CellInfoWcdma: mcc=%d, mnc=%d, lac=%d, cid=%d, psc=%d", cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc()));
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
 		if (result == null) {
-			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
+			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc());
 			this.put(result.getText(), result);
-		}
+		} else
+			result.setPsc(cid.getPsc());
 		result.setCellInfo(true);
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		result.setGeneration(3);

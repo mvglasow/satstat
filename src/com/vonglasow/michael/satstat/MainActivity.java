@@ -1646,7 +1646,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	protected static void showCellGsm(CellTowerGsm cell) {
         TableRow row = new TableRow(rilCells.getContext());
-        row.setWeightSum(26);
+        row.setWeightSum(29);
         
         TextView newType = new TextView(rilCells.getContext());
         newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
@@ -1678,6 +1678,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
 		newCid.setText(String.valueOf(cell.getCid()));
         row.addView(newCid);
+        
+        TextView newPsc = new TextView(rilCells.getContext());
+        newPsc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newPsc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newPsc.setText((cell.getPsc()==CellTowerGsm.UNKNOWN)?rilCells.getContext().getResources().getString(R.string.value_none):String.valueOf(cell.getPsc()));
+        row.addView(newPsc);
         
         TextView newDbm = new TextView(rilCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
