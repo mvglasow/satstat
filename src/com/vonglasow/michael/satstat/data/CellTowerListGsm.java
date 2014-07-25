@@ -149,7 +149,7 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	public void updateAll(List<CellInfo> cells) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 			return;
-		this.remove(CellTower.SOURCE_CELL_INFO);
+		this.removeSource(CellTower.SOURCE_CELL_INFO);
 		for (CellInfo cell : cells)
 			if (cell instanceof CellInfoGsm)
 				this.update((CellInfoGsm) cell);
@@ -168,7 +168,7 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * passing that entry as the argument.
 	 */
 	public void updateAll(String networkOperator, List<NeighboringCellInfo> cells) {
-		this.remove(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
+		this.removeSource(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
 		for (NeighboringCellInfo cell : cells)
 			this.update(networkOperator, cell);
 	}

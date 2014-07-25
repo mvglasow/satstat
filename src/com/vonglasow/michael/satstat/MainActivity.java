@@ -544,13 +544,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			int pt = mTelephonyManager.getPhoneType();
 			if (pt == PHONE_TYPE_GSM) {
 				mLastCellDbm = signalStrength.getGsmSignalStrength() * 2 - 113;
-				mCellsGsm.remove(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
 				//this may not be supported on some devices
 				String networkOperator = mTelephonyManager.getNetworkOperator();
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 				if (neighboringCells != null)
-					for (NeighboringCellInfo nci : neighboringCells)
-						mCellsGsm.update(networkOperator, nci);
+					mCellsGsm.updateAll(networkOperator, neighboringCells);
 			} else if (pt == PHONE_TYPE_CDMA)
 				mLastCellDbm = signalStrength.getCdmaDbm();
 			if ((mServingCell != null) && (mLastCellDbm != 0))
