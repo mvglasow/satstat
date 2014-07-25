@@ -491,6 +491,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
 	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+		/* TODO: disabled for debugging
 		// Requires API level 17. Many phones don't implement this method at all and will return null,
 		// the ones that do implement it return only certain cell types (none that we support at this point).
 		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -504,6 +505,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			showCells();
 	 	}
+	 	*/
 	 	
 		public void onCellLocationChanged (CellLocation location) {
 			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
@@ -2218,6 +2220,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mCellsGsm.updateAll(networkOperator, neighboringCells);
 			}
 			
+			/* TODO: disabled for debugging
 			// Requires API level 17. Many phones don't implement this method at all and will return null,
 			// the ones that do implement it return only certain cell types (none that we support at this point).
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -2228,6 +2231,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					mCellsLte.updateAll(allCells);
 				}
 			}
+			*/
 			
 			showCells();
 
