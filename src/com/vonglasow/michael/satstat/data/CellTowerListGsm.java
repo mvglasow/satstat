@@ -35,8 +35,13 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * @return The new or updated entry.
 	 */
 	public CellTowerGsm update(String networkOperator, GsmCellLocation location) {
-		int mcc = Integer.parseInt(networkOperator.substring(0, 3));
-		int mnc = Integer.parseInt(networkOperator.substring(3));
+		Log.d(this.getClass().getName(), String.format("New GsmCellLocation: network=%s, lac=%d, cid=%d, psc=%d", networkOperator, location.getLac(), location.getCid(), location.getPsc()));
+		int mcc = CellTowerGsm.UNKNOWN;
+		int mnc = CellTowerGsm.UNKNOWN;
+		if (networkOperator.length() > 3) {
+			mcc = Integer.parseInt(networkOperator.substring(0, 3));
+			mnc = Integer.parseInt(networkOperator.substring(3));
+		}
 		CellTowerGsm result = this.get(mcc, mnc, location.getLac(), location.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(mcc, mnc, location.getLac(), location.getCid(), location.getPsc());
@@ -60,9 +65,13 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * @return The new or updated entry.
 	 */
 	public CellTowerGsm update(String networkOperator, NeighboringCellInfo cell) {
-		int mcc = Integer.parseInt(networkOperator.substring(0, 3));
-		int mnc = Integer.parseInt(networkOperator.substring(3));
 		Log.d(this.getClass().getName(), String.format("New NeighboringCellInfo: network=%s, lac=%d, cid=%d, psc=%d", networkOperator, cell.getLac(), cell.getCid(), cell.getPsc()));
+		int mcc = CellTowerGsm.UNKNOWN;
+		int mnc = CellTowerGsm.UNKNOWN;
+		if (networkOperator.length() > 3) {
+			mcc = Integer.parseInt(networkOperator.substring(0, 3));
+			mnc = Integer.parseInt(networkOperator.substring(3));
+		}
 		CellTowerGsm result = this.get(mcc, mnc, cell.getLac(), cell.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(mcc, mnc, cell.getLac(), cell.getCid(), cell.getPsc());
