@@ -20,6 +20,9 @@
 package com.vonglasow.michael.satstat;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -576,6 +579,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		}
 	};
+	
+	private Thread.UncaughtExceptionHandler defaultUEH;
 
 	private final void onWifiEntryClick(String BSSID) {
 		selectedBSSID = BSSID;
@@ -926,6 +931,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+        	public void uncaughtException(Thread t, Throwable e) {
+        		Context c = getApplicationContext();
+        		File dumpDir = c.getExternalFilesDir(null);
+        		File dumpFile = new File (dumpDir, "satstat-" + System.currentTimeMillis() + ".log");
+        		PrintStream s;
+        		try {
+        			s = new PrintStream(dumpFile);
+        			e.printStackTrace(s);
+        			s.flush();
+        			s.close();
+        		} catch (FileNotFoundException e1) {
+        			e1.printStackTrace();
+        		}
+        		defaultUEH.uncaughtException(t, e);
+        	}
+        });
         
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
