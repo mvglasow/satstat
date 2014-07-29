@@ -7,6 +7,7 @@ public class CellTowerLte extends CellTower {
 	private int tac;
 	private int mcc;
 	private int mnc;
+	private int pci;
 	
 	public CellTowerLte(int mcc, int mnc, int tac, int ci) {
 		super();
@@ -33,6 +34,10 @@ public class CellTowerLte extends CellTower {
 		return this.mnc;
 	}
 	
+	public int getPci() {
+		return this.pci;
+	}
+
 	/**
 	 * Returns the cell identity in text form.
 	 * <p>
@@ -51,18 +56,37 @@ public class CellTowerLte extends CellTower {
 	}
 	
 	public void setCi(int ci) {
-		this.ci = ci;
+		if (ci != Integer.MAX_VALUE)
+			this.ci = ci;
+		else
+			this.ci = CellTower.UNKNOWN;
 	}
 	
 	public void setTac(int tac) {
-		this.tac = tac;
+		if (tac != Integer.MAX_VALUE)
+			this.tac = tac;
+		this.tac = CellTower.UNKNOWN;
 	}
 	
 	public void setMcc(int mcc) {
-		this.mcc = mcc;
+		if (mcc != Integer.MAX_VALUE)
+			this.mcc = mcc;
+		else
+			this.mcc = CellTower.UNKNOWN;
 	}
 	
 	public void setMnc(int mnc) {
-		this.mnc = mnc;
+		if (mnc != Integer.MAX_VALUE)
+			this.mnc = mnc;
+		else
+			this.mnc = CellTower.UNKNOWN;
+	}
+	
+	public void setPci(int pci) {
+		if ((pci != Integer.MAX_VALUE) && (pci != -1)) {
+			this.pci = pci;
+			this.generation = 3;
+		} else
+			this.pci = CellTower.UNKNOWN;
 	}
 }

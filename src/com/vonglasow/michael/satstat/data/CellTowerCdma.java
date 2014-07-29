@@ -43,14 +43,23 @@ public class CellTowerCdma extends CellTower {
 	}
 	
 	public void setBsid(int bsid) {
-		this.bsid = bsid;
+		if ((bsid != Integer.MAX_VALUE) && (bsid != -1))
+			this.bsid = bsid;
+		else
+			this.bsid = CellTower.UNKNOWN;
 	}
 	
 	public void setNid(int nid) {
-		this.nid = nid;
+		if ((nid != Integer.MAX_VALUE) && (nid != -1))
+			this.nid = nid;
+		else
+			this.nid = CellTower.UNKNOWN;
 	}
 	
 	public void setSid(int sid) {
-		this.sid = sid;
+		if ((sid != Integer.MAX_VALUE) && (sid != -1))
+			this.sid = sid;
+		else
+			this.sid = CellTower.UNKNOWN;
 	}
 }

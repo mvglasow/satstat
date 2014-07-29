@@ -3,7 +3,6 @@ package com.vonglasow.michael.satstat.data;
 public class CellTowerGsm extends CellTower {
 	public static String FAMILY = "gsm";
 	public static int MAX_2G_CID = 65535;
-	public static int UNKNOWN = -1;
 	
 	private int cid;
 	private int lac;
@@ -58,21 +57,32 @@ public class CellTowerGsm extends CellTower {
 	}
 	
 	public void setCid(int cid) {
-		this.cid = cid;
-		if (cid > MAX_2G_CID)
+		if ((cid != Integer.MAX_VALUE) && (cid != -1))
+			this.cid = cid;
+		else
+			this.cid = CellTower.UNKNOWN;
+		if (this.cid > MAX_2G_CID)
 			this.generation = 3;
 	}
 	
 	public void setLac(int lac) {
-		this.lac = lac;
+		if ((lac != Integer.MAX_VALUE) && (lac != -1))
+			this.lac = lac;
+		this.lac = CellTower.UNKNOWN;
 	}
 	
 	public void setMcc(int mcc) {
-		this.mcc = mcc;
+		if ((mcc != Integer.MAX_VALUE) && (mcc != -1))
+			this.mcc = mcc;
+		else
+			this.mcc = CellTower.UNKNOWN;
 	}
 	
 	public void setMnc(int mnc) {
-		this.mnc = mnc;
+		if ((mcc != Integer.MAX_VALUE) && (mcc != -1))
+			this.mnc = mnc;
+		else
+			this.mnc = CellTower.UNKNOWN;
 	}
 	
 	public void setPsc(int psc) {
@@ -80,6 +90,6 @@ public class CellTowerGsm extends CellTower {
 			this.psc = psc;
 			this.generation = 3;
 		} else
-			this.psc = UNKNOWN;
+			this.psc = CellTower.UNKNOWN;
 	}
 }

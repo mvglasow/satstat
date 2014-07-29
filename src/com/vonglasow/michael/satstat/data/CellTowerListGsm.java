@@ -34,8 +34,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * @return The new or updated entry.
 	 */
 	public CellTowerGsm update(String networkOperator, GsmCellLocation location) {
-		int mcc = CellTowerGsm.UNKNOWN;
-		int mnc = CellTowerGsm.UNKNOWN;
+		int mcc = CellTower.UNKNOWN;
+		int mnc = CellTower.UNKNOWN;
 		if (networkOperator.length() > 3) {
 			mcc = Integer.parseInt(networkOperator.substring(0, 3));
 			mnc = Integer.parseInt(networkOperator.substring(3));
@@ -63,8 +63,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * @return The new or updated entry.
 	 */
 	public CellTowerGsm update(String networkOperator, NeighboringCellInfo cell) {
-		int mcc = CellTowerGsm.UNKNOWN;
-		int mnc = CellTowerGsm.UNKNOWN;
+		int mcc = CellTower.UNKNOWN;
+		int mnc = CellTower.UNKNOWN;
 		if (networkOperator.length() > 3) {
 			mcc = Integer.parseInt(networkOperator.substring(0, 3));
 			mnc = Integer.parseInt(networkOperator.substring(3));

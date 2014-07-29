@@ -792,6 +792,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	}
 		return styleName;
 	}
+	
+	/**
+	 * Formats an item of cell information data for display.
+	 * <p>
+	 * This helper function formats any item of cell information data, such as
+	 * the cell ID, PSC or similar. For valid data a string with the properly
+	 * formatted value will be returned. If the input value is
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#UNKNOWN}, then the
+	 * {@code value_none} resource string will be returned. 
+	 * @param context the context of the caller
+	 * @param format a format string, which must contain placeholders for exactly one variable, or {@code null}.
+	 * @param raw the value to format
+	 * @return
+	 */
+	public static String formatCellData(Context context, String format, int raw) {
+		if (raw == CellTower.UNKNOWN)
+			return context.getResources().getString(R.string.value_none);
+		else {
+			String fmt = (format != null) ? format : "%d";
+			return String.format(fmt, raw);
+		}
+	}
 
     /**
      * Converts a bearing (in degrees) into a directional name.
@@ -1694,24 +1716,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newSid = new TextView(rilCdmaCells.getContext());
         newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 6));
         newSid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newSid.setText(String.format("%03d", cell.getSid()));
+        newSid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getSid()));
         row.addView(newSid);
         
         TextView newNid = new TextView(rilCdmaCells.getContext());
         newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
         newNid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newNid.setText(String.format("%02d", cell.getNid()));
+        newNid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getNid()));
         row.addView(newNid);
         
         TextView newBsid = new TextView(rilCdmaCells.getContext());
         newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
         newBsid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newBsid.setText(String.valueOf(cell.getBsid()));
+        newBsid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getBsid()));
         row.addView(newBsid);
         
         TextView newDbm = new TextView(rilCdmaCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
         newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        // TODO: format unknown dBm 
         newDbm.setText(String.valueOf(cell.getDbm()));
         row.addView(newDbm);
         
@@ -1732,36 +1755,37 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newMcc = new TextView(rilCells.getContext());
         newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
         newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        newMcc.setText(String.format("%03d", cell.getMcc()));
+        newMcc.setText(formatCellData(rilCells.getContext(), "%03d", cell.getMcc()));
         row.addView(newMcc);
         
         TextView newMnc = new TextView(rilCells.getContext());
         newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
         newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMnc.setText(String.format("%02d", cell.getMnc()));
+		newMnc.setText(formatCellData(rilCells.getContext(), "%02d", cell.getMnc()));
         row.addView(newMnc);
         
         TextView newLac = new TextView(rilCells.getContext());
         newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
         newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newLac.setText(String.valueOf(cell.getLac()));
+		newLac.setText(formatCellData(rilCells.getContext(), null, cell.getLac()));
         row.addView(newLac);
         
         TextView newCid = new TextView(rilCells.getContext());
         newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
         newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newCid.setText(String.valueOf(cell.getCid()));
+		newCid.setText(formatCellData(rilCells.getContext(), null, cell.getCid()));
         row.addView(newCid);
         
         TextView newPsc = new TextView(rilCells.getContext());
         newPsc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
         newPsc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        newPsc.setText((cell.getPsc()==CellTowerGsm.UNKNOWN)?rilCells.getContext().getResources().getString(R.string.value_none):String.valueOf(cell.getPsc()));
+        newPsc.setText(formatCellData(rilCells.getContext(), null, cell.getPsc()));
         row.addView(newPsc);
         
         TextView newDbm = new TextView(rilCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
         newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        // TODO: format unknown dBm 
         newDbm.setText(String.valueOf(cell.getDbm()));
         row.addView(newDbm);
         
@@ -1783,30 +1807,37 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newMcc = new TextView(rilLteCells.getContext());
         newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
         newMcc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newMcc.setText(String.format("%03d", cell.getMcc()));
+        newMcc.setText(formatCellData(rilLteCells.getContext(), "%03d", cell.getMcc()));
         row.addView(newMcc);
         
         TextView newMnc = new TextView(rilLteCells.getContext());
         newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
         newMnc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMnc.setText(String.format("%02d", cell.getMnc()));
+		newMnc.setText(formatCellData(rilLteCells.getContext(), "%02d", cell.getMnc()));
         row.addView(newMnc);
         
         TextView newTac = new TextView(rilLteCells.getContext());
         newTac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
         newTac.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newTac.setText(String.valueOf(cell.getTac()));
+        newTac.setText(formatCellData(rilLteCells.getContext(), null, cell.getTac()));
         row.addView(newTac);
         
         TextView newCi = new TextView(rilLteCells.getContext());
         newCi.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
         newCi.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newCi.setText(String.valueOf(cell.getCi()));
+		newCi.setText(formatCellData(rilLteCells.getContext(), null, cell.getCi()));
         row.addView(newCi);
+        
+        TextView newPci = new TextView(rilLteCells.getContext());
+        newPci.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newPci.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newPci.setText(formatCellData(rilLteCells.getContext(), null, cell.getPci()));
+        row.addView(newPci);
         
         TextView newDbm = new TextView(rilLteCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
         newDbm.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        // TODO: format unknown dBm 
         newDbm.setText(String.valueOf(cell.getDbm()));
         row.addView(newDbm);
         

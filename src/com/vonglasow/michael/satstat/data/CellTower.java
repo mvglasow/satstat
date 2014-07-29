@@ -8,6 +8,7 @@ public abstract class CellTower {
 	public static int SOURCE_CELL_LOCATION = 1;
 	public static int SOURCE_NEIGHBORING_CELL_INFO = 2;
 	public static int SOURCE_CELL_INFO = 4;
+	public static int UNKNOWN = -1;
 	
 	protected int dbm = 0;
 	protected int generation = 0;
