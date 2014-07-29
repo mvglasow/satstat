@@ -387,7 +387,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
 	protected static Handler networkTimehandler = null;
-	protected static int mLastNetworkType = TelephonyManager.NETWORK_TYPE_UNKNOWN; //the last observed (and displayed) network type
+	protected static int mLastNetworkGen = 0; //the last observed (and displayed) network type
 	protected static int mLastCellDbm;
 	protected static Runnable networkTimeRunnable = null;
 	private static final int NETWORK_REFRESH_DELAY = 1000; //the polling interval for the network type
@@ -531,13 +531,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
 			if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
-				if ((mLastNetworkType != TelephonyManager.NETWORK_TYPE_UNKNOWN) && (mServingCell != null))
-					mServingCell.setNetworkType(mLastNetworkType);
+				if ((mLastNetworkGen != 0) && (mServingCell != null))
+					mServingCell.setGeneration(mLastNetworkGen);
 				NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
 				if ((netinfo == null) 
 						|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
-						|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI))
+						|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
 					networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+				}
+			} else if (mServingCell != null) {
+				mLastNetworkGen = mServingCell.getGeneration();
 			}
 
 			showCells();
@@ -907,6 +910,37 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	
+    /**
+     * Gets the generation of a phone network type
+     * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
+     * @return 2, 3 or 4 for 2G, 3G or 4G; 0 for unknown
+     */
+	public static int getNetworkGeneration(int networkType) {
+    	switch (networkType) {
+    	case TelephonyManager.NETWORK_TYPE_CDMA:
+    	case TelephonyManager.NETWORK_TYPE_EDGE:
+    	case TelephonyManager.NETWORK_TYPE_GPRS:
+    	case TelephonyManager.NETWORK_TYPE_IDEN:
+    		return 2;
+    	case TelephonyManager.NETWORK_TYPE_1xRTT:
+    	case TelephonyManager.NETWORK_TYPE_EHRPD:
+    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
+    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
+    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
+    	case TelephonyManager.NETWORK_TYPE_HSDPA:
+    	case TelephonyManager.NETWORK_TYPE_HSPA:
+    	case TelephonyManager.NETWORK_TYPE_HSPAP:
+    	case TelephonyManager.NETWORK_TYPE_HSUPA:
+    	case TelephonyManager.NETWORK_TYPE_UMTS:
+    		return 3;
+    	case TelephonyManager.NETWORK_TYPE_LTE:
+    		return 4;
+    	default:
+    		return 0;
+    	}
+	}
+	
+	
 	/**
 	 * Gets the number of decimal digits to show when displaying sensor values, based on sensor accuracy.
 	 * @param sensor The sensor
@@ -1106,7 +1140,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	@Override
         	public void run() {
 	            int newNetworkType = mTelephonyManager.getNetworkType();
-	            if (newNetworkType != mLastNetworkType)
+	            if (getNetworkGeneration(newNetworkType) != mLastNetworkGen)
 	            	onNetworkTypeChanged(newNetworkType);
 	            else
 	            	networkTimehandler.postDelayed(this, NETWORK_REFRESH_DELAY);
@@ -1319,11 +1353,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
     protected static void onNetworkTypeChanged(int networkType) {
 		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
-		if (networkType != mLastNetworkType)
+		if (getNetworkGeneration(networkType) != mLastNetworkGen) {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
-		mLastNetworkType = networkType;
-		if (mServingCell != null)
-			mServingCell.setNetworkType(networkType);
+			mLastNetworkGen = getNetworkGeneration(networkType);
+			if (mServingCell != null)
+				mServingCell.setNetworkType(networkType);
+		}
 		showCells();
     }
 
