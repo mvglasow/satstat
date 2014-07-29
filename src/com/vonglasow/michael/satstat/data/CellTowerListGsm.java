@@ -11,7 +11,6 @@ import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoWcdma;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.gsm.GsmCellLocation;
-import android.util.Log;
 
 public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
@@ -35,7 +34,6 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * @return The new or updated entry.
 	 */
 	public CellTowerGsm update(String networkOperator, GsmCellLocation location) {
-		Log.d(this.getClass().getName(), String.format("New GsmCellLocation: network=%s, lac=%d, cid=%d, psc=%d", networkOperator, location.getLac(), location.getCid(), location.getPsc()));
 		int mcc = CellTowerGsm.UNKNOWN;
 		int mnc = CellTowerGsm.UNKNOWN;
 		if (networkOperator.length() > 3) {
@@ -65,7 +63,6 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * @return The new or updated entry.
 	 */
 	public CellTowerGsm update(String networkOperator, NeighboringCellInfo cell) {
-		Log.d(this.getClass().getName(), String.format("New NeighboringCellInfo: network=%s, lac=%d, cid=%d, psc=%d", networkOperator, cell.getLac(), cell.getCid(), cell.getPsc()));
 		int mcc = CellTowerGsm.UNKNOWN;
 		int mnc = CellTowerGsm.UNKNOWN;
 		if (networkOperator.length() > 3) {
@@ -100,7 +97,6 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 			return null;
 		CellIdentityGsm cid = cell.getCellIdentity();
-		Log.d(this.getClass().getName(), String.format("New CellInfoGsm: mcc=%d, mnc=%d, lac=%d, cid=%d, psc=%d", cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc()));
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc());
@@ -130,7 +126,6 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) 
 			return null;
 		CellIdentityWcdma cid = cell.getCellIdentity();
-		Log.d(this.getClass().getName(), String.format("New CellInfoWcdma: mcc=%d, mnc=%d, lac=%d, cid=%d, psc=%d", cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc()));
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
 		if (result == null) {
 			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc());
