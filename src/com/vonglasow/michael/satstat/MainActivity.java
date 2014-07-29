@@ -519,8 +519,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
 			else if (location instanceof CdmaCellLocation)
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-			if ((mLastNetworkType != TelephonyManager.NETWORK_TYPE_UNKNOWN) && (mServingCell != null) && (mServingCell.getGeneration() == 0))
-				mServingCell.setNetworkType(mLastNetworkType);
 			if ((mLastCellDbm != 0) && (mServingCell != null) && (mServingCell.getDbm() == 0))
 				mServingCell.setDbm(mLastCellDbm);
 			
@@ -532,11 +530,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
-			if ((netinfo == null) 
-					|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
-					|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI))
-				networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+			if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
+				if ((mLastNetworkType != TelephonyManager.NETWORK_TYPE_UNKNOWN) && (mServingCell != null))
+					mServingCell.setNetworkType(mLastNetworkType);
+				NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
+				if ((netinfo == null) 
+						|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
+						|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI))
+					networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+			}
 
 			showCells();
 		}
