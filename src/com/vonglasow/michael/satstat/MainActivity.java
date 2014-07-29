@@ -1139,16 +1139,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		
     		//Log.d("MainActivity", location.getProvider() + " " + latLong.toString());
     		
-    		mapCircles.get(location.getProvider()).setLatLong(latLong);
-    		mapMarkers.get(location.getProvider()).setLatLong(latLong);
-    		if (location.hasAccuracy()) {
-    			mapCircles.get(location.getProvider()).setVisible(true);
-    			mapCircles.get(location.getProvider()).setRadius(location.getAccuracy());
-    		} else {
-    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
-    			mapCircles.get(location.getProvider()).setVisible(false);
+    		Circle circle = mapCircles.get(location.getProvider());
+    		Marker marker = mapMarkers.get(location.getProvider());
+    		
+    		if (circle != null) {
+    			circle.setLatLong(latLong);
+	    		if (location.hasAccuracy()) {
+	    			circle.setVisible(true);
+	    			circle.setRadius(location.getAccuracy());
+	    		} else {
+	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
+	    			circle.setVisible(false);
+	    		}
     		}
-			mapMarkers.get(location.getProvider()).setVisible(true);
+    		
+			if (marker != null) {
+				marker.setLatLong(latLong);
+				marker.setVisible(true);
+			}
 			
 			applyLocationProviderStyle(this, location.getProvider(), null);
 			
@@ -1159,7 +1167,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
     		
     		// redraw, move locations into view and zoom out as needed
-    		updateMap();
+			if ((circle != null) || (marker != null) || (invalidator != null))
+				updateMap();
 		}
     	
     	// update GPS view
