@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +39,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,7 +49,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -74,25 +70,14 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
-import android.preference.ListPreference;
 import android.preference.PreferenceManager;
-//import android.os.PowerManager;
-//import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
-import android.telephony.CellInfoCdma;
-import android.telephony.CellInfoGsm;
-import android.telephony.CellInfoLte;
-import android.telephony.CellInfoWcdma;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
@@ -107,7 +92,6 @@ import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
 import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -129,36 +113,27 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.util.LatLongUtils;
-import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
-import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
-import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Circle;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
-import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.SettingsActivity.SettingsFragment;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
 import com.vonglasow.michael.satstat.data.CellTowerGsm;
@@ -169,7 +144,6 @@ import com.vonglasow.michael.satstat.data.CellTowerLte;
 import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
-import com.vonglasow.michael.satstat.widgets.SquareView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener, ViewPager.OnPageChangeListener {
 
@@ -394,10 +368,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static Handler wifiTimehandler = null;
 	protected static Runnable wifiTimeRunnable = null;
 	private static final int WIFI_REFRESH_DELAY = 1000; //the time between two requests for WLAN rescan.
-	/*
-	private PowerManager pm;
-	private WakeLock wl;
-	*/
 	
 	/**
 	 * Converts screen rotation to orientation for devices with a naturally tall screen.
@@ -496,8 +466,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
 	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-		// Requires API level 17. Many phones don't implement this method at all and will return null,
-		// the ones that do implement it return only certain cell types (none that we support at this point).
+		// Requires API level 17. Many phones don't implement this method at 
+		// all and will return null, the ones that do implement it return only
+		// certain cell types.
 		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
@@ -523,7 +494,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mServingCell.setDbm(mLastCellDbm);
 			
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
-				//this may not be supported on some devices
+				// this may not be supported on some devices (returns no data)
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 				if (neighboringCells != null)
 					mCellsGsm.updateAll(networkOperator, neighboringCells);
@@ -554,7 +525,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			int pt = mTelephonyManager.getPhoneType();
 			if (pt == PHONE_TYPE_GSM) {
 				mLastCellDbm = signalStrength.getGsmSignalStrength() * 2 - 113;
-				//this may not be supported on some devices
+				// this may not be supported on some devices (returns no data)
 				String networkOperator = mTelephonyManager.getNetworkOperator();
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 				if (neighboringCells != null)
@@ -666,18 +637,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		wifiLayout.addView(wifiDetails);
 		wifiLayout.setOnClickListener(clis);
 		wifiAps.addView(wifiLayout);
-		
-		/*
-		TableRow row3 = new TableRow(wifiAps.getContext());
-		TextView newCaps = new TextView(wifiAps.getContext());
-		newCaps.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
-		newCaps.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
-		newCaps.setText(WifiCapabilities.getScanResultSecurity(result));
-		//newCaps.setText(result.capabilities);
-		row3.addView(newCaps);
-		row3.setOnClickListener(clis);
-		wifiAps.addView(row3, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		*/
 	}
 
 	private final void refreshWifiResults() {
@@ -745,7 +704,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		circle.getPaintFill().setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
     		circle.getPaintStroke().setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
     		needsRedraw = isStyleChanged && circle.isVisible();
-    		//Log.d("MainActivity", "Set color for " + provider + " circle to " + sn);
     	}
     	
     	//Marker layer
@@ -755,7 +713,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
             marker.setBitmap(bitmap);
             needsRedraw = needsRedraw || (isStyleChanged && marker.isVisible());
-    		//Log.d("MainActivity", "Set color for " + provider + " marker to " + sn);
     	}
     	
     	if (needsRedraw)
@@ -872,37 +829,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	case 3:
     		return(R.color.gen3);
     	case 4:
-    		return(R.color.gen4);
-    	default:
-    		return(android.R.color.transparent);
-    	}
-	}
-	
-	
-    /**
-     * Gets the display color for a phone network type
-     * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
-     * @return The color in which to display the indicator
-     */
-	public static int getColorFromNetworkType(int networkType) {
-    	switch (networkType) {
-    	case TelephonyManager.NETWORK_TYPE_CDMA:
-    	case TelephonyManager.NETWORK_TYPE_EDGE:
-    	case TelephonyManager.NETWORK_TYPE_GPRS:
-    	case TelephonyManager.NETWORK_TYPE_IDEN:
-    		return(R.color.gen2);
-    	case TelephonyManager.NETWORK_TYPE_1xRTT:
-    	case TelephonyManager.NETWORK_TYPE_EHRPD:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
-    	case TelephonyManager.NETWORK_TYPE_HSDPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPAP:
-    	case TelephonyManager.NETWORK_TYPE_HSUPA:
-    	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		return(R.color.gen3);
-    	case TelephonyManager.NETWORK_TYPE_LTE:
     		return(R.color.gen4);
     	default:
     		return(android.R.color.transparent);
@@ -1158,13 +1084,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         };
         
         updateLocationProviderStyles();
-
-        // SCREEN_BRIGHT_WAKE_LOCK is deprecated
-    	/*
-        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Sensor Monitor");
-        wl.acquire();
-        */
     }
 	
 	
@@ -1234,8 +1153,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	// update map view
 		if (isMapViewReady) {
     		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
-    		
-    		//Log.d("MainActivity", location.getProvider() + " " + latLong.toString());
     		
     		Circle circle = mapCircles.get(location.getProvider());
     		Marker marker = mapMarkers.get(location.getProvider());
@@ -1308,18 +1225,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		gpsSpeed.setText(getString(R.string.value_none));
 	    	}
 	    	
-	    	// this doesn't seem to work, always returns 0 satellites
-	    	/*
-	    	String sats  = getString(R.string.value_none);
-	    	Bundle extras = location.getExtras();
-	    	if (extras != null) {
-	    		Object oSats = extras.get("satellites");
-	    		if (oSats != null) {
-	    			sats = oSats.toString();
-	    		}
-	    	}
-	    	gpsSatsInFix.setText(sats);
-	    	*/
+	    	// note: getting number of sats in fix by looking for "satellites"
+	    	// in location's extras doesn't seem to work, always returns 0 sats
     	}
     }
     
@@ -1482,7 +1389,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		if (isSensorViewReady && isRateElapsed) {
-			//Log.d("lsrntools", String.format("Processing sensor update at %s, rate %s, last %s ns ago", event.timestamp / 1000, iSensorRate, (event.timestamp / 1000) - mSensorRates.getLong(String.valueOf(event.sensor.getType()) + ".last")));
             switch (event.sensor.getType()) {  
 	            case Sensor.TYPE_ACCELEROMETER:
 	            	mAccLast = event.timestamp / 1000;
@@ -1565,7 +1471,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		//Log.d("MainActivity", "Shared preference " + key + " changed");
 		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
@@ -1598,15 +1503,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onStop();
     }
     
-    // we don't use wake locks
-    /*
-    @Override
-    protected void onDestroy() {
-    	wl.release();
-        super.onDestroy();
-    }
-    */
-
 	@Override
 	public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
         // probably ignore this event
@@ -1664,19 +1560,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     
 	private void setEmbeddedTabs(Object actionBar, Boolean embed_tabs) {
 	    try {
-	    	/*
-	        if (actionBar instanceof ActionBarWrapper) {
-	            // ICS and forward
-	            try {
-	                Field actionBarField = actionBar.getClass()
-	                        .getDeclaredField("mActionBar");
-	                actionBarField.setAccessible(true);
-	                actionBar = actionBarField.get(actionBar);
-	            } catch (Exception e) {
-	                Log.e("", "Error enabling embedded tabs", e);
-	            }
-	        }
-	        */
 	        Method setHasEmbeddedTabsMethod = actionBar.getClass()
 	                .getDeclaredMethod("setHasEmbeddedTabs", boolean.class);
 	        setHasEmbeddedTabsMethod.setAccessible(true);
@@ -1910,10 +1793,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	// remove all layers other than tile render layer from map
 	        for (int i = 0; i < layers.size(); )
 	        	if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
-	        		//Log.d("MainActivity", "Layer " + i + " is tile layer, skipping");
 	        		i++;
 	        	} else {
-	        		//Log.d("MainActivity", "Layer " + i + " is " + layers.get(i).getClass().getSimpleName() + " layer, removing");
 	        		layers.remove(i);
 	        	}
 	        
@@ -2139,25 +2020,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             case 3:
                 fragment = new MapSectionFragment();
                 return fragment;
-            	/*
-                fragment = new DummySectionFragment();
-                Bundle args = new Bundle();
-                args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-                fragment.setArguments(args);
-                return fragment;
-                */
             }
         return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 4 total pages.
             return 4;
         }
 
         public Drawable getPageIcon(int position) {
-            Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
                     return getResources().getDrawable(R.drawable.ic_action_gps);
@@ -2362,8 +2235,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mCellsGsm.updateAll(networkOperator, neighboringCells);
 			}
 			
-			// Requires API level 17. Many phones don't implement this method at all and will return null,
-			// the ones that do implement it return only certain cell types (none that we support at this point).
+			// Requires API level 17. Many phones don't implement this method
+			// at all and will return null, the ones that do implement it
+			// return only certain cell types.
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
 				if (allCells != null) {
