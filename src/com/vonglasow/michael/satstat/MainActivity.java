@@ -21,6 +21,8 @@ package com.vonglasow.michael.satstat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
@@ -939,12 +941,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		File dumpFile = new File (dumpDir, "satstat-" + System.currentTimeMillis() + ".log");
         		PrintStream s;
         		try {
+        			InputStream buildInStream = getResources().openRawResource(R.raw.build);
         			s = new PrintStream(dumpFile);
+        			s.append("SatStat build: ");
+        			
+        			int i;
+        			try {
+        				i = buildInStream.read();
+        				while (i != -1) {
+        					s.write(i);
+        					i = buildInStream.read();
+        				}
+        				buildInStream.close();
+        			} catch (IOException e1) {
+        				e1.printStackTrace();
+        			}
+        			
+        			s.append("\n\n");
         			e.printStackTrace(s);
         			s.flush();
         			s.close();
-        		} catch (FileNotFoundException e1) {
-        			e1.printStackTrace();
+        		} catch (FileNotFoundException e2) {
+        			e2.printStackTrace();
         		}
         		defaultUEH.uncaughtException(t, e);
         	}
