@@ -1875,10 +1875,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	            marker.setVisible(visible);
 	            style.recycle();
 	        }
+	        
+	        // move layers into view
+	        updateMap();
         }
-        
-        // move layers into view
-        updateMap();
 	}
 	
 	
