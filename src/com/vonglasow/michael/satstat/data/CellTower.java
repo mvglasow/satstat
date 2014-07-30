@@ -15,6 +15,31 @@ public abstract class CellTower {
 	protected boolean serving = false;
 	protected int source = 0;
 	
+	/**
+	 * Returns the alternate cell identity in text form.
+	 * <p>
+	 * The alternate cell identity is an alternate identifier, apart from the
+	 * globally unique cell identifier, which can be used to identify the cell.
+	 * <p>
+	 * Subclasses for network families that use alternate identifiers must
+	 * override this method to provide a string in the following form:
+	 * <p>
+	 * {@code network:text-id[-id]*}
+	 * <p>
+	 * {@code network} is a string which uniquely identifies the network family.
+	 * It is followed by a colon and a {@code text} which marks the identifier
+	 * as an alternate identifier, a dash and a sequence of {@code id}s in
+	 * hierarchical order (top to bottom), separated by dashes. Leading zeroes
+	 * are stripped from {@code id}s. The {@code id} structure is specific to
+	 * the network family.
+	 * <p>
+	 * Network families that do not use alternate identifiers should inherit
+	 * the default implementation, which returns {@code null}. 
+	 */
+	public String getAltText() {
+		return null;
+	}
+
 	public int getDbm() {
 		return dbm;
 	}

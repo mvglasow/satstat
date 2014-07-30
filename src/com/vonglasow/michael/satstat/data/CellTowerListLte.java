@@ -13,8 +13,11 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 	 * Returns the cell tower with the specified data, or {@code null} if it is not in the list. 
 	 */
 	public CellTowerLte get(int mcc, int mnc, int tac, int ci) {
-		String entry = String.format("%s:%d-%d-%d-%d", CellTowerLte.FAMILY, mcc, mnc, tac, ci);
-		return this.get(entry);
+		String entry = CellTowerLte.getText(mcc, mnc, tac, ci);
+		if (entry == null)
+			return null;
+		else
+			return this.get(entry);
 	}
 	
 	/**

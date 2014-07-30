@@ -1,6 +1,7 @@
 package com.vonglasow.michael.satstat.data;
 
 public class CellTowerGsm extends CellTower {
+	public static String ALT_ID = "pci";
 	public static String FAMILY = "gsm";
 	public static int MAX_2G_CID = 65535;
 	
@@ -17,6 +18,35 @@ public class CellTowerGsm extends CellTower {
 		this.lac = lac;
 		this.setCid(cid);
 		this.setPsc(psc);
+	}
+	
+	/**
+	 * Returns the alternate cell identity in text form.
+	 * <p>
+	 * For UMTS networks this string has the following form:
+	 * <p>
+	 * {@code gsm:psc-nnn}
+	 * <p>
+	 * The first is a string which uniquely identifies the network family.
+	 * It is followed by a colon, the string {@code psc} to denote an alternate
+	 * cell identity, a dash and the primary scrambling code (PSC) with no
+	 * leading zeroes.
+	 * <p> 
+	 * A result is only returned for UMTS (3G) cells with a valid PSC. In all
+	 * other cases, {@code null} is returned. 
+	 */
+	public String getAltText() {
+		return getAltText(this.psc);
+	}
+
+	/**
+	 * Converts a PSC to an alternate identity string, or {@code null} if the
+	 * PSC is invalid. 
+	 */
+	public static String getAltText(int psc) {
+		if ((psc == CellTower.UNKNOWN) || (psc == Integer.MAX_VALUE))
+			return null;
+		return String.format("%s:%s-%d", FAMILY, ALT_ID, psc);
 	}
 	
 	public int getCid() {
@@ -53,6 +83,22 @@ public class CellTowerGsm extends CellTower {
 	 */
 	@Override
 	public String getText() {
+		return getText(mcc, mnc, lac, cid);
+	}
+	
+	/**
+	 * Converts a MCC/MNC/LAC/CID tuple to an identity string, or
+	 * {@code null} if at least one of the arguments is invalid. 
+	 */
+	public static String getText(int mcc, int mnc, int lac, int cid) {
+		if ((mcc == CellTower.UNKNOWN) || (mcc == Integer.MAX_VALUE))
+			return null;
+		if ((mnc == CellTower.UNKNOWN) || (mnc == Integer.MAX_VALUE))
+			return null;
+		if ((lac == CellTower.UNKNOWN) || (lac == Integer.MAX_VALUE))
+			return null;
+		if ((cid == CellTower.UNKNOWN) || (cid == Integer.MAX_VALUE))
+			return null;
 		return String.format("%s:%d-%d-%d-%d", FAMILY, mcc, mnc, lac, cid);
 	}
 	

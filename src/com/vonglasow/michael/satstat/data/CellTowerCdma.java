@@ -39,6 +39,20 @@ public class CellTowerCdma extends CellTower {
 	 */
 	@Override
 	public String getText() {
+		return getText(sid, nid, bsid);
+	}
+	
+	/**
+	 * Converts a SID/NID/BSID tuple to an identity string, or {@code null}
+	 * if at least one of the arguments is invalid. 
+	 */
+	public static String getText(int sid, int nid, int bsid) {
+		if ((sid == CellTower.UNKNOWN) || (sid == Integer.MAX_VALUE))
+			return null;
+		if ((nid == CellTower.UNKNOWN) || (nid == Integer.MAX_VALUE))
+			return null;
+		if ((bsid == CellTower.UNKNOWN) || (bsid == Integer.MAX_VALUE))
+			return null;
 		return String.format("%s:%d-%d-%d", FAMILY, sid, nid, bsid);
 	}
 	

@@ -1,6 +1,7 @@
 package com.vonglasow.michael.satstat.data;
 
 public class CellTowerLte extends CellTower {
+	public static String ALT_ID = "pci";
 	public static String FAMILY = "lte";
 	
 	private int ci;
@@ -16,6 +17,35 @@ public class CellTowerLte extends CellTower {
 		this.tac = tac;
 		this.ci = ci;
 		this.generation = 4;
+	}
+	
+	/**
+	 * Returns the alternate cell identity in text form.
+	 * <p>
+	 * For UMTS networks this string has the following form:
+	 * <p>
+	 * {@code lte:pci-nnn}
+	 * <p>
+	 * The first is a string which uniquely identifies the network family.
+	 * It is followed by a colon, the string {@code pci} to denote an alternate
+	 * cell identity, a dash and the physical cell identity (PCI) with no
+	 * leading zeroes.
+	 * <p> 
+	 * A result is only returned for cells with a valid PCI. In all other
+	 * cases, {@code null} is returned. 
+	 */
+	public String getAltText() {
+		return getAltText(this.pci);
+	}
+
+	/**
+	 * Converts a PSC to an alternate identity string, or {@code null} if the
+	 * PSC is invalid. 
+	 */
+	public static String getAltText(int pci) {
+		if ((pci == CellTower.UNKNOWN) || (pci == Integer.MAX_VALUE))
+			return null;
+		return String.format("%s:%s-%d", FAMILY, ALT_ID, pci);
 	}
 	
 	public int getCi() {
@@ -52,6 +82,22 @@ public class CellTowerLte extends CellTower {
 	 */
 	@Override
 	public String getText() {
+		return getText(mcc, mnc, tac, ci);
+	}
+	
+	/**
+	 * Converts a MCC/MNC/TAC/CI tuple to an identity string, or
+	 * {@code null} if at least one of the arguments is invalid. 
+	 */
+	public static String getText(int mcc, int mnc, int tac, int ci) {
+		if ((mcc == CellTower.UNKNOWN) || (mcc == Integer.MAX_VALUE))
+			return null;
+		if ((mnc == CellTower.UNKNOWN) || (mnc == Integer.MAX_VALUE))
+			return null;
+		if ((tac == CellTower.UNKNOWN) || (tac == Integer.MAX_VALUE))
+			return null;
+		if ((ci == CellTower.UNKNOWN) || (ci == Integer.MAX_VALUE))
+			return null;
 		return String.format("%s:%d-%d-%d-%d", FAMILY, mcc, mnc, tac, ci);
 	}
 	

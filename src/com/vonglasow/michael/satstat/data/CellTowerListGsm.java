@@ -17,8 +17,11 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * Returns the cell tower with the specified data, or {@code null} if it is not in the list. 
 	 */
 	public CellTowerGsm get(int mcc, int mnc, int lac, int cid) {
-		String entry = String.format("%s:%d-%d-%d-%d", CellTowerGsm.FAMILY, mcc, mnc, lac, cid);
-		return this.get(entry);
+		String entry = CellTowerGsm.getText(mcc, mnc, lac, cid);
+		if (entry == null)
+			return null;
+		else
+			return this.get(entry);
 	}
 	
 	/**

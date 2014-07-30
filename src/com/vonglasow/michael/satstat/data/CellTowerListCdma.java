@@ -14,8 +14,11 @@ public class CellTowerListCdma extends CellTowerList<CellTowerCdma> {
 	 * Returns the cell tower with the specified data, or {@code null} if it is not in the list. 
 	 */
 	public CellTowerCdma get(int sid, int nid, int bsid) {
-		String entry = String.format("%s:%d-%d-%d", CellTowerCdma.FAMILY, sid, nid, bsid);
-		return this.get(entry);
+		String entry = CellTowerCdma.getText(sid, nid, bsid);
+		if (entry == null)
+			return null;
+		else
+			return this.get(entry);
 	}
 	
 	/**
