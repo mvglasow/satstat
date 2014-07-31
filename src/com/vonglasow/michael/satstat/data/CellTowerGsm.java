@@ -88,18 +88,17 @@ public class CellTowerGsm extends CellTower {
 	
 	/**
 	 * Converts a MCC/MNC/LAC/CID tuple to an identity string, or
-	 * {@code null} if at least one of the arguments is invalid. 
+	 * {@code null} if all arguments are invalid. 
 	 */
 	public static String getText(int mcc, int mnc, int lac, int cid) {
-		if ((mcc == CellTower.UNKNOWN) || (mcc == Integer.MAX_VALUE))
+		int iMcc = ((mcc == -1) || (mcc == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : mcc;
+		int iMnc = ((mnc == -1) || (mnc == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : mnc;
+		int iLac = ((lac == -1) || (lac == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : lac;
+		int iCid = ((cid == -1) || (cid == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : cid;
+		if ((iMcc == CellTower.UNKNOWN) && (iMnc == CellTower.UNKNOWN) && (iLac == CellTower.UNKNOWN) && (iCid == CellTower.UNKNOWN))
 			return null;
-		if ((mnc == CellTower.UNKNOWN) || (mnc == Integer.MAX_VALUE))
-			return null;
-		if ((lac == CellTower.UNKNOWN) || (lac == Integer.MAX_VALUE))
-			return null;
-		if ((cid == CellTower.UNKNOWN) || (cid == Integer.MAX_VALUE))
-			return null;
-		return String.format("%s:%d-%d-%d-%d", FAMILY, mcc, mnc, lac, cid);
+		else
+			return String.format("%s:%d-%d-%d-%d", FAMILY, iMcc, iMnc, iLac, iCid);
 	}
 	
 	public void setCid(int cid) {
