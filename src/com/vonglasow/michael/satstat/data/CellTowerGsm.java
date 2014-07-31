@@ -13,9 +13,9 @@ public class CellTowerGsm extends CellTower {
 	
 	public CellTowerGsm(int mcc, int mnc, int lac, int cid, int psc) {
 		super();
-		this.mcc = mcc;
-		this.mnc = mnc;
-		this.lac = lac;
+		this.setMcc(mcc);
+		this.setMnc(mnc);
+		this.setLac(lac);
 		this.setCid(cid);
 		this.setPsc(psc);
 	}
@@ -113,7 +113,8 @@ public class CellTowerGsm extends CellTower {
 	public void setLac(int lac) {
 		if ((lac != Integer.MAX_VALUE) && (lac != -1))
 			this.lac = lac;
-		this.lac = CellTower.UNKNOWN;
+		else
+			this.lac = CellTower.UNKNOWN;
 	}
 	
 	public void setMcc(int mcc) {

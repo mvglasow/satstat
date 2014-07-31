@@ -1592,7 +1592,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			rilCells.removeAllViews();
 			if (mCellsGsm.containsValue(mServingCell))
 				showCellGsm((CellTowerGsm) mServingCell);
-			for (CellTowerGsm cell : mCellsGsm.values())
+			for (CellTowerGsm cell : mCellsGsm.getAll())
 				if (cell != mServingCell)
 					showCellGsm(cell);
 		}
@@ -1604,7 +1604,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			rilCdmaCells.removeAllViews();
 			if (mCellsCdma.containsValue(mServingCell))
 				showCellCdma((CellTowerCdma) mServingCell);
-			for (CellTowerCdma cell : mCellsCdma.values())
+			for (CellTowerCdma cell : mCellsCdma.getAll())
 				if (cell != mServingCell)
 					showCellCdma(cell);
 		}
@@ -1616,7 +1616,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// rilLteCells.removeAllViews();
 			if (mCellsLte.containsValue(mServingCell))
 				showCellLte((CellTowerLte) mServingCell);
-			for (CellTowerLte cell : mCellsLte.values())
+			for (CellTowerLte cell : mCellsLte.getAll())
 				if (cell != mServingCell)
 					showCellLte(cell);
 		}

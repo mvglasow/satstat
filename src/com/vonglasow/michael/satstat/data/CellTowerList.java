@@ -2,10 +2,22 @@ package com.vonglasow.michael.satstat.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import android.util.Log;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class CellTowerList<T extends CellTower> extends HashMap<String, T> {
+	/**
+	 * Returns all entries in the list.
+	 * <p>
+	 * This method returns all entries in the list, with duplicates eliminated.
+	 * It is preferred over {@link #values()}, which may return duplicates.
+	 * @return
+	 */
+	public Set<T> getAll() {
+		Set<T> result = new HashSet<T>(this.values());
+		return result;
+	}
+	
 	/**
 	 * Removes cells of the specified source.
 	 * <p>
@@ -21,10 +33,11 @@ public abstract class CellTowerList<T extends CellTower> extends HashMap<String,
 	 */
 	public void removeSource(int source) {
 		ArrayList<String> toDelete = new ArrayList<String>();
-		for (CellTower ct : this.values()) {
+		for (String entry : this.keySet()) {
+			CellTower ct = this.get(entry);
 			ct.source = ct.source & ~source;
 			if (ct.source == 0)
-				toDelete.add(ct.getText());
+				toDelete.add(entry);
 		}
 		for (String entry : toDelete)
 			this.remove(entry);

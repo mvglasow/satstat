@@ -10,12 +10,13 @@ public class CellTowerLte extends CellTower {
 	private int mnc;
 	private int pci;
 	
-	public CellTowerLte(int mcc, int mnc, int tac, int ci) {
+	public CellTowerLte(int mcc, int mnc, int tac, int ci, int pci) {
 		super();
-		this.mcc = mcc;
-		this.mnc = mnc;
-		this.tac = tac;
-		this.ci = ci;
+		this.setMcc(mcc);
+		this.setMnc(mnc);
+		this.setTac(tac);
+		this.setCi(ci);
+		this.setPci(pci);
 		this.generation = 4;
 	}
 	
@@ -110,7 +111,8 @@ public class CellTowerLte extends CellTower {
 	public void setTac(int tac) {
 		if (tac != Integer.MAX_VALUE)
 			this.tac = tac;
-		this.tac = CellTower.UNKNOWN;
+		else
+			this.tac = CellTower.UNKNOWN;
 	}
 	
 	public void setMcc(int mcc) {

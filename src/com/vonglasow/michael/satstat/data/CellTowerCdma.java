@@ -9,9 +9,9 @@ public class CellTowerCdma extends CellTower {
 	
 	public CellTowerCdma(int sid, int nid, int bsid) {
 		super();
-		this.sid = sid;
-		this.nid = nid;
-		this.bsid = bsid;
+		this.setSid(sid);
+		this.setNid(nid);
+		this.setBsid(bsid);
 	}
 	
 	public int getBsid() {

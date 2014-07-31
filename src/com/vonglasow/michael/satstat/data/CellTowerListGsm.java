@@ -16,6 +16,17 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
 	 * Returns the cell tower with the specified data, or {@code null} if it is not in the list. 
 	 */
+	public CellTowerGsm get(int psc) {
+		String entry = CellTowerGsm.getAltText(psc);
+		if (entry == null)
+			return null;
+		else
+			return this.get(entry);
+	}
+	
+	/**
+	 * Returns the cell tower with the specified data, or {@code null} if it is not in the list. 
+	 */
 	public CellTowerGsm get(int mcc, int mnc, int lac, int cid) {
 		String entry = CellTowerGsm.getText(mcc, mnc, lac, cid);
 		if (entry == null)
@@ -27,8 +38,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
 	 * Adds or updates a cell tower.
 	 * <p>
-	 * If the cell tower is already in the list, it is replaced; if not, a new
-	 * entry is created.
+	 * If the cell tower is already in the list, its data is updated; if not, a
+	 * new entry is created.
 	 * <p>
 	 * This method will set the cell's identity data. After this call,
 	 * {@link #isServing()} will return {@code true} for this cell. 
@@ -44,13 +55,22 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			mnc = Integer.parseInt(networkOperator.substring(3));
 		}
 		CellTowerGsm result = this.get(mcc, mnc, location.getLac(), location.getCid());
-		if (result == null) {
+		if (result == null)
+			result = this.get(location.getPsc());
+		if (result == null)
 			result = new CellTowerGsm(mcc, mnc, location.getLac(), location.getCid(), location.getPsc());
-			this.put(result.getText(), result);
-		} else
+		if (result.getMcc() == CellTower.UNKNOWN)
+			result.setMcc(mcc);
+		if (result.getMnc() == CellTower.UNKNOWN)
+			result.setMnc(mnc);
+		if (result.getLac() == CellTower.UNKNOWN)
+			result.setLac(location.getLac());
+		if (result.getCid() == CellTower.UNKNOWN)
+			result.setCid(location.getCid());
+		if (result.getPsc() == CellTower.UNKNOWN)
 			result.setPsc(location.getPsc());
-		if (location.getPsc() != -1)
-			result.setGeneration(3);
+		this.put(result.getText(), result);
+		this.put(result.getAltText(), result);
 		result.setCellLocation(true);
 		return result;
 	}
@@ -58,8 +78,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
 	 * Adds or updates a cell tower.
 	 * <p>
-	 * If the cell tower is already in the list, it is replaced; if not, a new
-	 * entry is created.
+	 * If the cell tower is already in the list, its data is updated; if not, a
+	 * new entry is created.
 	 * <p>
 	 * This method will set the cell's identity data, generation and its signal
 	 * strength. 
@@ -73,11 +93,23 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			mnc = Integer.parseInt(networkOperator.substring(3));
 		}
 		CellTowerGsm result = this.get(mcc, mnc, cell.getLac(), cell.getCid());
-		if (result == null) {
+
+		if (result == null)
+			result = this.get(cell.getPsc());
+		if (result == null)
 			result = new CellTowerGsm(mcc, mnc, cell.getLac(), cell.getCid(), cell.getPsc());
-			this.put(result.getText(), result);
-		} else
+		if (result.getMcc() == CellTower.UNKNOWN)
+			result.setMcc(mcc);
+		if (result.getMnc() == CellTower.UNKNOWN)
+			result.setMnc(mnc);
+		if (result.getLac() == CellTower.UNKNOWN)
+			result.setLac(cell.getLac());
+		if (result.getCid() == CellTower.UNKNOWN)
+			result.setCid(cell.getCid());
+		if (result.getPsc() == CellTower.UNKNOWN)
 			result.setPsc(cell.getPsc());
+		this.put(result.getText(), result);
+		this.put(result.getAltText(), result);
 		result.setNeighboringCellInfo(true);
 		result.setDbm(cell.getRssi() * 2 - 113);
 		result.setNetworkType(cell.getNetworkType());
@@ -87,8 +119,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
 	 * Adds or updates a cell tower.
 	 * <p>
-	 * If the cell tower is already in the list, it is replaced; if not, a new
-	 * entry is created.
+	 * If the cell tower is already in the list, its data is updated; if not, a
+	 * new entry is created.
 	 * <p>
 	 * This method will set the cell's identity data, its signal strength and
 	 * whether it is the currently serving cell. If the API level is 18 or 
@@ -101,11 +133,22 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			return null;
 		CellIdentityGsm cid = cell.getCellIdentity();
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
-		if (result == null) {
+		if (result == null)
+			result = this.get(cid.getPsc());
+		if (result == null)
 			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc());
-			this.put(result.getText(), result);
-		} else
+		if (result.getMcc() == CellTower.UNKNOWN)
+			result.setMcc(cid.getMcc());
+		if (result.getMnc() == CellTower.UNKNOWN)
+			result.setMnc(cid.getMnc());
+		if (result.getLac() == CellTower.UNKNOWN)
+			result.setLac(cid.getLac());
+		if (result.getCid() == CellTower.UNKNOWN)
+			result.setCid(cid.getCid());
+		if (result.getPsc() == CellTower.UNKNOWN)
 			result.setPsc(cid.getPsc());
+		this.put(result.getText(), result);
+		this.put(result.getAltText(), result);
 		result.setCellInfo(true);
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -117,8 +160,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
 	 * Adds or updates a cell tower.
 	 * <p>
-	 * If the cell tower is already in the list, it is replaced; if not, a new
-	 * entry is created.
+	 * If the cell tower is already in the list, its data is updated; if not, a
+	 * new entry is created.
 	 * <p>
 	 * This method will set the cell's identity data and generation, its signal 
 	 * strength and whether it is the currently serving cell. 
@@ -130,11 +173,22 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			return null;
 		CellIdentityWcdma cid = cell.getCellIdentity();
 		CellTowerGsm result = this.get(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid());
-		if (result == null) {
+		if (result == null)
+			result = this.get(cid.getPsc());
+		if (result == null)
 			result = new CellTowerGsm(cid.getMcc(), cid.getMnc(), cid.getLac(), cid.getCid(), cid.getPsc());
-			this.put(result.getText(), result);
-		} else
+		if (result.getMcc() == CellTower.UNKNOWN)
+			result.setMcc(cid.getMcc());
+		if (result.getMnc() == CellTower.UNKNOWN)
+			result.setMnc(cid.getMnc());
+		if (result.getLac() == CellTower.UNKNOWN)
+			result.setLac(cid.getLac());
+		if (result.getCid() == CellTower.UNKNOWN)
+			result.setCid(cid.getCid());
+		if (result.getPsc() == CellTower.UNKNOWN)
 			result.setPsc(cid.getPsc());
+		this.put(result.getText(), result);
+		this.put(result.getAltText(), result);
 		result.setCellInfo(true);
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		result.setGeneration(3);
