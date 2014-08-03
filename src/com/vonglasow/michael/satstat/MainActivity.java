@@ -328,6 +328,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TableLayout rilCells;
 	protected static LinearLayout rilCdmaLayout;
 	protected static TableLayout rilCdmaCells;
+	protected static LinearLayout rilLteLayout;
+	protected static TableLayout rilLteCells;
 	protected static LinearLayout wifiAps;
 	
 	protected static boolean isMapViewReady = false;
@@ -1610,10 +1612,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		if ((mCellsLte == null) || (mCellsLte.isEmpty())) {
-			// rilLteLayout.setVisibility(View.GONE);
+			rilLteLayout.setVisibility(View.GONE);
 		} else {
-			// rilLteLayout.setVisibility(View.VISIBLE);
-			// rilLteCells.removeAllViews();
+			rilLteLayout.setVisibility(View.VISIBLE);
+			rilLteCells.removeAllViews();
 			if (mCellsLte.containsValue(mServingCell))
 				showCellLte((CellTowerLte) mServingCell);
 			for (CellTowerLte cell : mCellsLte.getAll())
@@ -1713,7 +1715,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	protected static void showCellLte(CellTowerLte cell) {
-		/*
         TableRow row = new TableRow(rilLteCells.getContext());
         row.setWeightSum(26);
         
@@ -1762,7 +1763,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         row.addView(newDbm);
         
         rilLteCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        */
 	}
 
 	/**
@@ -2211,10 +2211,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	rilCdmaLayout = (LinearLayout) rootView.findViewById(R.id.rilCdmaLayout);
         	rilCdmaCells = (TableLayout) rootView.findViewById(R.id.rilCdmaCells);
         	
+        	rilLteLayout = (LinearLayout) rootView.findViewById(R.id.rilLteLayout);
+        	rilLteCells = (TableLayout) rootView.findViewById(R.id.rilLteCells);
+        	
         	wifiAps = (LinearLayout) rootView.findViewById(R.id.wifiAps);
 
         	rilGsmLayout.setVisibility(View.GONE);
         	rilCdmaLayout.setVisibility(View.GONE);
+        	rilLteLayout.setVisibility(View.GONE);
         	
         	isRadioViewReady = true;
         	

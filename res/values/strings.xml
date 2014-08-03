@@ -88,6 +88,9 @@
     <string name="title_radio_sid">SID</string>
     <string name="title_radio_nid">NID</string>
     <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_lte">LTE</string>
+    <string name="title_radio_tac">TAC</string>
+    <string name="title_radio_pci">PCI</string>
     <string name="title_radio_wifi">WiFi</string>
     <string name="title_radio_mac">BSSID (MAC)</string>
     <string name="title_radio_channel">Ch</string>
