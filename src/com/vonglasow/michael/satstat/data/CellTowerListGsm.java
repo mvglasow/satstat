@@ -10,6 +10,7 @@ import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoWcdma;
 import android.telephony.NeighboringCellInfo;
+import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 
 public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
@@ -111,8 +112,29 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
 		result.setNeighboringCellInfo(true);
-		result.setDbm(cell.getRssi() * 2 - 113);
-		result.setNetworkType(cell.getNetworkType());
+		int networkType = cell.getNetworkType();
+		switch (networkType) {
+			case TelephonyManager.NETWORK_TYPE_UMTS:
+			case TelephonyManager.NETWORK_TYPE_HSDPA:
+			case TelephonyManager.NETWORK_TYPE_HSUPA:
+			case TelephonyManager.NETWORK_TYPE_HSPA:
+				/*
+				 * for details see TS 25.133 section 9.1.1.3
+				 * http://www.3gpp.org/DynaReport/25133.htm
+				 */
+				result.setDbm(cell.getRssi() - 116);
+				break;
+			case TelephonyManager.NETWORK_TYPE_EDGE:
+			case TelephonyManager.NETWORK_TYPE_GPRS:
+				result.setDbm(cell.getRssi() * 2 - 113);
+				break;
+			default:
+				// result.setDbm(CellTower.DBM_UNKNOWN);
+				// not needed because this is the default value; setting it
+				// here might overwrite valid data obtained from a different
+				// source
+		}
+		result.setNetworkType(networkType);
 		return result;
 	}
 	
