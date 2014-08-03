@@ -364,7 +364,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static String selectedBSSID = "";
 	protected static Handler networkTimehandler = null;
 	protected static int mLastNetworkGen = 0; //the last observed (and displayed) network type
-	protected static int mLastCellDbm;
+	protected static int mLastCellDbm = CellTower.DBM_UNKNOWN;
 	protected static Runnable networkTimeRunnable = null;
 	private static final int NETWORK_REFRESH_DELAY = 1000; //the polling interval for the network type
 	protected static Handler wifiTimehandler = null;
@@ -492,7 +492,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
 			else if (location instanceof CdmaCellLocation)
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-			if ((mLastCellDbm != 0) && (mServingCell != null) && (mServingCell.getDbm() == 0))
+			if ((mLastCellDbm != CellTower.DBM_UNKNOWN) && (mServingCell != null) && (mServingCell.getDbm() == CellTower.DBM_UNKNOWN))
 				mServingCell.setDbm(mLastCellDbm);
 			
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
@@ -534,7 +534,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					mCellsGsm.updateAll(networkOperator, neighboringCells);
 			} else if (pt == PHONE_TYPE_CDMA)
 				mLastCellDbm = signalStrength.getCdmaDbm();
-			if ((mServingCell != null) && (mLastCellDbm != 0))
+			if ((mServingCell != null) && (mLastCellDbm != CellTower.DBM_UNKNOWN))
 				mServingCell.setDbm(mLastCellDbm);
 			showCells();
 		}
@@ -772,6 +772,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
 	public static String formatCellData(Context context, String format, int raw) {
 		if (raw == CellTower.UNKNOWN)
+			return context.getResources().getString(R.string.value_none);
+		else {
+			String fmt = (format != null) ? format : "%d";
+			return String.format(fmt, raw);
+		}
+	}
+	
+	/**
+	 * Formats cell signal strength for display.
+	 * <p>
+	 * This helper function formats the signal strength for a cell. For valid
+	 * data a string with the properly formatted value will be returned. If the
+	 * input value is
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#DBM_UNKNOWN}, then
+	 * the {@code value_none} resource string will be returned.
+	 * @param context the context of the caller
+	 * @param format a format string, which must contain placeholders for exactly one variable, or {@code null}.
+	 * @param raw the signal strength in dBm
+	 * @return
+	 */
+	public static String formatCellDbm(Context context, String format, int raw) {
+		if (raw == CellTower.DBM_UNKNOWN)
 			return context.getResources().getString(R.string.value_none);
 		else {
 			String fmt = (format != null) ? format : "%d";
@@ -1656,8 +1678,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newDbm = new TextView(rilCdmaCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
         newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        // TODO: format unknown dBm 
-        newDbm.setText(String.valueOf(cell.getDbm()));
+        newDbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cell.getDbm()));
         row.addView(newDbm);
         
         rilCdmaCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -1707,8 +1728,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newDbm = new TextView(rilCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
         newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        // TODO: format unknown dBm 
-        newDbm.setText(String.valueOf(cell.getDbm()));
+        newDbm.setText(formatCellDbm(rilCells.getContext(), null, cell.getDbm()));
         row.addView(newDbm);
         
         rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -1758,8 +1778,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newDbm = new TextView(rilLteCells.getContext());
         newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
         newDbm.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        // TODO: format unknown dBm 
-        newDbm.setText(String.valueOf(cell.getDbm()));
+        newDbm.setText(formatCellDbm(rilLteCells.getContext(), null, cell.getDbm()));
         row.addView(newDbm);
         
         rilLteCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));

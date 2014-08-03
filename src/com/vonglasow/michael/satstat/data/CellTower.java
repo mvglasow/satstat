@@ -9,8 +9,9 @@ public abstract class CellTower {
 	public static int SOURCE_NEIGHBORING_CELL_INFO = 2;
 	public static int SOURCE_CELL_INFO = 4;
 	public static int UNKNOWN = -1;
+	public static int DBM_UNKNOWN = 85; // 99 is unknown ASU, hence 99 * 2 - 113
 	
-	protected int dbm = 0;
+	protected int dbm = DBM_UNKNOWN;
 	protected int generation = 0;
 	protected boolean serving = false;
 	protected int source = 0;
