@@ -44,16 +44,15 @@ public class CellTowerCdma extends CellTower {
 	
 	/**
 	 * Converts a SID/NID/BSID tuple to an identity string, or {@code null}
-	 * if all arguments are invalid. 
+	 * if BSID is invalid.
 	 */
 	public static String getText(int sid, int nid, int bsid) {
 		int iSid = ((sid == -1) || (sid == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : sid;
 		int iNid = ((nid == -1) || (nid == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : nid;
-		int iBsid = ((bsid == -1) || (bsid == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : bsid;
-		if ((iSid == CellTower.UNKNOWN) && (iNid == CellTower.UNKNOWN) && (iBsid == CellTower.UNKNOWN))
+		if ((bsid == -1) || (bsid == Integer.MAX_VALUE))
 			return null;
 		else
-			return String.format("%s:%d-%d-%d", FAMILY, iSid, iNid, iBsid);
+			return String.format("%s:%d-%d-%d", FAMILY, iSid, iNid, bsid);
 	}
 	
 	public void setBsid(int bsid) {

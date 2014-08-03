@@ -88,17 +88,16 @@ public class CellTowerLte extends CellTower {
 	
 	/**
 	 * Converts a MCC/MNC/TAC/CI tuple to an identity string, or
-	 * {@code null} if all arguments are invalid. 
+	 * {@code null} if CI is invalid.
 	 */
 	public static String getText(int mcc, int mnc, int tac, int ci) {
 		int iMcc = ((mcc == -1) || (mcc == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : mcc;
 		int iMnc = ((mnc == -1) || (mnc == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : mnc;
 		int iTac = ((tac == -1) || (tac == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : tac;
-		int iCi = ((ci == -1) || (ci == Integer.MAX_VALUE)) ? CellTower.UNKNOWN : ci;
-		if ((iMcc == CellTower.UNKNOWN) && (iMnc == CellTower.UNKNOWN) && (iTac == CellTower.UNKNOWN) && (iCi == CellTower.UNKNOWN))
+		if ((ci == -1) || (ci == Integer.MAX_VALUE))
 			return null;
 		else
-			return String.format("%s:%d-%d-%d-%d", FAMILY, iMcc, iMnc, iTac, iCi);
+			return String.format("%s:%d-%d-%d-%d", FAMILY, iMcc, iMnc, iTac, ci);
 	}
 	
 	public void setCi(int ci) {
