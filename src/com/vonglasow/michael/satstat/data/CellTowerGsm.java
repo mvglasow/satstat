@@ -1,5 +1,7 @@
 package com.vonglasow.michael.satstat.data;
 
+import android.telephony.NeighboringCellInfo;
+
 public class CellTowerGsm extends CellTower {
 	public static String ALT_ID = "pci";
 	public static String FAMILY = "gsm";
@@ -100,6 +102,20 @@ public class CellTowerGsm extends CellTower {
 			return String.format("%s:%d-%d-%d-%d", FAMILY, iMcc, iMnc, iLac, cid);
 	}
 	
+	/**
+	 * Sets signal strength dBm based on ASU.
+	 * <p>
+	 * ASU can be converted into dBm with the formula:
+	 * {@code dBm = -113 + 2 * asu}. The reporting range is from -113 dBm to
+	 * -51 dBm (0 to 31). Values outside this range will be ignored. Refer to
+	 * 3GPP TS 27.007 (Ver 10.3.0) Sec 8.69
+	 */
+	// or 3GPP TS 27.007 8.5
+	public void setAsu(int asu){
+		if ((asu >= 0) || (asu <= 31))
+			this.setDbm(-113 + 2 * asu);
+	}
+	
 	public void setCid(int cid) {
 		if ((cid != Integer.MAX_VALUE) && (cid != -1))
 			this.cid = cid;
@@ -107,6 +123,19 @@ public class CellTowerGsm extends CellTower {
 			this.cid = CellTower.UNKNOWN;
 		if (this.cid > MAX_2G_CID)
 			this.generation = 3;
+	}
+	
+	/**
+	 * Sets signal strength dBm based on CPICH RSCP.
+	 * <p>
+	 * RSCP is Received Signal Code Power. This value can be converted into dBm
+	 * with the formula: {@code dBm = rscp - 113}. The reporting range for
+	 * CPICH RSCP is from -120 dBm to -25 dBm (-5 to 91). Values outside this
+	 * range will be ignored. Refer to 3GPP TS 25.133 (Ver 10.2.0) 9.1.1.3
+	 */
+	public void setCpichRscp(int rscp){
+		if ((rscp >= -5) || (rscp <= 91))
+			this.setDbm(rscp - 116);
 	}
 	
 	public void setLac(int lac) {

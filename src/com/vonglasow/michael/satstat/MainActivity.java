@@ -364,6 +364,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static String selectedBSSID = "";
 	protected static Handler networkTimehandler = null;
 	protected static int mLastNetworkGen = 0; //the last observed (and displayed) network type
+	protected static int mLastCellAsu = NeighboringCellInfo.UNKNOWN_RSSI;
 	protected static int mLastCellDbm = CellTower.DBM_UNKNOWN;
 	protected static Runnable networkTimeRunnable = null;
 	private static final int NETWORK_REFRESH_DELAY = 1000; //the polling interval for the network type
@@ -488,12 +489,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
 			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
 			String networkOperator = mTelephonyManager.getNetworkOperator();
-			if (location instanceof GsmCellLocation)
+			if (location instanceof GsmCellLocation) {
 				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-			else if (location instanceof CdmaCellLocation)
+				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+			} else if (location instanceof CdmaCellLocation) {
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-			if ((mLastCellDbm != CellTower.DBM_UNKNOWN) && (mServingCell != null) && (mServingCell.getDbm() == CellTower.DBM_UNKNOWN))
-				mServingCell.setDbm(mLastCellDbm);
+				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
+			}
 			
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
 				// this may not be supported on some devices (returns no data)
@@ -526,16 +530,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
 			int pt = mTelephonyManager.getPhoneType();
 			if (pt == PHONE_TYPE_GSM) {
-				mLastCellDbm = signalStrength.getGsmSignalStrength() * 2 - 113;
+				mLastCellAsu = signalStrength.getGsmSignalStrength();
 				// this may not be supported on some devices (returns no data)
 				String networkOperator = mTelephonyManager.getNetworkOperator();
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 				if (neighboringCells != null)
 					mCellsGsm.updateAll(networkOperator, neighboringCells);
-			} else if (pt == PHONE_TYPE_CDMA)
+				if ((mServingCell != null) && (mServingCell instanceof CellTowerGsm))
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+			} else if (pt == PHONE_TYPE_CDMA) {
 				mLastCellDbm = signalStrength.getCdmaDbm();
-			if ((mServingCell != null) && (mLastCellDbm != CellTower.DBM_UNKNOWN))
+				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
 				mServingCell.setDbm(mLastCellDbm);
+			}
 			showCells();
 		}
 	};

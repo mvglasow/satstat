@@ -122,11 +122,11 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 				 * for details see TS 25.133 section 9.1.1.3
 				 * http://www.3gpp.org/DynaReport/25133.htm
 				 */
-				result.setDbm(cell.getRssi() - 116);
+				result.setCpichRscp(cell.getRssi() - 116);
 				break;
 			case TelephonyManager.NETWORK_TYPE_EDGE:
 			case TelephonyManager.NETWORK_TYPE_GPRS:
-				result.setDbm(cell.getRssi() * 2 - 113);
+				result.setAsu(cell.getRssi());
 				break;
 			default:
 				// result.setDbm(CellTower.DBM_UNKNOWN);
