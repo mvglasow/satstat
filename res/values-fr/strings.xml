@@ -25,7 +25,7 @@
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Vitesse</string>
     <string name="title_gps_alt">Altitude</string>
-    <string name="title_gps_time">Otention du dernier Fix</string>
+    <string name="title_gps_time">Obtention du dernier Fix</string>
     <string name="title_gps_bear">Bearing</string>
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Erreur</string>
