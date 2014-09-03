@@ -19,26 +19,36 @@
 
 package com.vonglasow.michael.satstat;
 
-import java.lang.reflect.Field;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -54,29 +64,26 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
-//import android.os.PowerManager;
-//import android.os.PowerManager.WakeLock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.telephony.CellInfo;
-import android.telephony.CellInfoCdma;
-import android.telephony.CellInfoGsm;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
+import static android.telephony.PhoneStateListener.LISTEN_DATA_CONNECTION_STATE;
 import static android.telephony.PhoneStateListener.LISTEN_NONE;
 import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import android.telephony.SignalStrength;
@@ -86,28 +93,100 @@ import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
+import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
+import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.Dimension;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
+import org.mapsforge.core.util.LatLongUtils;
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.LayerManager;
+import org.mapsforge.map.layer.Layers;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
+import org.mapsforge.map.layer.overlay.Circle;
+import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.data.CellTower;
+import com.vonglasow.michael.satstat.data.CellTowerCdma;
+import com.vonglasow.michael.satstat.data.CellTowerGsm;
+import com.vonglasow.michael.satstat.data.CellTowerListCdma;
+import com.vonglasow.michael.satstat.data.CellTowerListGsm;
+import com.vonglasow.michael.satstat.data.CellTowerListLte;
+import com.vonglasow.michael.satstat.data.CellTowerLte;
+import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
-import com.vonglasow.michael.satstat.widgets.SquareView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, SensorEventListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener, ViewPager.OnPageChangeListener {
 
+	public static double EARTH_CIRCUMFERENCE = 40000000; // meters
+	
+	/*
+	 * Indices into style arrays
+	 */
+	private static final int STYLE_MARKER = 0;
+	private static final int STYLE_STROKE = 1;
+	private static final int STYLE_FILL = 2;
+	
+	/*
+	 * Styles for location providers
+	 */
+	private static final String [] LOCATION_PROVIDER_STYLES = {
+		"location_provider_blue",
+		"location_provider_green",
+		"location_provider_orange",
+		"location_provider_purple",
+		"location_provider_red"
+	};
+	
+	/*
+	 * Blue style: default for network location provider
+	 */
+	private static final String LOCATION_PROVIDER_BLUE = "location_provider_blue";
+	
+	/*
+	 * Red style: default for GPS location provider
+	 */
+	private static final String LOCATION_PROVIDER_RED = "location_provider_red";
+	
+	/*
+	 * Gray style for inactive location providers
+	 */
+	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
+	
+	private static final String KEY_LOCATION_STALE = "isStale";
+	
+	private static List<String> mAvailableProviderStyles;
+	
+	
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -123,11 +202,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     ViewPager mViewPager;
     
+    /**
+     * Whether the activity is stopped. 
+     */
+    boolean isStopped;
+    
+    /**
+     * Whether we are running on a wide-screen device
+     */
+    boolean isWideScreen;
+    
 	//The rate in microseconds at which we would like to receive updates from the sensors.
 	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
 	private static final int iSensorRate = 200000; //Default is 20,000 for accel, 5,000 for gyro
 
-	private LocationManager mLocationManager;
+	private static LocationManager mLocationManager;
 	private SensorManager mSensorManager;
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
@@ -163,7 +252,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private long mPressureLast = 0;
 	private long mHumidityLast = 0;
 	private long mTempLast = 0;
+	
+	private static CellTower mServingCell;
+	private static CellTowerListGsm mCellsGsm = new CellTowerListGsm();
+	private static CellTowerListCdma mCellsCdma = new CellTowerListCdma();
+	private static CellTowerListLte mCellsLte = new CellTowerListLte();
+	
 	private static TelephonyManager mTelephonyManager;
+	private static ConnectivityManager mConnectivityManager;
 	private static WifiManager mWifiManager;
 
 	protected static MenuItem menu_action_record;
@@ -229,40 +325,72 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	protected static boolean isRadioViewReady = false;
 	protected static LinearLayout rilGsmLayout;
-	protected static TextView rilType;
-	protected static TextView rilMcc;
-	protected static TextView rilMnc;
-	protected static TextView rilCellId;
-	protected static TextView rilLac;
-	protected static TextView rilAsu;
 	protected static TableLayout rilCells;
-	protected static TextView rilSid;
-	protected static TextView rilNid;
-	protected static TextView rilBsid;
 	protected static LinearLayout rilCdmaLayout;
-	protected static TextView rilCdmaType;
-	protected static TextView rilCdmaAsu;
 	protected static TableLayout rilCdmaCells;
+	protected static LinearLayout rilLteLayout;
+	protected static TableLayout rilLteCells;
 	protected static LinearLayout wifiAps;
+	
+	protected static boolean isMapViewReady = false;
+	protected static boolean isMapViewAttached = true;
+	protected static MapView mapMap;
+	protected static TileDownloadLayer mapDownloadLayer = null;
+	protected static TileCache mapTileCache = null;
+	protected static ImageButton mapReattach;
+	protected static HashMap<String, Circle> mapCircles;
+	protected static HashMap<String, Marker> mapMarkers;
+	
+	/**
+	 * Cached map of locations reported by the providers.
+	 * 
+	 * The keys correspond to the provider names as defined by LocationManager.
+	 * The entries are {@link Location} instances. For valid and recent
+	 * locations these are copies of the locations supplied by
+	 * {@link LocationManager}. Invalid locations, intended as placeholders,
+	 * have an empty provider string and should not be processed. Stale
+	 * locations have isStale entry in their extras set to true. They can be
+	 * processed but may require special handling.
+	 */
+	protected static HashMap<String, Location> providerLocations;
+	
+	protected static HashMap<String, String> providerStyles;
+	protected static HashMap<String, String> providerAppliedStyles;
+	protected static Handler providerInvalidationHandler = null;
+	protected static HashMap<String, Runnable> providerInvalidators;
+	private static final int PROVIDER_EXPIRATION_DELAY = 2000; // the time after which a location is considered stale 
 	
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
+	protected static Handler networkTimehandler = null;
+	protected static int mLastNetworkGen = 0; //the last observed (and displayed) network type
+	protected static int mLastCellAsu = NeighboringCellInfo.UNKNOWN_RSSI;
+	protected static int mLastCellDbm = CellTower.DBM_UNKNOWN;
+	protected static Runnable networkTimeRunnable = null;
+	private static final int NETWORK_REFRESH_DELAY = 1000; //the polling interval for the network type
 	protected static Handler wifiTimehandler = null;
 	protected static Runnable wifiTimeRunnable = null;
 	private static final int WIFI_REFRESH_DELAY = 1000; //the time between two requests for WLAN rescan.
-	/*
-	private PowerManager pm;
-	private WakeLock wl;
-	*/
 	
 	/**
-	 * Converts screen rotation to orientation
+	 * Converts screen rotation to orientation for devices with a naturally tall screen.
 	 */
-	private final static Integer orFromRot[] = {
+	private final static Integer OR_FROM_ROT_TALL[] = {
 		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
 		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE};
+
+	/**
+	 * Converts screen rotation to orientation for devices with a naturally wide screen.
+	 */
+	private final static Integer OR_FROM_ROT_WIDE[] = {
+		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
+		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
+		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
+
+	private static SharedPreferences mSharedPreferences;
 
     @SuppressLint("UseSparseArrays")
 	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
@@ -341,38 +469,81 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
 	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-		/*
-		// Requires API level 17. Many phones don't implement this method at all and will return null,
-		// the ones that do implement it return only certain cell types (none that we support at this point).
-		//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
+		// Requires API level 17. Many phones don't implement this method at 
+		// all and will return null, the ones that do implement it return only
+		// certain cell types.
+		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
-	 			showCellInfo(cellInfo);
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
+				return;
+			if (cellInfo != null) {
+				mCellsGsm.updateAll(cellInfo);
+				mCellsCdma.updateAll(cellInfo);
+				mCellsLte.updateAll(cellInfo);
+			}
+			showCells();
 	 	}
-	 	*/
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			if (isRadioViewReady) {
-				showCellLocation(location);
-				if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
-					//this may not be supported on some devices
-					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-					showNeighboringCellInfo(neighboringCells);
-				}
+			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			String networkOperator = mTelephonyManager.getNetworkOperator();
+			if (location instanceof GsmCellLocation) {
+				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
+				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+			} else if (location instanceof CdmaCellLocation) {
+				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
+				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
 			}
+			
+			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
+				// this may not be supported on some devices (returns no data)
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				if (neighboringCells != null)
+					mCellsGsm.updateAll(networkOperator, neighboringCells);
+			}
+			
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
+			if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
+				if ((mLastNetworkGen != 0) && (mServingCell != null))
+					mServingCell.setGeneration(mLastNetworkGen);
+				NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
+				if ((netinfo == null) 
+						|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
+						|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
+					networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+				}
+			} else if (mServingCell != null) {
+				mLastNetworkGen = mServingCell.getGeneration();
+			}
+
+			showCells();
+		}
+		
+		public void onDataConnectionStateChanged (int state, int networkType) {
+			onNetworkTypeChanged(networkType);
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
-			if (isRadioViewReady) {
-				int pt = mTelephonyManager.getPhoneType();
-				if (pt == PHONE_TYPE_GSM) {
-					rilAsu.setText(String.valueOf(signalStrength.getGsmSignalStrength() * 2 - 113));
-					//this may not be supported on some devices
-					List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-					showNeighboringCellInfo(neighboringCells);
-				} else if (pt == PHONE_TYPE_CDMA) {
-					rilCdmaAsu.setText(String.valueOf(signalStrength.getCdmaDbm()));
-				}
+			int pt = mTelephonyManager.getPhoneType();
+			if (pt == PHONE_TYPE_GSM) {
+				mLastCellAsu = signalStrength.getGsmSignalStrength();
+				// this may not be supported on some devices (returns no data)
+				String networkOperator = mTelephonyManager.getNetworkOperator();
+				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+				if (neighboringCells != null)
+					mCellsGsm.updateAll(networkOperator, neighboringCells);
+				if ((mServingCell != null) && (mServingCell instanceof CellTowerGsm))
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+			} else if (pt == PHONE_TYPE_CDMA) {
+				mLastCellDbm = signalStrength.getCdmaDbm();
+				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
+				mServingCell.setDbm(mLastCellDbm);
 			}
+			showCells();
 		}
 	};
 	
@@ -393,6 +564,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 		}
 	};
+	
+	private Thread.UncaughtExceptionHandler defaultUEH;
 
 	private final void onWifiEntryClick(String BSSID) {
 		selectedBSSID = BSSID;
@@ -473,18 +646,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		wifiLayout.addView(wifiDetails);
 		wifiLayout.setOnClickListener(clis);
 		wifiAps.addView(wifiLayout);
-		
-		/*
-		TableRow row3 = new TableRow(wifiAps.getContext());
-		TextView newCaps = new TextView(wifiAps.getContext());
-		newCaps.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
-		newCaps.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
-		newCaps.setText(WifiCapabilities.getScanResultSecurity(result));
-		//newCaps.setText(result.capabilities);
-		row3.addView(newCaps);
-		row3.setOnClickListener(clis);
-		wifiAps.addView(row3, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		*/
 	}
 
 	private final void refreshWifiResults() {
@@ -522,6 +683,131 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	}
 	}
 	
+	
+	/**
+	 * Applies a style to the map overlays associated with a given location provider.
+	 * 
+	 * This method changes the style (effectively, the color) of the circle and
+	 * marker overlays. Its main purpose is to switch the color of the overlays
+	 * between gray and the provider color.
+	 * 
+	 * @param context The context of the caller
+	 * @param provider The name of the location provider, as returned by
+	 * {@link LocationProvider.getName()}.
+	 * @param styleName The name of the style to apply. If it is null, the
+	 * default style for the provider as returned by 
+	 * assignLocationProviderStyle() is applied. 
+	 */
+	protected static void applyLocationProviderStyle(Context context, String provider, String styleName) {
+		String sn = (styleName != null)?styleName:assignLocationProviderStyle(provider);
+		
+		Boolean isStyleChanged = !sn.equals(providerAppliedStyles.get(provider));
+		Boolean needsRedraw = false;
+		
+    	Resources res = context.getResources();
+    	TypedArray style = res.obtainTypedArray(res.getIdentifier(sn, "array", context.getPackageName()));
+    	
+    	// Circle layer
+    	Circle circle = mapCircles.get(provider);
+    	if (circle != null) {
+    		circle.getPaintFill().setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
+    		circle.getPaintStroke().setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
+    		needsRedraw = isStyleChanged && circle.isVisible();
+    	}
+    	
+    	//Marker layer
+    	Marker marker = mapMarkers.get(provider);
+    	if (marker != null) {
+            Drawable drawable = style.getDrawable(STYLE_MARKER);
+            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+            marker.setBitmap(bitmap);
+            needsRedraw = needsRedraw || (isStyleChanged && marker.isVisible());
+    	}
+    	
+    	if (needsRedraw)
+    		mapMap.getLayerManager().redrawLayers();
+    	providerAppliedStyles.put(provider, sn);
+        style.recycle();
+	}
+	
+	
+	/**
+	 * Returns the map overlay style to use for a given location provider.
+	 * 
+	 * This method first checks if a style has already been assigned to the
+	 * location provider. In that case the already assigned style is returned.
+	 * Otherwise a new style is assigned and the assignment is stored
+	 * internally and written to SharedPreferences.
+	 * @param provider
+	 * @return The style to use for non-stale locations
+	 */
+	protected static String assignLocationProviderStyle(String provider) {
+    	String styleName = providerStyles.get(provider);
+    	if (styleName == null) {
+    		/*
+    		 * Not sure if this ever happens but I can't rule it out. Scenarios I can think of:
+    		 * - A custom location provider which identifies itself as "passive"
+    		 * - A combination of the following:
+    		 *   - Passive location provider is selected
+    		 *   - A new provider is added while we're running (so it's not in our list)
+    		 *   - Another app starts using the new provider
+    		 *   - The passive location provider forwards us an update from the new provider
+    		 */
+    		if (mAvailableProviderStyles.isEmpty())
+        		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
+    		styleName = mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, mAvailableProviderStyles.get(0));
+    		providerStyles.put(provider, styleName);
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, styleName);
+			spEditor.commit();
+    	}
+		return styleName;
+	}
+	
+	/**
+	 * Formats an item of cell information data for display.
+	 * <p>
+	 * This helper function formats any item of cell information data, such as
+	 * the cell ID, PSC or similar. For valid data a string with the properly
+	 * formatted value will be returned. If the input value is
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#UNKNOWN}, then the
+	 * {@code value_none} resource string will be returned. 
+	 * @param context the context of the caller
+	 * @param format a format string, which must contain placeholders for exactly one variable, or {@code null}.
+	 * @param raw the value to format
+	 * @return
+	 */
+	public static String formatCellData(Context context, String format, int raw) {
+		if (raw == CellTower.UNKNOWN)
+			return context.getResources().getString(R.string.value_none);
+		else {
+			String fmt = (format != null) ? format : "%d";
+			return String.format(fmt, raw);
+		}
+	}
+	
+	/**
+	 * Formats cell signal strength for display.
+	 * <p>
+	 * This helper function formats the signal strength for a cell. For valid
+	 * data a string with the properly formatted value will be returned. If the
+	 * input value is
+	 * {@link com.vonglasow.michael.satstat.data.CellTower#DBM_UNKNOWN}, then
+	 * the {@code value_none} resource string will be returned.
+	 * @param context the context of the caller
+	 * @param format a format string, which must contain placeholders for exactly one variable, or {@code null}.
+	 * @param raw the signal strength in dBm
+	 * @return
+	 */
+	public static String formatCellDbm(Context context, String format, int raw) {
+		if (raw == CellTower.DBM_UNKNOWN)
+			return context.getResources().getString(R.string.value_none);
+		else {
+			String fmt = (format != null) ? format : "%d";
+			return String.format(fmt, raw);
+		}
+	}
+
     /**
      * Converts a bearing (in degrees) into a directional name.
      */
@@ -561,19 +847,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
+
+    /**
+     * Gets the display color for a phone network generation.
+     * @param generation The network generation, i.e. {@code 2}, {@code 3} or {@code 4} for any flavor of 2G, 3G or 4G, or {@code 0} for unknown
+     * @return The color in which to display the indicator. If {@code generation} is {@code 0} or not a valid generation, the color returned will be transparent.
+     */
+	public static int getColorFromGeneration(int generation) {
+    	switch (generation) {
+    	case 2:
+    		return(R.color.gen2);
+    	case 3:
+    		return(R.color.gen3);
+    	case 4:
+    		return(R.color.gen4);
+    	default:
+    		return(android.R.color.transparent);
+    	}
+	}
+	
 	
     /**
-     * Gets the display color for a phone network type
+     * Gets the generation of a phone network type
      * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
-     * @return The color in which to display the indicator
+     * @return 2, 3 or 4 for 2G, 3G or 4G; 0 for unknown
      */
-	public static int getColorFromNetworkType(int networkType) {
+	public static int getNetworkGeneration(int networkType) {
     	switch (networkType) {
     	case TelephonyManager.NETWORK_TYPE_CDMA:
     	case TelephonyManager.NETWORK_TYPE_EDGE:
     	case TelephonyManager.NETWORK_TYPE_GPRS:
     	case TelephonyManager.NETWORK_TYPE_IDEN:
-    		return(R.color.gen2);
+    		return 2;
     	case TelephonyManager.NETWORK_TYPE_1xRTT:
     	case TelephonyManager.NETWORK_TYPE_EHRPD:
     	case TelephonyManager.NETWORK_TYPE_EVDO_0:
@@ -584,11 +889,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	case TelephonyManager.NETWORK_TYPE_HSPAP:
     	case TelephonyManager.NETWORK_TYPE_HSUPA:
     	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		return(R.color.gen3);
+    		return 3;
     	case TelephonyManager.NETWORK_TYPE_LTE:
-    		return(R.color.gen4);
+    		return 4;
     	default:
-    		return(android.R.color.transparent);
+    		return 0;
     	}
 	}
 	
@@ -607,6 +912,30 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		(sensor != null) ? (byte) Math.max(Math.ceil(
         				(float) -Math.log10(sensor.getResolution())), 0) : 0);
 	}
+	
+	
+	/**
+	 * Determines if a location is stale.
+	 * 
+	 * A location is considered stale if its Extras have an isStale key set to
+	 * True. A location without this key is not considered stale.
+	 * 
+	 * @param location
+	 * @return True if stale, False otherwise
+	 */
+	public static boolean isLocationStale(Location location) {
+		Bundle extras = location.getExtras();
+		if (extras == null)
+			return false;
+		return extras.getBoolean(KEY_LOCATION_STALE);
+	}
+	
+	
+	public static void markLocationAsStale(Location location) {
+		if (location.getExtras() == null)
+			location.setExtras(new Bundle());
+		location.getExtras().putBoolean(KEY_LOCATION_STALE, true);
+	}
 
 
     /**
@@ -618,24 +947,105 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+        	public void uncaughtException(Thread t, Throwable e) {
+        		Context c = getApplicationContext();
+        		File dumpDir = c.getExternalFilesDir(null);
+        		File dumpFile = new File (dumpDir, "satstat-" + System.currentTimeMillis() + ".log");
+        		PrintStream s;
+        		try {
+        			InputStream buildInStream = getResources().openRawResource(R.raw.build);
+        			s = new PrintStream(dumpFile);
+        			s.append("SatStat build: ");
+        			
+        			int i;
+        			try {
+        				i = buildInStream.read();
+        				while (i != -1) {
+        					s.write(i);
+        					i = buildInStream.read();
+        				}
+        				buildInStream.close();
+        			} catch (IOException e1) {
+        				e1.printStackTrace();
+        			}
+        			
+        			s.append("\n\n");
+        			e.printStackTrace(s);
+        			s.flush();
+        			s.close();
+        		} catch (FileNotFoundException e2) {
+        			e2.printStackTrace();
+        		}
+        		defaultUEH.uncaughtException(t, e);
+        	}
+        });
+        
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         final ActionBar actionBar = getActionBar();
         
         setContentView(R.layout.activity_main);
         
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
-        /*
+        // Find out default screen orientation
         Configuration config = getResources().getConfiguration();
-        if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        int rot = wm.getDefaultDisplay().getRotation();
+        isWideScreen = (config.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+        	       (rot == Surface.ROTATION_0 || rot == Surface.ROTATION_180) ||
+        	       config.orientation == Configuration.ORIENTATION_PORTRAIT &&
+        	       (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270));
+        Log.d("MainActivity", "isWideScreen=" + Boolean.toString(isWideScreen));
+        
+        // compact action bar
+    	int dpX = (int) (this.getResources().getDisplayMetrics().widthPixels / this.getResources().getDisplayMetrics().density);
+    	/*
+    	 * This is a crude way to ensure a one-line action bar with tabs
+    	 * (not a drop-down list) and home (incon) and title only if there
+    	 * is space, depending on screen width:
+    	 * divide screen in units of 64 dp
+    	 * each tab requires 1 unit, home and menu require slightly less,
+    	 * title takes up approx. 2.5 units in portrait,
+    	 * home and title are about 2 units wide in landscape
+    	 */
+    	if (dpX < 192) {
+    		// just enough space for drop-down list and menu
             actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowTitleEnabled(false);
-        } else {
+    	} else if (dpX < 320) {
+    		// not enough space for four tabs, but home will fit next to list
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+    	} else if (dpX < 384) {
+    		// just enough space for four tabs
+            actionBar.setDisplayShowHomeEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
+    	} else if ((dpX < 448) || ((config.orientation == Configuration.ORIENTATION_PORTRAIT) && (dpX < 544))) {
+    		// space for four tabs and home, but not title
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+    	} else {
+    		// ample space for home, title and all four tabs
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(true);
-        }
-        */
+    	}
         setEmbeddedTabs(actionBar, true);
-
+        
+        providerLocations = new HashMap<String, Location>();
+        
+        mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
+        
+        providerStyles = new HashMap<String, String>();
+        providerAppliedStyles = new HashMap<String, String>();
+        
+        providerInvalidationHandler = new Handler();
+        providerInvalidators = new HashMap<String, Runnable>(); 
+        
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -653,6 +1063,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setIcon(mSectionsPagerAdapter.getPageIcon(i))
                             .setTabListener(this));
         }
+        
+        // This is needed by the mapsforge library.
+        AndroidGraphicFactory.createInstance(this.getApplication());
 
         // Get system services for event delivery
     	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -667,6 +1080,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mHumiditySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
         mTempSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        mConnectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
         mAccSensorRes = getSensorDecimals(mAccSensor, mAccSensorRes);
@@ -677,6 +1091,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mPressureSensorRes = getSensorDecimals(mPressureSensor, mPressureSensorRes);
         mHumiditySensorRes = getSensorDecimals(mHumiditySensor, mHumiditySensorRes);
         mTempSensorRes = getSensorDecimals(mTempSensor, mTempSensorRes);
+        
+        networkTimehandler = new Handler();
+        networkTimeRunnable = new Runnable() {
+        	@Override
+        	public void run() {
+	            int newNetworkType = mTelephonyManager.getNetworkType();
+	            if (getNetworkGeneration(newNetworkType) != mLastNetworkGen)
+	            	onNetworkTypeChanged(newNetworkType);
+	            else
+	            	networkTimehandler.postDelayed(this, NETWORK_REFRESH_DELAY);
+        	}
+        };
 
         wifiTimehandler = new Handler();
         wifiTimeRunnable = new Runnable() {
@@ -687,13 +1113,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 wifiTimehandler.postDelayed(this, WIFI_REFRESH_DELAY);
             }
         };
-
-        // SCREEN_BRIGHT_WAKE_LOCK is deprecated
-    	/*
-        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Sensor Monitor");
-        wl.acquire();
-        */
+        
+        updateLocationProviderStyles();
     }
 	
 	
@@ -706,34 +1127,98 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         return true;
     }
     
+    @Override
+    protected void onDestroy() {
+		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+		super.onDestroy();
+    }
+    
     /**
      * Called when the status of the GPS changes. Updates GPS display.
      */
     public void onGpsStatusChanged (int event) {
-    	if (isGpsViewReady) {
-    		GpsStatus status = mLocationManager.getGpsStatus(null);
-    		int satsInView = 0;
-    		int satsUsed = 0;
-    		Iterable<GpsSatellite> sats = status.getSatellites();
-    		for (GpsSatellite sat : sats) {
-    			satsInView++;
-    			if (sat.usedInFix()) {
-    				satsUsed++;
-    			}
-    		}
+		GpsStatus status = mLocationManager.getGpsStatus(null);
+		int satsInView = 0;
+		int satsUsed = 0;
+		Iterable<GpsSatellite> sats = status.getSatellites();
+		for (GpsSatellite sat : sats) {
+			satsInView++;
+			if (sat.usedInFix()) {
+				satsUsed++;
+			}
+		}
+
+		if (isGpsViewReady) {
     		gpsSats.setText(String.valueOf(satsUsed) + "/" + String.valueOf(satsInView));
     		gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
     		gpsStatusView.showSats(sats);
     		gpsSnrView.showSats(sats);
     	}
+    	
+		if ((isMapViewReady) && (satsUsed == 0)) {
+			Location location = providerLocations.get(LocationManager.GPS_PROVIDER);
+			if (location != null)
+				markLocationAsStale(location);
+			applyLocationProviderStyle(this, LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_GRAY);
+		}
     }
     
     /**
-     * Called when the location changes. Updates GPS display.
+     * Called when a new location is found by a registered location provider.
+     * Stores the location and updates GPS display and map view.
      */
     public void onLocationChanged(Location location) {
-    	// Called when a new location is found by the location provider.
-    	if (isGpsViewReady) {
+    	// some providers may report NaN for latitude and longitude:
+    	// if that happens, do not process this location and mark any previous
+    	// location from that provider as stale
+		if (Double.isNaN(location.getLatitude()) || Double.isNaN(location.getLongitude())) {
+			markLocationAsStale(providerLocations.get(location.getProvider()));
+			if (isMapViewReady)
+				applyLocationProviderStyle(this, location.getProvider(), LOCATION_PROVIDER_GRAY);
+			return;
+		}
+
+		if (providerLocations.containsKey(location.getProvider()))
+    		providerLocations.put(location.getProvider(), new Location(location));
+    	
+    	// update map view
+		if (isMapViewReady) {
+    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
+    		
+    		Circle circle = mapCircles.get(location.getProvider());
+    		Marker marker = mapMarkers.get(location.getProvider());
+    		
+    		if (circle != null) {
+    			circle.setLatLong(latLong);
+	    		if (location.hasAccuracy()) {
+	    			circle.setVisible(true);
+	    			circle.setRadius(location.getAccuracy());
+	    		} else {
+	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
+	    			circle.setVisible(false);
+	    		}
+    		}
+    		
+			if (marker != null) {
+				marker.setLatLong(latLong);
+				marker.setVisible(true);
+			}
+			
+			applyLocationProviderStyle(this, location.getProvider(), null);
+			
+			Runnable invalidator = providerInvalidators.get(location.getProvider());
+			if (invalidator != null) {
+				providerInvalidationHandler.removeCallbacks(invalidator);
+				providerInvalidationHandler.postDelayed(invalidator, PROVIDER_EXPIRATION_DELAY);
+			}
+    		
+    		// redraw, move locations into view and zoom out as needed
+			if ((circle != null) || (marker != null) || (invalidator != null))
+				updateMap();
+		}
+    	
+    	// update GPS view
+    	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
 	    	if (location.hasAccuracy()) {
 	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
 	    	} else {
@@ -771,18 +1256,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		gpsSpeed.setText(getString(R.string.value_none));
 	    	}
 	    	
-	    	// this doesn't seem to work, always returns 0 satellites
-	    	/*
-	    	String sats  = getString(R.string.value_none);
-	    	Bundle extras = location.getExtras();
-	    	if (extras != null) {
-	    		Object oSats = extras.get("satellites");
-	    		if (oSats != null) {
-	    			sats = oSats.toString();
-	    		}
-	    	}
-	    	gpsSatsInFix.setText(sats);
-	    	*/
+	    	// note: getting number of sats in fix by looking for "satellites"
+	    	// in location's extras doesn't seem to work, always returns 0 sats
     	}
     }
     
@@ -806,6 +1281,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		return super.onOptionsItemSelected(item);
     	}
     }
+    
+	/**
+	 * Updates the network type indicator for the current cell. Called by
+	 * {@link networkTimeRunnable.run()} or
+	 * {@link android.telephony.PhoneStateListener.onDataConnectionChanged(int, int)}.
+	 * 
+	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
+	 */
+    protected static void onNetworkTypeChanged(int networkType) {
+		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
+		if (getNetworkGeneration(networkType) != mLastNetworkGen) {
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
+			mLastNetworkGen = getNetworkGeneration(networkType);
+			if (mServingCell != null)
+				mServingCell.setNetworkType(networkType);
+		}
+		showCells();
+    }
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
@@ -825,6 +1318,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // corresponding tab.
         getActionBar().setSelectedNavigationItem(position);
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if ((isMapViewReady) && (mapDownloadLayer != null))
+        	mapDownloadLayer.onPause();
+	}
 
     /**
      * Called when a location provider is disabled. Does nothing.
@@ -839,12 +1339,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onResume() {
         super.onResume();
-        //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-        if (mLocationManager.getAllProviders().indexOf(LocationManager.GPS_PROVIDER) >= 0) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        } else {
-            Log.w("MainActivity", "No GPS location provider found. GPS data display will not be available.");
-        }
+        isStopped = false;
+        registerLocationProviders(this);
         mLocationManager.addGpsStatusListener(this);
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
@@ -855,7 +1351,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         mSensorManager.registerListener(this, mPressureSensor, iSensorRate);
         mSensorManager.registerListener(this, mHumiditySensor, iSensorRate);
         mSensorManager.registerListener(this, mTempSensor, iSensorRate);
-        mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_SIGNAL_STRENGTHS));
+        mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
         
         // register for certain WiFi events indicating that new networks may be in range
         // An access point scan has completed, and results are available.
@@ -871,6 +1367,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
 
         wifiTimehandler.postDelayed(wifiTimeRunnable, WIFI_REFRESH_DELAY);
+        
+        if ((isMapViewReady) && (mapDownloadLayer != null))
+        	mapDownloadLayer.onResume();
     }
 
     /**
@@ -886,7 +1385,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				// if Z acceleration is greater than X/Y combined, lock rotation, else unlock
 				if (Math.pow(event.values[2], 2) > Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2)) {
 					// workaround (SCREEN_ORIENTATION_LOCK is unsupported on API < 18)
-					setRequestedOrientation(orFromRot[this.getWindowManager().getDefaultDisplay().getRotation()]);
+					if (isWideScreen)
+						setRequestedOrientation(OR_FROM_ROT_WIDE[this.getWindowManager().getDefaultDisplay().getRotation()]);
+					else
+						setRequestedOrientation(OR_FROM_ROT_TALL[this.getWindowManager().getDefaultDisplay().getRotation()]);
 				} else {
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 				}
@@ -918,7 +1420,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		if (isSensorViewReady && isRateElapsed) {
-			//Log.d("lsrntools", String.format("Processing sensor update at %s, rate %s, last %s ns ago", event.timestamp / 1000, iSensorRate, (event.timestamp / 1000) - mSensorRates.getLong(String.valueOf(event.sensor.getType()) + ".last")));
             switch (event.sensor.getType()) {  
 	            case Sensor.TYPE_ACCELEROMETER:
 	            	mAccLast = event.timestamp / 1000;
@@ -988,6 +1489,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
     }
     	
+	/**
+	 * Called when preferences are changed.
+	 * 
+	 * This method processes changed to KEY_PREF_LOC_PROV, the list of selected
+	 * location providers. When called, it will unregister for all location 
+	 * updates and re-register for updates from the selected location providers.
+	 * (This includes unregistering and immediately re-registering for those
+	 * providers which remain selected – this is due to the fact that Android
+	 * does not support unregistering from a single location provider.) 
+	 */
+    @Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
+			// user selected or deselected location providers, refresh list
+			registerLocationProviders(this);
+			updateLocationProviders(this);
+		}
+	}
+
     /**
      * Called when a location provider's status changes. Does nothing.
      */
@@ -995,6 +1516,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     @Override
     protected void onStop() {
+    	isStopped = true;
     	mLocationManager.removeUpdates(this);
     	mLocationManager.removeGpsStatusListener(this);
     	mSensorManager.unregisterListener(this);
@@ -1005,94 +1527,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	// sometimes the receiver isn't registered, make sure we don't crash
         	Log.d(this.getLocalClassName(), "WifiScanReceiver was never registered, caught exception");
         }
+        networkTimehandler.removeCallbacks(networkTimeRunnable);
         wifiTimehandler.removeCallbacks(wifiTimeRunnable);
+        // we'll just skip that so locations will get invalidated in any case
+        //providerInvalidationHandler.removeCallbacksAndMessages(null);
         super.onStop();
     }
     
-    // we don't use wake locks
-    /*
-    @Override
-    protected void onDestroy() {
-    	wl.release();
-        super.onDestroy();
-    }
-    */
-
-	/**
-	 * Updates the list of cells in range. Called by {@link PhoneStateListener.onCellInfoChanged}
-	 * or after explicitly getting the location by calling {@link TelephonyManager.getAllCellInfo}.
-	 * 
-	 * @param cells The list of cells passed to {@link PhoneStateListener.onCellInfoChanged} or returned by {@link TelephonyManager.getAllCellInfo}
-	 */
-	/*
-	// Requires API level 17. Many phones don't implement this method at all and will return null,
-	// the ones that do implement it return only certain cell types (none that we support at this point).
-	//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
-	protected static void showCellInfo (List <CellInfo> cells) {
- 		if ((isRadioViewReady) && (cells != null)) {
- 			rilCells.removeAllViews();
- 			for (CellInfo cell : cells) {
-        		if (cell instanceof CellInfoGsm) {
-        			CellInfoGsm cellInfoGsm = (CellInfoGsm) cell;
-    	            TableRow row = new TableRow(rilCells.getContext());
-    	            TextView newMcc = new TextView(rilCells.getContext());
-    	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-    	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newMcc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMcc()));
-    	            row.addView(newMcc);
-    	            TextView newMnc = new TextView(rilCells.getContext());
-    	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-    	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newMnc.setText(String.valueOf(cellInfoGsm.getCellIdentity().getMnc()));
-    	            row.addView(newMnc);
-    	            TextView newLac = new TextView(rilCells.getContext());
-    	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-    	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newLac.setText(String.valueOf(cellInfoGsm.getCellIdentity().getLac()));
-    	            TextView newCid = new TextView(rilCells.getContext());
-    	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-    	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        			newCid.setText(String.valueOf(cellInfoGsm.getCellIdentity().getCid()));
-    	            row.addView(newCid);
-    	            row.addView(newLac);
-    	            TextView newDbm = new TextView(rilCells.getContext());
-    	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-    	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newDbm.setText(String.valueOf(cellInfoGsm.getCellSignalStrength().getDbm()));
-    	            row.addView(newDbm);
-    	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        		} else if (cell instanceof CellInfoCdma) {
-        			CellInfoCdma cellInfoCdma = (CellInfoCdma) cell;
-    	            TableRow row = new TableRow(rilCells.getContext());
-    	            TextView newSid = new TextView(rilCells.getContext());
-    	            newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-    	            newSid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newSid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getSystemId()));
-    	            row.addView(newSid);
-    	            TextView newNid = new TextView(rilCells.getContext());
-    	            newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-    	            newNid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newNid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getNetworkId()));
-    	            row.addView(newNid);
-    	            TextView newBsid = new TextView(rilCells.getContext());
-    	            newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-    	            newBsid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newBsid.setText(String.valueOf(cellInfoCdma.getCellIdentity().getBasestationId()));
-    	            row.addView(newBsid);
-    	            TextView newAsu = new TextView(rilCells.getContext());
-    	            newAsu.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-    	            newAsu.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    	            newAsu.setText(String.valueOf(cellInfoCdma.getCellSignalStrength().getAsuLevel()));
-    	            row.addView(newAsu);
-    	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        		}
- 			}
- 		}
-	}
-	*/
-	
-
-
 	@Override
 	public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
         // probably ignore this event
@@ -1100,7 +1541,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	@Override
 	public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
-		// TODO Auto-generated method stub
         // show the given tab
         // When the tab is selected, switch to the
         // corresponding page in the ViewPager.
@@ -1112,21 +1552,45 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // hide the given tab (ignore this event)
 	}
     
+	/**
+	 * Registers for updates with selected location providers.
+	 * @param context
+	 */
+	protected void registerLocationProviders(Context context) {
+		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>()));
+		List<String> allProviders = mLocationManager.getAllProviders();
+		
+		mLocationManager.removeUpdates(this);
+		
+		ArrayList<String> removedProviders = new ArrayList<String>();
+		for (String pr : providerLocations.keySet())
+			if (!providers.contains(pr))
+				removedProviders.add(pr);
+		for (String pr: removedProviders)
+			providerLocations.remove(pr);
+		
+        for (String pr : providers) {
+            if (allProviders.indexOf(pr) >= 0) {
+            	if (!providerLocations.containsKey(pr)) {
+            		Location location = new Location("");
+            		providerLocations.put(pr, location);
+            	}
+            	if (!isStopped) {
+            		mLocationManager.requestLocationUpdates(pr, 0, 0, this);
+                    Log.d("MainActivity", "Registered with provider: " + pr);
+            	}
+            } else {
+                Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
+            }
+        }
+		
+		// if GPS is not selected, request location updates but don't store location
+		if ((!providers.contains(LocationManager.GPS_PROVIDER)) && (!isStopped) && (allProviders.indexOf(LocationManager.GPS_PROVIDER) >= 0))
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+	}
+    
 	private void setEmbeddedTabs(Object actionBar, Boolean embed_tabs) {
 	    try {
-	    	/*
-	        if (actionBar instanceof ActionBarWrapper) {
-	            // ICS and forward
-	            try {
-	                Field actionBarField = actionBar.getClass()
-	                        .getDeclaredField("mActionBar");
-	                actionBarField.setAccessible(true);
-	                actionBar = actionBarField.get(actionBar);
-	            } catch (Exception e) {
-	                Log.e("", "Error enabling embedded tabs", e);
-	            }
-	        }
-	        */
 	        Method setHasEmbeddedTabsMethod = actionBar.getClass()
 	                .getDeclaredMethod("setHasEmbeddedTabs", boolean.class);
 	        setHasEmbeddedTabsMethod.setAccessible(true);
@@ -1135,91 +1599,421 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        Log.e("", "Error marking actionbar embedded", e);
 	    }
 	}
-
+	
 	/**
-	 * Updates the info display for the current radio cell. Called by {@link PhoneStateListener.onCellLocationChanged}
-	 * or after explicitly getting the location by calling {@link TelephonyManager.getCellLocation}.
-	 * 
-	 * @param location The location passed to {@link PhoneStateListener.onCellLocationChanged} or returned by {@link TelephonyManager.getCellLocation}
+	 * Updates the list of cells in range.
+	 * <p>
+	 * This method is automatically called by
+	 * {@link PhoneStateListener#onCellInfoChanged(List)}
+	 * and {@link PhoneStateListener.onCellLocationChanged}. It must be called
+	 * manually whenever {@link #mCellsCdma}, {@link #mCellsGsm}, 
+	 * {@link #mCellsLte} or one of their values are modified, typically after
+	 * calling {@link android.telephony.TelephonyManager#getAllCellInfo()},
+	 * {@link android.telephony.TelephonyManager#getCellLocation()} or
+	 * {@link android.telephony.TelephonyManager#getNeighboringCellInfo()}. 
 	 */
-	protected static void showCellLocation (CellLocation location) {
-		if (isRadioViewReady) {
-            if (location instanceof GsmCellLocation) {
-	            String networkOperator = mTelephonyManager.getNetworkOperator();
-	            rilType.setTextColor(rilType.getContext().getResources().getColor(getColorFromNetworkType(mTelephonyManager.getNetworkType())));
-	             
-	            int cid = ((GsmCellLocation) location).getCid();
-	            int lac = ((GsmCellLocation) location).getLac();
-	            
-	            if (networkOperator.length() >= 3) {
-		            rilMcc.setText(networkOperator.substring(0, 3));
-		            rilMnc.setText(networkOperator.substring(3));
-	            } else {
-	            	rilMcc.setText(rilMcc.getContext().getString(R.string.value_none));
-		            rilMnc.setText(rilMnc.getContext().getString(R.string.value_none));
-	            }
-	            rilCellId.setText(String.valueOf(cid));
-	            rilLac.setText(String.valueOf(lac));
-	            rilGsmLayout.setVisibility(View.VISIBLE);
-            } else if (location instanceof CdmaCellLocation) {
-	            rilCdmaType.setTextColor(rilCdmaType.getContext().getResources().getColor(getColorFromNetworkType(mTelephonyManager.getNetworkType())));
-            	int sid = ((CdmaCellLocation) location).getSystemId();
-            	int nid = ((CdmaCellLocation) location).getNetworkId();
-            	int bsid = ((CdmaCellLocation) location).getBaseStationId();
-            	rilSid.setText(String.valueOf(sid));
-            	rilNid.setText(String.valueOf(nid));
-            	rilBsid.setText(String.valueOf(bsid));
-	            rilCdmaLayout.setVisibility(View.VISIBLE);
-            }
+	protected static void showCells() {
+		if (!isRadioViewReady)
+			return;
+		
+		if ((mCellsGsm == null) || (mCellsGsm.isEmpty()))
+			rilGsmLayout.setVisibility(View.GONE);
+		else {
+			rilGsmLayout.setVisibility(View.VISIBLE);
+			rilCells.removeAllViews();
+			if (mCellsGsm.containsValue(mServingCell))
+				showCellGsm((CellTowerGsm) mServingCell);
+			for (CellTowerGsm cell : mCellsGsm.getAll())
+				if (cell != mServingCell)
+					showCellGsm(cell);
+		}
+		
+		if ((mCellsCdma == null) || (mCellsCdma.isEmpty()))
+			rilCdmaLayout.setVisibility(View.GONE);
+		else {
+			rilCdmaLayout.setVisibility(View.VISIBLE);
+			rilCdmaCells.removeAllViews();
+			if (mCellsCdma.containsValue(mServingCell))
+				showCellCdma((CellTowerCdma) mServingCell);
+			for (CellTowerCdma cell : mCellsCdma.getAll())
+				if (cell != mServingCell)
+					showCellCdma(cell);
+		}
+		
+		if ((mCellsLte == null) || (mCellsLte.isEmpty())) {
+			rilLteLayout.setVisibility(View.GONE);
+		} else {
+			rilLteLayout.setVisibility(View.VISIBLE);
+			rilLteCells.removeAllViews();
+			if (mCellsLte.containsValue(mServingCell))
+				showCellLte((CellTowerLte) mServingCell);
+			for (CellTowerLte cell : mCellsLte.getAll())
+				if (cell != mServingCell)
+					showCellLte(cell);
 		}
 	}
 	
-	//FIXME: don't repeat active cell in list (we're already displaying it above)
+	protected static void showCellCdma(CellTowerCdma cell) {
+        TableRow row = new TableRow(rilCdmaCells.getContext());
+        row.setWeightSum(26);
+        
+        TextView newType = new TextView(rilCdmaCells.getContext());
+        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+        newType.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newType.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
+        newType.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
+        row.addView(newType);
+        
+        TextView newSid = new TextView(rilCdmaCells.getContext());
+        newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 6));
+        newSid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newSid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getSid()));
+        row.addView(newSid);
+        
+        TextView newNid = new TextView(rilCdmaCells.getContext());
+        newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+        newNid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newNid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getNid()));
+        row.addView(newNid);
+        
+        TextView newBsid = new TextView(rilCdmaCells.getContext());
+        newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+        newBsid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newBsid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getBsid()));
+        row.addView(newBsid);
+        
+        TextView newDbm = new TextView(rilCdmaCells.getContext());
+        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+        newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
+        newDbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cell.getDbm()));
+        row.addView(newDbm);
+        
+        rilCdmaCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	}
+	
+	protected static void showCellGsm(CellTowerGsm cell) {
+        TableRow row = new TableRow(rilCells.getContext());
+        row.setWeightSum(29);
+        
+        TextView newType = new TextView(rilCells.getContext());
+        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+        newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
+        newType.setText(rilCells.getContext().getResources().getString(R.string.smallDot));
+        row.addView(newType);
+        
+        TextView newMcc = new TextView(rilCells.getContext());
+        newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newMcc.setText(formatCellData(rilCells.getContext(), "%03d", cell.getMcc()));
+        row.addView(newMcc);
+        
+        TextView newMnc = new TextView(rilCells.getContext());
+        newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+		newMnc.setText(formatCellData(rilCells.getContext(), "%02d", cell.getMnc()));
+        row.addView(newMnc);
+        
+        TextView newLac = new TextView(rilCells.getContext());
+        newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+        newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+		newLac.setText(formatCellData(rilCells.getContext(), null, cell.getLac()));
+        row.addView(newLac);
+        
+        TextView newCid = new TextView(rilCells.getContext());
+        newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+        newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+		newCid.setText(formatCellData(rilCells.getContext(), null, cell.getCid()));
+        row.addView(newCid);
+        
+        TextView newPsc = new TextView(rilCells.getContext());
+        newPsc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newPsc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newPsc.setText(formatCellData(rilCells.getContext(), null, cell.getPsc()));
+        row.addView(newPsc);
+        
+        TextView newDbm = new TextView(rilCells.getContext());
+        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+        newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
+        newDbm.setText(formatCellDbm(rilCells.getContext(), null, cell.getDbm()));
+        row.addView(newDbm);
+        
+        rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	}
+	
+	protected static void showCellLte(CellTowerLte cell) {
+        TableRow row = new TableRow(rilLteCells.getContext());
+        row.setWeightSum(26);
+        
+        TextView newType = new TextView(rilLteCells.getContext());
+        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
+        newType.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newType.setTextColor(rilLteCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
+        newType.setText(rilLteCells.getContext().getResources().getString(R.string.smallDot));
+        row.addView(newType);
+        
+        TextView newMcc = new TextView(rilLteCells.getContext());
+        newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMcc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newMcc.setText(formatCellData(rilLteCells.getContext(), "%03d", cell.getMcc()));
+        row.addView(newMcc);
+        
+        TextView newMnc = new TextView(rilLteCells.getContext());
+        newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newMnc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+		newMnc.setText(formatCellData(rilLteCells.getContext(), "%02d", cell.getMnc()));
+        row.addView(newMnc);
+        
+        TextView newTac = new TextView(rilLteCells.getContext());
+        newTac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
+        newTac.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newTac.setText(formatCellData(rilLteCells.getContext(), null, cell.getTac()));
+        row.addView(newTac);
+        
+        TextView newCi = new TextView(rilLteCells.getContext());
+        newCi.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
+        newCi.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+		newCi.setText(formatCellData(rilLteCells.getContext(), null, cell.getCi()));
+        row.addView(newCi);
+        
+        TextView newPci = new TextView(rilLteCells.getContext());
+        newPci.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
+        newPci.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newPci.setText(formatCellData(rilLteCells.getContext(), null, cell.getPci()));
+        row.addView(newPci);
+        
+        TextView newDbm = new TextView(rilLteCells.getContext());
+        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
+        newDbm.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
+        newDbm.setText(formatCellDbm(rilLteCells.getContext(), null, cell.getDbm()));
+        row.addView(newDbm);
+        
+        rilLteCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	}
+
 	/**
-	 * Updates the list of cells in range. Called after explicitly getting a
-	 * list of neighboring cells by calling {@link TelephonyManager.getNeighboringCellInfo}.
-	 * 
-	 * @param neighboringCells The list of cells returned by {@link TelephonyManager.getNeighboringCellInfo}
+	 * Updates internal data structures when the user's selection of location providers has changed.
+	 * @param context
 	 */
-	protected static void showNeighboringCellInfo (List <NeighboringCellInfo> neighboringCells) {
- 		if ((isRadioViewReady) && (neighboringCells != null)) {
- 			rilCells.removeAllViews();
- 			for (NeighboringCellInfo cell : neighboringCells) {
-	            TableRow row = new TableRow(rilCells.getContext());
-	            TextView newType = new TextView(rilCells.getContext());
-	            newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-	            newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-	            newType.setText(rilCells.getContext().getString(R.string.smallDot));
-	            newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromNetworkType(cell.getNetworkType())));
-	            row.addView(newType);
-	            TextView newMcc = new TextView(rilCells.getContext());
-	            newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newMcc.setText(rilCells.getContext().getString(R.string.value_none));
-	            row.addView(newMcc);
-	            TextView newMnc = new TextView(rilCells.getContext());
-	            newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-	            newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newMnc.setText(rilCells.getContext().getString(R.string.value_none));
-	            row.addView(newMnc);
-	            TextView newLac = new TextView(rilCells.getContext());
-	            newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 7));
-	            newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newLac.setText(String.valueOf(cell.getLac()));
-	            TextView newCid = new TextView(rilCells.getContext());
-	            newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-	            newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-    			newCid.setText(String.valueOf(cell.getCid()));
-	            row.addView(newCid);
-	            row.addView(newLac);
-	            TextView newDbm = new TextView(rilCells.getContext());
-	            newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-	            newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-	            newDbm.setText(String.valueOf(cell.getRssi() * 2 - 113));
-	            row.addView(newDbm);
-	            rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
- 			}
- 		}
+	protected static void updateLocationProviders(Context context) {
+        // add overlays
+        if (isMapViewReady) {
+			Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+			
+			updateLocationProviderStyles();
+			
+	        mapCircles = new HashMap<String, Circle>();
+	        mapMarkers = new HashMap<String, Marker>();
+	        
+	        ArrayList<String> removedProviders = new ArrayList<String>();
+			for (String pr : providerInvalidators.keySet())
+				if (!providers.contains(pr))
+					removedProviders.add(pr);
+			for (String pr: removedProviders)
+				providerInvalidators.remove(pr);
+			
+	        Log.d("MainActivity", "Provider location cache: " + providerLocations.keySet().toString());
+	        
+	        Layers layers = mapMap.getLayerManager().getLayers();
+	    	
+	    	// remove all layers other than tile render layer from map
+	        for (int i = 0; i < layers.size(); )
+	        	if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
+	        		i++;
+	        	} else {
+	        		layers.remove(i);
+	        	}
+	        
+	        for (String pr : providers) {
+	            // no invalidator for GPS, which is invalidated through GPS status
+	            if ((!pr.equals(LocationManager.GPS_PROVIDER)) && (providerInvalidators.get(pr)) == null) {
+	            	final String provider = pr;
+	            	final Context ctx = context;
+	            	providerInvalidators.put(pr, new Runnable() {
+	            		private String mProvider = provider;
+	            		
+	            		@Override
+	            		public void run() {
+	            			if (isMapViewReady) {
+		            			Location location = providerLocations.get(mProvider);
+		            			if (location != null)
+		            				markLocationAsStale(location);
+		            			applyLocationProviderStyle(ctx, mProvider, LOCATION_PROVIDER_GRAY);
+	            			}
+	            		}
+	            	});
+	            }
+	            
+	        	String styleName = assignLocationProviderStyle(pr);
+	        	LatLong latLong;
+	        	float acc;
+	        	boolean visible;
+	        	if ((providerLocations.get(pr) != null) && (providerLocations.get(pr).getProvider() != "")) {
+	        		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
+	        				providerLocations.get(pr).getLongitude());
+	        		if (providerLocations.get(pr).hasAccuracy())
+	        			acc = providerLocations.get(pr).getAccuracy();
+	        		else
+	        			acc = 0;
+	        		visible = true;
+	        		if (isLocationStale(providerLocations.get(pr)))
+	        			styleName = LOCATION_PROVIDER_GRAY;
+	        		Log.d("MainActivity", pr + " has " + latLong.toString());
+	        	} else {
+	        		latLong = new LatLong(0, 0);
+	        		acc = 0;
+	        		visible = false;
+	        		Log.d("MainActivity", pr + " has no location, hiding");
+	        	}
+	        	
+	        	// Circle layer
+	        	Resources res = context.getResources();
+	        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
+	        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
+	        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
+	            fill.setStyle(Style.FILL);
+	            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
+	        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
+	            stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
+	            stroke.setStyle(Style.STROKE);
+	            Circle circle = new Circle(latLong, acc, fill, stroke);
+	            mapCircles.put(pr, circle);
+	            layers.add(circle);
+	            circle.setVisible(visible);
+	            
+	            // Marker layer
+	            Drawable drawable = style.getDrawable(STYLE_MARKER);
+	            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+	            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
+	            mapMarkers.put(pr, marker);
+	            layers.add(marker);
+	            marker.setVisible(visible);
+	            style.recycle();
+	        }
+	        
+	        // move layers into view
+	        updateMap();
+        }
+	}
+	
+	
+	/**
+	 * Updates the list of styles to use for the location providers.
+	 * 
+	 * This method updates the internal list of styles to use for displaying
+	 * locations on the map, assigning a style to each location provider.
+	 * Styles that are defined in {@link SharedPreferences} are preserved. If
+	 * none are defined, the GPS location provider is assigned the red style
+	 * and the network location provider is assigned the blue style. The
+	 * passive location provider is not assigned a style, as it does not send
+	 * any locations of its own. Other location providers are assigned one of
+	 * the following styles: green, orange, purple. If there are more location
+	 * providers than styles, the same style (including red and blue) can be
+	 * assigned to multiple providers. The mapping is written to 
+	 * SharedPreferences so that it will be preserved even as available
+	 * location providers change.
+	 */
+	public static void updateLocationProviderStyles() {
+		//FIXME: move code into assignLocationProviderStyle and use that
+        List<String> allProviders = mLocationManager.getAllProviders();
+        allProviders.remove(LocationManager.PASSIVE_PROVIDER);
+        if (allProviders.contains(LocationManager.GPS_PROVIDER)) {
+        	providerStyles.put(LocationManager.GPS_PROVIDER, 
+        			mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_RED));
+        	mAvailableProviderStyles.remove(LOCATION_PROVIDER_RED);
+        	allProviders.remove(LocationManager.GPS_PROVIDER);
+        }
+        if (allProviders.contains(LocationManager.NETWORK_PROVIDER)) {
+        	providerStyles.put(LocationManager.NETWORK_PROVIDER, 
+        			mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.NETWORK_PROVIDER, LOCATION_PROVIDER_BLUE));
+        	mAvailableProviderStyles.remove(LOCATION_PROVIDER_BLUE);
+        	allProviders.remove(LocationManager.NETWORK_PROVIDER);
+        }
+        for (String prov : allProviders) {
+        	if (mAvailableProviderStyles.isEmpty())
+        		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
+      		providerStyles.put(prov,
+       				mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, mAvailableProviderStyles.get(0)));
+       		mAvailableProviderStyles.remove(providerStyles.get(prov));
+        };
+		SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+		for (String prov : providerStyles.keySet())
+			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, providerStyles.get(prov));
+		spEditor.commit();
+	}
+	
+	
+	/**
+	 * Updates the map view so that all markers are visible.
+	 */
+	public static void updateMap() {
+		boolean needsRedraw = false;
+		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
+		// just trigger a redraw if we're not going to pan or zoom
+		if ((dimension == null) || (!isMapViewAttached)) {
+			mapMap.getLayerManager().redrawLayers();
+			return;
+		}
+		// move locations into view and zoom out as needed
+		int tileSize = mapMap.getModel().displayModel.getTileSize();
+		BoundingBox bb = null;
+		BoundingBox bb2 = null;
+		for (Location l : providerLocations.values())
+			if ((l != null) && (l.getProvider() != "")) {
+				double lat = l.getLatitude();
+				double lon = l.getLongitude();
+				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / EARTH_CIRCUMFERENCE):0;
+				double xRadius = l.hasAccuracy()?(yRadius * Math.abs(Math.cos(lat))):0;
+				
+				double minLon = Math.max(lon - xRadius, -180);
+				double maxLon = Math.min(lon + xRadius, 180);
+				double minLat = Math.max(lat - yRadius, -90);
+				double maxLat = Math.min(lat + yRadius, 90);
+				
+				if (!isLocationStale(l)) {
+					// location is up to date, add to main BoundingBox
+					if (bb != null) {
+						minLat = Math.min(bb.minLatitude, minLat);
+						maxLat = Math.max(bb.maxLatitude, maxLat);
+						minLon = Math.min(bb.minLongitude, minLon);
+						maxLon = Math.max(bb.maxLongitude, maxLon);
+					}
+					bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
+				} else {
+					// location is stale, add to stale BoundingBox
+					if (bb2 != null) {
+						minLat = Math.min(bb2.minLatitude, minLat);
+						maxLat = Math.max(bb2.maxLatitude, maxLat);
+						minLon = Math.min(bb2.minLongitude, minLon);
+						maxLon = Math.max(bb2.maxLongitude, maxLon);
+					}
+					bb2 = new BoundingBox(minLat, minLon, maxLat, maxLon);
+				}
+			}
+		if (bb == null) bb = bb2; // all locations are stale, center to them
+		if (bb == null) {
+			needsRedraw = true;
+		} else {
+			byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
+			if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel()) {
+				mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
+			} else {
+				needsRedraw = true;
+			}
+			
+			MapViewProjection proj = new MapViewProjection(mapMap);
+			Point nw = proj.toPixels(new LatLong(bb.maxLatitude, bb.minLongitude));
+			Point se = proj.toPixels(new LatLong(bb.minLatitude, bb.maxLongitude));
+			
+			// move only if bb is not entirely visible
+			if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height)) {
+				mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
+			} else {
+				needsRedraw = true;
+			}
+		}
+		if (needsRedraw)
+			mapMap.getLayerManager().redrawLayers();
 	}
     
 
@@ -1249,25 +2043,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             case 2:
                 fragment = new RadioSectionFragment();
                 return fragment;
-            	/*
-                fragment = new DummySectionFragment();
-                Bundle args = new Bundle();
-                args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-                fragment.setArguments(args);
+            case 3:
+                fragment = new MapSectionFragment();
                 return fragment;
-                */
             }
         return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 4 total pages.
+            return 4;
         }
 
         public Drawable getPageIcon(int position) {
-            Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
                     return getResources().getDrawable(R.drawable.ic_action_gps);
@@ -1275,6 +2064,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return getResources().getDrawable(R.drawable.ic_action_sensor);
                 case 2:
                     return getResources().getDrawable(R.drawable.ic_action_radio);
+                case 3:
+                    return getResources().getDrawable(R.drawable.ic_action_map);
             }
             return null;
         }
@@ -1289,6 +2080,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
+                case 3:
+                    return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;
         }
@@ -1431,51 +2224,60 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public RadioSectionFragment() {
         }
 
-        @Override
+		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+		@Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_radio, container, false);
             
             // Initialize controls
         	rilGsmLayout = (LinearLayout) rootView.findViewById(R.id.rilGsmLayout);
-        	rilType = (TextView) rootView.findViewById(R.id.rilType);
-        	rilMcc = (TextView) rootView.findViewById(R.id.rilMcc);
-        	rilMnc = (TextView) rootView.findViewById(R.id.rilMnc);
-        	rilCellId = (TextView) rootView.findViewById(R.id.rilCellId);
-        	rilLac = (TextView) rootView.findViewById(R.id.rilLac);
-        	rilAsu = (TextView) rootView.findViewById(R.id.rilAsu);
         	rilCells = (TableLayout) rootView.findViewById(R.id.rilCells);
         	
         	rilCdmaLayout = (LinearLayout) rootView.findViewById(R.id.rilCdmaLayout);
-        	rilCdmaType = (TextView) rootView.findViewById(R.id.rilCdmaType);
-        	rilSid = (TextView) rootView.findViewById(R.id.rilSid); 
-        	rilNid = (TextView) rootView.findViewById(R.id.rilNid);
-        	rilBsid = (TextView) rootView.findViewById(R.id.rilBsid);
-        	rilCdmaAsu = (TextView) rootView.findViewById(R.id.rilCdmaAsu);
         	rilCdmaCells = (TableLayout) rootView.findViewById(R.id.rilCdmaCells);
+        	
+        	rilLteLayout = (LinearLayout) rootView.findViewById(R.id.rilLteLayout);
+        	rilLteCells = (TableLayout) rootView.findViewById(R.id.rilLteCells);
         	
         	wifiAps = (LinearLayout) rootView.findViewById(R.id.wifiAps);
 
         	rilGsmLayout.setVisibility(View.GONE);
         	rilCdmaLayout.setVisibility(View.GONE);
+        	rilLteLayout.setVisibility(View.GONE);
         	
         	isRadioViewReady = true;
         	
         	//get current phone info (first update won't fire until the cell actually changes)
             CellLocation cellLocation = mTelephonyManager.getCellLocation();
-            showCellLocation(cellLocation);
+			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
+			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
+			String networkOperator = mTelephonyManager.getNetworkOperator();
+			if (cellLocation instanceof GsmCellLocation)
+				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
+			else if (cellLocation instanceof CdmaCellLocation)
+				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
             
 			//this is not supported on some phones (returns an empty list)
 			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-			showNeighboringCellInfo(neighboringCells);
+			if (neighboringCells != null) {
+				mCellsGsm.updateAll(networkOperator, neighboringCells);
+			}
 			
-			/*
-			// Requires API level 17. Many phones don't implement this method at all and will return null,
-			// the ones that do implement it return only certain cell types (none that we support at this point).
-			//FIXME: add LTE display and wrap this call so that it will be safely skipped on API <= 17
-			List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-			showCellInfo(allCells);
-			*/
+			// Requires API level 17. Many phones don't implement this method
+			// at all and will return null, the ones that do implement it
+			// return only certain cell types.
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
+				if (allCells != null) {
+					mCellsGsm.updateAll(allCells);
+					mCellsCdma.updateAll(allCells);
+					mCellsLte.updateAll(allCells);
+				}
+			}
+			
+			showCells();
 
         	mWifiManager.startScan();
         	
@@ -1486,6 +2288,141 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public void onDestroyView() {
         	super.onDestroyView();
         	isRadioViewReady = false;
+        }
+    }
+    
+    
+    /**
+     * The fragment which displays the map view.
+     */
+    public static class MapSectionFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        public static final String ARG_SECTION_NUMBER = "section_number";
+
+        public MapSectionFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
+            
+            mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
+            
+            mapReattach.setVisibility(View.GONE);
+            isMapViewAttached = true;
+            
+    		OnClickListener clis = new OnClickListener () {
+    			@Override
+    			public void onClick(View v) {
+    				if (v == mapReattach) {
+    					isMapViewAttached = true;
+    					if (isMapViewReady) {
+    						mapReattach.setVisibility(View.GONE);
+    						updateMap();
+    					}
+    				}
+    			}
+    		};
+            mapReattach.setOnClickListener(clis);
+            
+            // Initialize controls
+            mapMap = new MapView(rootView.getContext());
+            ((FrameLayout) rootView).addView(mapMap, 0);
+
+            mapMap.setClickable(true);
+            mapMap.getMapScaleBar().setVisible(true);
+            mapMap.setBuiltInZoomControls(true);
+            mapMap.getMapZoomControls().setZoomLevelMin((byte) 10);
+            mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
+            
+            if (mapTileCache == null)
+	            mapTileCache = PersistentTileCache.createTileCache(rootView.getContext(), "MapQuest",
+	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
+	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
+
+            LayerManager layerManager = mapMap.getLayerManager();
+            Layers layers = layerManager.getLayers();
+            layers.clear();
+            
+            float lat = mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LAT, 360.0f);
+            float lon = mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LON, 360.0f);
+            
+            if ((lat < 360.0f) && (lon < 360.0f)) {
+                mapMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
+            }
+            
+            int zoom = mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
+            mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
+            
+            /*
+            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
+            		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
+
+            //FIXME: have user select map file
+            tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
+            
+            tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
+            
+            //tileRendererLayer.setTextScale(1.5f);
+            layers.add(tileRendererLayer);
+            */
+            
+            OnlineTileSource onlineTileSource = new OnlineTileSource(new String[]{
+            		"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
+            		}, 80);
+            onlineTileSource.setName("MapQuest")
+            	.setAlpha(false)
+	            .setBaseUrl("/tiles/1.0.0/map/")
+	            .setExtension("png")
+	            .setParallelRequestsLimit(8)
+	            .setProtocol("http")
+	            .setTileSize(256)
+	            .setZoomLevelMax((byte) 18)
+	            .setZoomLevelMin((byte) 0);
+	        
+            mapDownloadLayer = new TileDownloadLayer(mapTileCache,
+            		mapMap.getModel().mapViewPosition, onlineTileSource,
+            		AndroidGraphicFactory.INSTANCE);
+            layers.add(mapDownloadLayer);
+            mapDownloadLayer.onResume();
+            
+            GestureDetector gd = new GestureDetector(rootView.getContext(), 
+            	new GestureDetector.SimpleOnGestureListener() {
+	            	public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+	            		mapReattach.setVisibility(View.VISIBLE);
+	            		isMapViewAttached = false;
+	            		return false;
+	            	}
+            	}
+            );
+            
+            mapMap.setGestureDetector(gd);
+
+        	isMapViewReady = true;
+        	
+            //parse list of location providers
+            updateLocationProviders(rootView.getContext());
+            
+            return rootView;
+        }
+        
+        @Override
+        public void onDestroyView() {
+        	LatLong center = mapMap.getModel().mapViewPosition.getCenter();
+        	byte zoom = mapMap.getModel().mapViewPosition.getZoomLevel();
+        	
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LAT, (float) center.latitude);
+			spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LON, (float) center.longitude);
+			spEditor.putInt(SettingsActivity.KEY_PREF_MAP_ZOOM, zoom);
+			spEditor.commit();
+
+        	super.onDestroyView();
+        	isMapViewReady = false;
         }
     }
 }

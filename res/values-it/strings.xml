@@ -91,28 +91,37 @@
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">A proposito</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
-    <string name="about_text">Se qualcosa non funziona come dovrebbe,
+    <string name="about_text">&lt;p&gt;
+        Se qualcosa non funziona come dovrebbe,
         ovvero se hai un\'idea come migliorare ancora quest\'applicazione,
         segnalalo a:
-		\nhttps://github.com/mvglasow/satstat/issues
-		\n
-		\nCopyright &#169; 2013, 2014 Michael von Glasow
-		\n
-		\nThis program is free software: you can redistribute it and/or modify
-		it under the terms of the GNU General Public License as published by
-		the Free Software Foundation, either version 3 of the License, or
-		(at your option) any later version.
-		\n
-		\nThis program is distributed in the hope that it will be useful,
-		but WITHOUT ANY WARRANTY; without even the implied warranty of
-		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-		GNU General Public License for more details.
-		\n
-		\nYou should have received a copy of the GNU General Public License
-		along with this program. If not, see http://www.gnu.org/licenses/.
-		\n
-		\nIl codice sorgente di quest\'applicazione si trova a:
-		\nhttps://github.com/mvglasow/satstat</string>
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
+        &lt;/p&gt;&lt;p&gt;
+        Copyright &#169; 2013, 2014 Michael von Glasow
+        &lt;/p&gt;&lt;p&gt;
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+        &lt;/p&gt;&lt;p&gt;
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+        GNU General Public License for more details.
+        &lt;/p&gt;&lt;p&gt;
+        You should have received a copy of the GNU General Public License
+        along with this program. If not, see 
+        &lt;a href="http://www.gnu.org/licenses/"&gt;http://www.gnu.org/licenses/&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Map data and information provided by MapQuest, 
+        &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; 
+        and contributors, 
+        &lt;a href="http://wiki.openstreetmap.org/wiki/Legal_FAQ#3a._I_would_like_to_use_OpenStreetMap_maps._How_should_I_credit_you.3F"&gt;ODbL&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Il codice sorgente di quest\'applicazione si trova a:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_meter">&#x00a0;m</string>
@@ -141,4 +150,7 @@
     <string name="pref_lastupdate">Ultimo aggiornamento</string>
     <string name="pref_networks">Reti</string>
     <string name="pref_networks_summary">Aggiorna dati AGPS quando il mio dispositivo si collega a una delle reti selezionati</string>
+    <string name="pref_map">Mappa</string>
+    <string name="pref_loc_prov">Fonti di localizzazione</string>
+    <string name="pref_loc_prov_summary">Mostrare le fonti di localizzazione selezionati sulla mappa</string>
 </resources>

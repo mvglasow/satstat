@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spannable;
 import android.text.method.ScrollingMovementMethod;
 import android.text.util.Linkify;
 import android.widget.TextView;
@@ -60,8 +62,7 @@ public class AboutActivity extends Activity {
 		aboutBuild.setText(buildOutStream.toString());
 		
 		TextView aboutText = (TextView) findViewById(R.id.aboutText);
-		//aboutText.setMovementMethod(new ScrollingMovementMethod());
-		Linkify.addLinks(aboutText, Linkify.WEB_URLS);
+		aboutText.setText(Html.fromHtml(this.getString(R.string.about_text)));
 	}
 
 }

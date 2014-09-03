@@ -50,6 +50,11 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 	public static final String KEY_PREF_UPDATE_NETWORKS_MOBILE = Integer.toString(ConnectivityManager.TYPE_MOBILE);
 	public static final String KEY_PREF_UPDATE_FREQ = "pref_update_freq";
 	public static final String KEY_PREF_UPDATE_LAST = "pref_update_last";
+	public static final String KEY_PREF_LOC_PROV = "pref_loc_prov";
+	public static final String KEY_PREF_LOC_PROV_STYLE = "pref_loc_prov_style.";
+	public static final String KEY_PREF_MAP_LAT = "pref_map_lat";
+	public static final String KEY_PREF_MAP_LON = "pref_map_lon";
+	public static final String KEY_PREF_MAP_ZOOM = "pref_map_zoom";
 
 	private SharedPreferences mSharedPreferences;
 

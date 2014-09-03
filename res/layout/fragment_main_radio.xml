@@ -9,6 +9,130 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:id="@+id/rilLteLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/TextView06"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_radio_lte" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="true"
+            android:measureWithLargestChild="false"
+            android:weightSum="29" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="2"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/TextView02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="3"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/TextView04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_radio_mcc"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="3"
+                android:orientation="vertical"
+                android:weightSum="3" >
+
+                <TextView
+                    android:id="@+id/TextView01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_radio_mnc"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="5"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/TextView05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_radio_tac"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="9"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/TextView03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_radio_cellid"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="3"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_radio_pci"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="4"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_radio_level"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TableLayout
+            android:id="@+id/rilLteCells"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </TableLayout>
+    </LinearLayout>
+
 	<LinearLayout
 	    android:id="@+id/rilGsmLayout"
 	    android:layout_width="fill_parent"
@@ -27,7 +151,7 @@
 	        android:layout_height="wrap_content"
 	        android:baselineAligned="true"
 	        android:measureWithLargestChild="false"
-	        android:weightSum="28" >
+	        android:weightSum="29" >
 	
 	        <LinearLayout
 	            android:layout_width="0dp"
@@ -41,15 +165,6 @@
 	                android:layout_height="wrap_content"
 	                android:text=""
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilType"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-		            android:text="@string/smallDot"
-		            android:textColor="@android:color/transparent"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	
@@ -65,14 +180,6 @@
 	                android:layout_height="wrap_content"
 	                android:text="@string/title_radio_mcc"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilMcc"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	
@@ -90,20 +197,12 @@
 	                android:text="@string/title_radio_mnc"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
 	
-	            <TextView
-	                android:id="@+id/rilMnc"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
-	
 	        </LinearLayout>
 	        
 	        <LinearLayout
 	            android:layout_width="0dp"
 	            android:layout_height="fill_parent"
-	            android:layout_weight="7"
+	            android:layout_weight="5"
 	            android:orientation="vertical" >
 	
 	            <TextView
@@ -112,14 +211,6 @@
 	                android:layout_height="wrap_content"
 	                android:text="@string/title_radio_lac"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilLac"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	        
@@ -136,14 +227,19 @@
 	                android:text="@string/title_radio_cellid"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
 	
+	        </LinearLayout>
+
+	        <LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_height="fill_parent"
+	            android:layout_weight="3"
+	            android:orientation="vertical" >
+
 	            <TextView
-	                android:id="@+id/rilCellId"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
-	
+	                android:text="@string/title_radio_psc"
+	                android:textAppearance="?android:attr/textAppearanceSmall" />
 	        </LinearLayout>
 	
 	        <LinearLayout
@@ -157,14 +253,6 @@
 	                android:layout_height="wrap_content"
 	                android:text="@string/title_radio_level"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilAsu"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	
@@ -197,7 +285,7 @@
 	        android:layout_height="wrap_content"
 	        android:baselineAligned="true"
 	        android:measureWithLargestChild="false"
-	        android:weightSum="28" >
+	        android:weightSum="26" >
 	
 	        <LinearLayout
 	            android:layout_width="0dp"
@@ -212,21 +300,12 @@
 	                android:text=""
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
 	
-	            <TextView
-	                android:id="@+id/rilCdmaType"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-		            android:text="@string/smallDot"
-		            android:textColor="@android:color/transparent"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
-	
 	        </LinearLayout>
 	
 	        <LinearLayout
 	            android:layout_width="0dp"
 	            android:layout_height="fill_parent"
-	            android:layout_weight="5"
+	            android:layout_weight="6"
 	            android:orientation="vertical" >
 	
 	            <TextView
@@ -235,14 +314,6 @@
 	                android:layout_height="wrap_content"
 	                android:text="@string/title_radio_sid"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilSid"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	
@@ -259,20 +330,12 @@
 	                android:text="@string/title_radio_nid"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
 	
-	            <TextView
-	                android:id="@+id/rilNid"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
-	
 	        </LinearLayout>
 	
 	        <LinearLayout
 	            android:layout_width="0dp"
 	            android:layout_height="fill_parent"
-	            android:layout_weight="12"
+	            android:layout_weight="9"
 	            android:orientation="vertical" >
 	
 	            <TextView
@@ -281,14 +344,6 @@
 	                android:layout_height="wrap_content"
 	                android:text="@string/title_radio_bsid"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilBsid"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	
@@ -303,14 +358,6 @@
 	                android:layout_height="wrap_content"
 	                android:text="@string/title_radio_level"
 	                android:textAppearance="?android:attr/textAppearanceSmall" />
-	
-	            <TextView
-	                android:id="@+id/rilCdmaAsu"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:maxLines="2"
-	                android:text="@string/value_none"
-	                android:textAppearance="?android:attr/textAppearanceMedium" />
 	
 	        </LinearLayout>
 	
