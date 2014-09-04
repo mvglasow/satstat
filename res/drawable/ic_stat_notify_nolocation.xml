@@ -1,11 +1,11 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:oneshot="false">
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_m" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_ml" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_l" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_ml" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_m" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_mr" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_r" android:duration="250" />
-    <item android:drawable="@drawable/ic_stat_notify_nolocation_mr" android:duration="250" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_m" android:duration="160" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_lm" android:duration="240" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_l" android:duration="320" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_lm" android:duration="240" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_m" android:duration="160" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_mr" android:duration="240" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_r" android:duration="320" />
+    <item android:drawable="@drawable/ic_stat_notify_nolocation_mr" android:duration="240" />
 </animation-list>
