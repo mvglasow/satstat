@@ -20,6 +20,7 @@
 package com.vonglasow.michael.satstat;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.app.ActivityManager;
@@ -44,9 +45,23 @@ public class GpsEventReceiver extends BroadcastReceiver {
 	public static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	public static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
 	public static final String AGPS_DATA_EXPIRED = "com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED";
+	
+	/**
+	 * A dummy intent called when a location update is received.
+	 * <p>
+	 * Some devices will refresh AGPS data only when the GPS is accessed. Thus,
+	 * in order to force an AGPS update, we request location updates from the
+	 * GPS and immediately remove updates again. However, in order to request
+	 * location updates we need to supply either a LocationListener or a
+	 * PendingIntent to which the location updates will be delivered. This
+	 * Intent is used to create that PendingIntent. When this Intent is
+	 * received, it will be ignored.
+	 */
+	public static final String LOCATION_UPDATE_RECEIVED = "com.vonglasow.michael.satstat.LOCATION_UPDATE_RECEIVED";
 	public static final long MILLIS_PER_DAY = 86400000;
 	
-	private static Intent mAgpsIntent = new Intent(AGPS_DATA_EXPIRED);;
+	private static Intent mAgpsIntent = new Intent(AGPS_DATA_EXPIRED);
+	private static Intent mLocationIntent = new Intent(LOCATION_UPDATE_RECEIVED);
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -186,9 +201,14 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			SharedPreferences.Editor spEditor = sharedPref.edit();
 			spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
 			LocationManager locman = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+			List<String> allProviders = locman.getAllProviders();
+			PendingIntent tempIntent = PendingIntent.getBroadcast(mContext, 0, mLocationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			Log.i(GpsEventReceiver.class.getSimpleName(), "Requesting AGPS data update");
+			if (allProviders.contains(LocationManager.GPS_PROVIDER))
+				locman.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, tempIntent);
 			locman.sendExtraCommand("gps", "force_xtra_injection", null);
 			locman.sendExtraCommand("gps", "force_time_injection", null);
+			locman.removeUpdates(tempIntent);
 			spEditor.commit();
 			
 			if (freqMillis > 0) {
