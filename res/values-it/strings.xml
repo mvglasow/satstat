@@ -91,6 +91,7 @@
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">A proposito</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_version">Versione</string>
     <string name="about_text">&lt;p&gt;
         Se qualcosa non funziona come dovrebbe,
         ovvero se hai un\'idea come migliorare ancora quest\'applicazione,

@@ -97,6 +97,7 @@
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">About</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_version">Version</string>
     <string name="about_text">&lt;p&gt;
         If something doesn\'t work the way it should, or if you have an idea to make this
         app even greater, please report it at:

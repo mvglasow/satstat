@@ -91,6 +91,7 @@
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">Apie</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_version">Versija:</string>
     <string name="about_text">&lt;p&gt;
         Jeigu kažkas neveikia kaip turėtų, ar jeigu turite
         mintį kaip dar tobulinti šią programą, prašome pranešti čia:
