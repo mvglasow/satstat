@@ -178,7 +178,7 @@ public class GpsSnrView extends View {
 	}
 	
 	/**
-	 * Draws a satellite's SNR bar.
+	 * Draws the SNR bar for a satellite.
 	 * 
 	 * @param canvas The {@code Canvas} on which the SNR view will appear.
 	 * @param nmeaID The NMEA ID of the satellite, as returned by {@link android.location.GpsSatellite#getPrn()}.
@@ -201,37 +201,17 @@ public class GpsSnrView extends View {
 	}
 
 	/**
-	 * Returns the position of a satellite in the grid.
+	 * Returns the position of the SNR bar for a satellite in the grid.
 	 * <p>
-	 * This function returns the position at which the satellite with the given
-	 * {@code nmeaID} will appear in the grid, taking into account that some
-	 * satellites may be hidden from view.
+	 * This function returns the position at which the SNR bar for the
+	 * satellite with the given {@code nmeaID} will appear in the grid, taking
+	 * into account the visibility of NMEA ID ranges.
 	 * 
 	 * @param nmeaID The NMEA ID of the satellite, as returned by {@link android.location.GpsSatellite#getPrn()}.
-	 * @return The position of the satellite in the grid. The first satellite has position 1. If the satellite is not visible, -1 is returned. 
+	 * @return The position of the SNR bar in the grid. The position of the first visible bar is 1. If {@code nmeaID} falls within a hidden range, -1 is returned. 
 	 */
 	private int getGridPos(int nmeaID) {
-		if (nmeaID < 1) { 
-			return -1;
-		} else if (nmeaID <= 32) {
-			if (!draw_1_32) return -1;
-		} else if (nmeaID <= 54) {
-			if (!draw_33_54) return -1;
-		} else if (nmeaID <= 64) {
-			if (!draw_55_64) return -1;
-		} else if (nmeaID <= 88) {
-			if (!draw_65_88) return -1;
-		} else if (nmeaID <= 96) {
-			if (!draw_89_96) return -1;
-		} else if (nmeaID <= 192) {
-			if (!draw_97_192) return -1;
-		} else if (nmeaID <= 195) {
-			if (!draw_193_195) return -1;
-		} else if (nmeaID <= 200) {
-			if (!draw_196_200) return -1;
-		} else if (nmeaID <= 235) {
-			if (!draw_201_235) return -1;
-		} else return -1;
+		if (nmeaID < 1) return -1;
 		
 		int skip = 0;
 		if (nmeaID > 32) {
@@ -248,14 +228,41 @@ public class GpsSnrView extends View {
 								if (!draw_97_192) skip+=96;
 								if (nmeaID > 195) {
 									if (!draw_193_195) skip+=3;
-									if (nmeaID > 200)
-										if (!draw_196_200) skip+=5;
+									if (nmeaID > 200) {
+										if (nmeaID > MAX_NMEA_ID) return -1;
+										else if (!draw_201_235) return -1;
+										else if (!draw_196_200) skip+=5;
+									} else {
+										// 195 < nmeaID <= 200
+										if (!draw_196_200) return -1;
+									}
+								} else {
+									// 192 < nmeaID <= 195
+									if (!draw_193_195) return -1;
 								}
+							} else {
+								// 96 < nmeaID <= 192
+								if (!draw_97_192) return -1;
 							}
+						} else {
+							// 88 < nmeaID <= 96
+							if (!draw_89_96) return -1;
 						}
+					} else {
+						// 64 < nmeaID <= 88
+						if (!draw_65_88) return -1;
 					}
+				} else {
+					// 54 < nmeaID <= 64
+					if (!draw_55_64) return -1;
 				}
+			} else {
+				// 32 < nmeaID <= 54
+				if (!draw_33_54) return -1;
 			}
+		} else {
+			// nmeaID <= 32
+			if (!draw_1_32) return -1;
 		}
 		
 		return nmeaID - skip;
