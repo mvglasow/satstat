@@ -169,9 +169,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			text = text + (text.equals("")?"":", ") + String.format("%d/%d",
 					satsUsed,
 					satsInView);
-			// Experimental: add TTFF
 			text = text + (text.equals("")?"":",\n") + String.format("TTFF %d s",
-					status.getTimeToFirstFix());
+					status.getTimeToFirstFix() / 1000);
 			mBuilder.setSmallIcon(R.drawable.ic_stat_notify_location);
 			mBuilder.setContentTitle(title);
 			mBuilder.setContentText(text);
@@ -258,6 +257,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
 			mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
 			mBuilder.setContentText(getString(R.string.notify_nolocation_body));
+			mBuilder.setStyle(null);
 			
 			startForeground(ONGOING_NOTIFICATION, mBuilder.build());
 		} else {
