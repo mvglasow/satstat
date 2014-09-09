@@ -1557,7 +1557,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param context
 	 */
 	protected void registerLocationProviders(Context context) {
-		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>()));
+		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
 		List<String> allProviders = mLocationManager.getAllProviders();
 		
 		mLocationManager.removeUpdates(this);
@@ -1798,7 +1798,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static void updateLocationProviders(Context context) {
         // add overlays
         if (isMapViewReady) {
-			Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>());
+			Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER})));
 			
 			updateLocationProviderStyles();
 			

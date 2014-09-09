@@ -19,9 +19,11 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -83,6 +85,14 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 			}
 			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
 			spEditor.putStringSet(KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
+			spEditor.commit();
+		}
+		
+		// by default, show GPS and network location in map
+		if (!mSharedPreferences.contains(KEY_PREF_LOC_PROV)) {
+			Set<String> defaultLocProvs = new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}));
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putStringSet(KEY_PREF_LOC_PROV, defaultLocProvs);
 			spEditor.commit();
 		}
 	}
