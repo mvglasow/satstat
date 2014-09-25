@@ -53,11 +53,9 @@ android {
     dependencies {
         compile 'com.android.support:support-v4:19.0.+'
 
-        compile 'org.mapsforge:svg-android:0.4.0'
-        compile 'org.mapsforge:mapsforge:0.4.0'
-        compile 'org.mapsforge:mapsforge-core:0.4.0'
-        compile 'org.mapsforge:mapsforge-map:0.4.0'
-        compile 'org.mapsforge:mapsforge-map-reader:0.4.0'
-        compile 'org.mapsforge:mapsforge-map-android:0.4.0'
+        compile 'org.mapsforge:mapsforge-core:0.4.3'
+        compile 'org.mapsforge:mapsforge-map:0.4.3'
+        compile 'org.mapsforge:mapsforge-map-reader:0.4.3'
+        compile 'org.mapsforge:mapsforge-map-android:0.4.3'
     }
 }
