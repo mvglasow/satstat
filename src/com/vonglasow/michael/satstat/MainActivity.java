@@ -1743,7 +1743,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	protected static void showCellLte(CellTowerLte cell) {
         TableRow row = new TableRow(rilLteCells.getContext());
-        row.setWeightSum(26);
+        row.setWeightSum(29);
         
         TextView newType = new TextView(rilLteCells.getContext());
         newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
