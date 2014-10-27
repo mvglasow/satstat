@@ -137,6 +137,7 @@ import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
 import com.vonglasow.michael.satstat.data.CellTowerGsm;
+import com.vonglasow.michael.satstat.data.CellTowerList;
 import com.vonglasow.michael.satstat.data.CellTowerListCdma;
 import com.vonglasow.michael.satstat.data.CellTowerListGsm;
 import com.vonglasow.michael.satstat.data.CellTowerListLte;
@@ -480,6 +481,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mCellsGsm.updateAll(cellInfo);
 				mCellsCdma.updateAll(cellInfo);
 				mCellsLte.updateAll(cellInfo);
+				for (CellTowerList<CellTower> towers : new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte}) {
+					for (CellTower cell : towers.getAll())
+						if (cell.isServing())
+							mServingCell = cell;
+				}
 			}
 			showCells();
 	 	}
