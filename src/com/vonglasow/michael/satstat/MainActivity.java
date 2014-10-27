@@ -490,9 +490,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
 			String networkOperator = mTelephonyManager.getNetworkOperator();
 			if (location instanceof GsmCellLocation) {
-				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				if (mLastNetworkGen < 4) {
+					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
+					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				}
+				//FIXME: do we need to process 4G cells here?
 			} else if (location instanceof CdmaCellLocation) {
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
 				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
@@ -1291,9 +1294,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 */
     protected static void onNetworkTypeChanged(int networkType) {
 		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
-		if (getNetworkGeneration(networkType) != mLastNetworkGen) {
+		int newNetworkGen = getNetworkGeneration(networkType);
+		if (newNetworkGen != mLastNetworkGen) {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			mLastNetworkGen = getNetworkGeneration(networkType);
+			// if we switched from GSM/UMTS to LTE, the cell may be erroneously stored as a GSM cell
+			if (newNetworkGen == 4)
+				mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+				//FIXME: do we need to add the cell to the LTE list?
+			//FIXME: do we need to do something similar when switching from 4G to lower?
+			mLastNetworkGen = newNetworkGen;
 			if (mServingCell != null)
 				mServingCell.setNetworkType(networkType);
 		}
