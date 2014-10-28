@@ -481,11 +481,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				mCellsGsm.updateAll(cellInfo);
 				mCellsCdma.updateAll(cellInfo);
 				mCellsLte.updateAll(cellInfo);
-				for (CellTowerList<CellTower> towers : new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte}) {
-					for (CellTower cell : towers.getAll())
-						if (cell.isServing())
-							mServingCell = cell;
-				}
+				mServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte});
 			}
 			showCells();
 	 	}
@@ -500,8 +496,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
 					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
 						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				} else {
+					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
+					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
 				}
-				//FIXME: do we need to process 4G cells here?
 			} else if (location instanceof CdmaCellLocation) {
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
 				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
@@ -511,8 +510,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
 				// this may not be supported on some devices (returns no data)
 				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				if (neighboringCells != null)
+				if (neighboringCells != null) {
 					mCellsGsm.updateAll(networkOperator, neighboringCells);
+					mCellsLte.updateAll(networkOperator, neighboringCells);
+				}
 			}
 			
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
@@ -924,6 +925,29 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	
 	/**
+	 * Returns the serving cell.
+	 * <p>
+	 * This method iterates through the cell tower lists passed in
+	 * {@code lists} and looks for any entries marked as the serving cell.
+	 *  
+	 * @param lists An array of {@link com.vonglasow.michael.satstat.data.CellTowerList}
+	 * instances
+	 * @return The serving cell, if one is found, or {@code null} if none is
+	 * found. If multiple serving cells are found in {@code lists}, no
+	 * assertion is made which cell will be returned, or even that results
+	 * will be consistent between calls.
+	 */
+	public static CellTower getServingCell(CellTowerList[] lists) {
+		for (CellTowerList<CellTower> towers : lists) {
+			for (CellTower cell : towers.getAll())
+				if (cell.isServing())
+					return cell;
+		}
+		return null;
+	}
+    
+
+	/**
 	 * Determines if a location is stale.
 	 * 
 	 * A location is considered stale if its Extras have an isStale key set to
@@ -1303,11 +1327,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		int newNetworkGen = getNetworkGeneration(networkType);
 		if (newNetworkGen != mLastNetworkGen) {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			// if we switched from GSM/UMTS to LTE, the cell may be erroneously stored as a GSM cell
-			if (newNetworkGen == 4)
-				mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
-				//FIXME: do we need to add the cell to the LTE list?
-			//FIXME: do we need to do something similar when switching from 4G to lower?
+			// if we switched from GSM/UMTS to LTE or vice versa, the cell may
+			// have been stored in the wrong list
+			if ((newNetworkGen == 4) || (mLastNetworkGen == 4)) {
+				CellLocation cellLocation = mTelephonyManager.getCellLocation();
+				String networkOperator = mTelephonyManager.getNetworkOperator();
+				if (newNetworkGen == 4) {
+					mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+					if (cellLocation instanceof GsmCellLocation)
+						mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
+				} else {
+					mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
+					if (cellLocation instanceof GsmCellLocation)
+						mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
+				}
+			}
+			
 			mLastNetworkGen = newNetworkGen;
 			if (mServingCell != null)
 				mServingCell.setNetworkType(networkType);
@@ -2030,7 +2065,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (needsRedraw)
 			mapMap.getLayerManager().redrawLayers();
 	}
-    
+	
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -2264,20 +2299,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	isRadioViewReady = true;
         	
         	//get current phone info (first update won't fire until the cell actually changes)
-            CellLocation cellLocation = mTelephonyManager.getCellLocation();
 			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
 			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
 			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
 			String networkOperator = mTelephonyManager.getNetworkOperator();
-			if (cellLocation instanceof GsmCellLocation)
-				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
-			else if (cellLocation instanceof CdmaCellLocation)
-				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
             
 			//this is not supported on some phones (returns an empty list)
 			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
 			if (neighboringCells != null) {
 				mCellsGsm.updateAll(networkOperator, neighboringCells);
+				mCellsLte.updateAll(networkOperator, neighboringCells);
 			}
 			
 			// Requires API level 17. Many phones don't implement this method
@@ -2290,6 +2321,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					mCellsCdma.updateAll(allCells);
 					mCellsLte.updateAll(allCells);
 				}
+			}
+			
+            CellLocation cellLocation = mTelephonyManager.getCellLocation();
+			if (cellLocation instanceof CdmaCellLocation)
+				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
+			else if (cellLocation instanceof GsmCellLocation) {
+				CellTower newServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsLte});
+				if (newServingCell == null) {
+					if (!mCellsLte.isEmpty()) {
+						Log.d("MainActivity", "Trying to guess network type of GsmCellLocation... LTE cells found, assuming LTE");
+						newServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
+					} else {
+						Log.d("MainActivity", "Trying to guess network type of GsmCellLocation... no LTE cells found, assuming GSM or UMTS");
+						newServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
+					}
+					Log.d("MainActivity", String.format("newServingCell = %s, generation = %d", newServingCell.getText(), newServingCell.getGeneration()));
+				}
+				mServingCell = newServingCell;
 			}
 			
 			showCells();
