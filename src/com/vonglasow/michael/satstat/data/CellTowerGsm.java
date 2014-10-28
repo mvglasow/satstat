@@ -129,8 +129,9 @@ public class CellTowerGsm extends CellTower {
 	 * Sets signal strength dBm based on CPICH RSCP.
 	 * <p>
 	 * RSCP is Received Signal Code Power. This value can be converted into dBm
-	 * with the formula: {@code dBm = rscp - 113}. The reporting range for
-	 * CPICH RSCP is from -120 dBm to -25 dBm (-5 to 91). Values outside this
+	 * with the formula: {@code dBm = rscp - 116}. The reporting range for
+	 * CPICH RSCP is from -120 dBm to -25 dBm (-5 to 91, with the two extremes
+	 * indicating any RSCP outside the reporting range). Values outside this
 	 * range will be ignored. Refer to 3GPP TS 25.133 (Ver 10.2.0) 9.1.1.3
 	 */
 	public void setCpichRscp(int rscp){

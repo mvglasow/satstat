@@ -80,11 +80,12 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	 * Adds or updates a cell tower.
 	 * <p>
 	 * If the cell tower is already in the list, its data is updated; if not, a
-	 * new entry is created.
+	 * new entry is created. Cells whose network type is not a flavor of GSM or
+	 * UMTS will be rejected.
 	 * <p>
 	 * This method will set the cell's identity data, generation and its signal
 	 * strength. 
-	 * @return The new or updated entry.
+	 * @return The new or updated entry, or {@code null} if the cell was rejected
 	 */
 	public CellTowerGsm update(String networkOperator, NeighboringCellInfo cell) {
 		int mcc = CellTower.UNKNOWN;
@@ -99,6 +100,32 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			result = this.get(cell.getPsc());
 		if (result == null)
 			result = new CellTowerGsm(mcc, mnc, cell.getLac(), cell.getCid(), cell.getPsc());
+		result.setNeighboringCellInfo(true);
+		int networkType = cell.getNetworkType();
+		switch (networkType) {
+			case TelephonyManager.NETWORK_TYPE_UMTS:
+			case TelephonyManager.NETWORK_TYPE_HSDPA:
+			case TelephonyManager.NETWORK_TYPE_HSUPA:
+			case TelephonyManager.NETWORK_TYPE_HSPA:
+				/*
+				 * for details see TS 25.133 section 9.1.1.3
+				 * http://www.3gpp.org/DynaReport/25133.htm
+				 */
+				result.setCpichRscp(cell.getRssi());
+				break;
+			case TelephonyManager.NETWORK_TYPE_EDGE:
+			case TelephonyManager.NETWORK_TYPE_GPRS:
+				result.setAsu(cell.getRssi());
+				break;
+			default:
+				// not a GSM or UMTS cell, return
+				return null;
+				// result.setDbm(CellTower.DBM_UNKNOWN);
+				// not needed because this is the default value; setting it
+				// here might overwrite valid data obtained from a different
+				// source
+		}
+		result.setNetworkType(networkType);
 		if (result.getMcc() == CellTower.UNKNOWN)
 			result.setMcc(mcc);
 		if (result.getMnc() == CellTower.UNKNOWN)
@@ -111,30 +138,6 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			result.setPsc(cell.getPsc());
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
-		result.setNeighboringCellInfo(true);
-		int networkType = cell.getNetworkType();
-		switch (networkType) {
-			case TelephonyManager.NETWORK_TYPE_UMTS:
-			case TelephonyManager.NETWORK_TYPE_HSDPA:
-			case TelephonyManager.NETWORK_TYPE_HSUPA:
-			case TelephonyManager.NETWORK_TYPE_HSPA:
-				/*
-				 * for details see TS 25.133 section 9.1.1.3
-				 * http://www.3gpp.org/DynaReport/25133.htm
-				 */
-				result.setCpichRscp(cell.getRssi() - 116);
-				break;
-			case TelephonyManager.NETWORK_TYPE_EDGE:
-			case TelephonyManager.NETWORK_TYPE_GPRS:
-				result.setAsu(cell.getRssi());
-				break;
-			default:
-				// result.setDbm(CellTower.DBM_UNKNOWN);
-				// not needed because this is the default value; setting it
-				// here might overwrite valid data obtained from a different
-				// source
-		}
-		result.setNetworkType(networkType);
 		return result;
 	}
 	
