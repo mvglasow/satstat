@@ -133,7 +133,7 @@ public class CellTowerGsm extends CellTower {
 	 * range will be ignored. Refer to 3GPP TS 25.133 (Ver 10.2.0) 9.1.1.3
 	 */
 	public void setCpichRscp(int rscp){
-		if ((rscp >= -5) || (rscp <= 91))
+		if ((rscp >= -5) && (rscp <= 91))
 			this.setDbm(rscp - 116);
 	}
 	
