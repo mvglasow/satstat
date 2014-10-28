@@ -2,8 +2,6 @@ package com.vonglasow.michael.satstat.data;
 
 import android.telephony.TelephonyManager;
 
-import com.vonglasow.michael.satstat.R;
-
 public abstract class CellTower {
 	public static int SOURCE_CELL_LOCATION = 1;
 	public static int SOURCE_NEIGHBORING_CELL_INFO = 2;

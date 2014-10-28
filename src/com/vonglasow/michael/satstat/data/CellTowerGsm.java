@@ -1,7 +1,5 @@
 package com.vonglasow.michael.satstat.data;
 
-import android.telephony.NeighboringCellInfo;
-
 public class CellTowerGsm extends CellTower {
 	public static String ALT_ID = "pci";
 	public static String FAMILY = "gsm";
