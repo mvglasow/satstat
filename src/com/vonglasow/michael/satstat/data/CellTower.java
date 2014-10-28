@@ -83,7 +83,7 @@ public abstract class CellTower {
 	 * this method will always return {@code true}.
 	 */
 	public boolean isServing() {
-		return (serving || ((this.source | SOURCE_CELL_LOCATION) != 0));
+		return (serving || ((this.source & SOURCE_CELL_LOCATION) != 0));
 	}
 
 	public void setCellInfo(boolean value) {
