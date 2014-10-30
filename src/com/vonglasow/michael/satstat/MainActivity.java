@@ -494,12 +494,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (location instanceof GsmCellLocation) {
 				if (mLastNetworkGen < 4) {
 					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
 						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
 				} else {
 					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
-					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+					//FIXME: set dBm
+					//if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					//	((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
 				}
 			} else if (location instanceof CdmaCellLocation) {
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
