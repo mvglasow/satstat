@@ -498,9 +498,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
 				} else {
 					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
-					//FIXME: set dBm
-					//if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-					//	((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
+					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+						((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
 				}
 			} else if (location instanceof CdmaCellLocation) {
 				mServingCell = mCellsCdma.update((CdmaCellLocation) location);

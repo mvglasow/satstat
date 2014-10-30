@@ -100,6 +100,20 @@ public class CellTowerLte extends CellTower {
 			return String.format("%s:%d-%d-%d-%d", FAMILY, iMcc, iMnc, iTac, ci);
 	}
 	
+	/**
+	 * Sets signal strength dBm based on ASU.
+	 * <p>
+	 * ASU can be converted into dBm with the formula:
+	 * {@code dBm = -113 + 2 * asu}. The reporting range is from -113 dBm to
+	 * -51 dBm (0 to 31). Values outside this range will be ignored. Refer to
+	 * 3GPP TS 27.007 (Ver 10.3.0) Sec 8.69
+	 */
+	// or 3GPP TS 27.007 8.5
+	public void setAsu(int asu){
+		if ((asu >= 0) || (asu <= 31))
+			this.setDbm(-113 + 2 * asu);
+	}
+	
 	public void setCi(int ci) {
 		if (ci != Integer.MAX_VALUE)
 			this.ci = ci;

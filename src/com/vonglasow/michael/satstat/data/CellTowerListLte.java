@@ -72,7 +72,7 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
 		result.setCellLocation(true);
-		Log.d(this.getClass().getName(), String.format("Added GsmCellLocation for %s", result.getText()));
+		Log.d(this.getClass().getSimpleName(), String.format("Added GsmCellLocation for %s", result.getText()));
 		return result;
 	}
 	
@@ -104,8 +104,7 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		int networkType = cell.getNetworkType();
 		switch (networkType) {
 		case TelephonyManager.NETWORK_TYPE_LTE:
-				//result.setAsu(cell.getRssi());
-				//FIXME: if we ever get LTE cells this way, how can we find out their signal strength?
+				result.setAsu(cell.getRssi());
 				break;
 			default:
 				// not an LTE cell, return
@@ -124,7 +123,7 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 			result.setPci(cell.getPsc());
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
-		Log.d(this.getClass().getName(), String.format("Added NeighboringCellInfo for %s", result.getText()));
+		Log.d(this.getClass().getSimpleName(), String.format("Added NeighboringCellInfo for %s", result.getText()));
 		return result;
 	}
 	
