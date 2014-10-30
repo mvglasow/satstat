@@ -1344,8 +1344,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			
 			mLastNetworkGen = newNetworkGen;
-			if (mServingCell != null)
+			if (mServingCell != null) {
 				mServingCell.setNetworkType(networkType);
+				Log.d(MainActivity.class.getSimpleName(), String.format("Setting network type to %d for cell %s (%s)", mServingCell.getGeneration(), mServingCell.getText(), mServingCell.getAltText()));
+			}
 		}
 		showCells();
     }

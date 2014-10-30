@@ -1,6 +1,9 @@
 package com.vonglasow.michael.satstat.data;
 
+import com.vonglasow.michael.satstat.MainActivity;
+
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 public abstract class CellTower {
 	public static int SOURCE_CELL_LOCATION = 1;
@@ -103,6 +106,8 @@ public abstract class CellTower {
 	}
 
 	public void setGeneration(int generation) {
+		if (this instanceof CellTowerLte)
+			Log.d(this.getClass().getSimpleName(), String.format("Setting network type to %d for cell %s (%s)", generation, this.getText(), this.getAltText()));
 		this.generation = generation;
 	}
 
@@ -121,6 +126,8 @@ public abstract class CellTower {
      * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
      */
 	public void setNetworkType(int networkType) {
+		if (this instanceof CellTowerLte)
+			Log.d(this.getClass().getSimpleName(), String.format("Changing network type for cell %s (%s)", this.getText(), this.getAltText()));
     	switch (networkType) {
     	case TelephonyManager.NETWORK_TYPE_CDMA:
     	case TelephonyManager.NETWORK_TYPE_EDGE:
