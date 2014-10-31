@@ -181,6 +181,8 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 			return;
 		this.removeSource(CellTower.SOURCE_CELL_INFO);
+		if (cells == null)
+			return;
 		for (CellInfo cell : cells)
 			if (cell instanceof CellInfoLte)
 				this.update((CellInfoLte) cell);
@@ -197,7 +199,8 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 	 */
 	public void updateAll(String networkOperator, List<NeighboringCellInfo> cells) {
 		this.removeSource(CellTower.SOURCE_NEIGHBORING_CELL_INFO);
-		for (NeighboringCellInfo cell : cells)
-			this.update(networkOperator, cell);
+		if (cells != null)
+			for (NeighboringCellInfo cell : cells)
+				this.update(networkOperator, cell);
 	}
 }

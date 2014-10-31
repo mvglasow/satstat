@@ -83,6 +83,8 @@ public class CellTowerListCdma extends CellTowerList<CellTowerCdma> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 			return;
 		this.removeSource(CellTower.SOURCE_CELL_INFO);
+		if (cells == null)
+			return;
 		for (CellInfo cell : cells)
 			if (cell instanceof CellInfoCdma)
 				this.update((CellInfoCdma) cell);

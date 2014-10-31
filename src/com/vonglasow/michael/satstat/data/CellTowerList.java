@@ -21,12 +21,12 @@ public abstract class CellTowerList<T extends CellTower> extends HashMap<String,
 	/**
 	 * Removes cells of the specified source.
 	 * <p>
-	 * This method clears the flag corresponding to {@code source} in the
+	 * This method clears the flags corresponding to {@code source} in the
 	 * internal source field of all entries, and removes entries whose source
 	 * field is null. Call this method prior to adding new data from a source,
 	 * to tell the list that any cell information previously supplied by this
 	 * source is no longer current.
-	 * @param source Any of 
+	 * @param source Any combination of 
 	 * {@link com.michael.vonglasow.satstat.data.CellTower#SOURCE_CELL_LOCATION},
 	 * {@link com.michael.vonglasow.satstat.data.CellTower#SOURCE_NEIGHBORING_CELL_INFO}
 	 * or {@link com.michael.vonglasow.satstat.data.CellTower#SOURCE_CELL_INFO}.

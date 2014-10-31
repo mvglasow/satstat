@@ -477,12 +477,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
-			if (cellInfo != null) {
-				mCellsGsm.updateAll(cellInfo);
-				mCellsCdma.updateAll(cellInfo);
-				mCellsLte.updateAll(cellInfo);
-				mServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte});
-			}
+			mCellsGsm.updateAll(cellInfo);
+			mCellsCdma.updateAll(cellInfo);
+			mCellsLte.updateAll(cellInfo);
+			mServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte});
 			showCells();
 	 	}
 	 	
@@ -508,12 +506,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			}
 			
 			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
-				// this may not be supported on some devices (returns no data)
-				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				if (neighboringCells != null) {
-					mCellsGsm.updateAll(networkOperator, neighboringCells);
-					mCellsLte.updateAll(networkOperator, neighboringCells);
-				}
+				updateNeighboringCellInfo();
 			}
 			
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
@@ -541,11 +534,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			int pt = mTelephonyManager.getPhoneType();
 			if (pt == PHONE_TYPE_GSM) {
 				mLastCellAsu = signalStrength.getGsmSignalStrength();
-				// this may not be supported on some devices (returns no data)
-				String networkOperator = mTelephonyManager.getNetworkOperator();
-				List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-				if (neighboringCells != null)
-					mCellsGsm.updateAll(networkOperator, neighboringCells);
+				updateNeighboringCellInfo();
 				if ((mServingCell != null) && (mServingCell instanceof CellTowerGsm))
 					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
 			} else if (pt == PHONE_TYPE_CDMA) {
@@ -940,7 +929,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public static CellTower getServingCell(CellTowerList[] lists) {
 		for (CellTowerList<CellTower> towers : lists) {
 			for (CellTower cell : towers.getAll())
-				if (cell.isServing())
+				if (cell.hasSource() && cell.isServing())
 					return cell;
 		}
 		return null;
@@ -1333,11 +1322,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				CellLocation cellLocation = mTelephonyManager.getCellLocation();
 				String networkOperator = mTelephonyManager.getNetworkOperator();
 				if (newNetworkGen == 4) {
-					mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+					mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION | CellTower.SOURCE_NEIGHBORING_CELL_INFO | CellTower.SOURCE_CELL_INFO);
 					if (cellLocation instanceof GsmCellLocation)
 						mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
 				} else {
-					mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
+					mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION | CellTower.SOURCE_NEIGHBORING_CELL_INFO | CellTower.SOURCE_CELL_INFO);
 					if (cellLocation instanceof GsmCellLocation)
 						mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
 				}
@@ -1668,41 +1657,45 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		if (!isRadioViewReady)
 			return;
 		
-		if ((mCellsGsm == null) || (mCellsGsm.isEmpty()))
-			rilGsmLayout.setVisibility(View.GONE);
-		else {
-			rilGsmLayout.setVisibility(View.VISIBLE);
-			rilCells.removeAllViews();
-			if (mCellsGsm.containsValue(mServingCell))
-				showCellGsm((CellTowerGsm) mServingCell);
-			for (CellTowerGsm cell : mCellsGsm.getAll())
-				if (cell != mServingCell)
-					showCellGsm(cell);
-		}
+		int cdmaVisibility = View.GONE;
+		int gsmVisibility = View.GONE;
+		int lteVisibility = View.GONE;
 		
-		if ((mCellsCdma == null) || (mCellsCdma.isEmpty()))
-			rilCdmaLayout.setVisibility(View.GONE);
-		else {
-			rilCdmaLayout.setVisibility(View.VISIBLE);
-			rilCdmaCells.removeAllViews();
-			if (mCellsCdma.containsValue(mServingCell))
-				showCellCdma((CellTowerCdma) mServingCell);
-			for (CellTowerCdma cell : mCellsCdma.getAll())
-				if (cell != mServingCell)
-					showCellCdma(cell);
+		rilCells.removeAllViews();
+		if (mCellsGsm.containsValue(mServingCell)) {
+			showCellGsm((CellTowerGsm) mServingCell);
+			gsmVisibility = View.VISIBLE;
 		}
+		for (CellTowerGsm cell : mCellsGsm.getAll())
+			if (cell.hasSource() && (cell != mServingCell)) {
+				showCellGsm(cell);
+				gsmVisibility = View.VISIBLE;
+			}
+		rilGsmLayout.setVisibility(gsmVisibility);
 		
-		if ((mCellsLte == null) || (mCellsLte.isEmpty())) {
-			rilLteLayout.setVisibility(View.GONE);
-		} else {
-			rilLteLayout.setVisibility(View.VISIBLE);
-			rilLteCells.removeAllViews();
-			if (mCellsLte.containsValue(mServingCell))
-				showCellLte((CellTowerLte) mServingCell);
-			for (CellTowerLte cell : mCellsLte.getAll())
-				if (cell != mServingCell)
-					showCellLte(cell);
+		rilCdmaCells.removeAllViews();
+		if (mCellsCdma.containsValue(mServingCell)) {
+			showCellCdma((CellTowerCdma) mServingCell);
+			cdmaVisibility = View.VISIBLE;
 		}
+		for (CellTowerCdma cell : mCellsCdma.getAll())
+			if (cell.hasSource() && (cell != mServingCell)) {
+				showCellCdma(cell);
+				cdmaVisibility = View.VISIBLE;
+			}
+		rilCdmaLayout.setVisibility(cdmaVisibility);
+		
+		rilLteCells.removeAllViews();
+		if (mCellsLte.containsValue(mServingCell)) {
+			showCellLte((CellTowerLte) mServingCell);
+			lteVisibility = View.VISIBLE;
+		}
+		for (CellTowerLte cell : mCellsLte.getAll())
+			if (cell.hasSource() && (cell != mServingCell)) {
+				showCellLte(cell);
+				lteVisibility = View.VISIBLE;
+			}
+		rilLteLayout.setVisibility(lteVisibility);
 	}
 	
 	protected static void showCellCdma(CellTowerCdma cell) {
@@ -2068,6 +2061,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mapMap.getLayerManager().redrawLayers();
 	}
 	
+	
+	/**
+	 * Requeries neighboring cells
+	 */
+	protected static void updateNeighboringCellInfo() {
+		// this may not be supported on some devices (returns no data)
+		String networkOperator = mTelephonyManager.getNetworkOperator();
+		List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+		mCellsGsm.updateAll(networkOperator, neighboringCells);
+		mCellsLte.updateAll(networkOperator, neighboringCells);
+	}
+	
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -2306,23 +2311,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
 			String networkOperator = mTelephonyManager.getNetworkOperator();
             
-			//this is not supported on some phones (returns an empty list)
-			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-			if (neighboringCells != null) {
-				mCellsGsm.updateAll(networkOperator, neighboringCells);
-				mCellsLte.updateAll(networkOperator, neighboringCells);
-			}
+			updateNeighboringCellInfo();
 			
 			// Requires API level 17. Many phones don't implement this method
 			// at all and will return null, the ones that do implement it
-			// return only certain cell types.
+			// may return only certain cell types.
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-				if (allCells != null) {
-					mCellsGsm.updateAll(allCells);
-					mCellsCdma.updateAll(allCells);
-					mCellsLte.updateAll(allCells);
-				}
+				mCellsGsm.updateAll(allCells);
+				mCellsCdma.updateAll(allCells);
+				mCellsLte.updateAll(allCells);
 			}
 			
             CellLocation cellLocation = mTelephonyManager.getCellLocation();

@@ -64,6 +64,19 @@ public abstract class CellTower {
 	 * family. 
 	 */
 	public abstract String getText();
+	
+	/**
+	 * Whether the cell was included in the last update from any of the sources.
+	 * <p>
+	 * When an update is received from a source, cells that were received in an
+	 * earlier update from the same source have the flag for that source reset
+	 * but are still kept in the list until the next update. Such cells should
+	 * be considered stale and not be displayed in any list of active cells. 
+	 * @return {@code true} if the cell has its flag for at least one source set, {@code false} if not
+	 */
+	public boolean hasSource() {
+		return (source >= 0);
+	}
 
 	public boolean isCellInfo() {
 		return ((source & SOURCE_CELL_INFO) == SOURCE_CELL_INFO);
