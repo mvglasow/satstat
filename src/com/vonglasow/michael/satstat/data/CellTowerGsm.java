@@ -130,11 +130,20 @@ public class CellTowerGsm extends CellTower {
 	 * with the formula: {@code dBm = rscp - 116}. The reporting range for
 	 * CPICH RSCP is from -120 dBm to -25 dBm (-5 to 91, with the two extremes
 	 * indicating any RSCP outside the reporting range). Values outside this
-	 * range will be ignored. Refer to 3GPP TS 25.133 (Ver 10.2.0) 9.1.1.3
+	 * range will be ignored. Refer to 3GPP TS 25.133 (Ver 10.2.0) 9.1.1.3.
+	 * <p>
+	 * Note: It seems that at least on some devices
+	 * {@link android.telephony.NeighboringCellInfo#getRssi()} returns RSCP in
+	 * dBm rather than the index specified in the document. This method
+	 * attempts to guess the unit and set signal strength to the correct value
+	 * in either case. See
+	 * http://stackoverflow.com/questions/26620378/android-neighboringcellinfo-getrssi-returning-weird-data-for-umts-cells
 	 */
 	public void setCpichRscp(int rscp){
 		if ((rscp >= -5) && (rscp <= 91))
 			this.setDbm(rscp - 116);
+			else if ((rscp >= -121) && (rscp <=-25))
+				this.setDbm(rscp);
 	}
 	
 	public void setLac(int lac) {
