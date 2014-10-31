@@ -72,7 +72,7 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
 		result.setCellLocation(true);
-		Log.d(this.getClass().getSimpleName(), String.format("Added GsmCellLocation for %s", result.getText()));
+		Log.d(this.getClass().getSimpleName(), String.format("Added GsmCellLocation for %s, %d G", result.getText(), result.getGeneration()));
 		return result;
 	}
 	
@@ -123,7 +123,7 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 			result.setPci(cell.getPsc());
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
-		Log.d(this.getClass().getSimpleName(), String.format("Added NeighboringCellInfo for %s", result.getText()));
+		Log.d(this.getClass().getSimpleName(), String.format("Added NeighboringCellInfo for %s, %d G", result.getText(), result.getGeneration()));
 		return result;
 	}
 	
@@ -163,6 +163,7 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		result.setCellInfo(true);
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		result.setServing(cell.isRegistered());
+		Log.d(this.getClass().getSimpleName(), String.format("Added CellInfoLte for %s, %d G", result.getText(), result.getGeneration()));
 		return result;
 	}
 	

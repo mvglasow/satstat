@@ -12,6 +12,7 @@ import android.telephony.CellInfoWcdma;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
 public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 	/**
@@ -72,6 +73,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			result.setPsc(location.getPsc());
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
+		if ((result.getText() == null) && (result.getAltText() == null))
+			Log.d(this.getClass().getSimpleName(), String.format("Added %d G cell with no data from GsmCellLocation", result.getGeneration()));
 		result.setCellLocation(true);
 		return result;
 	}
@@ -138,6 +141,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 			result.setPsc(cell.getPsc());
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
+		if ((result.getText() == null) && (result.getAltText() == null))
+			Log.d(this.getClass().getSimpleName(), String.format("Added %d G cell with no data from NeighboringCellInfo", result.getGeneration()));
 		return result;
 	}
 	
@@ -179,6 +184,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
 			result.setGeneration(2);
 		result.setServing(cell.isRegistered());
+		if ((result.getText() == null) && (result.getAltText() == null))
+			Log.d(this.getClass().getSimpleName(), String.format("Added %d G cell with no data from CellInfoGsm", result.getGeneration()));
 		return result;
 	}
 	
@@ -218,6 +225,8 @@ public class CellTowerListGsm extends CellTowerList<CellTowerGsm> {
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		result.setGeneration(3);
 		result.setServing(cell.isRegistered());
+		if ((result.getText() == null) && (result.getAltText() == null))
+			Log.d(this.getClass().getSimpleName(), String.format("Added %d G cell with no data from CellInfoWcdma", result.getGeneration()));
 		return result;
 	}
 	
