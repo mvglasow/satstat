@@ -32,7 +32,7 @@
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Fehler</string>
     <string name="title_gps_sats">Satelliten</string>
-    <string name="title_gps_ttff">TTFF (s)</string>
+    <string name="title_gps_ttff">TTFF(s)</string>
     <string name="value_none">–</string>
     <string name="value_N">N</string>
     <string name="value_NNE">NNO</string>
@@ -74,7 +74,7 @@
     <string name="title_sensors_metTemp">&#x00a0;°C</string>
     <string name="title_sensors_metPressure">&#x00a0;hPa</string>
     <string name="title_sensors_metHumid">Rel. Luftfeuchte (%)</string>
-    <string name="title_sensor_misc">Verschiedene</string>
+    <string name="title_sensor_misc">Verschiedenes</string>
     <string name="title_sensors_light">&#x00a0;lux</string>
     <string name="title_sensors_proximity">Abstand (cm)</string>
     <string name="title_radio_gsm">GSM</string>
