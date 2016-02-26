@@ -57,6 +57,7 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 	public static final String KEY_PREF_MAP_LAT = "pref_map_lat";
 	public static final String KEY_PREF_MAP_LON = "pref_map_lon";
 	public static final String KEY_PREF_MAP_ZOOM = "pref_map_zoom";
+	public static final String KEY_PREF_UNIT_TYPE = "pref_unit_type";
 
 	private SharedPreferences mSharedPreferences;
 

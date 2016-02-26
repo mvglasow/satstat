@@ -1214,7 +1214,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     			circle.setLatLong(latLong);
 	    		if (location.hasAccuracy()) {
 	    			circle.setVisible(true);
-	    			circle.setRadius(location.getAccuracy());
+	    			circle.setRadius((location.getAccuracy() * (float) 3.28));
 	    		} else {
 	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
 	    			circle.setVisible(false);
@@ -1241,8 +1241,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	
     	// update GPS view
     	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+				Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
 	    	if (location.hasAccuracy()) {
-	    		gpsAccuracy.setText(String.format("%.0f", location.getAccuracy()));
+					Float getAcc = (float) 0.0;
+					if(prefUnitType) {
+						getAcc = (float)(location.getAccuracy());
+					} else {
+						getAcc = (float)(location.getAccuracy() * (float) 3.28084);
+					}
+	    		gpsAccuracy.setText(String.format("%.0f %s", getAcc, getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet))));
 	    	} else {
 	    		gpsAccuracy.setText(getString(R.string.value_none));
 	    	}
@@ -1252,11 +1260,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	gpsTime.setText(String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", location.getTime()));
 	    	
 	    	if (location.hasAltitude()) {
-	    		gpsAlt.setText(String.format("%.0f", location.getAltitude()));
+					Float getAltitude = (float) 0.0;
+					if(prefUnitType) {
+						getAltitude = (float)(location.getAltitude());
+					} else {
+						getAltitude = (float)(location.getAltitude() * (float) 3.28084);
+					}
+	    		gpsAlt.setText(String.format("%.0f %s", getAltitude, getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet))));
 	    		orDeclination.setText(String.format("%.0f%s", new GeomagneticField(
-	    				(float) location.getLatitude(),
+	    				(float) (getAltitude),
 	    				(float) location.getLongitude(),
-	    				(float) location.getAltitude(),
+	    				(float) (getAltitude),
 	    				location.getTime()
     				).getDeclination(), getString(R.string.unit_degree)));
 	    	} else {
@@ -1273,7 +1287,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	}
 	    	
 	    	if (location.hasSpeed()) {
-	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+					Float getSpeed = (float) 0.0;
+					if(prefUnitType) {
+						getSpeed = (float)(location.getSpeed());
+					} else {
+						getSpeed = (float)(location.getSpeed() * (float) 2.23694);
+					}
+	    		gpsSpeed.setText(String.format("%.0f %s", getSpeed, getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph))));
 	    	} else {
 	    		gpsSpeed.setText(getString(R.string.value_none));
 	    	}

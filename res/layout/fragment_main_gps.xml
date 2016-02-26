@@ -95,7 +95,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:lines="1"
-                    android:text="@string/unit_meter"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
         </LinearLayout>
@@ -182,7 +181,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:lines="1"
-                    android:text="@string/unit_km_h"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
         </LinearLayout>
@@ -221,7 +219,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:lines="1"
-                    android:text="@string/unit_meter"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
         </LinearLayout>

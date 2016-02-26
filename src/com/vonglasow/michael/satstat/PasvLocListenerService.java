@@ -150,21 +150,23 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			String title = String.format("%.5f%s%s %.5f%s%s",
 					lat, getString(R.string.unit_degree), ns,
 					lon, getString(R.string.unit_degree), ew);
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+			Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
 			String text = "";
 			if (location.hasAltitude()) {
 				text = text + String.format("%.0f%s",
-						location.getAltitude(),
-						getString(R.string.unit_meter));
+						(location.getAltitude() * (prefUnitType ? 1 : 3.28084)),
+						getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet)));
 			}
 			if (location.hasSpeed()) {
 				text = text + (text.equals("")?"":", ") + String.format("%.0f%s",
-						(location.getSpeed() * 3.6),
-						getString(R.string.unit_km_h));
+						(location.getSpeed() * (prefUnitType ? 3.6 : 2.23694)),
+						getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
 			}
 			if (location.hasAccuracy()) {
 				text = text + (text.equals("")?"":", ") + String.format("\u03b5 = %.0f%s",
-						location.getAccuracy(),
-						getString(R.string.unit_meter));
+						(location.getAccuracy() * (prefUnitType ? 1 : 3.28084)),
+						getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet)));
 			}
 			text = text + (text.equals("")?"":", ") + String.format("%d/%d",
 					satsUsed,
