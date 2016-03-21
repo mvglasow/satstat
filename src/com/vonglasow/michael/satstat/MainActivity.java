@@ -2040,6 +2040,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			needsRedraw = true;
 		} else {
 			byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
+			if (newZoom < 0)
+				newZoom = 0;
 			if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel()) {
 				mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
 			} else {
