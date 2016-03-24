@@ -359,7 +359,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static HashMap<String, String> providerAppliedStyles;
 	protected static Handler providerInvalidationHandler = null;
 	protected static HashMap<String, Runnable> providerInvalidators;
-	private static final int PROVIDER_EXPIRATION_DELAY = 2000; // the time after which a location is considered stale 
+	private static final int PROVIDER_EXPIRATION_DELAY = 6000; // the time after which a location is considered stale 
 	
 	private static List <ScanResult> scanResults = null;
 	private static String selectedBSSID = "";
