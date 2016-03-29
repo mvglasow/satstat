@@ -32,7 +32,7 @@ import android.view.View;
  * Displays the signal-to-noise ratio of the GPS satellites in a bar chart.
  */
 public class GpsSnrView extends View {
-	private String TAG = "GpsSnrView";
+	private final String TAG = "GpsSnrView";
 	
 	/**
 	 * The highest currently supported NMEA ID.

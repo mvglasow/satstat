@@ -1,8 +1,8 @@
 package com.vonglasow.michael.satstat.data;
 
 public class CellTowerLte extends CellTower {
-	public static String ALT_ID = "pci";
-	public static String FAMILY = "lte";
+	public static final String ALT_ID = "pci";
+	public static final String FAMILY = "lte";
 	
 	private int ci;
 	private int tac;

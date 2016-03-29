@@ -1,9 +1,9 @@
 package com.vonglasow.michael.satstat.data;
 
 public class CellTowerGsm extends CellTower {
-	public static String ALT_ID = "pci";
-	public static String FAMILY = "gsm";
-	public static int MAX_2G_CID = 65535;
+	public static final String ALT_ID = "pci";
+	public static final String FAMILY = "gsm";
+	public static final int MAX_2G_CID = 65535;
 	
 	private int cid;
 	private int lac;

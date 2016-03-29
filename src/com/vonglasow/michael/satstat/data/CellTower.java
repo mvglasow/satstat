@@ -6,11 +6,11 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public abstract class CellTower {
-	public static int SOURCE_CELL_LOCATION = 1;
-	public static int SOURCE_NEIGHBORING_CELL_INFO = 2;
-	public static int SOURCE_CELL_INFO = 4;
-	public static int UNKNOWN = -1;
-	public static int DBM_UNKNOWN = 85; // 99 is unknown ASU, hence 99 * 2 - 113
+	public static final int SOURCE_CELL_LOCATION = 1;
+	public static final int SOURCE_NEIGHBORING_CELL_INFO = 2;
+	public static final int SOURCE_CELL_INFO = 4;
+	public static final int UNKNOWN = -1;
+	public static final int DBM_UNKNOWN = 85; // 99 is unknown ASU, hence 99 * 2 - 113
 	
 	protected int dbm = DBM_UNKNOWN;
 	protected int generation = 0;

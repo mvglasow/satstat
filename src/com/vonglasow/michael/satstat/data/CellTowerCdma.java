@@ -1,7 +1,7 @@
 package com.vonglasow.michael.satstat.data;
 
 public class CellTowerCdma extends CellTower {
-	public static String FAMILY = "cdma";
+	public static final String FAMILY = "cdma";
 	
 	private int bsid;
 	private int nid;
