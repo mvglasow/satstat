@@ -145,7 +145,6 @@ public class CellTowerLte extends CellTower {
 	public void setPci(int pci) {
 		if ((pci != Integer.MAX_VALUE) && (pci != -1)) {
 			this.pci = pci;
-			this.generation = 3;
 		} else
 			this.pci = CellTower.UNKNOWN;
 	}
