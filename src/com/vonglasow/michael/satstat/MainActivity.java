@@ -26,14 +26,17 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
+import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -113,6 +116,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
@@ -395,6 +399,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
 
 	private static SharedPreferences mSharedPreferences;
+	
+	private static DateFormat df;
 
     @SuppressLint("UseSparseArrays")
 	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
@@ -1140,6 +1146,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         };
         
         updateLocationProviderStyles();
+        
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
     }
 	
 	
@@ -1246,6 +1254,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
     		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     		Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+    		Boolean prefUtc = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
 	    	if (location.hasAccuracy()) {
 	    		Float getAcc = (float) 0.0;
 	    		if(prefUnitType) {
@@ -1262,7 +1271,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	
 	    	gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
 	    	gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
-	    	gpsTime.setText(String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", location.getTime()));
+	    	if (prefUtc)
+	    		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+	    	else
+	    		df.setTimeZone(TimeZone.getDefault());
+	    	gpsTime.setText(df.format(new Date(location.getTime())));
 	    	
 	    	if (location.hasAltitude()) {
 	    		Float getAltitude = (float) 0.0;
