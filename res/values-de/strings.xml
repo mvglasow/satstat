@@ -8,18 +8,20 @@
     <string name="action_agps">AGPS-Daten neu laden</string>
     <string name="action_about">Info</string>
     <string name="dot">&#x2b1b;</string>
+    <string name="smallDot">&#x25fc;</string>
     <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Fehler beim Schreiben in Datei</string>
     <string name="error_ext_storage">Externer Speicher nicht verfügbar</string>
     <string name="info_start_rec">Aufzeichnung gestartet</string>
     <string name="notify_record_title">Sensordaten werden aufgezeichnet</string>
-    <string name="notify_record_body">Zum Beenden berühren</string>
+    <string name="notify_record_body">Zum Beenden antippen</string>
     <string name="status_agps">Aktualisierung der AGPS-Daten angefordert</string>
     <string name="status_agps_captive">Daten können nicht aktualisiert werden – starten Sie den Browser, melden Sie sich am Netzwerk an und versuchen Sie es erneut</string>
     <string name="status_agps_error">Kein Netz verfügbar, AGPS-Daten können nicht aktualisiert werden</string>
     <string name="title_section1">GPS</string>
     <string name="title_section2">Sensoren</string>
     <string name="title_section3">Funknetze</string>
+    <string name="title_section4">Map</string>
     <string name="title_gps_lat">Breite</string>
     <string name="title_gps_lon">Länge</string>
     <string name="title_gps_decl">Dekl.</string>
@@ -30,7 +32,7 @@
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Fehler</string>
     <string name="title_gps_sats">Satelliten</string>
-    <string name="title_gps_ttff">TTFF (s)</string>
+    <string name="title_gps_ttff">TTFF(s)</string>
     <string name="value_none">–</string>
     <string name="value_N">N</string>
     <string name="value_NNE">NNO</string>
@@ -72,7 +74,7 @@
     <string name="title_sensors_metTemp">&#x00a0;°C</string>
     <string name="title_sensors_metPressure">&#x00a0;hPa</string>
     <string name="title_sensors_metHumid">Rel. Luftfeuchte (%)</string>
-    <string name="title_sensor_misc">Verschiedene</string>
+    <string name="title_sensor_misc">Verschiedenes</string>
     <string name="title_sensors_light">&#x00a0;lux</string>
     <string name="title_sensors_proximity">Abstand (cm)</string>
     <string name="title_radio_gsm">GSM</string>
@@ -80,17 +82,22 @@
     <string name="title_radio_mnc">MNC</string>
     <string name="title_radio_cellid">Cell ID</string>
     <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_psc">PSC</string>
     <string name="title_radio_asu">ASU</string>
     <string name="title_radio_cdma">CDMA</string>
     <string name="title_radio_sid">SID</string>
     <string name="title_radio_nid">NID</string>
     <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_lte">LTE</string>
+    <string name="title_radio_tac">TAC</string>
+    <string name="title_radio_pci">PCI</string>
     <string name="title_radio_wifi">WiFi</string>
     <string name="title_radio_mac">BSSID (MAC)</string>
     <string name="title_radio_channel">K.</string>
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">Info</string>
-    <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_caption">Standort, Sensor und Netzwerk-Status</string>
+    <string name="about_version">Version</string>
     <string name="about_text">&lt;p&gt;
         Wenn etwas nicht so funktioniert, wie es sollte, oder
         wenn Sie Verbesserungsvorschläge haben, melden Sie diese bitte unter:
@@ -130,12 +137,13 @@
     <string name="pref_search_summary">Benachrichtigen, wenn eine Applikation versucht, meinen Standort zu bestimmen</string>
     <string name="title_activity_settings">Einstellungen</string>
     <string name="notify_nolocation_title">Standort wird gesucht</string>
-    <string name="notify_nolocation_body">Berühren, um Status zu sehen</string>
+    <string name="notify_nolocation_body">Antippen, um Status zu sehen</string>
     <string name="pref_notifications">Benachrichtigungen</string>
     <string name="pref_agps">AGPS-Aktualisierung</string>
-    <string name="pref_wifi">Bei WiFi-Verbindung</string>
-    <string name="pref_wifi_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem WiFi-Netzwerk verbindet</string>
+    <string name="pref_wifi">Bei WLAN-Verbindung</string>
+    <string name="pref_wifi_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem WLAN-Netzwerk verbindet</string>
     <string name="pref_freq">Aktualisierungsintervall</string>
+    <string name="pref_freq_summary">%s</string>
     <string-array name="prefs_freq_keys">
         <item >Jedes Mal</item>
         <item >Einmal täglich</item>
@@ -146,10 +154,23 @@
         <item >Einmal alle 6 Tage</item>
         <item >Einmal pro Woche</item>
     </string-array>
+    <string-array name="prefs_freq_values">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+        <item >3</item>
+        <item >4</item>
+        <item >5</item>
+        <item >6</item>
+        <item >7</item>
+    </string-array>
     <string name="pref_lastupdate">Letzte Aktualisierung</string>
+    <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Netze</string>
     <string name="pref_networks_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem der ausgewählten Netzwerke verbindet</string>
     <string name="pref_map">Karte</string>
     <string name="pref_loc_prov">Standortquellen</string>
     <string name="pref_loc_prov_summary">Ausgewählte Standortquellen auf der Karte anzeigen</string>
+    <string name="osm_attribution">© OpenStreetMap</string>
+    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy von MapQuest.</string>
 </resources>
