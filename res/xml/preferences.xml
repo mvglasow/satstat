@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/pref_unit">
+    <PreferenceCategory android:title="@string/pref_data">
       <CheckBoxPreference android:summary="@string/pref_unit_summary" android:defaultValue="true" android:title="@string/pref_unit" android:key="pref_unit_type"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_map">

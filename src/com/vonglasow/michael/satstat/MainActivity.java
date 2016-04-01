@@ -274,10 +274,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static TextView gpsLon;
 	protected static TextView orDeclination;
 	protected static TextView gpsSpeed;
+	protected static TextView gpsSpeedUnit;
 	protected static TextView gpsAlt;
+	protected static TextView gpsAltUnit;
 	protected static TextView gpsTime;
 	protected static TextView gpsBearing;
 	protected static TextView gpsAccuracy;
+	protected static TextView gpsAccuracyUnit;
 	protected static TextView gpsOrientation;
 	protected static TextView gpsSats;
 	protected static TextView gpsTtff;
@@ -1214,7 +1217,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     			circle.setLatLong(latLong);
 	    		if (location.hasAccuracy()) {
 	    			circle.setVisible(true);
-	    			circle.setRadius((location.getAccuracy() * (float) 3.28));
+	    			circle.setRadius(location.getAccuracy());
 	    		} else {
 	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
 	    			circle.setVisible(false);
@@ -1241,18 +1244,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	
     	// update GPS view
     	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
-				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-				Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    		Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
 	    	if (location.hasAccuracy()) {
-					Float getAcc = (float) 0.0;
-					if(prefUnitType) {
-						getAcc = (float)(location.getAccuracy());
-					} else {
-						getAcc = (float)(location.getAccuracy() * (float) 3.28084);
-					}
-	    		gpsAccuracy.setText(String.format("%.0f %s", getAcc, getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet))));
+	    		Float getAcc = (float) 0.0;
+	    		if(prefUnitType) {
+	    			getAcc = (float)(location.getAccuracy());
+	    		} else {
+	    			getAcc = (float)(location.getAccuracy() * (float) 3.28084);
+	    		}
+	    		gpsAccuracy.setText(String.format("%.0f", getAcc));
+	    		gpsAccuracyUnit.setText(getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet)));
 	    	} else {
 	    		gpsAccuracy.setText(getString(R.string.value_none));
+	    		gpsAccuracyUnit.setText("");
 	    	}
 	    	
 	    	gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
@@ -1260,21 +1265,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	gpsTime.setText(String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", location.getTime()));
 	    	
 	    	if (location.hasAltitude()) {
-					Float getAltitude = (float) 0.0;
-					if(prefUnitType) {
-						getAltitude = (float)(location.getAltitude());
-					} else {
-						getAltitude = (float)(location.getAltitude() * (float) 3.28084);
-					}
-	    		gpsAlt.setText(String.format("%.0f %s", getAltitude, getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet))));
+	    		Float getAltitude = (float) 0.0;
+	    		if(prefUnitType) {
+	    			getAltitude = (float)(location.getAltitude());
+	    		} else {
+	    			getAltitude = (float)(location.getAltitude() * (float) 3.28084);
+	    		}
+	    		gpsAlt.setText(String.format("%.0f", getAltitude));
+	    		gpsAltUnit.setText(getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet)));
 	    		orDeclination.setText(String.format("%.0f%s", new GeomagneticField(
-	    				(float) (getAltitude),
+	    				(float) location.getLatitude(),
 	    				(float) location.getLongitude(),
 	    				(float) (getAltitude),
 	    				location.getTime()
     				).getDeclination(), getString(R.string.unit_degree)));
 	    	} else {
 	    		gpsAlt.setText(getString(R.string.value_none));
+	    		gpsAltUnit.setText("");
 	    		orDeclination.setText(getString(R.string.value_none));
 	    	}
 	    	
@@ -1287,15 +1294,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	}
 	    	
 	    	if (location.hasSpeed()) {
-					Float getSpeed = (float) 0.0;
-					if(prefUnitType) {
-						getSpeed = (float)(location.getSpeed());
-					} else {
-						getSpeed = (float)(location.getSpeed() * (float) 2.23694);
-					}
-	    		gpsSpeed.setText(String.format("%.0f %s", getSpeed, getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph))));
+	    		Float getSpeed = (float) 0.0;
+	    		if(prefUnitType) {
+	    			getSpeed = (float)(location.getSpeed());
+	    		} else {
+	    			getSpeed = (float)(location.getSpeed() * (float) 2.23694);
+	    		}
+	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+	    		gpsSpeedUnit.setText(getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
 	    	} else {
 	    		gpsSpeed.setText(getString(R.string.value_none));
+	    		gpsSpeedUnit.setText("");
 	    	}
 	    	
 	    	// note: getting number of sats in fix by looking for "satellites"
@@ -2196,10 +2205,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	gpsLon = (TextView) rootView.findViewById(R.id.gpsLon);
         	orDeclination = (TextView) rootView.findViewById(R.id.orDeclination);
         	gpsSpeed = (TextView) rootView.findViewById(R.id.gpsSpeed);
+        	gpsSpeedUnit = (TextView) rootView.findViewById(R.id.gpsSpeedUnit);
         	gpsAlt = (TextView) rootView.findViewById(R.id.gpsAlt);
+        	gpsAltUnit = (TextView) rootView.findViewById(R.id.gpsAltUnit);
         	gpsTime = (TextView) rootView.findViewById(R.id.gpsTime);
         	gpsBearing = (TextView) rootView.findViewById(R.id.gpsBearing);
         	gpsAccuracy = (TextView) rootView.findViewById(R.id.gpsAccuracy);
+        	gpsAccuracyUnit = (TextView) rootView.findViewById(R.id.gpsAccuracyUnit);
         	gpsOrientation = (TextView) rootView.findViewById(R.id.gpsOrientation);
         	gpsSats = (TextView) rootView.findViewById(R.id.gpsSats);
         	gpsTtff = (TextView) rootView.findViewById(R.id.gpsTtff);

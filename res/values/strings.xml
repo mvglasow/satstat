@@ -174,8 +174,9 @@
     <string name="pref_map">Map</string>
     <string name="pref_loc_prov">Location Sources</string>
     <string name="pref_loc_prov_summary">Show selected location sources on the map</string>
-    <string name="pref_unit">Metric</string>
-    <string name="pref_unit_summary">Metric Units, Unchecked/False means English Units(USA/GB)</string>
+    <string name="pref_data">Data display</string>
+    <string name="pref_unit">Use metric units</string>
+    <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
 </resources>

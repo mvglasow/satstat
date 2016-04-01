@@ -90,11 +90,12 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
-                    android:id="@+id/TextView01"
+                    android:id="@+id/gpsAltUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:lines="1"
+                    android:text=""
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
         </LinearLayout>
@@ -181,6 +182,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:lines="1"
+                    android:text=""
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
         </LinearLayout>
@@ -214,11 +216,12 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
-                    android:id="@+id/TextView03"
+                    android:id="@+id/gpsAccuracyUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:lines="1"
+                    android:text=""
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
         </LinearLayout>
