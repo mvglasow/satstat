@@ -7,8 +7,6 @@
     <string name="action_stop_record">Termina registrazione</string>
     <string name="action_agps">Ricarico dati AGPS</string>
     <string name="action_about">A proposito</string>
-    <string name="dot">&#x2b1b;</string>
-    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Errore scrivendo file</string>
     <string name="error_ext_storage">Memoria esterna non disponibile</string>
     <string name="info_start_rec">Registrazione iniziata</string>

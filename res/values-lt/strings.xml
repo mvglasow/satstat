@@ -7,8 +7,6 @@
     <string name="action_stop_record">Pabaigti įrašymą</string>
     <string name="action_agps">Atnaujinti AGPS duomenis</string>
     <string name="action_about">Apie</string>
-    <string name="dot">&#x2b1b;</string>
-    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Error writing to file</string>
     <string name="error_ext_storage">External storage not available</string>
     <string name="info_start_rec">Started recording</string>

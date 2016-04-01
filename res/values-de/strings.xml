@@ -7,9 +7,6 @@
     <string name="action_stop_record">Aufzeichnung beenden</string>
     <string name="action_agps">AGPS-Daten neu laden</string>
     <string name="action_about">Info</string>
-    <string name="dot">&#x2b1b;</string>
-    <string name="smallDot">&#x25fc;</string>
-    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Fehler beim Schreiben in Datei</string>
     <string name="error_ext_storage">Externer Speicher nicht verfügbar</string>
     <string name="info_start_rec">Aufzeichnung gestartet</string>
@@ -21,7 +18,7 @@
     <string name="title_section1">GPS</string>
     <string name="title_section2">Sensoren</string>
     <string name="title_section3">Funknetze</string>
-    <string name="title_section4">Map</string>
+    <string name="title_section4">Karte</string>
     <string name="title_gps_lat">Breite</string>
     <string name="title_gps_lon">Länge</string>
     <string name="title_gps_decl">Dekl.</string>
@@ -32,7 +29,7 @@
     <string name="title_gps_orient">Orientation</string>
     <string name="title_gps_acc">Fehler</string>
     <string name="title_gps_sats">Satelliten</string>
-    <string name="title_gps_ttff">TTFF(s)</string>
+    <string name="title_gps_ttff">TTFF (s)</string>
     <string name="value_none">–</string>
     <string name="value_N">N</string>
     <string name="value_NNE">NNO</string>
@@ -96,7 +93,7 @@
     <string name="title_radio_channel">K.</string>
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">Info</string>
-    <string name="about_caption">Standort, Sensor und Netzwerk-Status</string>
+    <string name="about_caption">Status für Standort, Sensoren und Netzwerk</string>
     <string name="about_version">Version</string>
     <string name="about_text">&lt;p&gt;
         Wenn etwas nicht so funktioniert, wie es sollte, oder
@@ -104,7 +101,7 @@
         &lt;br/&gt;
         &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
         &lt;/p&gt;&lt;p&gt;
-        Copyright &#169; 2013, 2014 Michael von Glasow
+        Copyright &#169; 2013 – 2016 Michael von Glasow
         &lt;/p&gt;&lt;p&gt;
         Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
         der GNU General Public License, wie von der Free Software Foundation,
@@ -143,7 +140,6 @@
     <string name="pref_wifi">Bei WLAN-Verbindung</string>
     <string name="pref_wifi_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem WLAN-Netzwerk verbindet</string>
     <string name="pref_freq">Aktualisierungsintervall</string>
-    <string name="pref_freq_summary">%s</string>
     <string-array name="prefs_freq_keys">
         <item >Jedes Mal</item>
         <item >Einmal täglich</item>
@@ -154,16 +150,6 @@
         <item >Einmal alle 6 Tage</item>
         <item >Einmal pro Woche</item>
     </string-array>
-    <string-array name="prefs_freq_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
-        <item >4</item>
-        <item >5</item>
-        <item >6</item>
-        <item >7</item>
-    </string-array>
     <string name="pref_lastupdate">Letzte Aktualisierung</string>
     <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Netze</string>
@@ -171,6 +157,4 @@
     <string name="pref_map">Karte</string>
     <string name="pref_loc_prov">Standortquellen</string>
     <string name="pref_loc_prov_summary">Ausgewählte Standortquellen auf der Karte anzeigen</string>
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy von MapQuest.</string>
 </resources>

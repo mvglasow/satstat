@@ -7,8 +7,6 @@
     <string name="action_stop_record">Acaba registració</string>
     <string name="action_agps">Actualitza dades AGPS</string>
     <string name="action_about">Quant a l\'aplicació</string>
-    <string name="dot">&#x2b1b;</string>
-    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Error escrivint fitxer</string>
     <string name="error_ext_storage">Emmagatzematge extern no disponible</string>
     <string name="info_start_rec">Registració començada</string>
@@ -99,7 +97,7 @@
         &lt;br/&gt;
         &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
         &lt;/p&gt;&lt;p&gt;
-        Copyright &#169; 2013, 2014 Michael von Glasow
+        Copyright &#169; 2013 – 2016 Michael von Glasow
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by

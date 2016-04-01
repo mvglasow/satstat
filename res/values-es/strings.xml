@@ -7,8 +7,6 @@
     <string name="action_stop_record">Terminar registración</string>
     <string name="action_agps">Actualizar dados AGPS</string>
     <string name="action_about">Acerca de</string>
-    <string name="dot">&#x2b1b;</string>
-    <string name="dotSpace">&#x2b1b;&#x00a0;</string>
     <string name="error_write_file">Error escribiendo archivo</string>
     <string name="error_ext_storage">Almanecenamiento externo no disponible</string>
     <string name="info_start_rec">Grabación iniciada</string>
