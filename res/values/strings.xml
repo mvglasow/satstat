@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation" >
     <string name="app_name">SatStat</string>
     <string name="action_settings">Settings</string>
     <string name="action_record">Record</string>
@@ -130,7 +131,9 @@
         &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_mph">&#x00a0;mph</string>
     <string name="unit_meter">&#x00a0;m</string>
+    <string name="unit_feet">&#x00a0;ft</string>
     <string name="pref_notify">GPS fix notification</string>
     <string name="pref_notify_summary">Notify me when an application gets my location from GPS</string>
     <string name="pref_search">GPS search notification</string>
@@ -171,6 +174,8 @@
     <string name="pref_map">Map</string>
     <string name="pref_loc_prov">Location Sources</string>
     <string name="pref_loc_prov_summary">Show selected location sources on the map</string>
+    <string name="pref_unit">Metric</string>
+    <string name="pref_unit_summary">Metric Units, Unchecked/False means English Units(USA/GB)</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
 </resources>
