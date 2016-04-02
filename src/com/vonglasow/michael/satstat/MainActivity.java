@@ -401,6 +401,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static SharedPreferences mSharedPreferences;
 	
 	private static DateFormat df;
+	private static boolean prefCid = false;
 
     @SuppressLint("UseSparseArrays")
 	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
@@ -1016,6 +1017,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
 
         final ActionBar actionBar = getActionBar();
         
@@ -1589,6 +1591,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
 			updateLocationProviders(this);
+		} else if (key.equals(SettingsActivity.KEY_PREF_CID)) {
+			prefCid = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
 		}
 	}
 
@@ -1810,7 +1814,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newCid = new TextView(rilCells.getContext());
         newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
         newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newCid.setText(formatCellData(rilCells.getContext(), null, cell.getCid()));
+        if ((prefCid) && (cell.getCid() != CellTower.UNKNOWN) && (cell.getCid() > 0x0ffff)) {
+        	int rtcid = cell.getCid() / 0x10000;
+        	int cid = cell.getCid() % 0x10000;
+        	newCid.setText(String.format("%d-%d", rtcid, cid));
+        } else
+        	newCid.setText(formatCellData(rilCells.getContext(), null, cell.getCid()));
         row.addView(newCid);
         
         TextView newPsc = new TextView(rilCells.getContext());
@@ -1860,7 +1869,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         TextView newCi = new TextView(rilLteCells.getContext());
         newCi.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
         newCi.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newCi.setText(formatCellData(rilLteCells.getContext(), null, cell.getCi()));
+        if ((prefCid) && (cell.getCi() != CellTower.UNKNOWN)) {
+        	int eNodeBId = cell.getCi() / 0x100;
+        	int sectorId = cell.getCi() % 0x100;
+        	newCi.setText(String.format("%d-%d", eNodeBId, sectorId));
+        } else
+        	newCi.setText(formatCellData(rilLteCells.getContext(), null, cell.getCi()));
         row.addView(newCi);
         
         TextView newPci = new TextView(rilLteCells.getContext());

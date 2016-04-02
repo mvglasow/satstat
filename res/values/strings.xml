@@ -179,6 +179,8 @@
     <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string>
     <string name="pref_utc">Display GPS time in UTC</string>
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
+    <string name="pref_cid">Split UMTS/LTE cell IDs</string>
+    <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
 </resources>

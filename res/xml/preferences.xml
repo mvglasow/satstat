@@ -3,6 +3,7 @@
     <PreferenceCategory android:title="@string/pref_data">
       <CheckBoxPreference android:summary="@string/pref_unit_summary" android:defaultValue="true" android:title="@string/pref_unit" android:key="pref_unit_type"/>
       <CheckBoxPreference android:summary="@string/pref_utc_summary" android:defaultValue="false" android:title="@string/pref_utc" android:key="pref_utc"/>
+      <CheckBoxPreference android:summary="@string/pref_cid_summary" android:defaultValue="false" android:title="@string/pref_cid" android:key="pref_cid"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_map">
         <com.vonglasow.michael.satstat.widgets.LocProviderPreference android:key="pref_loc_prov" android:title="@string/pref_loc_prov" android:summary="@string/pref_loc_prov_summary" />
