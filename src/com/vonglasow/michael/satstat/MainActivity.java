@@ -1020,10 +1020,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
-		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
-		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
-		prefUtc = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
-		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
+		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
+		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
+		prefUtc = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, prefUtc);
+		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, prefCid);
 
         final ActionBar actionBar = getActionBar();
         
@@ -1626,13 +1626,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			registerLocationProviders(this);
 			updateLocationProviders(this);
 		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
-			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
 		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
-			prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
+			prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		} else if (key.equals(SettingsActivity.KEY_PREF_UTC)) {
-			prefUtc = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
+			prefUtc = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, prefUtc);
 		} else if (key.equals(SettingsActivity.KEY_PREF_CID)) {
-			prefCid = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
+			prefCid = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, prefCid);
 		}
 	}
 

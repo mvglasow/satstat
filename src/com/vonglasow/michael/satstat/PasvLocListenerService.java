@@ -229,15 +229,15 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY_FIX) || key.equals(SettingsActivity.KEY_PREF_NOTIFY_SEARCH)) {
-			mNotifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
-			mNotifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
+			mNotifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, mNotifyFix);
+			mNotifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 			if (!(mNotifyFix || mNotifySearch)) {
 				stopSelf();
 			}
 		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
-			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
 		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
-			prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
+			prefCoord = Integer.valueOf(sharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		}
 	}
 
@@ -245,10 +245,10 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
-		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
-		mNotifyFix = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
-		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
+		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
+		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
+		mNotifyFix = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, mNotifyFix);
+		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 
 		if (mLocationManager.getAllProviders().indexOf(LocationManager.PASSIVE_PROVIDER) >= 0) {
 			mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
