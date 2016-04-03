@@ -54,6 +54,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private int mStatus = GPS_INACTIVE;
 	
 	private boolean prefUnitType = true;
+	private int prefCoord = SettingsActivity.KEY_PREF_COORD_DECIMAL;
 	private boolean mNotifyFix = false;
 	private boolean mNotifySearch = false;
 
@@ -148,9 +149,38 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 					getString(R.string.value_E):
 						(location.getLongitude() < 0)?
 								getString(R.string.value_W):"";
-			String title = String.format("%.5f%s%s %.5f%s%s",
-					lat, getString(R.string.unit_degree), ns,
-					lon, getString(R.string.unit_degree), ew);
+			String title = "";
+			if (prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
+				title = String.format("%.5f%s%s %.5f%s%s",
+						lat, getString(R.string.unit_degree), ns,
+						lon, getString(R.string.unit_degree), ew);
+			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
+				double decY = lat;
+				double degY = Math.floor(decY);
+				double minY = 60.0 * (decY - degY);
+				double decX = lon;
+				double degX = Math.floor(decX);
+				double minX = 60.0 * (decY - degY);
+				title = String.format("%.0f%s %.4f' %s %.0f%s %.4f' %s",
+						degY, getString(R.string.unit_degree), minY + /*rounding*/ 0.00005, ns,
+						degX, getString(R.string.unit_degree), minX + /*rounding*/ 0.00005, ew);
+			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
+				double decY = lat;
+				double degY = Math.floor(decY);
+				double tmp = 60.0 * (decY - degY);
+				double minY = Math.floor(tmp);
+				double secY = 60.0 * (tmp - minY);
+				double decX = lon;
+				double degX = Math.floor(decX);
+				tmp = 60.0 * (decX - degX);
+				double minX = Math.floor(tmp);
+				double secX = 60.0 * (tmp - minX);
+				title = String.format("%.0f%s %.0f' %.2f\" %s %.0f%s %.0f' %.2f\" %s",
+						degY, getString(R.string.unit_degree), minY, secY + /*rounding*/ 0.005, ns,
+						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.005, ew);
+			}
+			// TODO else if MGRS
+
 			String text = "";
 			if (location.hasAltitude()) {
 				text = text + String.format("%.0f%s",
@@ -206,6 +236,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			}
 		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
 			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
+			prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
 		}
 	}
 
@@ -214,6 +246,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
 		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
 		mNotifyFix = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
 		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
 

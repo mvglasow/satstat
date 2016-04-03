@@ -2,6 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/pref_data">
       <CheckBoxPreference android:summary="@string/pref_unit_summary" android:defaultValue="true" android:title="@string/pref_unit" android:key="pref_unit_type"/>
+      <ListPreference android:key="pref_coord" android:title="@string/pref_coord" android:summary="%s" android:entries="@array/prefs_coord_keys" android:entryValues="@array/prefs_coord_values" android:defaultValue="0" />
       <CheckBoxPreference android:summary="@string/pref_utc_summary" android:defaultValue="false" android:title="@string/pref_utc" android:key="pref_utc"/>
       <CheckBoxPreference android:summary="@string/pref_cid_summary" android:defaultValue="false" android:title="@string/pref_cid" android:key="pref_cid"/>
     </PreferenceCategory>

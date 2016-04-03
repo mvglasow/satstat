@@ -402,6 +402,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	private static DateFormat df;
 	private static boolean prefUnitType = true;
+	private static int prefCoord = SettingsActivity.KEY_PREF_COORD_DECIMAL;
 	private static boolean prefUtc = false;
 	private static boolean prefCid = false;
 
@@ -1020,6 +1021,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
 		prefUtc = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
 		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
 
@@ -1272,8 +1274,39 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		gpsAccuracyUnit.setText("");
 	    	}
 	    	
-	    	gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
-	    	gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
+	    	if (prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
+	    		// TODO hide MGRS
+	    		// TODO show lat/lon
+	    		gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
+	    		gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
+	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
+	    		// TODO hide MGRS
+	    		// TODO show lat/lon
+	    		double dec = location.getLatitude();
+	    		double deg = Math.floor(dec);
+	    		double min = 60.0 * (dec - deg);
+	    		gpsLat.setText(String.format("%.0f%s %.4f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.00005));
+	    		dec = location.getLongitude();
+	    		deg = Math.floor(dec);
+	    		min = 60.0 * (dec - deg);
+	    		gpsLon.setText(String.format("%.0f%s %.4f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.00005));
+	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
+	    		// TODO hide MGRS
+	    		// TODO show lat/lon
+	    		double dec = location.getLatitude();
+	    		double deg = Math.floor(dec);
+	    		double tmp = 60.0 * (dec - deg);
+	    		double min = Math.floor(tmp);
+	    		double sec = 60.0 * (tmp - min);
+	    		gpsLat.setText(String.format("%.0f%s %.0f' %.2f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.005));
+	    		dec = location.getLongitude();
+	    		deg = Math.floor(dec);
+	    		tmp = 60.0 * (dec - deg);
+	    		min = Math.floor(tmp);
+	    		sec = 60.0 * (tmp - min);
+	    		gpsLon.setText(String.format("%.0f%s %.0f' %.2f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.005));
+	    	}
+	    	// TODO else if MGRS
 	    	if (prefUtc)
 	    		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 	    	else
@@ -1594,6 +1627,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			updateLocationProviders(this);
 		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
 			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
+			prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, "0"));
 		} else if (key.equals(SettingsActivity.KEY_PREF_UTC)) {
 			prefUtc = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
 		} else if (key.equals(SettingsActivity.KEY_PREF_CID)) {

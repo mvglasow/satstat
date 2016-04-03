@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/value_none"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -69,7 +69,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/value_none"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -98,7 +98,7 @@
                             android:layout_height="wrap_content"
                             android:maxLines="1"
                             android:text="@string/value_none"
-                            android:textAppearance="?android:attr/textAppearanceLarge" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/gpsAltUnit"
@@ -146,7 +146,7 @@
                             android:layout_weight="4"
                             android:maxLines="1"
                             android:text="@string/value_none"
-                            android:textAppearance="?android:attr/textAppearanceLarge" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/gpsOrientation"
@@ -155,7 +155,7 @@
                             android:layout_weight="4"
                             android:maxLines="1"
                             android:text="@string/value_none"
-                            android:textAppearance="?android:attr/textAppearanceLarge" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -185,7 +185,7 @@
                             android:layout_height="wrap_content"
                             android:maxLines="1"
                             android:text="@string/value_none"
-                            android:textAppearance="?android:attr/textAppearanceLarge" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/gpsSpeedUnit"
@@ -224,7 +224,7 @@
                             android:layout_height="wrap_content"
                             android:maxLines="1"
                             android:text="@string/value_none"
-                            android:textAppearance="?android:attr/textAppearanceLarge" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/gpsAccuracyUnit"
@@ -258,7 +258,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/value_none"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -290,7 +290,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/value_none"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -314,7 +314,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/value_none"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -338,7 +338,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@string/value_none"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
