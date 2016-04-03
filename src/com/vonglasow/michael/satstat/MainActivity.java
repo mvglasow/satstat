@@ -401,6 +401,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private static SharedPreferences mSharedPreferences;
 	
 	private static DateFormat df;
+	private static boolean prefUnitType = true;
+	private static boolean prefUtc = false;
 	private static boolean prefCid = false;
 
     @SuppressLint("UseSparseArrays")
@@ -1017,6 +1019,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+		prefUtc = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
 		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
 
         final ActionBar actionBar = getActionBar();
@@ -1254,9 +1258,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	
     	// update GPS view
     	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
-    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    		Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
-    		Boolean prefUtc = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
 	    	if (location.hasAccuracy()) {
 	    		Float getAcc = (float) 0.0;
 	    		if(prefUnitType) {
@@ -1591,6 +1592,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
 			updateLocationProviders(this);
+		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
+			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
+		} else if (key.equals(SettingsActivity.KEY_PREF_UTC)) {
+			prefUtc = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, false);
 		} else if (key.equals(SettingsActivity.KEY_PREF_CID)) {
 			prefCid = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, false);
 		}

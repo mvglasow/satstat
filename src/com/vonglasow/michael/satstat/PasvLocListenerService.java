@@ -53,6 +53,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	
 	private int mStatus = GPS_INACTIVE;
 	
+	private static boolean prefUnitType = true;
 	private boolean mNotifyFix = false;
 	private boolean mNotifySearch = false;
 
@@ -150,8 +151,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			String title = String.format("%.5f%s%s %.5f%s%s",
 					lat, getString(R.string.unit_degree), ns,
 					lon, getString(R.string.unit_degree), ew);
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-			Boolean prefUnitType = sharedPref.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
 			String text = "";
 			if (location.hasAltitude()) {
 				text = text + String.format("%.0f%s",
@@ -205,6 +204,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			if (!(mNotifyFix || mNotifySearch)) {
 				stopSelf();
 			}
+		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
+			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
 		}
 	}
 
@@ -212,6 +213,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
+		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, true);
 		mNotifyFix = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
 		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
 
