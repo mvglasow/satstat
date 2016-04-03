@@ -53,7 +53,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	
 	private int mStatus = GPS_INACTIVE;
 	
-	private static boolean prefUnitType = true;
+	private boolean prefUnitType = true;
 	private boolean mNotifyFix = false;
 	private boolean mNotifySearch = false;
 
