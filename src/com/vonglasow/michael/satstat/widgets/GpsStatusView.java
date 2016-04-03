@@ -33,6 +33,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.location.GpsSatellite;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class GpsStatusView extends SquareView {
@@ -55,9 +56,9 @@ public class GpsStatusView extends SquareView {
 	private Path labelPathW = new Path();
 
 	
-	//FIXME: these two should be DPI-dependent, this is OK for MDPI
-	private int gridStrokeWidth = 2;
-	private float snrScale = 0.2f;
+	private int gridStrokeWidth;
+	private float snrScale;
+	private float density;
 	
 	// Compensation for display rotation. Use Surface.ROTATION_* as index (0, 90, 180, 270 deg).
 	@SuppressWarnings("boxing")
@@ -65,20 +66,25 @@ public class GpsStatusView extends SquareView {
 	
 	public GpsStatusView(Context context) {
 		super(context);
-		doInit();
+		doInit(context);
 	}
 
 	public GpsStatusView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		doInit();
+		doInit(context);
 	}
 	
 	public GpsStatusView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		doInit();
+		doInit(context);
 	}
 	
-	private void doInit() {
+	private void doInit(Context context) {
+		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+		density = metrics.density;
+		snrScale = 0.2f * density;
+		gridStrokeWidth = Math.max(1, (int) (density));
+		
 		activePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		activePaint.setColor(Color.parseColor("#FF33B5E5"));
 		activePaint.setStyle(Paint.Style.FILL);
@@ -173,9 +179,11 @@ public class GpsStatusView extends SquareView {
 	public void refreshGeometries() {
 		gridBorderPaint.setStrokeWidth(mW * 0.0625f);
 		
+		float arrowWidth = 4 * density;
+		
 		northArrow.reset();
-		northArrow.moveTo(-8, - mH * 0.27f);
-		northArrow.lineTo(8, - mH * 0.27f);
+		northArrow.moveTo(-arrowWidth, - mH * 0.27f);
+		northArrow.lineTo(arrowWidth, - mH * 0.27f);
 		northArrow.lineTo(0, - mH * 0.405f - gridStrokeWidth * 2);
 		northArrow.close();
 
