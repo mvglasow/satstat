@@ -1283,26 +1283,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		// TODO hide MGRS
 	    		// TODO show lat/lon
 	    		double dec = location.getLatitude();
-	    		double deg = Math.floor(dec);
+	    		double deg = (int) dec;
 	    		double min = 60.0 * (dec - deg);
 	    		gpsLat.setText(String.format("%.0f%s %.4f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.00005));
 	    		dec = location.getLongitude();
-	    		deg = Math.floor(dec);
+	    		deg = (int) dec;
 	    		min = 60.0 * (dec - deg);
 	    		gpsLon.setText(String.format("%.0f%s %.4f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.00005));
 	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
 	    		// TODO hide MGRS
 	    		// TODO show lat/lon
 	    		double dec = location.getLatitude();
-	    		double deg = Math.floor(dec);
+	    		double deg = (int) dec;
 	    		double tmp = 60.0 * (dec - deg);
-	    		double min = Math.floor(tmp);
+	    		double min = (int) tmp;
 	    		double sec = 60.0 * (tmp - min);
 	    		gpsLat.setText(String.format("%.0f%s %.0f' %.2f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.005));
 	    		dec = location.getLongitude();
-	    		deg = Math.floor(dec);
+	    		deg = (int) dec;
 	    		tmp = 60.0 * (dec - deg);
-	    		min = Math.floor(tmp);
+	    		min = (int) tmp;
 	    		sec = 60.0 * (tmp - min);
 	    		gpsLon.setText(String.format("%.0f%s %.0f' %.2f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.005));
 	    	}
