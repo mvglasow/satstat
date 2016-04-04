@@ -28,7 +28,7 @@
                     android:id="@+id/LinearLayout2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="9"
                     android:orientation="vertical" >
 
                     <TextView
@@ -75,7 +75,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="6"
+                    android:layout_weight="5"
                     android:orientation="vertical" >
 
                     <TextView
@@ -122,7 +122,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="8"
+                    android:layout_weight="9"
                     android:orientation="vertical" >
 
                     <TextView
@@ -137,13 +137,13 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:weightSum="8" >
+                        android:weightSum="9" >
 
                         <TextView
                             android:id="@+id/gpsBearing"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="4"
+                            android:layout_weight="4.5"
                             android:maxLines="1"
                             android:text="@string/value_none"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -152,7 +152,7 @@
                             android:id="@+id/gpsOrientation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="4"
+                            android:layout_weight="4.5"
                             android:maxLines="1"
                             android:text="@string/value_none"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -201,7 +201,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="4.5"
+                    android:layout_weight="4"
                     android:orientation="vertical" >
 
                     <TextView
@@ -240,7 +240,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="5.5"
+                    android:layout_weight="5"
                     android:orientation="vertical" >
 
                     <TextView
@@ -272,7 +272,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="3.5"
+                    android:layout_weight="4.5"
                     android:orientation="vertical" >
 
                     <TextView
@@ -320,7 +320,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="16"
+                    android:layout_weight="15"
                     android:orientation="vertical" >
 
                     <TextView

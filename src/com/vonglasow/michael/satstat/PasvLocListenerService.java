@@ -161,9 +161,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				double decX = lon;
 				double degX = (int) decX;
 				double minX = 60.0 * (decY - degY);
-				title = String.format("%.0f%s %.4f' %s %.0f%s %.4f' %s",
-						degY, getString(R.string.unit_degree), minY + /*rounding*/ 0.00005, ns,
-						degX, getString(R.string.unit_degree), minX + /*rounding*/ 0.00005, ew);
+				title = String.format("%.0f%s %.3f' %s %.0f%s %.3f' %s",
+						degY, getString(R.string.unit_degree), minY + /*rounding*/ 0.0005, ns,
+						degX, getString(R.string.unit_degree), minX + /*rounding*/ 0.0005, ew);
 			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
 				double decY = lat;
 				double degY = (int) decY;
@@ -175,9 +175,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				tmp = 60.0 * (decX - degX);
 				double minX = (int) tmp;
 				double secX = 60.0 * (tmp - minX);
-				title = String.format("%.0f%s %.0f' %.2f\" %s %.0f%s %.0f' %.2f\" %s",
-						degY, getString(R.string.unit_degree), minY, secY + /*rounding*/ 0.005, ns,
-						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.005, ew);
+				title = String.format("%.0f%s %.0f' %.1f\" %s %.0f%s %.0f' %.1f\" %s",
+						degY, getString(R.string.unit_degree), minY, secY + /*rounding*/ 0.05, ns,
+						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.05, ew);
 			}
 			// TODO else if MGRS
 
