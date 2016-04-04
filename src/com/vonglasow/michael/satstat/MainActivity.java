@@ -126,7 +126,6 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
@@ -147,6 +146,7 @@ import com.vonglasow.michael.satstat.data.CellTowerListCdma;
 import com.vonglasow.michael.satstat.data.CellTowerListGsm;
 import com.vonglasow.michael.satstat.data.CellTowerListLte;
 import com.vonglasow.michael.satstat.data.CellTowerLte;
+import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 
@@ -2505,14 +2505,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
             
             if (mapTileCache == null)
-            	mapTileCache = AndroidUtil.createExternalStorageTileCache(rootView.getContext(),
-            			"MapQuest",
-            			Math.round(AndroidUtil.getMinimumCacheSize(rootView.getContext(),
-            					mapMap.getModel().displayModel.getTileSize(),
-            					mapMap.getModel().frameBufferModel.getOverdrawFactor(),
-            					1f)),
-            			mapMap.getModel().displayModel.getTileSize(),
-            			true);
+	            mapTileCache = PersistentTileCache.createTileCache(rootView.getContext(), "MapQuest",
+	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
+	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
 
             LayerManager layerManager = mapMap.getLayerManager();
             Layers layers = layerManager.getLayers();
