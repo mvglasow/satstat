@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation" >
+    <string name="app_name">SatStat</string>
+    <string name="action_settings">Beállítások</string>
+    <string name="action_record">Rögzítés</string>
+    <string name="action_stop_record">Rögzítés megállítása</string>
+    <string name="action_agps">AGPS adatok újratöltése</string>
+    <string name="action_about">Névjegy</string>
+    <string name="dot">&#x25a0;</string>
+    <string name="smallDot">&#x25fc;</string>
+    <string name="dotSpace">&#x25a0;&#x00a0;</string>
+    <string name="error_write_file">Hiba a fájlba írás közben</string>
+    <string name="error_ext_storage">A külső tároló nem elérhető</string>
+    <string name="info_start_rec">Rögzítés elindítva</string>
+    <string name="notify_record_title">Érzékelő adatok rögzítése</string>
+    <string name="notify_record_body">Érintse meg a rögzítés leállításához</string>
+    <string name="status_agps">AGPS adat újratöltése kérvényezve</string>
+    <string name="status_agps_captive">Nem sikerült frissíteni az adatot – indítsa el a böngészőt, jelentkezzen be a hálózatra, és próbálja meg újra</string>
+    <string name="status_agps_error">Nincs elérhető hálózat, nem lehet újratölteni az AGPS adatokat</string>
+    <string name="title_section1">GPS</string>
+    <string name="title_section2">Érzékelők</string>
+    <string name="title_section3">Vezeték nélküli</string>
+    <string name="title_section4">Térkép</string>
+    <string name="title_gps_lat">Szélesség</string>
+    <string name="title_gps_lon">Hosszúság</string>
+    <string name="title_gps_decl">Dekl.</string>
+    <string name="title_gps_speed">Sebesség</string>
+    <string name="title_gps_alt">Magasság</string>
+    <string name="title_gps_time">Legutóbbi fix pozíció</string>
+    <string name="title_gps_bear">Haladási irány</string>
+    <string name="title_gps_orient">Nézeti irány</string>
+    <string name="title_gps_acc">Pontosság</string>
+    <string name="title_gps_sats">Műholdak</string>
+    <string name="title_gps_ttff">TTFF (mp)</string>
+    <string name="value_none">–</string>
+    <string name="value_N">É</string>
+    <string name="value_NNE">ÉÉK</string>
+    <string name="value_NE">ÉK</string>
+    <string name="value_ENE">KÉK</string>
+    <string name="value_E">K</string>
+    <string name="value_ESE">KDK</string>
+    <string name="value_SE">DK</string>
+    <string name="value_SSE">DDK</string>
+    <string name="value_S">D</string>
+    <string name="value_SSW">DDNy</string>
+    <string name="value_SW">DNy</string>
+    <string name="value_WSW">NyDNy</string>
+    <string name="value_W">Ny</string>
+    <string name="value_WNW">NyÉNy</string>
+    <string name="value_NW">ÉNy</string>
+    <string name="value_NNW">ÉÉNy</string>
+    <string name="title_sensor_acc">Gyorsulás és gravitáció</string>
+    <string name="title_sensors_accTotal">Σg (m/s²)</string>
+    <string name="title_sensors_accX">gx (m/s²)</string>
+    <string name="title_sensors_accY">gy (m/s²)</string>
+    <string name="title_sensors_accZ">gz (m/s²)</string>
+    <string name="title_sensor_rot">Elfordulás</string>
+    <string name="title_sensors_rotTotal">Σω (rad/s)</string>
+    <string name="title_sensors_rotX">ωx (rad/s)</string>
+    <string name="title_sensors_rotY">ωy (rad/s)</string>
+    <string name="title_sensors_rotZ">ωz (rad/s)</string>
+    <string name="title_sensor_or">Irány</string>
+    <string name="title_sensors_orAzimuth">Azimut</string>
+    <string name="title_sensors_orAziText">Égtáj</string>
+    <string name="title_sensors_orPitch">Billenés</string>
+    <string name="title_sensors_orRoll">Dőlés</string>
+    <string name="title_sensor_mag">Mágneses mező</string>
+    <string name="title_sensors_magTotal">ΣB (µT)</string>
+    <string name="title_sensors_magX">Bx (µT)</string>
+    <string name="title_sensors_magY">By (µT)</string>
+    <string name="title_sensors_magZ">Bz (µT)</string>
+    <string name="title_sensor_met">Meteorológia</string>
+    <string name="title_sensors_metTemp">&#x00a0;°C</string>
+    <string name="title_sensors_metPressure">&#x00a0;hPa</string>
+    <string name="title_sensors_metHumid">Relatív páratartalom (%)</string>
+    <string name="title_sensor_misc">Egyebek</string>
+    <string name="title_sensors_light">&#x00a0;lux</string>
+    <string name="title_sensors_proximity">Közelség (cm)</string>
+    <string name="title_radio_gsm">GSM</string>
+    <string name="title_radio_mcc">MCC</string>
+    <string name="title_radio_mnc">MNC</string>
+    <string name="title_radio_cellid">Cella ID</string>
+    <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_psc">PSC</string>
+    <string name="title_radio_asu">ASU</string>
+    <string name="title_radio_cdma">CDMA</string>
+    <string name="title_radio_sid">SID</string>
+    <string name="title_radio_nid">NID</string>
+    <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_lte">LTE</string>
+    <string name="title_radio_tac">TAC</string>
+    <string name="title_radio_pci">PCI</string>
+    <string name="title_radio_wifi">WiFi</string>
+    <string name="title_radio_mac">BSSID (MAC)</string>
+    <string name="title_radio_channel">Ch</string>
+    <string name="title_radio_level">dBm</string>
+    <string name="title_activity_about">Névjegy</string>
+    <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_version">Verzió</string>
+    <string name="about_text">&lt;p&gt;
+        If something doesn\'t work the way it should, or if you have an idea to make this
+        app even greater, please report it at:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
+        &lt;/p&gt;&lt;p&gt;
+        Copyright &#169; 2013 – 2016 Michael von Glasow
+        &lt;/p&gt;&lt;p&gt;
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+        &lt;/p&gt;&lt;p&gt;
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+        GNU General Public License for more details.
+        &lt;/p&gt;&lt;p&gt;
+        You should have received a copy of the GNU General Public License
+        along with this program. If not, see 
+        &lt;a href="http://www.gnu.org/licenses/"&gt;http://www.gnu.org/licenses/&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Map data and information provided by MapQuest, 
+        &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; 
+        and contributors, 
+        &lt;a href="http://wiki.openstreetmap.org/wiki/Legal_FAQ#3a._I_would_like_to_use_OpenStreetMap_maps._How_should_I_credit_you.3F"&gt;ODbL&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        The source code for this application is at:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
+    <string name="unit_degree">°</string>
+    <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_mph">&#x00a0;mph</string>
+    <string name="unit_meter">&#x00a0;m</string>
+    <string name="unit_feet">&#x00a0;ft</string>
+    <string name="pref_notify">GPS fix pozíció értesítés</string>
+    <string name="pref_notify_summary">Értesítsen, ha egy program megkapja a GPS pozíciómat</string>
+    <string name="pref_search">GPS keresési értesítés</string>
+    <string name="pref_search_summary">Értesítsen, ha egy program keresi a GPS pozíciómat</string>
+    <string name="title_activity_settings">Beállítások</string>
+    <string name="notify_nolocation_title">Pozíció keresése</string>
+    <string name="notify_nolocation_body">Érintse meg az állapot megtekintéséhez</string>
+    <string name="pref_notifications">Értesítések</string>
+    <string name="pref_agps">AGPS adat frissítése</string>
+    <string name="pref_wifi">WiFi kapcsolatkor</string>
+    <string name="pref_wifi_summary">AGPS adat frissítése, ha az eszközöm WiFi hálózaton van</string>
+    <string name="pref_freq">Frissítési gyakoriság</string>
+    <string name="pref_freq_summary">%s</string>
+    <string-array name="prefs_freq_keys">
+        <item >Minden alkalommal</item>
+        <item >Naponta egyszer</item>
+        <item >Kétnaponta</item>
+        <item >Háromnaponta</item>
+        <item >Négynaponta</item>
+        <item >Ötnaponta</item>
+        <item >Hatnaponta</item>
+        <item >Hetente egyszer</item>
+    </string-array>
+    <string-array name="prefs_freq_values">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+        <item >3</item>
+        <item >4</item>
+        <item >5</item>
+        <item >6</item>
+        <item >7</item>
+    </string-array>
+    <string name="pref_lastupdate">Utolsó frissítés</string>
+    <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
+    <string name="pref_networks">Hálózatok</string>
+    <string name="pref_networks_summary">AGPS adat frissítése, ha az eszközöm valamelyik kiválasztott hálózathoz csatlakozik.</string>
+    <string name="pref_map">Térkép</string>
+    <string name="pref_loc_prov">Pozíció források</string>
+    <string name="pref_loc_prov_summary">Kiválasztott pozícióforrások megjelenítése a térképen</string>
+    <string name="pref_data">Adatmegjelenítés</string>
+    <string name="pref_unit">Metrikus mértékegységek használata</string>
+    <string name="pref_unit_summary">Kikapcsolva angolszász mértékegységek fognak megjelenni (kivéve az érzékelők lapján)</string>
+    <string name="pref_utc">GPS idő megjelenítése UTC-ben</string>
+    <string name="pref_utc_summary">A GPS fix pozíció megjelenítése UTC szerint helyi idő helyett.</string>
+    <string name="pref_cid">Split UMTS/LTE cell IDs</string>
+    <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
+    <string name="osm_attribution">© OpenStreetMap</string>
+    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+</resources>
