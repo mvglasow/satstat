@@ -8,9 +8,6 @@
     <string name="action_stop_record">Rögzítés megállítása</string>
     <string name="action_agps">AGPS adatok újratöltése</string>
     <string name="action_about">Névjegy</string>
-    <string name="dot">&#x25a0;</string>
-    <string name="smallDot">&#x25fc;</string>
-    <string name="dotSpace">&#x25a0;&#x00a0;</string>
     <string name="error_write_file">Hiba a fájlba írás közben</string>
     <string name="error_ext_storage">A külső tároló nem elérhető</string>
     <string name="info_start_rec">Rögzítés elindítva</string>
@@ -146,7 +143,6 @@
     <string name="pref_wifi">WiFi kapcsolatkor</string>
     <string name="pref_wifi_summary">AGPS adat frissítése, ha az eszközöm WiFi hálózaton van</string>
     <string name="pref_freq">Frissítési gyakoriság</string>
-    <string name="pref_freq_summary">%s</string>
     <string-array name="prefs_freq_keys">
         <item >Minden alkalommal</item>
         <item >Naponta egyszer</item>
@@ -157,20 +153,9 @@
         <item >Hatnaponta</item>
         <item >Hetente egyszer</item>
     </string-array>
-    <string-array name="prefs_freq_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
-        <item >4</item>
-        <item >5</item>
-        <item >6</item>
-        <item >7</item>
-    </string-array>
     <string name="pref_lastupdate">Utolsó frissítés</string>
-    <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Hálózatok</string>
-    <string name="pref_networks_summary">AGPS adat frissítése, ha az eszközöm valamelyik kiválasztott hálózathoz csatlakozik.</string>
+    <string name="pref_networks_summary">AGPS adat frissítése, ha az eszközöm valamelyik kiválasztott hálózathoz csatlakozik</string>
     <string name="pref_map">Térkép</string>
     <string name="pref_loc_prov">Pozíció források</string>
     <string name="pref_loc_prov_summary">Kiválasztott pozícióforrások megjelenítése a térképen</string>
