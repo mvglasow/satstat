@@ -137,6 +137,9 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.util.MapViewProjection;
 
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.MGRSRef;
+
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
@@ -274,8 +277,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static LinearLayout gpsRootLayout;
 	protected static GpsStatusView gpsStatusView;
 	protected static GpsSnrView gpsSnrView;
+	protected static LinearLayout gpsLatLayout;
 	protected static TextView gpsLat;
+	protected static LinearLayout gpsLonLayout;
 	protected static TextView gpsLon;
+	protected static LinearLayout gpsCoordLayout;
+	protected static TextView gpsCoord;
 	protected static TextView orDeclination;
 	protected static TextView gpsSpeed;
 	protected static TextView gpsSpeedUnit;
@@ -1275,13 +1282,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	}
 	    	
 	    	if (prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
-	    		// TODO hide MGRS
-	    		// TODO show lat/lon
+	    		gpsCoordLayout.setVisibility(View.GONE);
+	    		gpsLatLayout.setVisibility(View.VISIBLE);
+	    		gpsLonLayout.setVisibility(View.VISIBLE);
 	    		gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
 	    		gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
 	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
-	    		// TODO hide MGRS
-	    		// TODO show lat/lon
+	    		gpsCoordLayout.setVisibility(View.GONE);
+	    		gpsLatLayout.setVisibility(View.VISIBLE);
+	    		gpsLonLayout.setVisibility(View.VISIBLE);
 	    		double dec = location.getLatitude();
 	    		double deg = (int) dec;
 	    		double min = 60.0 * (dec - deg);
@@ -1291,8 +1300,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		min = 60.0 * (dec - deg);
 	    		gpsLon.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
 	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
-	    		// TODO hide MGRS
-	    		// TODO show lat/lon
+	    		gpsCoordLayout.setVisibility(View.GONE);
+	    		gpsLatLayout.setVisibility(View.VISIBLE);
+	    		gpsLonLayout.setVisibility(View.VISIBLE);
 	    		double dec = location.getLatitude();
 	    		double deg = (int) dec;
 	    		double tmp = 60.0 * (dec - deg);
@@ -1305,8 +1315,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		min = (int) tmp;
 	    		sec = 60.0 * (tmp - min);
 	    		gpsLon.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
+	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
+	    		gpsLatLayout.setVisibility(View.GONE);
+	    		gpsLonLayout.setVisibility(View.GONE);
+	    		gpsCoordLayout.setVisibility(View.VISIBLE);
+	    		gpsCoord.setText(new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M));
 	    	}
-	    	// TODO else if MGRS
 	    	if (prefUtc)
 	    		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 	    	else
@@ -2268,8 +2282,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
             params.weight = 1;
             gpsRootLayout.addView(gpsStatusView, 0, params);
+        	gpsLatLayout = (LinearLayout) rootView.findViewById(R.id.gpsLatLayout);
         	gpsLat = (TextView) rootView.findViewById(R.id.gpsLat);
+        	gpsLonLayout = (LinearLayout) rootView.findViewById(R.id.gpsLonLayout);
         	gpsLon = (TextView) rootView.findViewById(R.id.gpsLon);
+        	gpsCoordLayout = (LinearLayout) rootView.findViewById(R.id.gpsCoordLayout);
+        	gpsCoord = (TextView) rootView.findViewById(R.id.gpsCoord);
         	orDeclination = (TextView) rootView.findViewById(R.id.orDeclination);
         	gpsSpeed = (TextView) rootView.findViewById(R.id.gpsSpeed);
         	gpsSpeedUnit = (TextView) rootView.findViewById(R.id.gpsSpeedUnit);

@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat;
 
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.MGRSRef;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -178,8 +180,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				title = String.format("%.0f%s %.0f' %.1f\" %s %.0f%s %.0f' %.1f\" %s",
 						degY, getString(R.string.unit_degree), minY, secY + /*rounding*/ 0.05, ns,
 						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.05, ew);
+			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
+				title = new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M);
 			}
-			// TODO else if MGRS
 
 			String text = "";
 			if (location.hasAltitude()) {

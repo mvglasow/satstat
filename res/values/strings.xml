@@ -25,6 +25,7 @@
     <string name="title_section4">Map</string>
     <string name="title_gps_lat">Latitude</string>
     <string name="title_gps_lon">Longitude</string>
+    <string name="title_gps_coord">Coordinates</string>
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Speed</string>
     <string name="title_gps_alt">Elevation</string>
@@ -182,13 +183,13 @@
         <item >Decimal degrees</item>
         <item >Degrees, minutes</item>
         <item >Degrees, minutes, seconds</item>
-        <!-- <item >MGRS</item> -->
+        <item >MGRS</item>
     </string-array>
     <string-array name="prefs_coord_values">
         <item >0</item>
         <item >1</item>
         <item >2</item>
-        <!-- <item >3</item> -->
+        <item >3</item>
     </string-array>
     <string name="pref_utc">Display GPS time in UTC</string>
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
