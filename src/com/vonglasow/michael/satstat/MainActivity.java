@@ -552,16 +552,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
 			int pt = mTelephonyManager.getPhoneType();
+			if (mServingCell == null) {
+				Log.w(MainActivity.class.getSimpleName(),
+						"onSignalStrengthsChanged() called but serving cell is null");
+				return;
+			}
 			if (pt == PHONE_TYPE_GSM) {
 				mLastCellAsu = signalStrength.getGsmSignalStrength();
 				updateNeighboringCellInfo();
-				if ((mServingCell != null) && (mServingCell instanceof CellTowerGsm))
+				if (mServingCell instanceof CellTowerGsm)
 					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				else
+					Log.w(MainActivity.class.getSimpleName(),
+							"onSignalStrengthsChanged() called for PHONE_TYPE_GSM but serving cell is not GSM");
 			} else if (pt == PHONE_TYPE_CDMA) {
 				mLastCellDbm = signalStrength.getCdmaDbm();
 				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
 				mServingCell.setDbm(mLastCellDbm);
-			}
+			} else
+				Log.w(MainActivity.class.getSimpleName(),
+						String.format("onSignalStrengthsChanged() called for unknown phone type (%d)", pt));
 			showCells();
 		}
 	};
