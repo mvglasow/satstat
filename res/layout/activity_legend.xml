@@ -1,0 +1,474 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    tools:context="com.vonglasow.michael.satstat.LegendActivity" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_legend_gps" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <!-- GPS legend items go here -->
+                <!-- TODO dividers between child layouts -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/gpsUsed" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_gps_used"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/gpsUnused" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_gps_unused"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_legend_sensors" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <!-- Sensor legend items go here -->
+                <!-- TODO dividers between child layouts -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/accHigh" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_sensors_high"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/accMedium" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_sensors_medium"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/accLow" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_sensors_low"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/accUnreliable" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_sensors_unreliable"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_legend_radio" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <!-- Radio legend items go here -->
+                <!-- TODO dividers between child layouts -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/gen2" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_2g"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/gen3" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_3g"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/dot"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/gen4" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_4g"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_content_wifi_open" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_open"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_content_wifi_wep" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_wep"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_content_wifi_psk" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_psk"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_content_wifi_eap" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_eap"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_content_wifi_adhoc" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_adhoc"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:measureWithLargestChild="false"
+                    android:orientation="horizontal"
+                    android:weightSum="22" >
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center"
+                        android:layout_weight="3"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_content_wifi_unknown" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="19"
+                        android:gravity="center_vertical"
+                        android:text="@string/title_legend_radio_unknown"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_legend_map" />
+
+            <LinearLayout
+                android:id="@+id/legendMapContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <!-- Map legend items go here (added dynamically) -->
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
