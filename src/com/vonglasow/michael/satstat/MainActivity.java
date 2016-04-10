@@ -498,7 +498,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
 			if (cellInfo == null)
-				Log.d(MainActivity.class.getSimpleName(),
+				Log.w(MainActivity.class.getSimpleName(),
 						"onCellInfoChanged() called with null argument");
 			else
 				Log.d(MainActivity.class.getSimpleName(),
