@@ -497,6 +497,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
+			if (cellInfo == null)
+				Log.d(MainActivity.class.getSimpleName(),
+						"onCellInfoChanged() called with null argument");
+			else
+				Log.d(MainActivity.class.getSimpleName(),
+						String.format("onCellInfoChanged() called for %d cells", cellInfo.size()));
 			mCellsGsm.updateAll(cellInfo);
 			mCellsCdma.updateAll(cellInfo);
 			mCellsLte.updateAll(cellInfo);
