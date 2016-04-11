@@ -2053,11 +2053,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        	Resources res = context.getResources();
 	        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
 	        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
+	        	float density = context.getResources().getDisplayMetrics().density;
 	        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
 	            fill.setStyle(Style.FILL);
 	            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
 	        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
-	            stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
+	            stroke.setStrokeWidth(Math.max(1.5f * density, 1));
 	            stroke.setStyle(Style.STROKE);
 	            Circle circle = new Circle(latLong, acc, fill, stroke);
 	            mapCircles.put(pr, circle);
