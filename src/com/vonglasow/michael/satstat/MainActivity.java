@@ -830,37 +830,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	
-    /**
-     * Gets the generation of a phone network type
-     * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
-     * @return 2, 3 or 4 for 2G, 3G or 4G; 0 for unknown
-     */
-	public static int getNetworkGeneration(int networkType) {
-    	switch (networkType) {
-    	case TelephonyManager.NETWORK_TYPE_CDMA:
-    	case TelephonyManager.NETWORK_TYPE_EDGE:
-    	case TelephonyManager.NETWORK_TYPE_GPRS:
-    	case TelephonyManager.NETWORK_TYPE_IDEN:
-    		return 2;
-    	case TelephonyManager.NETWORK_TYPE_1xRTT:
-    	case TelephonyManager.NETWORK_TYPE_EHRPD:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
-    	case TelephonyManager.NETWORK_TYPE_HSDPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPAP:
-    	case TelephonyManager.NETWORK_TYPE_HSUPA:
-    	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		return 3;
-    	case TelephonyManager.NETWORK_TYPE_LTE:
-    		return 4;
-    	default:
-    		return 0;
-    	}
-	}
-	
-	
 	/**
 	 * Gets the number of decimal digits to show when displaying sensor values, based on sensor accuracy.
 	 * @param sensor The sensor
@@ -1087,7 +1056,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	@Override
         	public void run() {
 	            int newNetworkType = mTelephonyManager.getNetworkType();
-	            if (getNetworkGeneration(newNetworkType) != mLastNetworkGen)
+	            if (CellTower.getGenerationFromNetworkType(newNetworkType) != mLastNetworkGen)
 	            	onNetworkTypeChanged(newNetworkType);
 	            else
 	            	networkTimehandler.postDelayed(this, NETWORK_REFRESH_DELAY);
@@ -1351,29 +1320,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
 	 */
     protected static void onNetworkTypeChanged(int networkType) {
-    	// TODO make use of mPhoneStateListener.update()
 		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
-		int newNetworkGen = getNetworkGeneration(networkType);
+		int newNetworkGen = CellTower.getGenerationFromNetworkType(networkType);
+		int oldNetworkGen = mLastNetworkGen;
 		if (newNetworkGen != mLastNetworkGen) {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			// if we switched from GSM/UMTS to LTE or vice versa, the cell may
-			// have been stored in the wrong list
-			if ((newNetworkGen == 4) || (mLastNetworkGen == 4)) {
-				CellLocation cellLocation = mTelephonyManager.getCellLocation();
-				String networkOperator = mTelephonyManager.getNetworkOperator();
-				if (newNetworkGen == 4) {
-					mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION | CellTower.SOURCE_NEIGHBORING_CELL_INFO | CellTower.SOURCE_CELL_INFO);
-					if (cellLocation instanceof GsmCellLocation)
-						mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
-				} else {
-					mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION | CellTower.SOURCE_NEIGHBORING_CELL_INFO | CellTower.SOURCE_CELL_INFO);
-					if (cellLocation instanceof GsmCellLocation)
-						mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
-				}
-			}
-			
 			mLastNetworkGen = newNetworkGen;
-			if (mServingCell != null) {
+			/*
+			 * Network type changes occur slightly before or after cell changes. Therefore, we may have
+			 * stored cells in the wrong list when switching from or to LTE.
+			 */
+			if ((newNetworkGen == 4) || (oldNetworkGen == 4))
+				updateCellData(null, null, null);
+			else if (mServingCell != null) {
 				mServingCell.setNetworkType(networkType);
 				Log.d(MainActivity.class.getSimpleName(), String.format("Setting network type to %d for cell %s (%s)", mServingCell.getGeneration(), mServingCell.getText(), mServingCell.getAltText()));
 			}
