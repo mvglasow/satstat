@@ -1275,11 +1275,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	if (location.hasSpeed()) {
 	    		Float getSpeed = (float) 0.0;
 	    		if(prefUnitType) {
-	    			getSpeed = (float)(location.getSpeed());
+	    			getSpeed = (float)(location.getSpeed() * 3.6f);
 	    		} else {
-	    			getSpeed = (float)(location.getSpeed() * (float) 2.23694);
+	    			getSpeed = (float)(location.getSpeed() * 3.6f * 2.23694f);
 	    		}
-	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+	    		gpsSpeed.setText(String.format("%.0f", getSpeed));
 	    		gpsSpeedUnit.setText(getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
 	    	} else {
 	    		gpsSpeed.setText(getString(R.string.value_none));
