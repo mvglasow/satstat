@@ -489,67 +489,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
-	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-		// Requires API level 17. Many phones don't implement this method at 
-		// all and will return null, the ones that do implement it return only
-		// certain cell types.
+	private static final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
 		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
-			if (cellInfo == null)
-				Log.w(MainActivity.class.getSimpleName(),
-						"onCellInfoChanged() called with null argument");
-			else
-				Log.d(MainActivity.class.getSimpleName(),
-						String.format("onCellInfoChanged() called for %d cells", cellInfo.size()));
-			mCellsGsm.updateAll(cellInfo);
-			mCellsCdma.updateAll(cellInfo);
-			mCellsLte.updateAll(cellInfo);
-			mServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte});
-			showCells();
+			updateCellData(null, null, cellInfo);
 	 	}
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			String networkOperator = mTelephonyManager.getNetworkOperator();
-			if (location instanceof GsmCellLocation) {
-				if (mLastNetworkGen < 4) {
-					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-					if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
-						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-				} else {
-					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
-					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-						((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
-				}
-			} else if (location instanceof CdmaCellLocation) {
-				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-					((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
-			}
-			
-			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
-				updateNeighboringCellInfo();
-			}
-			
-			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
-				if ((mLastNetworkGen != 0) && (mServingCell != null))
-					mServingCell.setGeneration(mLastNetworkGen);
-				NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
-				if ((netinfo == null) 
-						|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
-						|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
-					networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
-				}
-			} else if (mServingCell != null) {
-				mLastNetworkGen = mServingCell.getGeneration();
-			}
-
-			showCells();
+			updateCellData(location, null, null);
 		}
 		
 		public void onDataConnectionStateChanged (int state, int networkType) {
@@ -557,28 +506,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
-			int pt = mTelephonyManager.getPhoneType();
-			if (mServingCell == null) {
-				Log.w(MainActivity.class.getSimpleName(),
-						"onSignalStrengthsChanged() called but serving cell is null");
-				return;
-			}
-			if (pt == PHONE_TYPE_GSM) {
-				mLastCellAsu = signalStrength.getGsmSignalStrength();
-				updateNeighboringCellInfo();
-				if (mServingCell instanceof CellTowerGsm)
-					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-				else
-					Log.w(MainActivity.class.getSimpleName(),
-							"onSignalStrengthsChanged() called for PHONE_TYPE_GSM but serving cell is not GSM");
-			} else if (pt == PHONE_TYPE_CDMA) {
-				mLastCellDbm = signalStrength.getCdmaDbm();
-				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
-				mServingCell.setDbm(mLastCellDbm);
-			} else
-				Log.w(MainActivity.class.getSimpleName(),
-						String.format("onSignalStrengthsChanged() called for unknown phone type (%d)", pt));
-			showCells();
+			updateCellData(null, signalStrength, null);
 		}
 	};
 	
@@ -1418,11 +1346,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	/**
 	 * Updates the network type indicator for the current cell. Called by
 	 * {@link networkTimeRunnable.run()} or
-	 * {@link android.telephony.PhoneStateListener.onDataConnectionChanged(int, int)}.
+	 * {@link android.telephony.PhoneStateListener#onDataConnectionStateChanged(int, int)}.
 	 * 
 	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
 	 */
     protected static void onNetworkTypeChanged(int networkType) {
+    	// TODO make use of mPhoneStateListener.update()
 		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
 		int newNetworkGen = getNetworkGeneration(networkType);
 		if (newNetworkGen != mLastNetworkGen) {
@@ -1966,6 +1895,124 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 	/**
+	 * Updates all cell data.
+	 * 
+	 * This method is called whenever any change in the cell environment (cells in view or signal
+	 * strengths) is signaled, e.g. by a call to a {@link android.telephony.PhoneStateListener}. The
+	 * arguments of this method should be filled with the data passed to the
+	 * {@link android.telephony.PhoneStateListener} where possible, and null passed for all others.
+	 * 
+	 * To force an update of all cell data, simply call this method with each argument set to null.
+	 * 
+	 * If any of the arguments is null, this method will try to obtain that data by querying
+	 * {@link android.telephony.TelephonyManager}. The only exception is {@code signalStrength}, which
+	 * will not be explicitly queried if missing.
+	 * 
+	 * It will first process {@code aCellInfo}, then {@code aLocation}, querying current values from
+	 * {@link android.telephony.TelephonyManager} if one of these arguments is null. Next it will process
+	 * {@code signalStrength}, if supplied, and eventually obtain neighboring cells by calling
+	 * {@link android.telephony.TelephonyManager#getNeighboringCellInfo()} and process these. Eventually
+	 * it will refresh the list of cells.
+	 * 
+	 * @param aLocation The {@link android.telephony.CellLocation} reported by a
+	 * {@link android.telephony.PhoneStateListener}. If null, the current value will be queried.
+	 * @param aSignalStrength The {@link android.telephony.SignalStrength} reported by a
+	 * {@link android.telephony.PhoneStateListener}. If null, the signal strength of the serving cell
+	 * will either be taken from {@code aCellInfo}, if available, or not be updated at all.
+	 * @param aCellInfo A list of {@link android.telephony.CellInfo} instances reported by a
+	 * {@link android.telephony.PhoneStateListener}. If null, the current value will be queried.
+	 */
+	@SuppressLint("NewApi")
+	public static void updateCellData(CellLocation aLocation, SignalStrength signalStrength, List<CellInfo> aCellInfo) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			/*
+			 * CellInfo requires API 17+ and should in theory return all cells in view. In practice,
+			 * some devices do not implement it or return only a partial list. On some devices,
+			 * PhoneStateListener#onCellInfoChanged() will fire but always receive a null argument.
+			 */
+			List<CellInfo> cellInfo = (aCellInfo != null) ? aCellInfo : mTelephonyManager.getAllCellInfo();
+			mCellsGsm.updateAll(cellInfo);
+			mCellsCdma.updateAll(cellInfo);
+			mCellsLte.updateAll(cellInfo);
+		}
+		
+		/*
+		 * CellLocation should return the serving cell, unless it is LTE (in which case it should
+		 * return null). In practice, however, some devices do return LTE cells. The approach of
+		 * this method does not work well for devices with multiple radios.
+		 */
+		CellLocation location = (aLocation != null) ? aLocation : mTelephonyManager.getCellLocation();
+		String networkOperator = mTelephonyManager.getNetworkOperator();
+		mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+		mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
+		mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
+		if (location instanceof GsmCellLocation) {
+			if (mLastNetworkGen < 4) {
+				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
+				if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+			} else {
+				mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
+				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
+			}
+		} else if (location instanceof CdmaCellLocation) {
+			mServingCell = mCellsCdma.update((CdmaCellLocation) location);
+			if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+				((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
+		}
+		networkTimehandler.removeCallbacks(networkTimeRunnable);
+		
+		if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
+			if ((mLastNetworkGen != 0) && (mServingCell != null))
+				mServingCell.setGeneration(mLastNetworkGen);
+			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
+			if ((netinfo == null)
+					|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS)
+					|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
+				networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+			}
+		} else if (mServingCell != null) {
+			mLastNetworkGen = mServingCell.getGeneration();
+		}
+		
+		if ((signalStrength != null) && (mServingCell != null)) {
+			int pt = mTelephonyManager.getPhoneType();
+			if (pt == PHONE_TYPE_GSM) {
+				mLastCellAsu = signalStrength.getGsmSignalStrength();
+				updateNeighboringCellInfo();
+				if (mServingCell instanceof CellTowerGsm)
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				else
+					Log.w(MainActivity.class.getSimpleName(),
+							"Got SignalStrength for PHONE_TYPE_GSM but serving cell is not GSM");
+			} else if (pt == PHONE_TYPE_CDMA) {
+				mLastCellDbm = signalStrength.getCdmaDbm();
+				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
+					mServingCell.setDbm(mLastCellDbm);
+				else
+					Log.w(MainActivity.class.getSimpleName(),
+							"Got SignalStrength for PHONE_TYPE_CDMA but serving cell is not CDMA");
+			} else
+				Log.w(MainActivity.class.getSimpleName(),
+						String.format("Got SignalStrength for unknown phone type (%d)", pt));
+		} else if (mServingCell == null) {
+			Log.w(MainActivity.class.getSimpleName(),
+					"Got SignalStrength but serving cell is null");
+		}
+
+		/*
+		 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
+		 * only GSM and successors' cells, but not CDMA cells.
+		 */
+		List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+		mCellsGsm.updateAll(networkOperator, neighboringCells);
+		mCellsLte.updateAll(networkOperator, neighboringCells);
+		
+		showCells();
+	}
+	
+	/**
 	 * Updates internal data structures when the user's selection of location providers has changed.
 	 * @param context
 	 */
@@ -2444,42 +2491,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	isRadioViewReady = true;
         	
         	//get current phone info (first update won't fire until the cell actually changes)
-			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
-			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
-			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
-			String networkOperator = mTelephonyManager.getNetworkOperator();
-            
-			updateNeighboringCellInfo();
-			
-			// Requires API level 17. Many phones don't implement this method
-			// at all and will return null, the ones that do implement it
-			// may return only certain cell types.
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-				mCellsGsm.updateAll(allCells);
-				mCellsCdma.updateAll(allCells);
-				mCellsLte.updateAll(allCells);
-			}
-			
-            CellLocation cellLocation = mTelephonyManager.getCellLocation();
-			if (cellLocation instanceof CdmaCellLocation)
-				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
-			else if (cellLocation instanceof GsmCellLocation) {
-				CellTower newServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsLte});
-				if (newServingCell == null) {
-					if (!mCellsLte.isEmpty()) {
-						Log.d("MainActivity", "Trying to guess network type of GsmCellLocation... LTE cells found, assuming LTE");
-						newServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
-					} else {
-						Log.d("MainActivity", "Trying to guess network type of GsmCellLocation... no LTE cells found, assuming GSM or UMTS");
-						newServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
-					}
-					Log.d("MainActivity", String.format("newServingCell = %s, generation = %d", newServingCell.getText(), newServingCell.getGeneration()));
-				}
-				mServingCell = newServingCell;
-			}
-			
-			showCells();
+			updateCellData(null, null, null);
 
         	mWifiManager.startScan();
         	
