@@ -215,13 +215,13 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
+		// nop
 
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
+		// nop
 
 	}
 
