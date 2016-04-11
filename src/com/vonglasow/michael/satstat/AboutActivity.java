@@ -25,9 +25,6 @@ import java.io.InputStream;
 
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.method.ScrollingMovementMethod;
-import android.text.util.Linkify;
 import android.widget.TextView;
 import android.app.ActionBar;
 import android.app.Activity;

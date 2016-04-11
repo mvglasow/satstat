@@ -19,9 +19,6 @@
 
 package com.vonglasow.michael.satstat.widgets;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.vonglasow.michael.satstat.R;
 
 import android.app.Activity;
@@ -30,11 +27,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
 import android.location.GpsSatellite;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 public class GpsStatusView extends SquareView {
 	private float mYaw = 0;

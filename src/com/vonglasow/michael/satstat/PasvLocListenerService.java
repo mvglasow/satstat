@@ -41,7 +41,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
 
@@ -62,7 +61,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	private LocationManager mLocationManager;
 	private NotificationCompat.Builder mBuilder;
-	private NotificationManager mNotificationManager;
 	private SharedPreferences mSharedPreferences;
 	private BroadcastReceiver mGpsStatusReceiver = new BroadcastReceiver() {
 		@Override
@@ -95,7 +93,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_ENABLED_CHANGE));
 		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_FIX_CHANGE));
 	}

@@ -25,7 +25,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import android.net.wifi.ScanResult;
-import android.provider.Settings;
 import android.util.Log;
 
 public abstract class WifiCapabilities {

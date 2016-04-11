@@ -1,7 +1,5 @@
 package com.vonglasow.michael.satstat.data;
 
-import com.vonglasow.michael.satstat.MainActivity;
-
 import android.telephony.TelephonyManager;
 import android.util.Log;
 

@@ -1,19 +1,12 @@
 package com.vonglasow.michael.satstat.widgets;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.MultiSelectListPreference;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.AttributeSet;
-import android.util.Log;
 
 public class NetworkTypePreference extends MultiSelectListPreference {
 	

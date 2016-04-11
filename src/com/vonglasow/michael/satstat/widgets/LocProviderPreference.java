@@ -5,8 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.preference.MultiSelectListPreference;
 import android.util.AttributeSet;
 
