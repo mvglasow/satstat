@@ -67,6 +67,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
@@ -923,6 +924,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         					i = buildInStream.read();
         				}
         				buildInStream.close();
+        				String [] scanPaths = {dumpFile.getAbsolutePath()};
+        				MediaScannerConnection.scanFile(getApplicationContext(), scanPaths, null, null);
         			} catch (IOException e1) {
         				e1.printStackTrace();
         			}
