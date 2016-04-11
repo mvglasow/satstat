@@ -59,7 +59,7 @@
         <service android:name="PasvLocListenerService" android:exported="false" android:stopWithTask="false"></service>
 
         <activity
-            android:name=".LegendActivity"
+            android:name="com.vonglasow.michael.satstat.LegendActivity"
             android:label="@string/title_activity_legend"
             android:parentActivityName=".MainActivity" >
             <meta-data
