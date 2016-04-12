@@ -7,10 +7,8 @@
     <string name="action_record">Rögzítés</string>
     <string name="action_stop_record">Rögzítés megállítása</string>
     <string name="action_agps">AGPS adatok újratöltése</string>
+    <string name="action_legend">Jelmagyarázat</string>
     <string name="action_about">Névjegy</string>
-    <string name="dot">&#x25a0;</string>
-    <string name="smallDot">&#x25fc;</string>
-    <string name="dotSpace">&#x25a0;&#x00a0;</string>
     <string name="error_write_file">Hiba a fájlba írás közben</string>
     <string name="error_ext_storage">A külső tároló nem elérhető</string>
     <string name="info_start_rec">Rögzítés elindítva</string>
@@ -25,6 +23,7 @@
     <string name="title_section4">Térkép</string>
     <string name="title_gps_lat">Szélesség</string>
     <string name="title_gps_lon">Hosszúság</string>
+    <string name="title_gps_coord">Koordináták</string>
     <string name="title_gps_decl">Dekl.</string>
     <string name="title_gps_speed">Sebesség</string>
     <string name="title_gps_alt">Magasság</string>
@@ -146,7 +145,6 @@
     <string name="pref_wifi">WiFi kapcsolatkor</string>
     <string name="pref_wifi_summary">AGPS adat frissítése, ha az eszközöm WiFi hálózaton van</string>
     <string name="pref_freq">Frissítési gyakoriság</string>
-    <string name="pref_freq_summary">%s</string>
     <string-array name="prefs_freq_keys">
         <item >Minden alkalommal</item>
         <item >Naponta egyszer</item>
@@ -157,30 +155,48 @@
         <item >Hatnaponta</item>
         <item >Hetente egyszer</item>
     </string-array>
-    <string-array name="prefs_freq_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
-        <item >4</item>
-        <item >5</item>
-        <item >6</item>
-        <item >7</item>
-    </string-array>
     <string name="pref_lastupdate">Utolsó frissítés</string>
-    <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Hálózatok</string>
-    <string name="pref_networks_summary">AGPS adat frissítése, ha az eszközöm valamelyik kiválasztott hálózathoz csatlakozik.</string>
+    <string name="pref_networks_summary">AGPS adat frissítése, ha az eszközöm valamelyik kiválasztott hálózathoz csatlakozik</string>
     <string name="pref_map">Térkép</string>
     <string name="pref_loc_prov">Pozíció források</string>
     <string name="pref_loc_prov_summary">Kiválasztott pozícióforrások megjelenítése a térképen</string>
     <string name="pref_data">Adatmegjelenítés</string>
     <string name="pref_unit">Metrikus mértékegységek használata</string>
     <string name="pref_unit_summary">Kikapcsolva angolszász mértékegységek fognak megjelenni (kivéve az érzékelők lapján)</string>
+    <string name="pref_coord">Coordinates</string>
+    <string-array name="prefs_coord_keys">
+        <item >Tizedes fok</item>
+        <item >Fok, tizedes perc</item>
+        <item >Fok, perc, másodperc</item>
+        <item >MGRS</item>
+    </string-array>
     <string name="pref_utc">GPS idő megjelenítése UTC-ben</string>
     <string name="pref_utc_summary">A GPS fix pozíció megjelenítése UTC szerint helyi idő helyett.</string>
     <string name="pref_cid">Split UMTS/LTE cell IDs</string>
     <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="title_activity_legend">Jelmagyarázat</string>
+    <string name="title_legend_gps">GPS</string>
+    <string name="title_legend_gps_used">Fix pozícióhoz felhasznált műholdak</string>
+    <string name="title_legend_gps_unused">Fix pozícióhoz fel nem használt műholdak</string>
+    <string name="title_legend_sensors">Érzékelők</string>
+    <string name="title_legend_sensors_high">Nagy pontosság</string>
+    <string name="title_legend_sensors_medium">Közepes pontosság</string>
+    <string name="title_legend_sensors_low">Alacsony pontosság</string>
+    <string name="title_legend_sensors_unreliable">Megbízhatatlan</string>
+    <string name="title_legend_radio">Vezeték nélküli</string>
+    <string name="title_legend_radio_2g">2G cella</string>
+    <string name="title_legend_radio_3g">3G cella</string>
+    <string name="title_legend_radio_4g">4G cella</string>
+    <string name="title_legend_radio_open">Nyílt WiFi</string>
+    <string name="title_legend_radio_wep">WEP titkosítás</string>
+    <string name="title_legend_radio_psk">WPA-PSK titkosítás</string>
+    <string name="title_legend_radio_eap">WPA-EAP titkosítás</string>
+    <string name="title_legend_radio_adhoc">Ad-hoc WiFi</string>
+    <string name="title_legend_radio_unknown">Ismeretlen WiFi típus</string>
+    <string name="title_legend_map">Térkép</string>
+    <string name="title_legend_map_prov">Pozíció %s forrásból</string>
+    <string name="title_legend_map_stale">Pontatlan pozíció bármely forrásból</string>
 </resources>
