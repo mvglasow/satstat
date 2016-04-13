@@ -918,7 +918,11 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         	public void uncaughtException(Thread t, Throwable e) {
         		Context c = getApplicationContext();
         		File dumpDir = c.getExternalFilesDir(null);
-        		File dumpFile = new File (dumpDir, "satstat-" + System.currentTimeMillis() + ".log");
+        		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.ROOT);
+        		fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+        		String fileName = String.format("satstat-%s.log", fmt.format(new Date(System.currentTimeMillis())));
+
+        		File dumpFile = new File (dumpDir, fileName);
         		PrintStream s;
         		try {
         			InputStream buildInStream = getResources().openRawResource(R.raw.build);
