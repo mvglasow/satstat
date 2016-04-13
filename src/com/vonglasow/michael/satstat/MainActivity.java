@@ -971,49 +971,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         	       (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270));
         Log.d("MainActivity", "isWideScreen=" + Boolean.toString(isWideScreen));
         
-        // compact action bar
-    	int dpX = (int) (this.getResources().getDisplayMetrics().widthPixels / this.getResources().getDisplayMetrics().density);
-        if (Build.VERSION.SDK_INT < 21) { // FIXME for crude testing
-    	/*
-    	 * This is a crude way to ensure a one-line action bar with tabs
-    	 * (not a drop-down list) and home (incon) and title only if there
-    	 * is space, depending on screen width:
-    	 * divide screen in units of 64 dp
-    	 * each tab requires 1 unit, home and menu require slightly less,
-    	 * title takes up approx. 2.5 units in portrait,
-    	 * home and title are about 2 units wide in landscape
-    	 */
-    	if (dpX < 192) {
-    		// just enough space for drop-down list and menu
-            actionBar.setDisplayShowHomeEnabled(false);
-            actionBar.setDisplayShowTitleEnabled(false);
-    	} else if (dpX < 320) {
-    		// not enough space for four tabs, but home will fit next to list
-            actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(false);
-    	} else if (dpX < 384) {
-    		// just enough space for four tabs
-            actionBar.setDisplayShowHomeEnabled(false);
-            actionBar.setDisplayShowTitleEnabled(false);
-    	} else if ((dpX < 448) || ((config.orientation == Configuration.ORIENTATION_PORTRAIT) && (dpX < 544))) {
-    		// space for four tabs and home, but not title
-            actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(false);
-    	} else {
-    		// ample space for home, title and all four tabs
-            actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(true);
-    	}
-        } else {
-        	// API 21 and above
-        	// FIXME needs overhaul (dp values to be verified)
-        	if ((dpX < 448) || ((config.orientation == Configuration.ORIENTATION_PORTRAIT) && (dpX < 544))) {
-                actionBar.setDisplayShowTitleEnabled(false);
-        	} else {
-                actionBar.setDisplayShowTitleEnabled(true);
-        	}
-        }
-        
         providerLocations = new HashMap<String, Location>();
         
         mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
