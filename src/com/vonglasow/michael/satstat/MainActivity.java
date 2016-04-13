@@ -40,8 +40,6 @@ import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -76,11 +74,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.telephony.CellInfo;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;
@@ -154,7 +158,7 @@ import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends AppCompatActivity implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener {
 
 	public static double EARTH_CIRCUMFERENCE = 40000000; // meters
 	
@@ -210,6 +214,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    
+    /**
+     * The tab view to switch between the fragments of the MainView.
+     */
+    TabLayout mTabLayout;
     
     /**
      * Whether the activity is stopped. 
@@ -948,11 +957,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		prefUtc = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, prefUtc);
 		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, prefCid);
 
-        final ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         
         setContentView(R.layout.activity_main);
-        
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
         // Find out default screen orientation
         Configuration config = getResources().getConfiguration();
@@ -966,6 +973,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         // compact action bar
     	int dpX = (int) (this.getResources().getDisplayMetrics().widthPixels / this.getResources().getDisplayMetrics().density);
+        if (Build.VERSION.SDK_INT < 21) { // FIXME for crude testing
     	/*
     	 * This is a crude way to ensure a one-line action bar with tabs
     	 * (not a drop-down list) and home (incon) and title only if there
@@ -996,7 +1004,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(true);
     	}
-        setEmbeddedTabs(actionBar, true);
+        } else {
+        	// API 21 and above
+        	// FIXME needs overhaul (dp values to be verified)
+        	if ((dpX < 448) || ((config.orientation == Configuration.ORIENTATION_PORTRAIT) && (dpX < 544))) {
+                actionBar.setDisplayShowTitleEnabled(false);
+        	} else {
+                actionBar.setDisplayShowTitleEnabled(true);
+        	}
+        }
         
         providerLocations = new HashMap<String, Location>();
         
@@ -1015,16 +1031,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOnPageChangeListener(this);
         
-        // Add tabs, specifying the tab's text and TabListener
+        Context ctx = new ContextThemeWrapper(getApplication(), R.style.AppTheme);
+        mTabLayout = new TabLayout(ctx);
+        LinearLayout.LayoutParams mTabLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        mTabLayout.setLayoutParams(mTabLayoutParams);
+        
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            actionBar.addTab(
-                    actionBar.newTab()
-                            //.setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setIcon(mSectionsPagerAdapter.getPageIcon(i))
-                            .setTabListener(this));
+        	TabLayout.Tab newTab = mTabLayout.newTab();
+        	newTab.setIcon(mSectionsPagerAdapter.getPageIcon(i));
+        	mTabLayout.addTab(newTab);
         }
+
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(mTabLayout);
+
+        mTabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         
         // This is needed by the mapsforge library.
         AndroidGraphicFactory.createInstance(this.getApplication());
@@ -1296,23 +1319,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    	case R.id.action_agps:
-    		Log.i(this.getLocalClassName(), "User requested AGPS data update");
-    		GpsEventReceiver.refreshAgps(this, false, true);
-    		return true;
-    	case R.id.action_settings:
-    		startActivity(new Intent(this, SettingsActivity.class));
-    		return true;
-    	case R.id.action_legend:
-    		startActivity(new Intent(this, LegendActivity.class));
-    		return true;
-    	case R.id.action_about:
-    		startActivity(new Intent(this, AboutActivity.class));
-    		return true;
-    	default:
-    		return super.onOptionsItemSelected(item);
-    	}
+    	int itemId = item.getItemId();
+		if (itemId == R.id.action_agps) {
+			Log.i(this.getLocalClassName(), "User requested AGPS data update");
+			GpsEventReceiver.refreshAgps(this, false, true);
+			return true;
+		} else if (itemId == R.id.action_settings) {
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+		} else if (itemId == R.id.action_legend) {
+			startActivity(new Intent(this, LegendActivity.class));
+			return true;
+		} else if (itemId == R.id.action_about) {
+			startActivity(new Intent(this, AboutActivity.class));
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
     }
     
 	/**
@@ -1343,25 +1366,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		showCells();
     }
 
-	@Override
-	public void onPageScrollStateChanged(int state) {
-		// nop
-		
-	}
-
-	@Override
-	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		// nop
-		
-	}
-
-	@Override
-	public void onPageSelected(int position) {
-        // When swiping between pages, select the
-        // corresponding tab.
-        getActionBar().setSelectedNavigationItem(position);
-	}
-	
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -1585,24 +1589,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onStop();
     }
     
-	@Override
-	public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
-        // probably ignore this event
-	}
-
-	@Override
-	public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
-        // show the given tab
-        // When the tab is selected, switch to the
-        // corresponding page in the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-	}
-
-	@Override
-	public void onTabUnselected(Tab tab, android.app.FragmentTransaction ft) {
-        // hide the given tab (ignore this event)
-	}
-    
 	/**
 	 * Registers for updates with selected location providers.
 	 * @param context
@@ -1640,17 +1626,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 	}
     
-	private void setEmbeddedTabs(Object actionBar, Boolean embed_tabs) {
-	    try {
-	        Method setHasEmbeddedTabsMethod = actionBar.getClass()
-	                .getDeclaredMethod("setHasEmbeddedTabs", boolean.class);
-	        setHasEmbeddedTabsMethod.setAccessible(true);
-	        setHasEmbeddedTabsMethod.invoke(actionBar, embed_tabs);
-	    } catch (Exception e) {
-	        Log.e("", "Error marking actionbar embedded", e);
-	    }
-	}
-	
 	/**
 	 * Updates the list of cells in range.
 	 * <p>

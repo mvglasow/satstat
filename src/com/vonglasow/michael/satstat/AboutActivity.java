@@ -24,23 +24,23 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 
 import com.vonglasow.michael.satstat.R;
 
-public class AboutActivity extends Activity {
+public class AboutActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
 
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		TextView aboutBuild = (TextView) findViewById(R.id.aboutBuild);

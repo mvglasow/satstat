@@ -30,14 +30,14 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
-public class SettingsActivity extends Activity implements OnSharedPreferenceChangeListener{
+public class SettingsActivity extends AppCompatActivity implements OnSharedPreferenceChangeListener{
 
 	public static final String KEY_PREF_NOTIFY_FIX = "pref_notify_fix";
 	public static final String KEY_PREF_NOTIFY_SEARCH = "pref_notify_search";
@@ -69,7 +69,7 @@ public class SettingsActivity extends Activity implements OnSharedPreferenceChan
 		setContentView(R.layout.activity_settings);
 
 		// Show the Up button in the action bar.
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		// Display the fragment as the main content.
