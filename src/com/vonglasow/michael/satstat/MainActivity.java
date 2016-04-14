@@ -65,9 +65,9 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -945,8 +945,11 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         			e.printStackTrace(s);
         			s.flush();
         			s.close();
-        			String [] scanPaths = {dumpFile.toString()};
-        			MediaScannerConnection.scanFile(c, scanPaths, null, null);
+        			
+        			Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        			Uri contentUri = Uri.fromFile(dumpFile);
+        			mediaScanIntent.setData(contentUri);
+        			c.sendBroadcast(mediaScanIntent);
         		} catch (FileNotFoundException e2) {
         			e2.printStackTrace();
         		}
@@ -2150,7 +2153,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		mCellsLte.updateAll(networkOperator, neighboringCells);
 	}
 	
-
+	
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
