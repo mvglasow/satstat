@@ -937,8 +937,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         					i = buildInStream.read();
         				}
         				buildInStream.close();
-        				String [] scanPaths = {dumpFile.getAbsolutePath()};
-        				MediaScannerConnection.scanFile(getApplicationContext(), scanPaths, null, null);
         			} catch (IOException e1) {
         				e1.printStackTrace();
         			}
@@ -947,6 +945,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         			e.printStackTrace(s);
         			s.flush();
         			s.close();
+        			String [] scanPaths = {dumpFile.toString()};
+        			MediaScannerConnection.scanFile(c, scanPaths, null, null);
         		} catch (FileNotFoundException e2) {
         			e2.printStackTrace();
         		}
