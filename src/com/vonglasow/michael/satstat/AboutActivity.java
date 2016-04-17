@@ -25,9 +25,7 @@ import java.io.InputStream;
 
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.method.ScrollingMovementMethod;
-import android.text.util.Linkify;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -70,5 +68,15 @@ public class AboutActivity extends Activity {
 		TextView aboutText = (TextView) findViewById(R.id.aboutText);
 		aboutText.setText(Html.fromHtml(this.getString(R.string.about_text)));
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			onBackPressed();
+			return true;
+		}
 
+		return super.onOptionsItemSelected(item);
+	}
 }

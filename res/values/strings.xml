@@ -7,6 +7,7 @@
     <string name="action_record">Record</string>
     <string name="action_stop_record">Stop recording</string>
     <string name="action_agps">Reload AGPS data</string>
+    <string name="action_legend">Legend</string>
     <string name="action_about">About</string>
     <string name="dot">&#x25a0;</string>
     <string name="smallDot">&#x25fc;</string>
@@ -25,6 +26,7 @@
     <string name="title_section4">Map</string>
     <string name="title_gps_lat">Latitude</string>
     <string name="title_gps_lon">Longitude</string>
+    <string name="title_gps_coord">Coordinates</string>
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Speed</string>
     <string name="title_gps_alt">Elevation</string>
@@ -182,13 +184,13 @@
         <item >Decimal degrees</item>
         <item >Degrees, minutes</item>
         <item >Degrees, minutes, seconds</item>
-        <!-- <item >MGRS</item> -->
+        <item >MGRS</item>
     </string-array>
     <string-array name="prefs_coord_values">
         <item >0</item>
         <item >1</item>
         <item >2</item>
-        <!-- <item >3</item> -->
+        <item >3</item>
     </string-array>
     <string name="pref_utc">Display GPS time in UTC</string>
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
@@ -196,4 +198,26 @@
     <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="title_activity_legend">Legend</string>
+    <string name="title_legend_gps">GPS</string>
+    <string name="title_legend_gps_used">Satellite used in fix</string>
+    <string name="title_legend_gps_unused">Satellite not used in fix</string>
+    <string name="title_legend_sensors">Sensors</string>
+    <string name="title_legend_sensors_high">High accuracy</string>
+    <string name="title_legend_sensors_medium">Medium accuracy</string>
+    <string name="title_legend_sensors_low">Low accuracy</string>
+    <string name="title_legend_sensors_unreliable">Unreliable</string>
+    <string name="title_legend_radio">Radio</string>
+    <string name="title_legend_radio_2g">2G cell</string>
+    <string name="title_legend_radio_3g">3G cell</string>
+    <string name="title_legend_radio_4g">4G cell</string>
+    <string name="title_legend_radio_open">Open WiFi</string>
+    <string name="title_legend_radio_wep">WEP security</string>
+    <string name="title_legend_radio_psk">WPA-PSK (personal) security</string>
+    <string name="title_legend_radio_eap">WPA-EAP (enterprise) security</string>
+    <string name="title_legend_radio_adhoc">Ad-hoc WiFi</string>
+    <string name="title_legend_radio_unknown">Unknown WiFi type</string>
+    <string name="title_legend_map">Map</string>
+    <string name="title_legend_map_prov">Location from %s provider</string>
+    <string name="title_legend_map_stale">Stale location from any provider</string>
 </resources>

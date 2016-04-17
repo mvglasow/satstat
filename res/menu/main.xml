@@ -8,6 +8,7 @@
         android:id="@+id/action_settings"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+    <item android:id="@+id/action_legend" android:title="@string/action_legend"></item>
     <item android:id="@+id/action_about" android:title="@string/action_about"></item>
     
 

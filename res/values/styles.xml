@@ -16,6 +16,9 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    <color name="gpsUsed">#33B5E5</color>
+    <color name="gpsUnused">#CC0000</color>
+    
     <color name="accHigh">#669900</color>
     <color name="accMedium">#FF8800</color>
     <color name="accLow">#CC0000</color>
@@ -68,5 +71,6 @@
         <item>@color/circle_gray_fill</item>
     </array>
     <color name="halo">#B2FFFFFF</color>
+    <dimen name="bitmap_padding">2dp</dimen>
     
 </resources>

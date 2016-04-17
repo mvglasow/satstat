@@ -1,7 +1,5 @@
 package com.vonglasow.michael.satstat.data;
 
-import com.vonglasow.michael.satstat.MainActivity;
-
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -51,6 +49,36 @@ public abstract class CellTower {
 	}
 	
 	/**
+	 * Returns the network generation of a phone network type.
+	 * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
+     * @return 2, 3 or 4 for 2G, 3G or 4G; 0 for unknown
+	 */
+	public static int getGenerationFromNetworkType(int networkType) {
+		switch (networkType) {
+		case TelephonyManager.NETWORK_TYPE_CDMA:
+		case TelephonyManager.NETWORK_TYPE_EDGE:
+		case TelephonyManager.NETWORK_TYPE_GPRS:
+		case TelephonyManager.NETWORK_TYPE_IDEN:
+			return 2;
+		case TelephonyManager.NETWORK_TYPE_1xRTT:
+		case TelephonyManager.NETWORK_TYPE_EHRPD:
+		case TelephonyManager.NETWORK_TYPE_EVDO_0:
+		case TelephonyManager.NETWORK_TYPE_EVDO_A:
+		case TelephonyManager.NETWORK_TYPE_EVDO_B:
+		case TelephonyManager.NETWORK_TYPE_HSDPA:
+		case TelephonyManager.NETWORK_TYPE_HSPA:
+		case TelephonyManager.NETWORK_TYPE_HSPAP:
+		case TelephonyManager.NETWORK_TYPE_HSUPA:
+		case TelephonyManager.NETWORK_TYPE_UMTS:
+			return 3;
+		case TelephonyManager.NETWORK_TYPE_LTE:
+			return 4;
+		default:
+			return 0;
+		}
+	}
+
+	/**
 	 * Returns the cell identity in text form.
 	 * <p>
 	 * Subclasses must override this method to provide a string in the following form:
@@ -99,6 +127,26 @@ public abstract class CellTower {
 	public boolean isServing() {
 		return (serving || ((this.source & SOURCE_CELL_LOCATION) != 0));
 	}
+	
+	/**
+	 * Determines a "loose match" for two parts of a cell ID.
+	 * 
+	 * A "loose match" will return true if one of its two arguments is {@link #UNKNOWN}, or if both
+	 * arguments are truly equal.
+	 * 
+	 * Any part of a cell identification (e.g. MCC, MNC, any area ID, cell ID, scrambling code) can
+	 * be compared in this manner as long as it assigns a value of {@link #UNKNOWN} to values which
+	 * are not known, and only to those.
+	 * 
+	 * @param l
+	 * @param r
+	 * @return True for a match, false otherwise
+	 */
+	public static boolean matches(int l, int r) {
+		if ((l == UNKNOWN) || (r == UNKNOWN))
+			return true;
+		return (l == r);
+	}
 
 	public void setCellInfo(boolean value) {
 		if (value)
@@ -141,31 +189,7 @@ public abstract class CellTower {
 	public void setNetworkType(int networkType) {
 		if (this instanceof CellTowerLte)
 			Log.d(this.getClass().getSimpleName(), String.format("Changing network type for cell %s (%s)", this.getText(), this.getAltText()));
-    	switch (networkType) {
-    	case TelephonyManager.NETWORK_TYPE_CDMA:
-    	case TelephonyManager.NETWORK_TYPE_EDGE:
-    	case TelephonyManager.NETWORK_TYPE_GPRS:
-    	case TelephonyManager.NETWORK_TYPE_IDEN:
-    		this.generation = 2;
-    		return;
-    	case TelephonyManager.NETWORK_TYPE_1xRTT:
-    	case TelephonyManager.NETWORK_TYPE_EHRPD:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
-    	case TelephonyManager.NETWORK_TYPE_HSDPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPAP:
-    	case TelephonyManager.NETWORK_TYPE_HSUPA:
-    	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		this.generation = 3;
-    		return;
-    	case TelephonyManager.NETWORK_TYPE_LTE:
-    		this.generation = 4;
-    		return;
-    	default:
-    		return;
-    	}
+		this.generation = getGenerationFromNetworkType(networkType);
 	}
 	
 	public void setServing(boolean serving) {

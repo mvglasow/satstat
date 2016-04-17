@@ -67,6 +67,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
@@ -136,6 +137,9 @@ import org.mapsforge.map.layer.overlay.Circle;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.util.MapViewProjection;
+
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.MGRSRef;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.data.CellTower;
@@ -274,8 +278,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected static LinearLayout gpsRootLayout;
 	protected static GpsStatusView gpsStatusView;
 	protected static GpsSnrView gpsSnrView;
+	protected static LinearLayout gpsLatLayout;
 	protected static TextView gpsLat;
+	protected static LinearLayout gpsLonLayout;
 	protected static TextView gpsLon;
+	protected static LinearLayout gpsCoordLayout;
+	protected static TextView gpsCoord;
 	protected static TextView orDeclination;
 	protected static TextView gpsSpeed;
 	protected static TextView gpsSpeedUnit;
@@ -482,61 +490,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
-	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-		// Requires API level 17. Many phones don't implement this method at 
-		// all and will return null, the ones that do implement it return only
-		// certain cell types.
+	private static final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
 		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
-			mCellsGsm.updateAll(cellInfo);
-			mCellsCdma.updateAll(cellInfo);
-			mCellsLte.updateAll(cellInfo);
-			mServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsCdma, mCellsLte});
-			showCells();
+			updateCellData(null, null, cellInfo);
 	 	}
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			String networkOperator = mTelephonyManager.getNetworkOperator();
-			if (location instanceof GsmCellLocation) {
-				if (mLastNetworkGen < 4) {
-					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-					if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
-						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-				} else {
-					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
-					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-						((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
-				}
-			} else if (location instanceof CdmaCellLocation) {
-				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-					((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
-			}
-			
-			if (mTelephonyManager.getPhoneType() == PHONE_TYPE_GSM) {
-				updateNeighboringCellInfo();
-			}
-			
-			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
-				if ((mLastNetworkGen != 0) && (mServingCell != null))
-					mServingCell.setGeneration(mLastNetworkGen);
-				NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
-				if ((netinfo == null) 
-						|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS) 
-						|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
-					networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
-				}
-			} else if (mServingCell != null) {
-				mLastNetworkGen = mServingCell.getGeneration();
-			}
-
-			showCells();
+			updateCellData(location, null, null);
 		}
 		
 		public void onDataConnectionStateChanged (int state, int networkType) {
@@ -544,18 +507,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
-			int pt = mTelephonyManager.getPhoneType();
-			if (pt == PHONE_TYPE_GSM) {
-				mLastCellAsu = signalStrength.getGsmSignalStrength();
-				updateNeighboringCellInfo();
-				if ((mServingCell != null) && (mServingCell instanceof CellTowerGsm))
-					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-			} else if (pt == PHONE_TYPE_CDMA) {
-				mLastCellDbm = signalStrength.getCdmaDbm();
-				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
-				mServingCell.setDbm(mLastCellDbm);
-			}
-			showCells();
+			updateCellData(null, signalStrength, null);
 		}
 	};
 	
@@ -879,37 +831,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	
-    /**
-     * Gets the generation of a phone network type
-     * @param networkType The network type as returned by {@link TelephonyManager.getNetworkType}
-     * @return 2, 3 or 4 for 2G, 3G or 4G; 0 for unknown
-     */
-	public static int getNetworkGeneration(int networkType) {
-    	switch (networkType) {
-    	case TelephonyManager.NETWORK_TYPE_CDMA:
-    	case TelephonyManager.NETWORK_TYPE_EDGE:
-    	case TelephonyManager.NETWORK_TYPE_GPRS:
-    	case TelephonyManager.NETWORK_TYPE_IDEN:
-    		return 2;
-    	case TelephonyManager.NETWORK_TYPE_1xRTT:
-    	case TelephonyManager.NETWORK_TYPE_EHRPD:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_0:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_A:
-    	case TelephonyManager.NETWORK_TYPE_EVDO_B:
-    	case TelephonyManager.NETWORK_TYPE_HSDPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPA:
-    	case TelephonyManager.NETWORK_TYPE_HSPAP:
-    	case TelephonyManager.NETWORK_TYPE_HSUPA:
-    	case TelephonyManager.NETWORK_TYPE_UMTS:
-    		return 3;
-    	case TelephonyManager.NETWORK_TYPE_LTE:
-    		return 4;
-    	default:
-    		return 0;
-    	}
-	}
-	
-	
 	/**
 	 * Gets the number of decimal digits to show when displaying sensor values, based on sensor accuracy.
 	 * @param sensor The sensor
@@ -1003,6 +924,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         					i = buildInStream.read();
         				}
         				buildInStream.close();
+        				String [] scanPaths = {dumpFile.getAbsolutePath()};
+        				MediaScannerConnection.scanFile(getApplicationContext(), scanPaths, null, null);
         			} catch (IOException e1) {
         				e1.printStackTrace();
         			}
@@ -1136,7 +1059,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	@Override
         	public void run() {
 	            int newNetworkType = mTelephonyManager.getNetworkType();
-	            if (getNetworkGeneration(newNetworkType) != mLastNetworkGen)
+	            if (CellTower.getGenerationFromNetworkType(newNetworkType) != mLastNetworkGen)
 	            	onNetworkTypeChanged(newNetworkType);
 	            else
 	            	networkTimehandler.postDelayed(this, NETWORK_REFRESH_DELAY);
@@ -1275,13 +1198,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	}
 	    	
 	    	if (prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
-	    		// TODO hide MGRS
-	    		// TODO show lat/lon
+	    		gpsCoordLayout.setVisibility(View.GONE);
+	    		gpsLatLayout.setVisibility(View.VISIBLE);
+	    		gpsLonLayout.setVisibility(View.VISIBLE);
 	    		gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
 	    		gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
 	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
-	    		// TODO hide MGRS
-	    		// TODO show lat/lon
+	    		gpsCoordLayout.setVisibility(View.GONE);
+	    		gpsLatLayout.setVisibility(View.VISIBLE);
+	    		gpsLonLayout.setVisibility(View.VISIBLE);
 	    		double dec = location.getLatitude();
 	    		double deg = (int) dec;
 	    		double min = 60.0 * (dec - deg);
@@ -1291,8 +1216,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		min = 60.0 * (dec - deg);
 	    		gpsLon.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
 	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
-	    		// TODO hide MGRS
-	    		// TODO show lat/lon
+	    		gpsCoordLayout.setVisibility(View.GONE);
+	    		gpsLatLayout.setVisibility(View.VISIBLE);
+	    		gpsLonLayout.setVisibility(View.VISIBLE);
 	    		double dec = location.getLatitude();
 	    		double deg = (int) dec;
 	    		double tmp = 60.0 * (dec - deg);
@@ -1305,8 +1231,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    		min = (int) tmp;
 	    		sec = 60.0 * (tmp - min);
 	    		gpsLon.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
+	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
+	    		gpsLatLayout.setVisibility(View.GONE);
+	    		gpsLonLayout.setVisibility(View.GONE);
+	    		gpsCoordLayout.setVisibility(View.VISIBLE);
+	    		gpsCoord.setText(new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M));
 	    	}
-	    	// TODO else if MGRS
 	    	if (prefUtc)
 	    		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 	    	else
@@ -1345,11 +1275,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	if (location.hasSpeed()) {
 	    		Float getSpeed = (float) 0.0;
 	    		if(prefUnitType) {
-	    			getSpeed = (float)(location.getSpeed());
+	    			getSpeed = (float)(location.getSpeed() * 3.6f);
 	    		} else {
-	    			getSpeed = (float)(location.getSpeed() * (float) 2.23694);
+	    			getSpeed = (float)(location.getSpeed() * 3.6f * 2.23694f);
 	    		}
-	    		gpsSpeed.setText(String.format("%.0f", (location.getSpeed()) * 3.6));
+	    		gpsSpeed.setText(String.format("%.0f", getSpeed));
 	    		gpsSpeedUnit.setText(getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
 	    	} else {
 	    		gpsSpeed.setText(getString(R.string.value_none));
@@ -1374,6 +1304,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	case R.id.action_settings:
     		startActivity(new Intent(this, SettingsActivity.class));
     		return true;
+    	case R.id.action_legend:
+    		startActivity(new Intent(this, LegendActivity.class));
+    		return true;
     	case R.id.action_about:
     		startActivity(new Intent(this, AboutActivity.class));
     		return true;
@@ -1385,33 +1318,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	/**
 	 * Updates the network type indicator for the current cell. Called by
 	 * {@link networkTimeRunnable.run()} or
-	 * {@link android.telephony.PhoneStateListener.onDataConnectionChanged(int, int)}.
+	 * {@link android.telephony.PhoneStateListener#onDataConnectionStateChanged(int, int)}.
 	 * 
 	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
 	 */
     protected static void onNetworkTypeChanged(int networkType) {
 		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
-		int newNetworkGen = getNetworkGeneration(networkType);
+		int newNetworkGen = CellTower.getGenerationFromNetworkType(networkType);
+		int oldNetworkGen = mLastNetworkGen;
 		if (newNetworkGen != mLastNetworkGen) {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			// if we switched from GSM/UMTS to LTE or vice versa, the cell may
-			// have been stored in the wrong list
-			if ((newNetworkGen == 4) || (mLastNetworkGen == 4)) {
-				CellLocation cellLocation = mTelephonyManager.getCellLocation();
-				String networkOperator = mTelephonyManager.getNetworkOperator();
-				if (newNetworkGen == 4) {
-					mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION | CellTower.SOURCE_NEIGHBORING_CELL_INFO | CellTower.SOURCE_CELL_INFO);
-					if (cellLocation instanceof GsmCellLocation)
-						mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
-				} else {
-					mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION | CellTower.SOURCE_NEIGHBORING_CELL_INFO | CellTower.SOURCE_CELL_INFO);
-					if (cellLocation instanceof GsmCellLocation)
-						mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
-				}
-			}
-			
 			mLastNetworkGen = newNetworkGen;
-			if (mServingCell != null) {
+			/*
+			 * Network type changes occur slightly before or after cell changes. Therefore, we may have
+			 * stored cells in the wrong list when switching from or to LTE.
+			 */
+			if ((newNetworkGen == 4) || (oldNetworkGen == 4))
+				updateCellData(null, null, null);
+			else if (mServingCell != null) {
 				mServingCell.setNetworkType(networkType);
 				Log.d(MainActivity.class.getSimpleName(), String.format("Setting network type to %d for cell %s (%s)", mServingCell.getGeneration(), mServingCell.getText(), mServingCell.getAltText()));
 			}
@@ -1421,13 +1345,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		// TODO Auto-generated method stub
+		// nop
 		
 	}
 
 	@Override
 	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		// TODO Auto-generated method stub
+		// nop
 		
 	}
 
@@ -1933,6 +1857,124 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 
 	/**
+	 * Updates all cell data.
+	 * 
+	 * This method is called whenever any change in the cell environment (cells in view or signal
+	 * strengths) is signaled, e.g. by a call to a {@link android.telephony.PhoneStateListener}. The
+	 * arguments of this method should be filled with the data passed to the
+	 * {@link android.telephony.PhoneStateListener} where possible, and null passed for all others.
+	 * 
+	 * To force an update of all cell data, simply call this method with each argument set to null.
+	 * 
+	 * If any of the arguments is null, this method will try to obtain that data by querying
+	 * {@link android.telephony.TelephonyManager}. The only exception is {@code signalStrength}, which
+	 * will not be explicitly queried if missing.
+	 * 
+	 * It will first process {@code aCellInfo}, then {@code aLocation}, querying current values from
+	 * {@link android.telephony.TelephonyManager} if one of these arguments is null. Next it will process
+	 * {@code signalStrength}, if supplied, and eventually obtain neighboring cells by calling
+	 * {@link android.telephony.TelephonyManager#getNeighboringCellInfo()} and process these. Eventually
+	 * it will refresh the list of cells.
+	 * 
+	 * @param aLocation The {@link android.telephony.CellLocation} reported by a
+	 * {@link android.telephony.PhoneStateListener}. If null, the current value will be queried.
+	 * @param aSignalStrength The {@link android.telephony.SignalStrength} reported by a
+	 * {@link android.telephony.PhoneStateListener}. If null, the signal strength of the serving cell
+	 * will either be taken from {@code aCellInfo}, if available, or not be updated at all.
+	 * @param aCellInfo A list of {@link android.telephony.CellInfo} instances reported by a
+	 * {@link android.telephony.PhoneStateListener}. If null, the current value will be queried.
+	 */
+	@SuppressLint("NewApi")
+	public static void updateCellData(CellLocation aLocation, SignalStrength signalStrength, List<CellInfo> aCellInfo) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			/*
+			 * CellInfo requires API 17+ and should in theory return all cells in view. In practice,
+			 * some devices do not implement it or return only a partial list. On some devices,
+			 * PhoneStateListener#onCellInfoChanged() will fire but always receive a null argument.
+			 */
+			List<CellInfo> cellInfo = (aCellInfo != null) ? aCellInfo : mTelephonyManager.getAllCellInfo();
+			mCellsGsm.updateAll(cellInfo);
+			mCellsCdma.updateAll(cellInfo);
+			mCellsLte.updateAll(cellInfo);
+		}
+		
+		/*
+		 * CellLocation should return the serving cell, unless it is LTE (in which case it should
+		 * return null). In practice, however, some devices do return LTE cells. The approach of
+		 * this method does not work well for devices with multiple radios.
+		 */
+		CellLocation location = (aLocation != null) ? aLocation : mTelephonyManager.getCellLocation();
+		String networkOperator = mTelephonyManager.getNetworkOperator();
+		mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+		mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
+		mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
+		if (location instanceof GsmCellLocation) {
+			if (mLastNetworkGen < 4) {
+				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
+				if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+			} else {
+				mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
+				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+					((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
+			}
+		} else if (location instanceof CdmaCellLocation) {
+			mServingCell = mCellsCdma.update((CdmaCellLocation) location);
+			if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+				((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
+		}
+		networkTimehandler.removeCallbacks(networkTimeRunnable);
+		
+		if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
+			if ((mLastNetworkGen != 0) && (mServingCell != null))
+				mServingCell.setGeneration(mLastNetworkGen);
+			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
+			if ((netinfo == null)
+					|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS)
+					|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
+				networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
+			}
+		} else if (mServingCell != null) {
+			mLastNetworkGen = mServingCell.getGeneration();
+		}
+		
+		if ((signalStrength != null) && (mServingCell != null)) {
+			int pt = mTelephonyManager.getPhoneType();
+			if (pt == PHONE_TYPE_GSM) {
+				mLastCellAsu = signalStrength.getGsmSignalStrength();
+				updateNeighboringCellInfo();
+				if (mServingCell instanceof CellTowerGsm)
+					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				else
+					Log.w(MainActivity.class.getSimpleName(),
+							"Got SignalStrength for PHONE_TYPE_GSM but serving cell is not GSM");
+			} else if (pt == PHONE_TYPE_CDMA) {
+				mLastCellDbm = signalStrength.getCdmaDbm();
+				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
+					mServingCell.setDbm(mLastCellDbm);
+				else
+					Log.w(MainActivity.class.getSimpleName(),
+							"Got SignalStrength for PHONE_TYPE_CDMA but serving cell is not CDMA");
+			} else
+				Log.w(MainActivity.class.getSimpleName(),
+						String.format("Got SignalStrength for unknown phone type (%d)", pt));
+		} else if (mServingCell == null) {
+			Log.w(MainActivity.class.getSimpleName(),
+					"Got SignalStrength but serving cell is null");
+		}
+
+		/*
+		 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
+		 * only GSM and successors' cells, but not CDMA cells.
+		 */
+		List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+		mCellsGsm.updateAll(networkOperator, neighboringCells);
+		mCellsLte.updateAll(networkOperator, neighboringCells);
+		
+		showCells();
+	}
+	
+	/**
 	 * Updates internal data structures when the user's selection of location providers has changed.
 	 * @param context
 	 */
@@ -2011,11 +2053,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        	Resources res = context.getResources();
 	        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
 	        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
+	        	float density = context.getResources().getDisplayMetrics().density;
 	        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
 	            fill.setStyle(Style.FILL);
 	            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
 	        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
-	            stroke.setStrokeWidth(4); // FIXME: make this DPI-dependent
+	            stroke.setStrokeWidth(Math.max(1.5f * density, 1));
 	            stroke.setStyle(Style.STROKE);
 	            Circle circle = new Circle(latLong, acc, fill, stroke);
 	            mapCircles.put(pr, circle);
@@ -2268,8 +2311,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
             params.weight = 1;
             gpsRootLayout.addView(gpsStatusView, 0, params);
+        	gpsLatLayout = (LinearLayout) rootView.findViewById(R.id.gpsLatLayout);
         	gpsLat = (TextView) rootView.findViewById(R.id.gpsLat);
+        	gpsLonLayout = (LinearLayout) rootView.findViewById(R.id.gpsLonLayout);
         	gpsLon = (TextView) rootView.findViewById(R.id.gpsLon);
+        	gpsCoordLayout = (LinearLayout) rootView.findViewById(R.id.gpsCoordLayout);
+        	gpsCoord = (TextView) rootView.findViewById(R.id.gpsCoord);
         	orDeclination = (TextView) rootView.findViewById(R.id.orDeclination);
         	gpsSpeed = (TextView) rootView.findViewById(R.id.gpsSpeed);
         	gpsSpeedUnit = (TextView) rootView.findViewById(R.id.gpsSpeedUnit);
@@ -2407,42 +2454,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	isRadioViewReady = true;
         	
         	//get current phone info (first update won't fire until the cell actually changes)
-			mCellsGsm.remove(CellTower.SOURCE_CELL_LOCATION);
-			mCellsCdma.remove(CellTower.SOURCE_CELL_LOCATION);
-			mCellsLte.remove(CellTower.SOURCE_CELL_LOCATION);
-			String networkOperator = mTelephonyManager.getNetworkOperator();
-            
-			updateNeighboringCellInfo();
-			
-			// Requires API level 17. Many phones don't implement this method
-			// at all and will return null, the ones that do implement it
-			// may return only certain cell types.
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				List <CellInfo> allCells = mTelephonyManager.getAllCellInfo();
-				mCellsGsm.updateAll(allCells);
-				mCellsCdma.updateAll(allCells);
-				mCellsLte.updateAll(allCells);
-			}
-			
-            CellLocation cellLocation = mTelephonyManager.getCellLocation();
-			if (cellLocation instanceof CdmaCellLocation)
-				mServingCell = mCellsCdma.update((CdmaCellLocation) cellLocation);
-			else if (cellLocation instanceof GsmCellLocation) {
-				CellTower newServingCell = getServingCell(new CellTowerList[]{mCellsGsm, mCellsLte});
-				if (newServingCell == null) {
-					if (!mCellsLte.isEmpty()) {
-						Log.d("MainActivity", "Trying to guess network type of GsmCellLocation... LTE cells found, assuming LTE");
-						newServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) cellLocation);
-					} else {
-						Log.d("MainActivity", "Trying to guess network type of GsmCellLocation... no LTE cells found, assuming GSM or UMTS");
-						newServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) cellLocation);
-					}
-					Log.d("MainActivity", String.format("newServingCell = %s, generation = %d", newServingCell.getText(), newServingCell.getGeneration()));
-				}
-				mServingCell = newServingCell;
-			}
-			
-			showCells();
+			updateCellData(null, null, null);
 
         	mWifiManager.startScan();
         	

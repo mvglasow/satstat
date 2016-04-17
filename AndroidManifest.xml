@@ -17,14 +17,14 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.vonglasow.michael.satstat.MainActivity"
+            android:name="MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,18 +33,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.vonglasow.michael.satstat.AboutActivity"
+            android:name="AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="MainActivity" >
         </activity>
         <activity
-            android:name="com.vonglasow.michael.satstat.SettingsActivity"
+            android:name="SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="MainActivity" />
         </activity>
+
         <receiver android:name="GpsEventReceiver">
             <intent-filter>
                 <action android:name="android.location.GPS_ENABLED_CHANGE"/>
@@ -54,7 +55,17 @@
                 <action android:name="com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED"/>
             </intent-filter>
         </receiver>
+
         <service android:name="PasvLocListenerService" android:exported="false" android:stopWithTask="false"></service>
+
+        <activity
+            android:name="LegendActivity"
+            android:label="@string/title_activity_legend"
+            android:parentActivityName="MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat;
 
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.MGRSRef;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -39,7 +41,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
 
@@ -60,7 +61,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	private LocationManager mLocationManager;
 	private NotificationCompat.Builder mBuilder;
-	private NotificationManager mNotificationManager;
 	private SharedPreferences mSharedPreferences;
 	private BroadcastReceiver mGpsStatusReceiver = new BroadcastReceiver() {
 		@Override
@@ -93,7 +93,6 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_ENABLED_CHANGE));
 		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_FIX_CHANGE));
 	}
@@ -178,8 +177,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				title = String.format("%.0f%s %.0f' %.1f\" %s %.0f%s %.0f' %.1f\" %s",
 						degY, getString(R.string.unit_degree), minY, secY + /*rounding*/ 0.05, ns,
 						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.05, ew);
+			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
+				title = new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M);
 			}
-			// TODO else if MGRS
 
 			String text = "";
 			if (location.hasAltitude()) {
@@ -215,13 +215,13 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
+		// nop
 
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
+		// nop
 
 	}
 

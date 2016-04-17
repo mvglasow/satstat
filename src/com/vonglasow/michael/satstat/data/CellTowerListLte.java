@@ -54,9 +54,19 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 			mcc = Integer.parseInt(networkOperator.substring(0, 3));
 			mnc = Integer.parseInt(networkOperator.substring(3));
 		}
-		CellTowerLte result = this.get(mcc, mnc, location.getLac(), location.getCid());
-		if (result == null)
-			result = this.get(location.getPsc());
+		CellTowerLte result = null;
+		CellTowerLte cand = this.get(mcc, mnc, location.getLac(), location.getCid());
+		if ((cand != null) && CellTower.matches(location.getPsc(), cand.getPci()))
+			result = cand;
+		if (result == null) {
+			cand = this.get(location.getPsc());
+			if ((cand != null)
+					&& CellTower.matches(mcc, cand.getMcc())
+					&& CellTower.matches(mnc, cand.getMnc())
+					&& CellTower.matches(location.getLac(), cand.getTac())
+					&& CellTower.matches(location.getCid(), cand.getCi()))
+				result = cand;
+		}
 		if (result == null)
 			result = new CellTowerLte(mcc, mnc, location.getLac(), location.getCid(), location.getPsc());
 		if (result.getMcc() == CellTower.UNKNOWN)
@@ -94,10 +104,20 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 			mcc = Integer.parseInt(networkOperator.substring(0, 3));
 			mnc = Integer.parseInt(networkOperator.substring(3));
 		}
-		CellTowerLte result = this.get(mcc, mnc, cell.getLac(), cell.getCid());
+		CellTowerLte result = null;
+		CellTowerLte cand = this.get(mcc, mnc, cell.getLac(), cell.getCid());
+		if ((cand != null) && CellTower.matches(cell.getPsc(), cand.getPci()))
+			result = cand;
 
-		if (result == null)
-			result = this.get(cell.getPsc());
+		if (result == null) {
+			cand = this.get(cell.getPsc());
+			if ((cand != null)
+					&& CellTower.matches(mcc, cand.getMcc())
+					&& CellTower.matches(mnc, cand.getMnc())
+					&& CellTower.matches(cell.getLac(), cand.getTac())
+					&& CellTower.matches(cell.getCid(), cand.getCi()))
+				result = cand;
+		}
 		if (result == null)
 			result = new CellTowerLte(mcc, mnc, cell.getLac(), cell.getCid(), cell.getPsc());
 		result.setNeighboringCellInfo(true);
@@ -123,7 +143,10 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 			result.setPci(cell.getPsc());
 		this.put(result.getText(), result);
 		this.put(result.getAltText(), result);
-		Log.d(this.getClass().getSimpleName(), String.format("Added NeighboringCellInfo for %s, %d G", result.getText(), result.getGeneration()));
+		Log.d(this.getClass().getSimpleName(), String.format("Added NeighboringCellInfo for %s, %d G, %d dBm",
+				result.getText(),
+				result.getGeneration(),
+				result.getDbm()));
 		return result;
 	}
 	
@@ -142,10 +165,20 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 			return null;
 		CellIdentityLte cid = cell.getCellIdentity();
-		CellTowerLte result = this.get(cid.getMcc(), cid.getMnc(), cid.getTac(), cid.getCi());
+		CellTowerLte result = null;
+		CellTowerLte cand = this.get(cid.getMcc(), cid.getMnc(), cid.getTac(), cid.getCi());
+		if ((cand != null) && CellTower.matches(cid.getPci(), cand.getPci()))
+			result = cand;
 
-		if (result == null)
-			result = this.get(cid.getPci());
+		if (result == null) {
+			cand = this.get(cid.getPci());
+			if ((cand != null)
+					&& ((cid.getMcc() == Integer.MAX_VALUE) || CellTower.matches(cid.getMcc(), cand.getMcc()))
+					&& ((cid.getMnc() == Integer.MAX_VALUE) || CellTower.matches(cid.getMnc(), cand.getMnc()))
+					&& ((cid.getTac() == Integer.MAX_VALUE) || CellTower.matches(cid.getTac(), cand.getTac()))
+					&& ((cid.getCi() == Integer.MAX_VALUE) ||CellTower.matches(cid.getCi(), cand.getCi())))
+				result = cand;
+		}
 		if (result == null)
 			result = new CellTowerLte(cid.getMcc(), cid.getMnc(), cid.getTac(), cid.getCi(), cid.getPci());
 		if (result.getMcc() == CellTower.UNKNOWN)
@@ -163,7 +196,10 @@ public class CellTowerListLte extends CellTowerList<CellTowerLte> {
 		result.setCellInfo(true);
 		result.setDbm(cell.getCellSignalStrength().getDbm());
 		result.setServing(cell.isRegistered());
-		Log.d(this.getClass().getSimpleName(), String.format("Added CellInfoLte for %s, %d G", result.getText(), result.getGeneration()));
+		Log.d(this.getClass().getSimpleName(), String.format("Added CellInfoLte for %s, %d G, %d dBm",
+				result.getText(),
+				result.getGeneration(),
+				result.getDbm()));
 		return result;
 	}
 	
