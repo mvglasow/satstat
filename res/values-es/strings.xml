@@ -6,6 +6,7 @@
     <string name="action_record">Grabar</string>
     <string name="action_stop_record">Terminar registración</string>
     <string name="action_agps">Actualizar dados AGPS</string>
+    <string name="action_legend">Leyenda</string>
     <string name="action_about">Acerca de</string>
     <string name="error_write_file">Error escribiendo archivo</string>
     <string name="error_ext_storage">Almanecenamiento externo no disponible</string>
@@ -20,6 +21,7 @@
     <string name="title_section3">Redes</string>
     <string name="title_gps_lat">Latitud</string>
     <string name="title_gps_lon">Longitud</string>
+    <string name="title_gps_coord">Coordenadas</string>
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Velocidad</string>
     <string name="title_gps_alt">Altitud</string>
@@ -152,4 +154,42 @@
     <string name="pref_map">Mapa</string>
     <string name="pref_loc_prov">Fuentes de ubicación</string>
     <string name="pref_loc_prov_summary">Mostrar las fuentes de ubicación seleccionadas en el mapa</string>
+    <string name="pref_data">Representación de dados</string>
+    <string name="pref_unit">Usar unidades métricas</string>
+    <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
+    <string name="pref_coord">Coordenadas</string>
+    <string-array name="prefs_coord_keys">
+        <item >Grados (notación decimal)</item>
+        <item >Grados y minutos</item>
+        <item >Grados, minutos y segundos</item>
+        <item >MGRS</item>
+    </string-array>
+    <!-- <string name="pref_utc">Display GPS time in UTC</string> -->
+    <!-- <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string> -->
+    <!-- <string name="pref_cid">Split UMTS/LTE cell IDs</string> -->
+    <!-- <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string> -->
+    <string name="osm_attribution">© OpenStreetMap</string>
+    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="title_activity_legend">Leyenda</string>
+    <string name="title_legend_gps">GPS</string>
+    <!-- <string name="title_legend_gps_used">Satellite used in fix</string> -->
+    <!-- <string name="title_legend_gps_unused">Satellite not used in fix</string> -->
+    <string name="title_legend_sensors">Sensores</string>
+    <string name="title_legend_sensors_high">Exactitud alta</string>
+    <string name="title_legend_sensors_medium">Exactitud media</string>
+    <string name="title_legend_sensors_low">Exactitud baja</string>
+    <!-- <string name="title_legend_sensors_unreliable">Unreliable</string> -->
+    <string name="title_legend_radio">Redes</string>
+    <string name="title_legend_radio_2g">Celda 2G</string>
+    <string name="title_legend_radio_3g">Celda 3G</string>
+    <string name="title_legend_radio_4g">Celda 4G</string>
+    <string name="title_legend_radio_open">WiFi abierto</string>
+    <string name="title_legend_radio_wep">Seguridad WEP</string>
+    <string name="title_legend_radio_psk">Seguridad WPA-PSK (personal)</string>
+    <string name="title_legend_radio_eap">Seguridad WPA-EAP (enterprise)</string>
+    <string name="title_legend_radio_adhoc">WiFi ad hoc</string>
+    <string name="title_legend_radio_unknown">Tipo WiFi desconocido</string>
+    <string name="title_legend_map">Mapa</string>
+    <string name="title_legend_map_prov">Ubicación de fuente %s</string>
+    <!-- <string name="title_legend_map_stale">Stale location from any provider</string> -->
 </resources>

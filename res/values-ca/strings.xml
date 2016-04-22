@@ -6,6 +6,7 @@
     <string name="action_record">Registra</string>
     <string name="action_stop_record">Acaba registració</string>
     <string name="action_agps">Actualitza dades AGPS</string>
+    <string name="action_legend">Llegenda</string>
     <string name="action_about">Quant a l\'aplicació</string>
     <string name="error_write_file">Error escrivint fitxer</string>
     <string name="error_ext_storage">Emmagatzematge extern no disponible</string>
@@ -20,6 +21,7 @@
     <string name="title_section3">Xarxes</string>
     <string name="title_gps_lat">Latitud</string>
     <string name="title_gps_lon">Longitud</string>
+    <string name="title_gps_coord">Coordenades</string>
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Velocitat</string>
     <string name="title_gps_alt">Altitud</string>
@@ -152,4 +154,42 @@
     <string name="pref_map">Mapa</string>
     <string name="pref_loc_prov">Fonts d\'ubicació</string>
     <string name="pref_loc_prov_summary">Mostra les fonts d\'ubicació seleccionades al mapa</string>
+    <string name="pref_data">Representació de dades</string>
+    <string name="pref_unit">Utilitzar unitats mètriques</string>
+    <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
+    <string name="pref_coord">Coordenades</string>
+    <string-array name="prefs_coord_keys">
+        <item >Graus</item>
+        <item >Graus i minuts</item>
+        <item >Graus, minuts i segons</item>
+        <item >MGRS</item>
+    </string-array>
+    <string name="pref_utc">Mostra temps GPS en UTC</string>
+    <string name="pref_utc_summary">Utilitza UTC en comptes de temps local per mostrar el temps GPS</string>
+    <string name="pref_cid">Subdivideix l\'ID de cel·les UMTS/LTE</string>
+    <string name="pref_cid_summary">Subdivideix l\'ID de cel·les en RNCID/CID o eNodeB/sector ID</string>
+    <string name="osm_attribution">© OpenStreetMap</string>
+    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="title_activity_legend">Llegenda</string>
+    <string name="title_legend_gps">GPS</string>
+    <string name="title_legend_gps_used">Satèl·lite utilitzat per l\'ubicació</string>
+    <string name="title_legend_gps_unused">Satèl·lite no utilitzat per l\'ubicació</string>
+    <string name="title_legend_sensors">Sensors</string>
+    <string name="title_legend_sensors_high">Exactitud alta</string>
+    <string name="title_legend_sensors_medium">Exactitud mitjana</string>
+    <string name="title_legend_sensors_low">Exactitud baixa</string>
+    <!-- <string name="title_legend_sensors_unreliable">Unreliable</string> -->
+    <string name="title_legend_radio">Xarxes</string>
+    <string name="title_legend_radio_2g">Cel·la 2G</string>
+    <string name="title_legend_radio_3g">Cel·la 3G</string>
+    <string name="title_legend_radio_4g">Cel·la 4G</string>
+    <string name="title_legend_radio_open">WiFi obert</string>
+    <string name="title_legend_radio_wep">Seguretat WEP</string>
+    <string name="title_legend_radio_psk">Seguretat WPA-PSK (personal)</string>
+    <string name="title_legend_radio_eap">Seguretat WPA-EAP (enterprise)</string>
+    <string name="title_legend_radio_adhoc">WiFi ad hoc</string>
+    <string name="title_legend_radio_unknown">Tipus de WiFi desconegut</string>
+    <string name="title_legend_map">Mapa</string>
+    <string name="title_legend_map_prov">Ubicació de la font %s</string>
+    <string name="title_legend_map_stale">Ubicació gastada de qualsevol font</string>
 </resources>
