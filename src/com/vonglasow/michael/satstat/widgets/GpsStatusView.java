@@ -81,28 +81,28 @@ public class GpsStatusView extends SquareView {
 		gridStrokeWidth = Math.max(1, (int) (density));
 		
 		activePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		activePaint.setColor(Color.parseColor("#FF33B5E5"));
+		activePaint.setColor(Color.parseColor("#FF80CBC4")); // Teal 200
 		activePaint.setStyle(Paint.Style.FILL);
 		
 		inactivePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		inactivePaint.setColor(Color.parseColor("#FFFF4444"));
+		inactivePaint.setColor(Color.parseColor("#FFF44336")); // Red 500
 		inactivePaint.setStyle(Paint.Style.FILL);
 		
 		gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		gridPaint.setColor(Color.parseColor("#FFFF8800"));
+		gridPaint.setColor(Color.parseColor("#FFFF9800")); // Orange 500
 		gridPaint.setStyle(Paint.Style.STROKE);
 		gridPaint.setStrokeWidth(gridStrokeWidth);
 		
 		gridBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		gridBorderPaint.setColor(Color.parseColor("#50FF8800"));
+		gridBorderPaint.setColor(Color.parseColor("#50FF9800")); // Orange 500 @ 30%
 		gridBorderPaint.setStyle(Paint.Style.STROKE);
 		
 		northPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		northPaint.setColor(Color.parseColor("#FFCC0000"));
+		northPaint.setColor(Color.parseColor("#FFF44336")); // Red 500
 		northPaint.setStyle(Paint.Style.FILL);
 		
 		labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		labelPaint.setColor(Color.parseColor("#FFFF8800"));
+		labelPaint.setColor(Color.parseColor("#FFFF9800")); // Orange 500
 		labelPaint.setStyle(Paint.Style.FILL);
 		labelPaint.setTextAlign(Paint.Align.CENTER);
 	}
