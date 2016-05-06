@@ -154,7 +154,7 @@
     <string name="pref_map">Mappa</string>
     <string name="pref_loc_prov">Fonti di localizzazione</string>
     <string name="pref_loc_prov_summary">Mostrare le fonti di localizzazione selezionati sulla mappa</string>
-    <string name="pref_data">Rapresentazione dati</string>
+    <string name="pref_data">Rappresentazione dati</string>
     <string name="pref_unit">Usare unità metriche</string>
     <string name="pref_unit_summary">Se non selezionato, verrano utilizzate delle unità imperiali (eccetto per i sensori)</string>
     <string name="pref_coord">Coordinati</string>
