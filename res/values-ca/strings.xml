@@ -13,7 +13,7 @@
     <string name="info_start_rec">Registració començada</string>
     <string name="notify_record_title">Registració dades</string>
     <string name="notify_record_body">Toca si vols acabar la registració</string>
-    <string name="status_agps">Actualització dades AGPS sol·lecitada</string>
+    <string name="status_agps">Actualització dades AGPS sol·lecitada – ten present que Android no informa de l\'èxit de l\'operació</string>
     <string name="status_agps_captive">Impossible actualitzar dades – inicia el navegador, inicia la sessió a la xarxa i torna-ho a provar</string>
     <string name="status_agps_error">Cap xarxa disponible, impossible actualitzar dades AGPS</string>
     <string name="title_section1">GPS</string>

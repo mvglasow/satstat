@@ -13,7 +13,7 @@
     <string name="info_start_rec">Registrazione iniziata</string>
     <string name="notify_record_title">Registrazione dati</string>
     <string name="notify_record_body">Tocca per terminare la registrazione</string>
-    <string name="status_agps">Richiesto ricarico dati AGPS</string>
+    <string name="status_agps">Richiesto ricarico dati AGPS – tieni conto che Android non ne rileva l\'esito</string>
     <string name="status_agps_captive">Impossibile ricaricare dati – avvia browser, accedi alla rete e riprova</string>
     <string name="status_agps_error">Nessuna rete disponibile, impossibile ricaricare dati AGPS</string>
     <string name="title_section1">GPS</string>

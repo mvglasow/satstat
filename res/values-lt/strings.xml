@@ -13,7 +13,7 @@
     <string name="info_start_rec">Started recording</string>
     <string name="notify_record_title">Recording sensor data</string>
     <string name="notify_record_body">Touch to stop recording</string>
-    <string name="status_agps">AGPS duomenų atnaujinimo užklausa išsiųsta</string>
+    <string name="status_agps">AGPS duomenų atnaujinimo užklausa išsiųsta – dėmesio, kad apie atnaujinimo sekmę nepranešiama</string>
     <string name="status_agps_captive">Negalima atnaujinti duomenų – paleiskite naršyklę, prisijunkite prie tinklo ir bandykite dar kartą</string>
     <string name="status_agps_error">Galimo tinklo nėra, negalima atnaujinti AGPS duomenų</string>
     <string name="title_section1">GPS</string>

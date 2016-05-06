@@ -13,7 +13,7 @@
     <string name="info_start_rec">Aufzeichnung gestartet</string>
     <string name="notify_record_title">Sensordaten werden aufgezeichnet</string>
     <string name="notify_record_body">Zum Beenden antippen</string>
-    <string name="status_agps">Aktualisierung der AGPS-Daten angefordert</string>
+    <string name="status_agps">Aktualisierung der AGPS-Daten angefordert – beachten Sie, dass Android den Erfolg der Aktualisierung nicht meldet</string>
     <string name="status_agps_captive">Daten können nicht aktualisiert werden – starten Sie den Browser, melden Sie sich am Netzwerk an und versuchen Sie es erneut</string>
     <string name="status_agps_error">Kein Netz verfügbar, AGPS-Daten können nicht aktualisiert werden</string>
     <string name="title_section1">GPS</string>

@@ -17,7 +17,7 @@
     <string name="info_start_rec">Started recording</string>
     <string name="notify_record_title">Recording sensor data</string>
     <string name="notify_record_body">Touch to stop recording</string>
-    <string name="status_agps">AGPS data reload requested</string>
+    <string name="status_agps">AGPS data reload requested – note that Android does not report success or failure</string>
     <string name="status_agps_captive">Can\'t refresh data – launch browser, sign into the network and try again</string>
     <string name="status_agps_error">No network available, can\'t reload AGPS data</string>
     <string name="title_section1">GPS</string>

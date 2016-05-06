@@ -13,7 +13,7 @@
     <string name="info_start_rec">Grabación iniciada</string>
     <string name="notify_record_title">Grabación de dados</string>
     <string name="notify_record_body">Toca para terminar la grabación</string>
-    <string name="status_agps">Actualización de dados AGPS solecitada</string>
+    <string name="status_agps">Actualización de dados AGPS solecitada – ten en cuenta que Android no informa del éxito de la operación</string>
     <string name="status_agps_captive">Imposible actualizar dados – inicia el navegador, inicia la sesión en red y vuelve a intentarlo</string>
     <string name="status_agps_error">Ninguna red disponible, imposible actualizar dados AGPS</string>
     <string name="title_section1">GPS</string>
