@@ -102,15 +102,15 @@ public class GpsSnrView extends View {
 
 	private void doInit() {
 		activePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		activePaint.setColor(Color.parseColor("#FF33B5E5"));
+		activePaint.setColor(Color.parseColor("#FF80CBC4")); // Teal 200
 		activePaint.setStyle(Paint.Style.FILL);
 
 		inactivePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		inactivePaint.setColor(Color.parseColor("#FFFF4444"));
+		inactivePaint.setColor(Color.parseColor("#FFF44336")); // Red 500
 		inactivePaint.setStyle(Paint.Style.FILL);
 
 		gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		gridPaint.setColor(Color.parseColor("#FF4D4D4D"));
+		gridPaint.setColor(Color.parseColor("#FF424242")); // Gray 800
 		gridPaint.setStyle(Paint.Style.STROKE);
 		gridPaint.setStrokeWidth(gridStrokeWidth);
 

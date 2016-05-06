@@ -1,3 +1,5 @@
+.gradle
 bin
+build
 gen
 res/raw/build.txt

@@ -2,13 +2,13 @@ package com.vonglasow.michael.satstat;
 
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 
-public class LegendActivity extends Activity {
+public class LegendActivity extends AppCompatActivity {
 	/*
 	 * Gray style for inactive location providers
 	 */

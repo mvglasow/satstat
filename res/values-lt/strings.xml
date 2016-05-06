@@ -6,20 +6,22 @@
     <string name="action_record">Įrašyti</string>
     <string name="action_stop_record">Pabaigti įrašymą</string>
     <string name="action_agps">Atnaujinti AGPS duomenis</string>
+    <string name="action_legend">Legenda</string>
     <string name="action_about">Apie</string>
     <string name="error_write_file">Error writing to file</string>
     <string name="error_ext_storage">External storage not available</string>
     <string name="info_start_rec">Started recording</string>
     <string name="notify_record_title">Recording sensor data</string>
     <string name="notify_record_body">Touch to stop recording</string>
-    <string name="status_agps">AGPS duomenų atnaujinimo užklausa išsiųsta</string>
+    <string name="status_agps">AGPS duomenų atnaujinimo užklausa išsiųsta – dėmesio, kad apie atnaujinimo sekmę nepranešiama</string>
     <string name="status_agps_captive">Negalima atnaujinti duomenų – paleiskite naršyklę, prisijunkite prie tinklo ir bandykite dar kartą</string>
-    <string name="status_agps_error">Joks galimas tinklas, negalima atnaujinti AGPS duomenų</string>
+    <string name="status_agps_error">Galimo tinklo nėra, negalima atnaujinti AGPS duomenų</string>
     <string name="title_section1">GPS</string>
     <string name="title_section2">Jutikliai</string>
     <string name="title_section3">Tinklai</string>
     <string name="title_gps_lat">Platuma</string>
     <string name="title_gps_lon">Ilguma</string>
+    <string name="title_gps_coord">Koordinatės</string>
     <string name="title_gps_decl">Dekl.</string>
     <string name="title_gps_speed">Greitis</string>
     <string name="title_gps_alt">Aukštis</string>
@@ -151,4 +153,42 @@
     <string name="pref_map">Žemėlapis</string>
     <string name="pref_loc_prov">Vietovės šaltiniai</string>
     <string name="pref_loc_prov_summary">Nurodyti išrinktuosius vietovės šaltinius žemėlapyje</string>
+    <string name="pref_data">Duomenų nurodymas</string>
+    <string name="pref_unit">Naudoti metrinius vienetus</string>
+    <string name="pref_unit_summary">Jeigu neišrinkta, bus naudojami JAV matavimo vinetai (išskyrus jutikliams)</string>
+    <string name="pref_coord">Koordinatės</string>
+    <string-array name="prefs_coord_keys">
+        <item >Laipsniais</item>
+        <item >Laipsniais ir minutėmis</item>
+        <item >Laipsniais, minutėmis ir sekundėmis</item>
+        <item >MGRS</item>
+    </string-array>
+    <string name="pref_utc">Nurodyti GPS laiką UTC</string>
+    <string name="pref_utc_summary">Naudoti UTC vietienio laiko juosto vietoj GPS laiko nurodymui</string>
+    <string name="pref_cid">Sudalyti UMTS/LTE ląstelių ID kodus</string>
+    <string name="pref_cid_summary">Sudalyti ID kodus į RNCID/CID arba eNodeB/sector ID</string>
+    <string name="osm_attribution">© OpenStreetMap</string>
+    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="title_activity_legend">Legenda</string>
+    <string name="title_legend_gps">GPS</string>
+    <string name="title_legend_gps_used">Palydovas vartojamas vietovei nustatyti</string>
+    <string name="title_legend_gps_unused">Palydovas nevartojamas vietovei nustatyti</string>
+    <string name="title_legend_sensors">Jutikliai</string>
+    <string name="title_legend_sensors_high">Aukštas tikslumas</string>
+    <string name="title_legend_sensors_medium">Vidutinis tikslumas</string>
+    <string name="title_legend_sensors_low">Žemas tikslumas</string>
+    <string name="title_legend_sensors_unreliable">Nepatikimas</string>
+    <string name="title_legend_radio">Tinklai</string>
+    <string name="title_legend_radio_2g">2G ląstelė</string>
+    <string name="title_legend_radio_3g">3G ląstelė</string>
+    <string name="title_legend_radio_4g">4G ląstelė</string>
+    <string name="title_legend_radio_open">Atviras WiFi tinklas</string>
+    <string name="title_legend_radio_wep">WEP saugumas</string>
+    <string name="title_legend_radio_psk">WPA-PSK (asmeninis) saugumas</string>
+    <string name="title_legend_radio_eap">WPA-EAP (verslo) saugumas</string>
+    <string name="title_legend_radio_adhoc">Ad-hoc WiFi</string>
+    <string name="title_legend_radio_unknown">Nepažįstama WiFi rūšis</string>
+    <string name="title_legend_map">Žemėlapis</string>
+    <string name="title_legend_map_prov">%s šaltinio vietovė</string>
+    <string name="title_legend_map_stale">Pasenusi bet kurio šaltinio vietovė</string>
 </resources>

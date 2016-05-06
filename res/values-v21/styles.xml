@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- API 21 theme customizations can go here. -->
+        <item name="android:listSeparatorTextViewStyle">@style/listSeparatorTextViewStyle</item>
+    </style>
+
+    <style name="listSeparatorTextViewStyle">
+        <item name="android:paddingTop">16dip</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Material.Body2</item>
+        <item name="android:textColor">?android:attr/colorAccent</item>
+        <item name="android:layout_marginBottom">8dip</item>
+    </style>
+    
+</resources>

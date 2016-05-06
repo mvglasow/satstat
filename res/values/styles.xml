@@ -4,7 +4,7 @@
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo">
+    <style name="AppBaseTheme" parent="Theme.AppCompat">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -16,30 +16,31 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
-    <color name="gpsUsed">#33B5E5</color>
-    <color name="gpsUnused">#CC0000</color>
     
-    <color name="accHigh">#669900</color>
-    <color name="accMedium">#FF8800</color>
-    <color name="accLow">#CC0000</color>
-    <color name="accUnreliable">#9933CC</color>
+    <color name="gpsUsed">#80CBC4</color>
+    <color name="gpsUnused">#F44336</color>
+    
+    <color name="accHigh">#8BC344</color>
+    <color name="accMedium">#FF9800</color>
+    <color name="accLow">#F44336</color>
+    <color name="accUnreliable">#9C27B0</color>
 
-    <color name="gen2">#669900</color>
-    <color name="gen3">#33B5E5</color>
-    <color name="gen4">#9933CC</color>
+    <color name="gen2">#8BC344</color>
+    <color name="gen3">#80CBC4</color>
+    <color name="gen4">#9C27B0</color>
     
-    <color name="circle_blue_stroke">#FF33B5E5</color>
-    <color name="circle_blue_fill">#4D33B5E5</color>
-    <color name="circle_purple_stroke">#FF9933CC</color>
-    <color name="circle_purple_fill">#4D9933CC</color>
-    <color name="circle_green_stroke">#FF669900</color>
-    <color name="circle_green_fill">#4D669900</color>
-    <color name="circle_orange_stroke">#FFFF8800</color>
-    <color name="circle_orange_fill">#4DFF8800</color>
-    <color name="circle_red_stroke">#FFCC0000</color>
-    <color name="circle_red_fill">#4DCC0000</color>
-    <color name="circle_gray_stroke">#FFA6ACA9</color>
-    <color name="circle_gray_fill">#4DA6ACA9</color>
+    <color name="circle_blue_stroke">#FF00BCD4</color>
+    <color name="circle_blue_fill">#4D00BCD4</color>
+    <color name="circle_purple_stroke">#FF9C27B0</color>
+    <color name="circle_purple_fill">#4D9C27B0</color>
+    <color name="circle_green_stroke">#FF8BC344</color>
+    <color name="circle_green_fill">#4D8BC344</color>
+    <color name="circle_orange_stroke">#FFFF9800</color>
+    <color name="circle_orange_fill">#4DFF9800</color>
+    <color name="circle_red_stroke">#FFF44336</color>
+    <color name="circle_red_fill">#4DF44336</color>
+    <color name="circle_gray_stroke">#FF9E9E9E</color>
+    <color name="circle_gray_fill">#4D9E9E9E</color>
     <array name="location_provider_blue">
         <item>@drawable/ic_context_marker_blue</item>
         <item>@color/circle_blue_stroke</item>
