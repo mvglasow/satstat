@@ -14,7 +14,7 @@
     <string name="info_start_rec">Rögzítés elindítva</string>
     <string name="notify_record_title">Érzékelő adatok rögzítése</string>
     <string name="notify_record_body">Érintse meg a rögzítés leállításához</string>
-    <string name="status_agps">AGPS adat újratöltése kérvényezve</string>
+    <string name="status_agps">AGPS adat újratöltése kérvényezve - az Android nem ad tájékoztatást, hogy sikerült-e a frissítés</string>
     <string name="status_agps_captive">Nem sikerült frissíteni az adatot – indítsa el a böngészőt, jelentkezzen be a hálózatra, és próbálja meg újra</string>
     <string name="status_agps_error">Nincs elérhető hálózat, nem lehet újratölteni az AGPS adatokat</string>
     <string name="title_section1">GPS</string>
