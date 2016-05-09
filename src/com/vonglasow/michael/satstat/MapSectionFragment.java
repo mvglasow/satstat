@@ -35,6 +35,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
@@ -67,8 +68,6 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-
-import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
 
 /**
  * The fragment which displays the map view.
@@ -305,9 +304,14 @@ public class MapSectionFragment extends Fragment {
 		providerInvalidators = new HashMap<String, Runnable>();
 
 		if (mapTileCache == null)
-			mapTileCache = PersistentTileCache.createTileCache(rootView.getContext(), "MapQuest",
-					mapMap.getModel().displayModel.getTileSize(), 1f,
-					mapMap.getModel().frameBufferModel.getOverdrawFactor());
+			mapTileCache = AndroidUtil.createExternalStorageTileCache(rootView.getContext(),
+					"MapQuest",
+					Math.round(AndroidUtil.getMinimumCacheSize(rootView.getContext(),
+							mapMap.getModel().displayModel.getTileSize(),
+							mapMap.getModel().frameBufferModel.getOverdrawFactor(),
+							1f)),
+							mapMap.getModel().displayModel.getTileSize(),
+							true);
 
 		onlineTileSource = new OnlineTileSource(new String[]{
 				"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
@@ -345,12 +349,9 @@ public class MapSectionFragment extends Fragment {
 		if (mainActivity.mapSectionFragment == this)
 			mainActivity.mapSectionFragment = null;
 
-		if (mapTileCache != null)
-			mapTileCache.destroy();
-		if (mapMap != null) {
-			mapMap.getModel().mapViewPosition.destroy();
-			mapMap.destroy();
-		}
+		if (mapMap != null)
+			mapMap.destroyAll();
+		AndroidGraphicFactory.clearResourceMemoryCache();
 		super.onDestroyView();
 	}
 	

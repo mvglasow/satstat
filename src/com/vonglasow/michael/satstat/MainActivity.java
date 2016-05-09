@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
@@ -88,8 +90,6 @@ import android.view.Surface;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.data.CellTower;

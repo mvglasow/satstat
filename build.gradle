@@ -55,9 +55,10 @@ android {
         compile 'com.android.support:appcompat-v7:23.2.1'
         compile 'com.android.support:design:23.2.1'
 
-        compile 'org.mapsforge:mapsforge-core:0.4.3'
-        compile 'org.mapsforge:mapsforge-map:0.4.3'
-        compile 'org.mapsforge:mapsforge-map-reader:0.4.3'
-        compile 'org.mapsforge:mapsforge-map-android:0.4.3'
+        compile 'org.mapsforge:mapsforge-core:0.6.1'
+        compile 'org.mapsforge:mapsforge-map:0.6.1'
+        compile 'org.mapsforge:mapsforge-map-reader:0.6.1'
+        compile 'org.mapsforge:mapsforge-map-android:0.6.1'
+        compile 'com.caverock:androidsvg:1.2.2-beta-1'
     }
 }
