@@ -27,10 +27,8 @@ import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -38,7 +36,6 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -49,31 +46,21 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_HIGH;
-import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_LOW;
-import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM;
-import static android.hardware.SensorManager.SENSOR_STATUS_UNRELIABLE;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -86,7 +73,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.telephony.CellInfo;
 import android.telephony.CellLocation;
-import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
@@ -95,110 +81,21 @@ import static android.telephony.PhoneStateListener.LISTEN_NONE;
 import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
-import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
-import android.telephony.cdma.CdmaCellLocation;
-import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.Surface;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
-import org.mapsforge.core.graphics.Bitmap;
-import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.graphics.Style;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.Dimension;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Point;
-import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.layer.LayerManager;
-import org.mapsforge.map.layer.Layers;
-import org.mapsforge.map.layer.cache.TileCache;
-import org.mapsforge.map.layer.download.TileDownloadLayer;
-import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
-import org.mapsforge.map.layer.overlay.Circle;
-import org.mapsforge.map.layer.overlay.Marker;
-import org.mapsforge.map.layer.renderer.TileRendererLayer;
-import org.mapsforge.map.util.MapViewProjection;
-
-import uk.me.jstott.jcoord.LatLng;
-import uk.me.jstott.jcoord.MGRSRef;
 
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.data.CellTower;
-import com.vonglasow.michael.satstat.data.CellTowerCdma;
-import com.vonglasow.michael.satstat.data.CellTowerGsm;
 import com.vonglasow.michael.satstat.data.CellTowerList;
-import com.vonglasow.michael.satstat.data.CellTowerListCdma;
-import com.vonglasow.michael.satstat.data.CellTowerListGsm;
-import com.vonglasow.michael.satstat.data.CellTowerListLte;
-import com.vonglasow.michael.satstat.data.CellTowerLte;
-import com.vonglasow.michael.satstat.mapsforge.PersistentTileCache;
-import com.vonglasow.michael.satstat.widgets.GpsSnrView;
-import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 
 public class MainActivity extends AppCompatActivity implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener {
-
-	public static double EARTH_CIRCUMFERENCE = 40000000; // meters
-	
-	/*
-	 * Indices into style arrays
-	 */
-	private static final int STYLE_MARKER = 0;
-	private static final int STYLE_STROKE = 1;
-	private static final int STYLE_FILL = 2;
-	
-	/*
-	 * Styles for location providers
-	 */
-	private static final String [] LOCATION_PROVIDER_STYLES = {
-		"location_provider_blue",
-		"location_provider_green",
-		"location_provider_orange",
-		"location_provider_purple",
-		"location_provider_red"
-	};
-	
-	/*
-	 * Blue style: default for network location provider
-	 */
-	private static final String LOCATION_PROVIDER_BLUE = "location_provider_blue";
-	
-	/*
-	 * Red style: default for GPS location provider
-	 */
-	private static final String LOCATION_PROVIDER_RED = "location_provider_red";
-	
-	/*
-	 * Gray style for inactive location providers
-	 */
-	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
-	
-	private static final String KEY_LOCATION_STALE = "isStale";
-	
-	private static List<String> mAvailableProviderStyles;
-	
-	
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -233,8 +130,17 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
 	private static final int iSensorRate = 200000; //Default is 20,000 for accel, 5,000 for gyro
 
-	private static LocationManager mLocationManager;
-	private SensorManager mSensorManager;
+	GpsSectionFragment gpsSectionFragment = null;
+	SensorSectionFragment sensorSectionFragment = null;
+	RadioSectionFragment radioSectionFragment = null;
+	MapSectionFragment mapSectionFragment = null;
+	
+	TelephonyManager telephonyManager;
+	ConnectivityManager connectivityManager;
+	WifiManager wifiManager;
+	LocationManager locationManager;
+	SensorManager sensorManager;
+	
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
 	private Sensor mGyroSensor;
@@ -245,21 +151,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	private Sensor mHumiditySensor;
 	private Sensor mTempSensor;
 	
-	/*
-	 *  Maximum resolutions for sensors, expressed as number of decimals. These
-	 *  values were chosen based on screen real estate and significance. They
-	 *  may be lowered if actual precision is lower, but will not be increased
-	 *  even if sensors are capable of delivering higher precision.
-	 */
-    private byte mAccSensorRes = 3;
-    private byte mGyroSensorRes = 4;
-    private byte mMagSensorRes = 2;
-    private byte mLightSensorRes = 1;
-    private byte mProximitySensorRes = 1;
-    private byte mPressureSensorRes = 0;
-    private byte mHumiditySensorRes = 0;
-    private byte mTempSensorRes = 1;
-    
 	private long mOrLast = 0;
 	private long mAccLast = 0;
 	private long mGyroLast = 0;
@@ -269,133 +160,10 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	private long mPressureLast = 0;
 	private long mHumidityLast = 0;
 	private long mTempLast = 0;
-	
-	private static CellTower mServingCell;
-	private static CellTowerListGsm mCellsGsm = new CellTowerListGsm();
-	private static CellTowerListCdma mCellsCdma = new CellTowerListCdma();
-	private static CellTowerListLte mCellsLte = new CellTowerListLte();
-	
-	private static TelephonyManager mTelephonyManager;
-	private static ConnectivityManager mConnectivityManager;
-	private static WifiManager mWifiManager;
 
 	protected static MenuItem menu_action_record;
 	protected static MenuItem menu_action_stop_record;
 
-	protected static boolean isGpsViewReady = false;
-	protected static LinearLayout gpsRootLayout;
-	protected static GpsStatusView gpsStatusView;
-	protected static GpsSnrView gpsSnrView;
-	protected static LinearLayout gpsLatLayout;
-	protected static TextView gpsLat;
-	protected static LinearLayout gpsLonLayout;
-	protected static TextView gpsLon;
-	protected static LinearLayout gpsCoordLayout;
-	protected static TextView gpsCoord;
-	protected static TextView orDeclination;
-	protected static TextView gpsSpeed;
-	protected static TextView gpsSpeedUnit;
-	protected static TextView gpsAlt;
-	protected static TextView gpsAltUnit;
-	protected static TextView gpsTime;
-	protected static TextView gpsBearing;
-	protected static TextView gpsAccuracy;
-	protected static TextView gpsAccuracyUnit;
-	protected static TextView gpsOrientation;
-	protected static TextView gpsSats;
-	protected static TextView gpsTtff;
-
-	protected static boolean isSensorViewReady = false;
-	protected static TextView accStatus;
-	protected static TextView accHeader;
-	protected static TextView accTotal;
-	protected static TextView accX;
-	protected static TextView accY;
-	protected static TextView accZ;
-	protected static TextView rotStatus;
-	protected static TextView rotHeader;
-	protected static TextView rotTotal;
-	protected static TextView rotX;
-	protected static TextView rotY;
-	protected static TextView rotZ;
-	protected static TextView magStatus;
-	protected static TextView magHeader;
-	protected static TextView magTotal;
-	protected static TextView magX;
-	protected static TextView magY;
-	protected static TextView magZ;
-	protected static TextView orStatus;
-	protected static TextView orHeader;
-	protected static TextView orAzimuth;
-	protected static TextView orAziText;
-	protected static TextView orPitch;
-	protected static TextView orRoll;
-	protected static TextView miscHeader;
-	protected static TextView tempStatus;
-	protected static TextView tempHeader;
-	protected static TextView metTemp;
-	protected static TextView pressureStatus;
-	protected static TextView pressureHeader;
-	protected static TextView metPressure;
-	protected static TextView humidStatus;
-	protected static TextView humidHeader;
-	protected static TextView metHumid;
-	protected static TextView lightStatus;
-	protected static TextView lightHeader;
-	protected static TextView light;
-	protected static TextView proximityStatus;
-	protected static TextView proximityHeader;
-	protected static TextView proximity;
-
-	protected static boolean isRadioViewReady = false;
-	protected static LinearLayout rilGsmLayout;
-	protected static TableLayout rilCells;
-	protected static LinearLayout rilCdmaLayout;
-	protected static TableLayout rilCdmaCells;
-	protected static LinearLayout rilLteLayout;
-	protected static TableLayout rilLteCells;
-	protected static LinearLayout wifiAps;
-	
-	protected static boolean isMapViewReady = false;
-	protected static boolean isMapViewAttached = true;
-	protected static MapView mapMap;
-	protected static TileDownloadLayer mapDownloadLayer = null;
-	protected static TileCache mapTileCache = null;
-	protected static ImageButton mapReattach;
-	protected static HashMap<String, Circle> mapCircles;
-	protected static HashMap<String, Marker> mapMarkers;
-	
-	/**
-	 * Cached map of locations reported by the providers.
-	 * 
-	 * The keys correspond to the provider names as defined by LocationManager.
-	 * The entries are {@link Location} instances. For valid and recent
-	 * locations these are copies of the locations supplied by
-	 * {@link LocationManager}. Invalid locations, intended as placeholders,
-	 * have an empty provider string and should not be processed. Stale
-	 * locations have isStale entry in their extras set to true. They can be
-	 * processed but may require special handling.
-	 */
-	protected static HashMap<String, Location> providerLocations;
-	
-	protected static HashMap<String, String> providerStyles;
-	protected static HashMap<String, String> providerAppliedStyles;
-	protected static Handler providerInvalidationHandler = null;
-	protected static HashMap<String, Runnable> providerInvalidators;
-	private static final int PROVIDER_EXPIRATION_DELAY = 6000; // the time after which a location is considered stale 
-	
-	private static List <ScanResult> scanResults = null;
-	private static String selectedBSSID = "";
-	protected static Handler networkTimehandler = null;
-	protected static int mLastNetworkGen = 0; //the last observed (and displayed) network type
-	protected static int mLastCellAsu = NeighboringCellInfo.UNKNOWN_RSSI;
-	protected static int mLastCellDbm = CellTower.DBM_UNKNOWN;
-	protected static Runnable networkTimeRunnable = null;
-	private static final int NETWORK_REFRESH_DELAY = 1000; //the polling interval for the network type
-	protected static Handler wifiTimehandler = null;
-	protected static Runnable wifiTimeRunnable = null;
-	private static final int WIFI_REFRESH_DELAY = 1000; //the time between two requests for WLAN rescan.
-	
 	/**
 	 * Converts screen rotation to orientation for devices with a naturally tall screen.
 	 */
@@ -414,108 +182,38 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
 		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
 
-	private static SharedPreferences mSharedPreferences;
+	SharedPreferences mSharedPreferences;
 	
-	private static DateFormat df;
-	private static boolean prefUnitType = true;
-	private static int prefCoord = SettingsActivity.KEY_PREF_COORD_DECIMAL;
-	private static boolean prefUtc = false;
-	private static boolean prefCid = false;
+	boolean prefUnitType = true;
+	int prefCoord = SettingsActivity.KEY_PREF_COORD_DECIMAL;
+	boolean prefUtc = false;
+	boolean prefCid = false;
 
-    @SuppressLint("UseSparseArrays")
-	private final static HashMap<Integer, Integer> channelsFrequency = new HashMap<Integer, Integer>() {
-		/*
-		 * Required for serializable objects
-		 */
-		private static final long serialVersionUID = 6793015643527778045L;
-
-		{
-			// 2.4 GHz (802.11 b/g/n)
-			this.put(2412, 1);
-			this.put(2417, 2);
-			this.put(2422, 3);
-			this.put(2427, 4);
-			this.put(2432, 5);
-			this.put(2437, 6);
-			this.put(2442, 7);
-			this.put(2447, 8);
-			this.put(2452, 9);
-			this.put(2457, 10);
-			this.put(2462, 11);
-			this.put(2467, 12);
-			this.put(2472, 13);
-			this.put(2484, 14);
-			
-			//5 GHz (802.11 a/h/j/n/ac)
-			this.put(4915, 183);
-			this.put(4920, 184);
-			this.put(4925, 185);
-			this.put(4935, 187);
-			this.put(4940, 188);
-			this.put(4945, 189);
-			this.put(4960, 192);
-			this.put(4980, 196);
-			
-			this.put(5035, 7);
-			this.put(5040, 8);
-			this.put(5045, 9);
-			this.put(5055, 11);
-			this.put(5060, 12);
-			this.put(5080, 16);
-			
-			this.put(5170, 34);
-			this.put(5180, 36);
-			this.put(5190, 38);
-			this.put(5200, 40);
-			this.put(5210, 42);
-			this.put(5220, 44);
-			this.put(5230, 46);
-			this.put(5240, 48);
-			this.put(5260, 52);
-			this.put(5280, 56);
-			this.put(5300, 60);
-			this.put(5320, 64);
-			
-			this.put(5500, 100);
-			this.put(5520, 104);
-			this.put(5540, 108);
-			this.put(5560, 112);
-			this.put(5580, 116);
-			this.put(5600, 120);
-			this.put(5620, 124);
-			this.put(5640, 128);
-			this.put(5660, 132);
-			this.put(5680, 136);
-			this.put(5700, 140);
-			this.put(5745, 149);
-			this.put(5765, 153);
-			this.put(5785, 157);
-			this.put(5805, 161);
-			this.put(5825, 165);
-		}
-	};
-	
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 
 	 */
-	private static final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+	private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
 		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	 	public void onCellInfoChanged(List<CellInfo> cellInfo) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) 
 				return;
-			updateCellData(null, null, cellInfo);
+			if (radioSectionFragment != null)
+				radioSectionFragment.updateCellData(null, null, cellInfo);
 	 	}
 	 	
 		public void onCellLocationChanged (CellLocation location) {
-			updateCellData(location, null, null);
+			if (radioSectionFragment != null)
+				radioSectionFragment.updateCellData(location, null, null);
 		}
 		
 		public void onDataConnectionStateChanged (int state, int networkType) {
-			onNetworkTypeChanged(networkType);
+			if (radioSectionFragment != null)
+				radioSectionFragment.onNetworkTypeChanged(networkType);
 		}
 		
 		public void onSignalStrengthsChanged (SignalStrength signalStrength) {
-			updateCellData(null, signalStrength, null);
+			if (radioSectionFragment != null)
+				radioSectionFragment.updateCellData(null, signalStrength, null);
 		}
 	};
 	
@@ -526,335 +224,45 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		@Override
 		public void onReceive(Context c, Intent intent) {
 			if (intent.getAction() == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
-				scanResults = mWifiManager.getScanResults();
-				if (isRadioViewReady) {
-					refreshWifiResults();
+				if (radioSectionFragment != null) {
+					radioSectionFragment.scanResults = wifiManager.getScanResults();
+					radioSectionFragment.refreshWifiResults();
 				}
 			} else {
 				//something has changed about WiFi setup, rescan
-				mWifiManager.startScan();
+				wifiManager.startScan();
 			}
 		}
 	};
 	
 	private Thread.UncaughtExceptionHandler defaultUEH;
-
-	private final void onWifiEntryClick(String BSSID) {
-		selectedBSSID = BSSID;
-		refreshWifiResults();
-	}
-
-	private final void addWifiResult(ScanResult result) {
-		final ScanResult r = result;
-		android.view.View.OnClickListener clis = new android.view.View.OnClickListener () {
-
-			@Override
-			public void onClick(View v) {
-				onWifiEntryClick(r.BSSID);
-			}
-		};
-
-		View divider = new View(wifiAps.getContext());
-		divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1));
-		divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
-		divider.setOnClickListener(clis);
-		wifiAps.addView(divider);
-		
-		LinearLayout wifiLayout = new LinearLayout(wifiAps.getContext());
-		wifiLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-		wifiLayout.setOrientation(LinearLayout.HORIZONTAL);
-		wifiLayout.setWeightSum(22);
-		wifiLayout.setMeasureWithLargestChildEnabled(false);
-		
-		ImageView wifiType = new ImageView(wifiAps.getContext());
-		wifiType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT, 3));
-		if (WifiCapabilities.isAdhoc(result)) {
-			wifiType.setImageResource(R.drawable.ic_content_wifi_adhoc);
-		} else if ((WifiCapabilities.isEnterprise(result)) || (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.EAP)) {
-			wifiType.setImageResource(R.drawable.ic_content_wifi_eap);
-		} else if (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.PSK) {
-			wifiType.setImageResource(R.drawable.ic_content_wifi_psk);
-		} else if (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.WEP) {
-			wifiType.setImageResource(R.drawable.ic_content_wifi_wep);
-		} else if (WifiCapabilities.getScanResultSecurity(result) == WifiCapabilities.OPEN) {
-			wifiType.setImageResource(R.drawable.ic_content_wifi_open);
-		} else {
-			wifiType.setImageResource(R.drawable.ic_content_wifi_unknown);
-		}
-		
-		wifiType.setScaleType(ScaleType.CENTER);
-		wifiLayout.addView(wifiType);
-		
-		TableLayout wifiDetails = new TableLayout(wifiAps.getContext());
-		wifiDetails.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
-		TableRow innerRow1 = new TableRow(wifiAps.getContext());
-		TextView newMac = new TextView(wifiAps.getContext());
-		newMac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 14));
-		newMac.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-		newMac.setText(result.BSSID);
-		innerRow1.addView(newMac);
-		TextView newCh = new TextView(wifiAps.getContext());
-		newCh.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-		newCh.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-		newCh.setText(getChannelFromFrequency(result.frequency));
-		innerRow1.addView(newCh);
-		TextView newLevel = new TextView(wifiAps.getContext());
-		newLevel.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newLevel.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Medium);
-		newLevel.setText(String.valueOf(result.level));
-		innerRow1.addView(newLevel);
-		innerRow1.setOnClickListener(clis);
-		wifiDetails.addView(innerRow1,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-		TableRow innerRow2 = new TableRow(wifiAps.getContext());
-		TextView newSSID = new TextView(wifiAps.getContext());
-		newSSID.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 19));
-		newSSID.setTextAppearance(wifiAps.getContext(), android.R.style.TextAppearance_Small);
-		newSSID.setText(result.SSID);
-		innerRow2.addView(newSSID);
-		innerRow2.setOnClickListener(clis);
-		wifiDetails.addView(innerRow2, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-		wifiLayout.addView(wifiDetails);
-		wifiLayout.setOnClickListener(clis);
-		wifiAps.addView(wifiLayout);
-	}
-
-	private final void refreshWifiResults() {
-		if (scanResults != null) {
-			wifiAps.removeAllViews();
-			//add the selected network first
-			for (ScanResult result : scanResults) {
-				if (result.BSSID.equals(selectedBSSID)) {
-					addWifiResult(result);
-				}
-			}
-			for (ScanResult result : scanResults) {
-				if (!result.BSSID.equals(selectedBSSID)) {
-					addWifiResult(result);	
-				}
-			}
-		}
-	}
-	
-    /**
-     * Converts an accuracy value into a color identifier.
-     */
-	public static int accuracyToColor(int accuracy) {
-    	switch (accuracy) {
-    	case SENSOR_STATUS_ACCURACY_HIGH:
-    		return(R.color.accHigh);
-    	case SENSOR_STATUS_ACCURACY_MEDIUM:
-    		return(R.color.accMedium);
-    	case SENSOR_STATUS_ACCURACY_LOW:
-    		return(R.color.accLow);
-    	case SENSOR_STATUS_UNRELIABLE:
-    		return(R.color.accUnreliable);
-    	default:
-    		return(android.R.color.background_dark);
-    	}
-	}
 	
 	
-	/**
-	 * Applies a style to the map overlays associated with a given location provider.
-	 * 
-	 * This method changes the style (effectively, the color) of the circle and
-	 * marker overlays. Its main purpose is to switch the color of the overlays
-	 * between gray and the provider color.
-	 * 
-	 * @param context The context of the caller
-	 * @param provider The name of the location provider, as returned by
-	 * {@link LocationProvider.getName()}.
-	 * @param styleName The name of the style to apply. If it is null, the
-	 * default style for the provider as returned by 
-	 * assignLocationProviderStyle() is applied. 
-	 */
-	protected static void applyLocationProviderStyle(Context context, String provider, String styleName) {
-		String sn = (styleName != null)?styleName:assignLocationProviderStyle(provider);
-		
-		Boolean isStyleChanged = !sn.equals(providerAppliedStyles.get(provider));
-		Boolean needsRedraw = false;
-		
-    	Resources res = context.getResources();
-    	TypedArray style = res.obtainTypedArray(res.getIdentifier(sn, "array", context.getPackageName()));
-    	
-    	// Circle layer
-    	Circle circle = mapCircles.get(provider);
-    	if (circle != null) {
-    		circle.getPaintFill().setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
-    		circle.getPaintStroke().setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
-    		needsRedraw = isStyleChanged && circle.isVisible();
-    	}
-    	
-    	//Marker layer
-    	Marker marker = mapMarkers.get(provider);
-    	if (marker != null) {
-            Drawable drawable = style.getDrawable(STYLE_MARKER);
-            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-            marker.setBitmap(bitmap);
-            needsRedraw = needsRedraw || (isStyleChanged && marker.isVisible());
-    	}
-    	
-    	if (needsRedraw)
-    		mapMap.getLayerManager().redrawLayers();
-    	providerAppliedStyles.put(provider, sn);
-        style.recycle();
-	}
-	
-	
-	/**
-	 * Returns the map overlay style to use for a given location provider.
-	 * 
-	 * This method first checks if a style has already been assigned to the
-	 * location provider. In that case the already assigned style is returned.
-	 * Otherwise a new style is assigned and the assignment is stored
-	 * internally and written to SharedPreferences.
-	 * @param provider
-	 * @return The style to use for non-stale locations
-	 */
-	protected static String assignLocationProviderStyle(String provider) {
-    	String styleName = providerStyles.get(provider);
-    	if (styleName == null) {
-    		/*
-    		 * Not sure if this ever happens but I can't rule it out. Scenarios I can think of:
-    		 * - A custom location provider which identifies itself as "passive"
-    		 * - A combination of the following:
-    		 *   - Passive location provider is selected
-    		 *   - A new provider is added while we're running (so it's not in our list)
-    		 *   - Another app starts using the new provider
-    		 *   - The passive location provider forwards us an update from the new provider
-    		 */
-    		if (mAvailableProviderStyles.isEmpty())
-        		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
-    		styleName = mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, mAvailableProviderStyles.get(0));
-    		providerStyles.put(provider, styleName);
-			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, styleName);
-			spEditor.commit();
-    	}
-		return styleName;
-	}
-	
-	/**
-	 * Formats an item of cell information data for display.
-	 * <p>
-	 * This helper function formats any item of cell information data, such as
-	 * the cell ID, PSC or similar. For valid data a string with the properly
-	 * formatted value will be returned. If the input value is
-	 * {@link com.vonglasow.michael.satstat.data.CellTower#UNKNOWN}, then the
-	 * {@code value_none} resource string will be returned. 
-	 * @param context the context of the caller
-	 * @param format a format string, which must contain placeholders for exactly one variable, or {@code null}.
-	 * @param raw the value to format
-	 * @return
-	 */
-	public static String formatCellData(Context context, String format, int raw) {
-		if (raw == CellTower.UNKNOWN)
-			return context.getResources().getString(R.string.value_none);
-		else {
-			String fmt = (format != null) ? format : "%d";
-			return String.format(fmt, raw);
-		}
-	}
-	
-	/**
-	 * Formats cell signal strength for display.
-	 * <p>
-	 * This helper function formats the signal strength for a cell. For valid
-	 * data a string with the properly formatted value will be returned. If the
-	 * input value is
-	 * {@link com.vonglasow.michael.satstat.data.CellTower#DBM_UNKNOWN}, then
-	 * the {@code value_none} resource string will be returned.
-	 * @param context the context of the caller
-	 * @param format a format string, which must contain placeholders for exactly one variable, or {@code null}.
-	 * @param raw the signal strength in dBm
-	 * @return
-	 */
-	public static String formatCellDbm(Context context, String format, int raw) {
-		if (raw == CellTower.DBM_UNKNOWN)
-			return context.getResources().getString(R.string.value_none);
-		else {
-			String fmt = (format != null) ? format : "%d";
-			return String.format(fmt, raw);
-		}
-	}
-
     /**
      * Converts a bearing (in degrees) into a directional name.
      */
-    public String formatOrientation(float bearing) {
+    public static String formatOrientation(Context context, float bearing) {
 		return 
-			(bearing < 11.25) ? getString(R.string.value_N) :
-				(bearing < 33.75) ? getString(R.string.value_NNE) :
-					(bearing < 56.25) ? getString(R.string.value_NE) :
-						(bearing < 78.75) ? getString(R.string.value_ENE) :
-							(bearing < 101.25) ? getString(R.string.value_E) :
-								(bearing < 123.75) ? getString(R.string.value_ESE) :
-									(bearing < 146.25) ? getString(R.string.value_SE) :
-										(bearing < 168.75) ? getString(R.string.value_SSE) :
-											(bearing < 191.25) ? getString(R.string.value_S) :
-												(bearing < 213.75) ? getString(R.string.value_SSW) :
-													(bearing < 236.25) ? getString(R.string.value_SW) :
-														(bearing < 258.75) ? getString(R.string.value_WSW) :
-															(bearing < 280.25) ? getString(R.string.value_W) :
-																(bearing < 302.75) ? getString(R.string.value_WNW) :
-																	(bearing < 325.25) ? getString(R.string.value_NW) :
-																		(bearing < 347.75) ? getString(R.string.value_NNW) :
-																			getString(R.string.value_N);
+			(bearing < 11.25) ? context.getString(R.string.value_N) :
+				(bearing < 33.75) ? context.getString(R.string.value_NNE) :
+					(bearing < 56.25) ? context.getString(R.string.value_NE) :
+						(bearing < 78.75) ? context.getString(R.string.value_ENE) :
+							(bearing < 101.25) ? context.getString(R.string.value_E) :
+								(bearing < 123.75) ? context.getString(R.string.value_ESE) :
+									(bearing < 146.25) ? context.getString(R.string.value_SE) :
+										(bearing < 168.75) ? context.getString(R.string.value_SSE) :
+											(bearing < 191.25) ? context.getString(R.string.value_S) :
+												(bearing < 213.75) ? context.getString(R.string.value_SSW) :
+													(bearing < 236.25) ? context.getString(R.string.value_SW) :
+														(bearing < 258.75) ? context.getString(R.string.value_WSW) :
+															(bearing < 280.25) ? context.getString(R.string.value_W) :
+																(bearing < 302.75) ? context.getString(R.string.value_WNW) :
+																	(bearing < 325.25) ? context.getString(R.string.value_NW) :
+																		(bearing < 347.75) ? context.getString(R.string.value_NNW) :
+																			context.getString(R.string.value_N);
     }
 	
     
-    /**
-     * Gets the WiFi channel number for a frequency
-     * @param frequency The frequency in MHz
-     * @return The channel number corresponding to {@code frequency}
-     */
-	public static String getChannelFromFrequency(int frequency) {
-		if (channelsFrequency.containsKey(frequency)) {
-			return String.valueOf(channelsFrequency.get(frequency));
-		}
-		else {
-			return "?";
-		}
-	}
-	
-
-    /**
-     * Gets the display color for a phone network generation.
-     * @param generation The network generation, i.e. {@code 2}, {@code 3} or {@code 4} for any flavor of 2G, 3G or 4G, or {@code 0} for unknown
-     * @return The color in which to display the indicator. If {@code generation} is {@code 0} or not a valid generation, the color returned will be transparent.
-     */
-	public static int getColorFromGeneration(int generation) {
-    	switch (generation) {
-    	case 2:
-    		return(R.color.gen2);
-    	case 3:
-    		return(R.color.gen3);
-    	case 4:
-    		return(R.color.gen4);
-    	default:
-    		return(android.R.color.transparent);
-    	}
-	}
-	
-	
-	/**
-	 * Gets the number of decimal digits to show when displaying sensor values, based on sensor accuracy.
-	 * @param sensor The sensor
-	 * @param maxDecimals The maximum number of decimals to display, even if the sensor's accuracy is higher
-	 * @return
-	 */
-	public static byte getSensorDecimals(Sensor sensor, byte maxDecimals) {
-		if (sensor == null) return 0;
-		float res = sensor.getResolution();
-		if (res == 0) return maxDecimals;
-        return (byte) Math.min(maxDecimals,
-        		(sensor != null) ? (byte) Math.max(Math.ceil(
-        				(float) -Math.log10(sensor.getResolution())), 0) : 0);
-	}
-	
-	
 	/**
 	 * Returns the serving cell.
 	 * <p>
@@ -877,30 +285,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		return null;
 	}
     
-
-	/**
-	 * Determines if a location is stale.
-	 * 
-	 * A location is considered stale if its Extras have an isStale key set to
-	 * True. A location without this key is not considered stale.
-	 * 
-	 * @param location
-	 * @return True if stale, False otherwise
-	 */
-	public static boolean isLocationStale(Location location) {
-		Bundle extras = location.getExtras();
-		if (extras == null)
-			return false;
-		return extras.getBoolean(KEY_LOCATION_STALE);
-	}
-	
-	
-	public static void markLocationAsStale(Location location) {
-		if (location.getExtras() == null)
-			location.setExtras(new Bundle());
-		location.getExtras().putBoolean(KEY_LOCATION_STALE, true);
-	}
-
 
     /**
      * Called when a sensor's accuracy has changed. Does nothing.
@@ -977,17 +361,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         	       (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270));
         Log.d("MainActivity", "isWideScreen=" + Boolean.toString(isWideScreen));
         
-        providerLocations = new HashMap<String, Location>();
-        
-        mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
-        
-        providerStyles = new HashMap<String, String>();
-        providerAppliedStyles = new HashMap<String, String>();
-        
-        providerInvalidationHandler = new Handler();
-        providerInvalidators = new HashMap<String, Runnable>(); 
-        
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment for each of the
         // primary sections of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -1016,55 +390,20 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         AndroidGraphicFactory.createInstance(this.getApplication());
 
         // Get system services for event delivery
-    	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        mOrSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);        
-        mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);     
-        mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE); 
-        mMagSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD); 
-        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        mPressureSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-        mHumiditySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-        mTempSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        mConnectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-
-        mAccSensorRes = getSensorDecimals(mAccSensor, mAccSensorRes);
-        mGyroSensorRes = getSensorDecimals(mGyroSensor, mGyroSensorRes);
-        mMagSensorRes = getSensorDecimals(mMagSensor, mMagSensorRes);
-        mLightSensorRes = getSensorDecimals(mLightSensor, mLightSensorRes);
-        mProximitySensorRes = getSensorDecimals(mProximitySensor, mProximitySensorRes);
-        mPressureSensorRes = getSensorDecimals(mPressureSensor, mPressureSensorRes);
-        mHumiditySensorRes = getSensorDecimals(mHumiditySensor, mHumiditySensorRes);
-        mTempSensorRes = getSensorDecimals(mTempSensor, mTempSensorRes);
-        
-        networkTimehandler = new Handler();
-        networkTimeRunnable = new Runnable() {
-        	@Override
-        	public void run() {
-	            int newNetworkType = mTelephonyManager.getNetworkType();
-	            if (CellTower.getGenerationFromNetworkType(newNetworkType) != mLastNetworkGen)
-	            	onNetworkTypeChanged(newNetworkType);
-	            else
-	            	networkTimehandler.postDelayed(this, NETWORK_REFRESH_DELAY);
-        	}
-        };
-
-        wifiTimehandler = new Handler();
-        wifiTimeRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                mWifiManager.startScan();
-                wifiTimehandler.postDelayed(this, WIFI_REFRESH_DELAY);
-            }
-        };
-        
-        updateLocationProviderStyles();
-        
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+    	locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        mOrSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);        
+        mAccSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);     
+        mGyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE); 
+        mMagSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD); 
+        mLightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mProximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        mPressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mHumiditySensor = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        mTempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
     }
 	
 	
@@ -1087,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
      * Called when the status of the GPS changes. Updates GPS display.
      */
     public void onGpsStatusChanged (int event) {
-		GpsStatus status = mLocationManager.getGpsStatus(null);
+		GpsStatus status = locationManager.getGpsStatus(null);
 		int satsInView = 0;
 		int satsUsed = 0;
 		Iterable<GpsSatellite> sats = status.getSatellites();
@@ -1098,18 +437,12 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			}
 		}
 
-		if (isGpsViewReady) {
-    		gpsSats.setText(String.valueOf(satsUsed) + "/" + String.valueOf(satsInView));
-    		gpsTtff.setText(String.valueOf(status.getTimeToFirstFix() / 1000));
-    		gpsStatusView.showSats(sats);
-    		gpsSnrView.showSats(sats);
+		if (gpsSectionFragment != null) {
+    		gpsSectionFragment.onGpsStatusChanged(status, satsInView, satsUsed, sats);
     	}
     	
-		if ((isMapViewReady) && (satsUsed == 0)) {
-			Location location = providerLocations.get(LocationManager.GPS_PROVIDER);
-			if (location != null)
-				markLocationAsStale(location);
-			applyLocationProviderStyle(this, LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_GRAY);
+		if (mapSectionFragment != null) {
+			mapSectionFragment.onGpsStatusChanged(status, satsInView, satsUsed, sats);
 		}
     }
     
@@ -1118,162 +451,14 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
      * Stores the location and updates GPS display and map view.
      */
     public void onLocationChanged(Location location) {
-    	// some providers may report NaN for latitude and longitude:
-    	// if that happens, do not process this location and mark any previous
-    	// location from that provider as stale
-		if (Double.isNaN(location.getLatitude()) || Double.isNaN(location.getLongitude())) {
-			markLocationAsStale(providerLocations.get(location.getProvider()));
-			if (isMapViewReady)
-				applyLocationProviderStyle(this, location.getProvider(), LOCATION_PROVIDER_GRAY);
-			return;
-		}
-
-		if (providerLocations.containsKey(location.getProvider()))
-    		providerLocations.put(location.getProvider(), new Location(location));
-    	
     	// update map view
-		if (isMapViewReady) {
-    		LatLong latLong = new LatLong(location.getLatitude(), location.getLongitude());
-    		
-    		Circle circle = mapCircles.get(location.getProvider());
-    		Marker marker = mapMarkers.get(location.getProvider());
-    		
-    		if (circle != null) {
-    			circle.setLatLong(latLong);
-	    		if (location.hasAccuracy()) {
-	    			circle.setVisible(true);
-	    			circle.setRadius(location.getAccuracy());
-	    		} else {
-	    			Log.d("MainActivity", "Location from " + location.getProvider() + " has no accuracy");
-	    			circle.setVisible(false);
-	    		}
-    		}
-    		
-			if (marker != null) {
-				marker.setLatLong(latLong);
-				marker.setVisible(true);
-			}
-			
-			applyLocationProviderStyle(this, location.getProvider(), null);
-			
-			Runnable invalidator = providerInvalidators.get(location.getProvider());
-			if (invalidator != null) {
-				providerInvalidationHandler.removeCallbacks(invalidator);
-				providerInvalidationHandler.postDelayed(invalidator, PROVIDER_EXPIRATION_DELAY);
-			}
-    		
-    		// redraw, move locations into view and zoom out as needed
-			if ((circle != null) || (marker != null) || (invalidator != null))
-				updateMap();
+		if (mapSectionFragment != null) {
+			mapSectionFragment.onLocationChanged(location);
 		}
     	
     	// update GPS view
-    	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (isGpsViewReady)) {
-	    	if (location.hasAccuracy()) {
-	    		Float getAcc = (float) 0.0;
-	    		if(prefUnitType) {
-	    			getAcc = (float)(location.getAccuracy());
-	    		} else {
-	    			getAcc = (float)(location.getAccuracy() * (float) 3.28084);
-	    		}
-	    		gpsAccuracy.setText(String.format("%.0f", getAcc));
-	    		gpsAccuracyUnit.setText(getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet)));
-	    	} else {
-	    		gpsAccuracy.setText(getString(R.string.value_none));
-	    		gpsAccuracyUnit.setText("");
-	    	}
-	    	
-	    	if (prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
-	    		gpsCoordLayout.setVisibility(View.GONE);
-	    		gpsLatLayout.setVisibility(View.VISIBLE);
-	    		gpsLonLayout.setVisibility(View.VISIBLE);
-	    		gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
-	    		gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
-	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
-	    		gpsCoordLayout.setVisibility(View.GONE);
-	    		gpsLatLayout.setVisibility(View.VISIBLE);
-	    		gpsLonLayout.setVisibility(View.VISIBLE);
-	    		double dec = location.getLatitude();
-	    		double deg = (int) dec;
-	    		double min = 60.0 * (dec - deg);
-	    		gpsLat.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
-	    		dec = location.getLongitude();
-	    		deg = (int) dec;
-	    		min = 60.0 * (dec - deg);
-	    		gpsLon.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
-	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
-	    		gpsCoordLayout.setVisibility(View.GONE);
-	    		gpsLatLayout.setVisibility(View.VISIBLE);
-	    		gpsLonLayout.setVisibility(View.VISIBLE);
-	    		double dec = location.getLatitude();
-	    		double deg = (int) dec;
-	    		double tmp = 60.0 * (dec - deg);
-	    		double min = (int) tmp;
-	    		double sec = 60.0 * (tmp - min);
-	    		gpsLat.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
-	    		dec = location.getLongitude();
-	    		deg = (int) dec;
-	    		tmp = 60.0 * (dec - deg);
-	    		min = (int) tmp;
-	    		sec = 60.0 * (tmp - min);
-	    		gpsLon.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
-	    	} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
-	    		gpsLatLayout.setVisibility(View.GONE);
-	    		gpsLonLayout.setVisibility(View.GONE);
-	    		gpsCoordLayout.setVisibility(View.VISIBLE);
-	    		gpsCoord.setText(new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M));
-	    	}
-	    	if (prefUtc)
-	    		df.setTimeZone(TimeZone.getTimeZone("UTC"));
-	    	else
-	    		df.setTimeZone(TimeZone.getDefault());
-	    	gpsTime.setText(df.format(new Date(location.getTime())));
-	    	
-	    	if (location.hasAltitude()) {
-	    		Float getAltitude = (float) 0.0;
-	    		if(prefUnitType) {
-	    			getAltitude = (float)(location.getAltitude());
-	    		} else {
-	    			getAltitude = (float)(location.getAltitude() * (float) 3.28084);
-	    		}
-	    		gpsAlt.setText(String.format("%.0f", getAltitude));
-	    		gpsAltUnit.setText(getString(((prefUnitType) ? R.string.unit_meter : R.string.unit_feet)));
-	    		orDeclination.setText(String.format("%.0f%s", new GeomagneticField(
-	    				(float) location.getLatitude(),
-	    				(float) location.getLongitude(),
-	    				(float) (getAltitude),
-	    				location.getTime()
-    				).getDeclination(), getString(R.string.unit_degree)));
-	    	} else {
-	    		gpsAlt.setText(getString(R.string.value_none));
-	    		gpsAltUnit.setText("");
-	    		orDeclination.setText(getString(R.string.value_none));
-	    	}
-	    	
-	    	if (location.hasBearing()) {
-	    		gpsBearing.setText(String.format("%.0f%s", location.getBearing(), getString(R.string.unit_degree)));
-	    		gpsOrientation.setText(formatOrientation(location.getBearing()));
-	    	} else {
-	    		gpsBearing.setText(getString(R.string.value_none));
-	    		gpsOrientation.setText(getString(R.string.value_none));
-	    	}
-	    	
-	    	if (location.hasSpeed()) {
-	    		Float getSpeed = (float) 0.0;
-	    		if(prefUnitType) {
-	    			getSpeed = (float)(location.getSpeed() * 3.6f);
-	    		} else {
-	    			getSpeed = (float)(location.getSpeed() * 3.6f * 2.23694f);
-	    		}
-	    		gpsSpeed.setText(String.format("%.0f", getSpeed));
-	    		gpsSpeedUnit.setText(getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
-	    	} else {
-	    		gpsSpeed.setText(getString(R.string.value_none));
-	    		gpsSpeedUnit.setText("");
-	    	}
-	    	
-	    	// note: getting number of sats in fix by looking for "satellites"
-	    	// in location's extras doesn't seem to work, always returns 0 sats
+    	if ((location.getProvider().equals(LocationManager.GPS_PROVIDER)) && (gpsSectionFragment != null)) {
+    		gpsSectionFragment.onLocationChanged(location);
     	}
     }
     
@@ -1301,34 +486,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		}
     }
     
-	/**
-	 * Updates the network type indicator for the current cell. Called by
-	 * {@link networkTimeRunnable.run()} or
-	 * {@link android.telephony.PhoneStateListener#onDataConnectionStateChanged(int, int)}.
-	 * 
-	 * @param networkType One of the NETWORK_TYPE_xxxx constants defined in {@link android.telephony.TelephonyManager}
-	 */
-    protected static void onNetworkTypeChanged(int networkType) {
-		Log.d("MainActivity", "Network type changed to " + Integer.toString(networkType));
-		int newNetworkGen = CellTower.getGenerationFromNetworkType(networkType);
-		int oldNetworkGen = mLastNetworkGen;
-		if (newNetworkGen != mLastNetworkGen) {
-			networkTimehandler.removeCallbacks(networkTimeRunnable);
-			mLastNetworkGen = newNetworkGen;
-			/*
-			 * Network type changes occur slightly before or after cell changes. Therefore, we may have
-			 * stored cells in the wrong list when switching from or to LTE.
-			 */
-			if ((newNetworkGen == 4) || (oldNetworkGen == 4))
-				updateCellData(null, null, null);
-			else if (mServingCell != null) {
-				mServingCell.setNetworkType(networkType);
-				Log.d(MainActivity.class.getSimpleName(), String.format("Setting network type to %d for cell %s (%s)", mServingCell.getGeneration(), mServingCell.getText(), mServingCell.getAltText()));
-			}
-		}
-		showCells();
-    }
-
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -1349,17 +506,17 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         super.onResume();
         isStopped = false;
         registerLocationProviders(this);
-        mSensorManager.registerListener(this, mOrSensor, iSensorRate);
-        mSensorManager.registerListener(this, mAccSensor, iSensorRate);
-        mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
-        mSensorManager.registerListener(this, mMagSensor, iSensorRate);
-        mSensorManager.registerListener(this, mLightSensor, iSensorRate);
-        mSensorManager.registerListener(this, mProximitySensor, iSensorRate);
-        mSensorManager.registerListener(this, mPressureSensor, iSensorRate);
-        mSensorManager.registerListener(this, mHumiditySensor, iSensorRate);
-        mSensorManager.registerListener(this, mTempSensor, iSensorRate);
+        sensorManager.registerListener(this, mOrSensor, iSensorRate);
+        sensorManager.registerListener(this, mAccSensor, iSensorRate);
+        sensorManager.registerListener(this, mGyroSensor, iSensorRate);
+        sensorManager.registerListener(this, mMagSensor, iSensorRate);
+        sensorManager.registerListener(this, mLightSensor, iSensorRate);
+        sensorManager.registerListener(this, mProximitySensor, iSensorRate);
+        sensorManager.registerListener(this, mPressureSensor, iSensorRate);
+        sensorManager.registerListener(this, mHumiditySensor, iSensorRate);
+        sensorManager.registerListener(this, mTempSensor, iSensorRate);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        	mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
+        	telephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
         else
         	Log.w("MainActivity", "ACCESS_COARSE_LOCATION permission not granted. Cell info will not be available.");
         
@@ -1375,12 +532,11 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         
         // A connection to the supplicant has been established or the connection to the supplicant has been lost.
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
-
-        wifiTimehandler.postDelayed(wifiTimeRunnable, WIFI_REFRESH_DELAY);
     }
 
     /**
-     * Called when a sensor's reading changes. Updates sensor display.
+     * Called when a sensor's reading changes. Updates sensor display and rotates sky plot according
+     * to bearing.
      */
     public void onSensorChanged(SensorEvent event) {
 		//to enforce sensor rate
@@ -1426,73 +582,45 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 				break;
 		}
 		
-		if (isSensorViewReady && isRateElapsed) {
-            switch (event.sensor.getType()) {  
-	            case Sensor.TYPE_ACCELEROMETER:
-	            	mAccLast = event.timestamp / 1000;
-		            accX.setText(String.format("%." + mAccSensorRes + "f", event.values[0]));
-		            accY.setText(String.format("%." + mAccSensorRes + "f", event.values[1]));
-		            accZ.setText(String.format("%." + mAccSensorRes + "f", event.values[2]));
-					accTotal.setText(String.format("%." + mAccSensorRes + "f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-					accStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-					break;
-	            case Sensor.TYPE_ORIENTATION:
-	            	mOrLast = event.timestamp / 1000;
-		            orAzimuth.setText(String.format("%.0f%s", event.values[0], getString(R.string.unit_degree)));
-		            orAziText.setText(formatOrientation(event.values[0]));
-		            orPitch.setText(String.format("%.0f%s", event.values[1], getString(R.string.unit_degree)));
-		            orRoll.setText(String.format("%.0f%s", event.values[2], getString(R.string.unit_degree)));
-					orStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-					break;
-	            case Sensor.TYPE_GYROSCOPE:
-	            	mGyroLast = event.timestamp / 1000;
-		            rotX.setText(String.format("%." + mGyroSensorRes + "f", event.values[0]));
-		            rotY.setText(String.format("%." + mGyroSensorRes + "f", event.values[1]));
-		            rotZ.setText(String.format("%." + mGyroSensorRes + "f", event.values[2]));
-					rotTotal.setText(String.format("%." + mGyroSensorRes + "f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-					rotStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-					break;
-	            case Sensor.TYPE_MAGNETIC_FIELD:
-	            	mMagLast = event.timestamp / 1000;
-		            magX.setText(String.format("%." + mMagSensorRes + "f", event.values[0]));
-		            magY.setText(String.format("%." + mMagSensorRes + "f", event.values[1]));
-		            magZ.setText(String.format("%." + mMagSensorRes + "f", event.values[2]));
-					magTotal.setText(String.format("%." + mMagSensorRes + "f", Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2))));
-					magStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-	            	break;
-	            case Sensor.TYPE_LIGHT:
-	            	mLightLast = event.timestamp / 1000;
-	            	light.setText(String.format("%." + mLightSensorRes + "f", event.values[0]));
-					lightStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-	            	break;
-	            case Sensor.TYPE_PROXIMITY:
-	            	mProximityLast = event.timestamp / 1000;
-	            	proximity.setText(String.format("%." + mProximitySensorRes + "f", event.values[0]));
-					proximityStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-	            	break;
-	            case Sensor.TYPE_PRESSURE:
-	            	mPressureLast = event.timestamp / 1000;
-	            	metPressure.setText(String.format("%." + mPressureSensorRes + "f", event.values[0]));
-					pressureStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-	            	break;
-	            case Sensor.TYPE_RELATIVE_HUMIDITY:
-	            	mHumidityLast = event.timestamp / 1000;
-	            	metHumid.setText(String.format("%." + mHumiditySensorRes + "f", event.values[0]));
-					humidStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-	            	break;
-	            case Sensor.TYPE_AMBIENT_TEMPERATURE:
-	            	mTempLast = event.timestamp / 1000;
-	            	metTemp.setText(String.format("%." + mTempSensorRes + "f", event.values[0]));
-					tempStatus.setTextColor(getResources().getColor(accuracyToColor(event.accuracy)));
-	            	break;
-            }
+		if (!isRateElapsed)
+			return;
+		
+		switch (event.sensor.getType()) {
+		case Sensor.TYPE_ACCELEROMETER:
+			mAccLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_ORIENTATION:
+			mOrLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_GYROSCOPE:
+			mGyroLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_MAGNETIC_FIELD:
+			mMagLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_LIGHT:
+			mLightLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_PROXIMITY:
+			mProximityLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_PRESSURE:
+			mPressureLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_RELATIVE_HUMIDITY:
+			mHumidityLast = event.timestamp / 1000;
+			break;
+		case Sensor.TYPE_AMBIENT_TEMPERATURE:
+			mTempLast = event.timestamp / 1000;
+			break;
+		}
+
+		
+		if (sensorSectionFragment != null) {
+			sensorSectionFragment.onSensorChanged(event);
     	}
-		if (isGpsViewReady && isRateElapsed) {
-			switch (event.sensor.getType()) {
-            case Sensor.TYPE_ORIENTATION:
-                    gpsStatusView.setYaw(event.values[0]);
-				break;
-			}
+		if (gpsSectionFragment != null) {
+			gpsSectionFragment.onSensorChanged(event);
 		}
     }
     	
@@ -1512,7 +640,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
-			updateLocationProviders(this);
 		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
 			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
 		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
@@ -1532,18 +659,16 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     @Override
     protected void onStop() {
     	isStopped = true;
-    	mLocationManager.removeUpdates(this);
-    	mLocationManager.removeGpsStatusListener(this);
-    	mSensorManager.unregisterListener(this);
-        mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
+    	locationManager.removeUpdates(this);
+    	locationManager.removeGpsStatusListener(this);
+    	sensorManager.unregisterListener(this);
+        telephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
         try {
         	unregisterReceiver(mWifiScanReceiver);
         } catch (IllegalArgumentException e) {
         	// sometimes the receiver isn't registered, make sure we don't crash
         	Log.d(this.getLocalClassName(), "WifiScanReceiver was never registered, caught exception");
         }
-        networkTimehandler.removeCallbacks(networkTimeRunnable);
-        wifiTimehandler.removeCallbacks(wifiTimeRunnable);
         // we'll just skip that so locations will get invalidated in any case
         //providerInvalidationHandler.removeCallbacksAndMessages(null);
         super.onStop();
@@ -1555,623 +680,38 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	 */
 	protected void registerLocationProviders(Context context) {
 		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
-		List<String> allProviders = mLocationManager.getAllProviders();
+		List<String> allProviders = locationManager.getAllProviders();
 		
-		mLocationManager.removeUpdates(this);
+		locationManager.removeUpdates(this);
 		
-		ArrayList<String> removedProviders = new ArrayList<String>();
-		for (String pr : providerLocations.keySet())
-			if (!providers.contains(pr))
-				removedProviders.add(pr);
-		for (String pr: removedProviders)
-			providerLocations.remove(pr);
+		if (mapSectionFragment != null)
+			mapSectionFragment.onLocationProvidersChanged(providers);
 		
-        for (String pr : providers) {
-            if (allProviders.indexOf(pr) >= 0) {
-            	if (!providerLocations.containsKey(pr)) {
-            		Location location = new Location("");
-            		providerLocations.put(pr, location);
-            	}
-            	if (!isStopped) {
-            		try {
-            			mLocationManager.requestLocationUpdates(pr, 0, 0, this);
-                        Log.d("MainActivity", "Registered with provider: " + pr);
-            		} catch (SecurityException e) {
-            			Log.w("MainActivity", "Permission not granted for " + pr + " location provider. Data display will not be available for this provider.");
-            		}
-            	}
-            } else {
-                Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
-            }
-        }
+		if (!isStopped) {
+			for (String pr : providers) {
+				if (allProviders.indexOf(pr) >= 0) {
+					try {
+						locationManager.requestLocationUpdates(pr, 0, 0, this);
+						Log.d("MainActivity", "Registered with provider: " + pr);
+					} catch (SecurityException e) {
+						Log.w("MainActivity", "Permission not granted for " + pr + " location provider. Data display will not be available for this provider.");
+					}
+				} else {
+					Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
+				}
+			}
+		}
 		
         try {
         	// if GPS is not selected, request location updates but don't store location
         	if ((!providers.contains(LocationManager.GPS_PROVIDER)) && (!isStopped) && (allProviders.indexOf(LocationManager.GPS_PROVIDER) >= 0))
-        		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
-        	mLocationManager.addGpsStatusListener(this);
+        	locationManager.addGpsStatusListener(this);
         } catch (SecurityException e) {
         	Log.w("MainActivity", "Permission not granted for " + LocationManager.GPS_PROVIDER + " location provider. Data display will not be available for this provider.");
         }
 	}
-    
-	/**
-	 * Updates the list of cells in range.
-	 * <p>
-	 * This method is automatically called by
-	 * {@link PhoneStateListener#onCellInfoChanged(List)}
-	 * and {@link PhoneStateListener.onCellLocationChanged}. It must be called
-	 * manually whenever {@link #mCellsCdma}, {@link #mCellsGsm}, 
-	 * {@link #mCellsLte} or one of their values are modified, typically after
-	 * calling {@link android.telephony.TelephonyManager#getAllCellInfo()},
-	 * {@link android.telephony.TelephonyManager#getCellLocation()} or
-	 * {@link android.telephony.TelephonyManager#getNeighboringCellInfo()}. 
-	 */
-	protected static void showCells() {
-		if (!isRadioViewReady)
-			return;
-		
-		int cdmaVisibility = View.GONE;
-		int gsmVisibility = View.GONE;
-		int lteVisibility = View.GONE;
-		
-		rilCells.removeAllViews();
-		if (mCellsGsm.containsValue(mServingCell)) {
-			showCellGsm((CellTowerGsm) mServingCell);
-			gsmVisibility = View.VISIBLE;
-		}
-		for (CellTowerGsm cell : mCellsGsm.getAll())
-			if (cell.hasSource() && (cell != mServingCell)) {
-				showCellGsm(cell);
-				gsmVisibility = View.VISIBLE;
-			}
-		rilGsmLayout.setVisibility(gsmVisibility);
-		
-		rilCdmaCells.removeAllViews();
-		if (mCellsCdma.containsValue(mServingCell)) {
-			showCellCdma((CellTowerCdma) mServingCell);
-			cdmaVisibility = View.VISIBLE;
-		}
-		for (CellTowerCdma cell : mCellsCdma.getAll())
-			if (cell.hasSource() && (cell != mServingCell)) {
-				showCellCdma(cell);
-				cdmaVisibility = View.VISIBLE;
-			}
-		rilCdmaLayout.setVisibility(cdmaVisibility);
-		
-		rilLteCells.removeAllViews();
-		if (mCellsLte.containsValue(mServingCell)) {
-			showCellLte((CellTowerLte) mServingCell);
-			lteVisibility = View.VISIBLE;
-		}
-		for (CellTowerLte cell : mCellsLte.getAll())
-			if (cell.hasSource() && (cell != mServingCell)) {
-				showCellLte(cell);
-				lteVisibility = View.VISIBLE;
-			}
-		rilLteLayout.setVisibility(lteVisibility);
-	}
-	
-	protected static void showCellCdma(CellTowerCdma cell) {
-        TableRow row = new TableRow(rilCdmaCells.getContext());
-        row.setWeightSum(26);
-        
-        TextView newType = new TextView(rilCdmaCells.getContext());
-        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-        newType.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newType.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-        newType.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
-        row.addView(newType);
-        
-        TextView newSid = new TextView(rilCdmaCells.getContext());
-        newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 6));
-        newSid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newSid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getSid()));
-        row.addView(newSid);
-        
-        TextView newNid = new TextView(rilCdmaCells.getContext());
-        newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-        newNid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newNid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getNid()));
-        row.addView(newNid);
-        
-        TextView newBsid = new TextView(rilCdmaCells.getContext());
-        newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-        newBsid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newBsid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getBsid()));
-        row.addView(newBsid);
-        
-        TextView newDbm = new TextView(rilCdmaCells.getContext());
-        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-        newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-        newDbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cell.getDbm()));
-        row.addView(newDbm);
-        
-        rilCdmaCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-	}
-	
-	protected static void showCellGsm(CellTowerGsm cell) {
-        TableRow row = new TableRow(rilCells.getContext());
-        row.setWeightSum(29);
-        
-        TextView newType = new TextView(rilCells.getContext());
-        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-        newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-        newType.setText(rilCells.getContext().getResources().getString(R.string.smallDot));
-        row.addView(newType);
-        
-        TextView newMcc = new TextView(rilCells.getContext());
-        newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-        newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        newMcc.setText(formatCellData(rilCells.getContext(), "%03d", cell.getMcc()));
-        row.addView(newMcc);
-        
-        TextView newMnc = new TextView(rilCells.getContext());
-        newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-        newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMnc.setText(formatCellData(rilCells.getContext(), "%02d", cell.getMnc()));
-        row.addView(newMnc);
-        
-        TextView newLac = new TextView(rilCells.getContext());
-        newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-        newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newLac.setText(formatCellData(rilCells.getContext(), null, cell.getLac()));
-        row.addView(newLac);
-        
-        TextView newCid = new TextView(rilCells.getContext());
-        newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-        newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        if ((prefCid) && (cell.getCid() != CellTower.UNKNOWN) && (cell.getCid() > 0x0ffff)) {
-        	int rtcid = cell.getCid() / 0x10000;
-        	int cid = cell.getCid() % 0x10000;
-        	newCid.setText(String.format("%d-%d", rtcid, cid));
-        } else
-        	newCid.setText(formatCellData(rilCells.getContext(), null, cell.getCid()));
-        row.addView(newCid);
-        
-        TextView newPsc = new TextView(rilCells.getContext());
-        newPsc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-        newPsc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        newPsc.setText(formatCellData(rilCells.getContext(), null, cell.getPsc()));
-        row.addView(newPsc);
-        
-        TextView newDbm = new TextView(rilCells.getContext());
-        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-        newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-        newDbm.setText(formatCellDbm(rilCells.getContext(), null, cell.getDbm()));
-        row.addView(newDbm);
-        
-        rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-	}
-	
-	protected static void showCellLte(CellTowerLte cell) {
-        TableRow row = new TableRow(rilLteCells.getContext());
-        row.setWeightSum(29);
-        
-        TextView newType = new TextView(rilLteCells.getContext());
-        newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-        newType.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newType.setTextColor(rilLteCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-        newType.setText(rilLteCells.getContext().getResources().getString(R.string.smallDot));
-        row.addView(newType);
-        
-        TextView newMcc = new TextView(rilLteCells.getContext());
-        newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-        newMcc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newMcc.setText(formatCellData(rilLteCells.getContext(), "%03d", cell.getMcc()));
-        row.addView(newMcc);
-        
-        TextView newMnc = new TextView(rilLteCells.getContext());
-        newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-        newMnc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMnc.setText(formatCellData(rilLteCells.getContext(), "%02d", cell.getMnc()));
-        row.addView(newMnc);
-        
-        TextView newTac = new TextView(rilLteCells.getContext());
-        newTac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-        newTac.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newTac.setText(formatCellData(rilLteCells.getContext(), null, cell.getTac()));
-        row.addView(newTac);
-        
-        TextView newCi = new TextView(rilLteCells.getContext());
-        newCi.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-        newCi.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        if ((prefCid) && (cell.getCi() != CellTower.UNKNOWN)) {
-        	int eNodeBId = cell.getCi() / 0x100;
-        	int sectorId = cell.getCi() % 0x100;
-        	newCi.setText(String.format("%d-%d", eNodeBId, sectorId));
-        } else
-        	newCi.setText(formatCellData(rilLteCells.getContext(), null, cell.getCi()));
-        row.addView(newCi);
-        
-        TextView newPci = new TextView(rilLteCells.getContext());
-        newPci.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-        newPci.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newPci.setText(formatCellData(rilLteCells.getContext(), null, cell.getPci()));
-        row.addView(newPci);
-        
-        TextView newDbm = new TextView(rilLteCells.getContext());
-        newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-        newDbm.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-        newDbm.setText(formatCellDbm(rilLteCells.getContext(), null, cell.getDbm()));
-        row.addView(newDbm);
-        
-        rilLteCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-	}
-
-	/**
-	 * Updates all cell data.
-	 * 
-	 * This method is called whenever any change in the cell environment (cells in view or signal
-	 * strengths) is signaled, e.g. by a call to a {@link android.telephony.PhoneStateListener}. The
-	 * arguments of this method should be filled with the data passed to the
-	 * {@link android.telephony.PhoneStateListener} where possible, and null passed for all others.
-	 * 
-	 * To force an update of all cell data, simply call this method with each argument set to null.
-	 * 
-	 * If any of the arguments is null, this method will try to obtain that data by querying
-	 * {@link android.telephony.TelephonyManager}. The only exception is {@code signalStrength}, which
-	 * will not be explicitly queried if missing.
-	 * 
-	 * It will first process {@code aCellInfo}, then {@code aLocation}, querying current values from
-	 * {@link android.telephony.TelephonyManager} if one of these arguments is null. Next it will process
-	 * {@code signalStrength}, if supplied, and eventually obtain neighboring cells by calling
-	 * {@link android.telephony.TelephonyManager#getNeighboringCellInfo()} and process these. Eventually
-	 * it will refresh the list of cells.
-	 * 
-	 * @param aLocation The {@link android.telephony.CellLocation} reported by a
-	 * {@link android.telephony.PhoneStateListener}. If null, the current value will be queried.
-	 * @param aSignalStrength The {@link android.telephony.SignalStrength} reported by a
-	 * {@link android.telephony.PhoneStateListener}. If null, the signal strength of the serving cell
-	 * will either be taken from {@code aCellInfo}, if available, or not be updated at all.
-	 * @param aCellInfo A list of {@link android.telephony.CellInfo} instances reported by a
-	 * {@link android.telephony.PhoneStateListener}. If null, the current value will be queried.
-	 */
-	@SuppressLint("NewApi")
-	public static void updateCellData(CellLocation aLocation, SignalStrength signalStrength, List<CellInfo> aCellInfo) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			try {
-				/*
-				 * CellInfo requires API 17+ and should in theory return all cells in view. In practice,
-				 * some devices do not implement it or return only a partial list. On some devices,
-				 * PhoneStateListener#onCellInfoChanged() will fire but always receive a null argument.
-				 */
-				List<CellInfo> cellInfo = (aCellInfo != null) ? aCellInfo : mTelephonyManager.getAllCellInfo();
-				mCellsGsm.updateAll(cellInfo);
-				mCellsCdma.updateAll(cellInfo);
-				mCellsLte.updateAll(cellInfo);
-			} catch (SecurityException e) {
-				// Permission not granted, can't retrieve cell data
-			}
-		}
-		
-		try {
-			/*
-			 * CellLocation should return the serving cell, unless it is LTE (in which case it should
-			 * return null). In practice, however, some devices do return LTE cells. The approach of
-			 * this method does not work well for devices with multiple radios.
-			 */
-			CellLocation location = (aLocation != null) ? aLocation : mTelephonyManager.getCellLocation();
-			String networkOperator = mTelephonyManager.getNetworkOperator();
-			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
-			if (location instanceof GsmCellLocation) {
-				if (mLastNetworkGen < 4) {
-					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-					if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
-						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-				} else {
-					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
-					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-						((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
-				}
-			} else if (location instanceof CdmaCellLocation) {
-				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-					((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
-			}
-			networkTimehandler.removeCallbacks(networkTimeRunnable);
-		} catch (SecurityException e) {
-			// Permission not granted, can't retrieve cell data
-		}
-		
-		if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
-			if ((mLastNetworkGen != 0) && (mServingCell != null))
-				mServingCell.setGeneration(mLastNetworkGen);
-			NetworkInfo netinfo = mConnectivityManager.getActiveNetworkInfo();
-			if ((netinfo == null)
-					|| (netinfo.getType() < ConnectivityManager.TYPE_MOBILE_MMS)
-					|| (netinfo.getType() > ConnectivityManager.TYPE_MOBILE_HIPRI)) {
-				networkTimehandler.postDelayed(networkTimeRunnable, NETWORK_REFRESH_DELAY);
-			}
-		} else if (mServingCell != null) {
-			mLastNetworkGen = mServingCell.getGeneration();
-		}
-		
-		if ((signalStrength != null) && (mServingCell != null)) {
-			int pt = mTelephonyManager.getPhoneType();
-			if (pt == PHONE_TYPE_GSM) {
-				mLastCellAsu = signalStrength.getGsmSignalStrength();
-				updateNeighboringCellInfo();
-				if (mServingCell instanceof CellTowerGsm)
-					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-				else
-					Log.w(MainActivity.class.getSimpleName(),
-							"Got SignalStrength for PHONE_TYPE_GSM but serving cell is not GSM");
-			} else if (pt == PHONE_TYPE_CDMA) {
-				mLastCellDbm = signalStrength.getCdmaDbm();
-				if ((mServingCell != null) && (mServingCell instanceof CellTowerCdma))
-					mServingCell.setDbm(mLastCellDbm);
-				else
-					Log.w(MainActivity.class.getSimpleName(),
-							"Got SignalStrength for PHONE_TYPE_CDMA but serving cell is not CDMA");
-			} else
-				Log.w(MainActivity.class.getSimpleName(),
-						String.format("Got SignalStrength for unknown phone type (%d)", pt));
-		} else if (mServingCell == null) {
-			Log.w(MainActivity.class.getSimpleName(),
-					"Got SignalStrength but serving cell is null");
-		}
-
-		try {
-			/*
-			 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
-			 * only GSM and successors' cells, but not CDMA cells.
-			 */
-			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-			String networkOperator = mTelephonyManager.getNetworkOperator();
-			mCellsGsm.updateAll(networkOperator, neighboringCells);
-			mCellsLte.updateAll(networkOperator, neighboringCells);
-		} catch (SecurityException e) {
-			// Permission not granted, can't retrieve cell data
-		}
-		
-		showCells();
-	}
-	
-	/**
-	 * Updates internal data structures when the user's selection of location providers has changed.
-	 * @param context
-	 */
-	protected static void updateLocationProviders(Context context) {
-        // add overlays
-        if (isMapViewReady) {
-			Set<String> providers = mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER})));
-			
-			updateLocationProviderStyles();
-			
-	        mapCircles = new HashMap<String, Circle>();
-	        mapMarkers = new HashMap<String, Marker>();
-	        
-	        ArrayList<String> removedProviders = new ArrayList<String>();
-			for (String pr : providerInvalidators.keySet())
-				if (!providers.contains(pr))
-					removedProviders.add(pr);
-			for (String pr: removedProviders)
-				providerInvalidators.remove(pr);
-			
-	        Log.d("MainActivity", "Provider location cache: " + providerLocations.keySet().toString());
-	        
-	        Layers layers = mapMap.getLayerManager().getLayers();
-	    	
-	    	// remove all layers other than tile render layer from map
-	        for (int i = 0; i < layers.size(); )
-	        	if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
-	        		i++;
-	        	} else {
-	        		layers.remove(i);
-	        	}
-	        
-	        for (String pr : providers) {
-	            // no invalidator for GPS, which is invalidated through GPS status
-	            if ((!pr.equals(LocationManager.GPS_PROVIDER)) && (providerInvalidators.get(pr)) == null) {
-	            	final String provider = pr;
-	            	final Context ctx = context;
-	            	providerInvalidators.put(pr, new Runnable() {
-	            		private String mProvider = provider;
-	            		
-	            		@Override
-	            		public void run() {
-	            			if (isMapViewReady) {
-		            			Location location = providerLocations.get(mProvider);
-		            			if (location != null)
-		            				markLocationAsStale(location);
-		            			applyLocationProviderStyle(ctx, mProvider, LOCATION_PROVIDER_GRAY);
-	            			}
-	            		}
-	            	});
-	            }
-	            
-	        	String styleName = assignLocationProviderStyle(pr);
-	        	LatLong latLong;
-	        	float acc;
-	        	boolean visible;
-	        	if ((providerLocations.get(pr) != null) && (providerLocations.get(pr).getProvider() != "")) {
-	        		latLong = new LatLong(providerLocations.get(pr).getLatitude(), 
-	        				providerLocations.get(pr).getLongitude());
-	        		if (providerLocations.get(pr).hasAccuracy())
-	        			acc = providerLocations.get(pr).getAccuracy();
-	        		else
-	        			acc = 0;
-	        		visible = true;
-	        		if (isLocationStale(providerLocations.get(pr)))
-	        			styleName = LOCATION_PROVIDER_GRAY;
-	        		Log.d("MainActivity", pr + " has " + latLong.toString());
-	        	} else {
-	        		latLong = new LatLong(0, 0);
-	        		acc = 0;
-	        		visible = false;
-	        		Log.d("MainActivity", pr + " has no location, hiding");
-	        	}
-	        	
-	        	// Circle layer
-	        	Resources res = context.getResources();
-	        	TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
-	        	Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
-	        	float density = context.getResources().getDisplayMetrics().density;
-	        	fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
-	            fill.setStyle(Style.FILL);
-	            Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
-	        	stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
-	            stroke.setStrokeWidth(Math.max(1.5f * density, 1));
-	            stroke.setStyle(Style.STROKE);
-	            Circle circle = new Circle(latLong, acc, fill, stroke);
-	            mapCircles.put(pr, circle);
-	            layers.add(circle);
-	            circle.setVisible(visible);
-	            
-	            // Marker layer
-	            Drawable drawable = style.getDrawable(STYLE_MARKER);
-	            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-	            Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
-	            mapMarkers.put(pr, marker);
-	            layers.add(marker);
-	            marker.setVisible(visible);
-	            style.recycle();
-	        }
-	        
-	        // move layers into view
-	        updateMap();
-        }
-	}
-	
-	
-	/**
-	 * Updates the list of styles to use for the location providers.
-	 * 
-	 * This method updates the internal list of styles to use for displaying
-	 * locations on the map, assigning a style to each location provider.
-	 * Styles that are defined in {@link SharedPreferences} are preserved. If
-	 * none are defined, the GPS location provider is assigned the red style
-	 * and the network location provider is assigned the blue style. The
-	 * passive location provider is not assigned a style, as it does not send
-	 * any locations of its own. Other location providers are assigned one of
-	 * the following styles: green, orange, purple. If there are more location
-	 * providers than styles, the same style (including red and blue) can be
-	 * assigned to multiple providers. The mapping is written to 
-	 * SharedPreferences so that it will be preserved even as available
-	 * location providers change.
-	 */
-	public static void updateLocationProviderStyles() {
-		//FIXME: move code into assignLocationProviderStyle and use that
-        List<String> allProviders = mLocationManager.getAllProviders();
-        allProviders.remove(LocationManager.PASSIVE_PROVIDER);
-        if (allProviders.contains(LocationManager.GPS_PROVIDER)) {
-        	providerStyles.put(LocationManager.GPS_PROVIDER, 
-        			mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_RED));
-        	mAvailableProviderStyles.remove(LOCATION_PROVIDER_RED);
-        	allProviders.remove(LocationManager.GPS_PROVIDER);
-        }
-        if (allProviders.contains(LocationManager.NETWORK_PROVIDER)) {
-        	providerStyles.put(LocationManager.NETWORK_PROVIDER, 
-        			mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.NETWORK_PROVIDER, LOCATION_PROVIDER_BLUE));
-        	mAvailableProviderStyles.remove(LOCATION_PROVIDER_BLUE);
-        	allProviders.remove(LocationManager.NETWORK_PROVIDER);
-        }
-        for (String prov : allProviders) {
-        	if (mAvailableProviderStyles.isEmpty())
-        		mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
-      		providerStyles.put(prov,
-       				mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, mAvailableProviderStyles.get(0)));
-       		mAvailableProviderStyles.remove(providerStyles.get(prov));
-        };
-		SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-		for (String prov : providerStyles.keySet())
-			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, providerStyles.get(prov));
-		spEditor.commit();
-	}
-	
-	
-	/**
-	 * Updates the map view so that all markers are visible.
-	 */
-	public static void updateMap() {
-		boolean needsRedraw = false;
-		Dimension dimension = mapMap.getModel().mapViewDimension.getDimension();
-		// just trigger a redraw if we're not going to pan or zoom
-		if ((dimension == null) || (!isMapViewAttached)) {
-			mapMap.getLayerManager().redrawLayers();
-			return;
-		}
-		// move locations into view and zoom out as needed
-		int tileSize = mapMap.getModel().displayModel.getTileSize();
-		BoundingBox bb = null;
-		BoundingBox bb2 = null;
-		for (Location l : providerLocations.values())
-			if ((l != null) && (l.getProvider() != "")) {
-				double lat = l.getLatitude();
-				double lon = l.getLongitude();
-				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / EARTH_CIRCUMFERENCE):0;
-				double xRadius = l.hasAccuracy()?(yRadius * Math.abs(Math.cos(lat))):0;
-				
-				double minLon = Math.max(lon - xRadius, -180);
-				double maxLon = Math.min(lon + xRadius, 180);
-				double minLat = Math.max(lat - yRadius, -90);
-				double maxLat = Math.min(lat + yRadius, 90);
-				
-				if (!isLocationStale(l)) {
-					// location is up to date, add to main BoundingBox
-					if (bb != null) {
-						minLat = Math.min(bb.minLatitude, minLat);
-						maxLat = Math.max(bb.maxLatitude, maxLat);
-						minLon = Math.min(bb.minLongitude, minLon);
-						maxLon = Math.max(bb.maxLongitude, maxLon);
-					}
-					bb = new BoundingBox(minLat, minLon, maxLat, maxLon);
-				} else {
-					// location is stale, add to stale BoundingBox
-					if (bb2 != null) {
-						minLat = Math.min(bb2.minLatitude, minLat);
-						maxLat = Math.max(bb2.maxLatitude, maxLat);
-						minLon = Math.min(bb2.minLongitude, minLon);
-						maxLon = Math.max(bb2.maxLongitude, maxLon);
-					}
-					bb2 = new BoundingBox(minLat, minLon, maxLat, maxLon);
-				}
-			}
-		if (bb == null) bb = bb2; // all locations are stale, center to them
-		if (bb == null) {
-			needsRedraw = true;
-		} else {
-			byte newZoom = LatLongUtils.zoomForBounds(dimension, bb, tileSize);
-			if (newZoom < 0)
-				newZoom = 0;
-			if (newZoom < mapMap.getModel().mapViewPosition.getZoomLevel()) {
-				mapMap.getModel().mapViewPosition.setZoomLevel(newZoom);
-			} else {
-				needsRedraw = true;
-			}
-			
-			MapViewProjection proj = new MapViewProjection(mapMap);
-			Point nw = proj.toPixels(new LatLong(bb.maxLatitude, bb.minLongitude));
-			Point se = proj.toPixels(new LatLong(bb.minLatitude, bb.maxLongitude));
-			
-			// move only if bb is not entirely visible
-			if ((nw.x < 0) || (nw.y < 0) || (se.x > dimension.width) || (se.y > dimension.height)) {
-				mapMap.getModel().mapViewPosition.setCenter(bb.getCenterPoint());
-			} else {
-				needsRedraw = true;
-			}
-		}
-		if (needsRedraw)
-			mapMap.getLayerManager().redrawLayers();
-	}
-	
-	
-	/**
-	 * Requeries neighboring cells
-	 */
-	protected static void updateNeighboringCellInfo() {
-		// this may not be supported on some devices (returns no data)
-		String networkOperator = mTelephonyManager.getNetworkOperator();
-		List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-		mCellsGsm.updateAll(networkOperator, neighboringCells);
-		mCellsLte.updateAll(networkOperator, neighboringCells);
-	}
-	
 	
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -2191,16 +731,16 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         	Fragment fragment;
             switch (position) {
             case 0:
-                fragment = new GpsSectionFragment();
+            	fragment = new GpsSectionFragment();
                 return fragment;
             case 1:
-                fragment = new SensorSectionFragment();
+            	fragment = new SensorSectionFragment();
                 return fragment;
             case 2:
-                fragment = new RadioSectionFragment();
+            	fragment = new RadioSectionFragment();
                 return fragment;
             case 3:
-                fragment = new MapSectionFragment();
+            	fragment = new MapSectionFragment();
                 return fragment;
             }
         return null;
@@ -2240,357 +780,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
                     return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;
-        }
-    }
-
-    /**
-     * The fragment which displays GPS data.
-     */
-    public static class GpsSectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        public GpsSectionFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_gps, container, false);
-            
-            // Initialize controls
-            gpsRootLayout = (LinearLayout) rootView.findViewById(R.id.gpsRootLayout);
-            gpsSnrView = (GpsSnrView) rootView.findViewById(R.id.gpsSnrView);
-            gpsStatusView = new GpsStatusView(rootView.getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
-            params.weight = 1;
-            gpsRootLayout.addView(gpsStatusView, 0, params);
-        	gpsLatLayout = (LinearLayout) rootView.findViewById(R.id.gpsLatLayout);
-        	gpsLat = (TextView) rootView.findViewById(R.id.gpsLat);
-        	gpsLonLayout = (LinearLayout) rootView.findViewById(R.id.gpsLonLayout);
-        	gpsLon = (TextView) rootView.findViewById(R.id.gpsLon);
-        	gpsCoordLayout = (LinearLayout) rootView.findViewById(R.id.gpsCoordLayout);
-        	gpsCoord = (TextView) rootView.findViewById(R.id.gpsCoord);
-        	orDeclination = (TextView) rootView.findViewById(R.id.orDeclination);
-        	gpsSpeed = (TextView) rootView.findViewById(R.id.gpsSpeed);
-        	gpsSpeedUnit = (TextView) rootView.findViewById(R.id.gpsSpeedUnit);
-        	gpsAlt = (TextView) rootView.findViewById(R.id.gpsAlt);
-        	gpsAltUnit = (TextView) rootView.findViewById(R.id.gpsAltUnit);
-        	gpsTime = (TextView) rootView.findViewById(R.id.gpsTime);
-        	gpsBearing = (TextView) rootView.findViewById(R.id.gpsBearing);
-        	gpsAccuracy = (TextView) rootView.findViewById(R.id.gpsAccuracy);
-        	gpsAccuracyUnit = (TextView) rootView.findViewById(R.id.gpsAccuracyUnit);
-        	gpsOrientation = (TextView) rootView.findViewById(R.id.gpsOrientation);
-        	gpsSats = (TextView) rootView.findViewById(R.id.gpsSats);
-        	gpsTtff = (TextView) rootView.findViewById(R.id.gpsTtff);
-        	
-        	isGpsViewReady = true;
-        	
-            return rootView;
-        }
-        
-        @Override
-        public void onDestroyView() {
-        	super.onDestroyView();
-        	isGpsViewReady = false;
-        }
-    }
-
-
-    /**
-     * The fragment which displays sensor data.
-     */
-    public static class SensorSectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        public SensorSectionFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_sensors, container, false);
-            
-            // Initialize controls
-        	accStatus = (TextView) rootView.findViewById(R.id.accStatus);
-        	accHeader = (TextView) rootView.findViewById(R.id.accHeader);
-        	accX = (TextView) rootView.findViewById(R.id.accX);
-        	accY = (TextView) rootView.findViewById(R.id.accY);
-        	accZ = (TextView) rootView.findViewById(R.id.accZ);
-        	accTotal = (TextView) rootView.findViewById(R.id.accTotal);
-        	rotStatus = (TextView) rootView.findViewById(R.id.rotStatus);
-        	rotHeader = (TextView) rootView.findViewById(R.id.rotHeader);
-        	rotX = (TextView) rootView.findViewById(R.id.rotX);
-        	rotY = (TextView) rootView.findViewById(R.id.rotY);
-        	rotZ = (TextView) rootView.findViewById(R.id.rotZ);
-        	rotTotal = (TextView) rootView.findViewById(R.id.rotTotal);
-        	magStatus = (TextView) rootView.findViewById(R.id.magStatus);
-        	magHeader = (TextView) rootView.findViewById(R.id.magHeader);
-        	magX = (TextView) rootView.findViewById(R.id.magX);
-        	magY = (TextView) rootView.findViewById(R.id.magY);
-        	magZ = (TextView) rootView.findViewById(R.id.magZ);
-        	magTotal = (TextView) rootView.findViewById(R.id.magTotal);
-        	orStatus = (TextView) rootView.findViewById(R.id.orStatus);
-        	orHeader = (TextView) rootView.findViewById(R.id.orHeader);
-        	orAzimuth = (TextView) rootView.findViewById(R.id.orAzimuth);
-        	orAziText = (TextView) rootView.findViewById(R.id.orAziText);
-        	orPitch = (TextView) rootView.findViewById(R.id.orPitch);
-        	orRoll = (TextView) rootView.findViewById(R.id.orRoll);
-        	miscHeader = (TextView) rootView.findViewById(R.id.miscHeader);
-        	tempStatus = (TextView) rootView.findViewById(R.id.tempStatus);
-        	tempHeader = (TextView) rootView.findViewById(R.id.tempHeader);
-        	metTemp = (TextView) rootView.findViewById(R.id.metTemp);
-        	pressureStatus = (TextView) rootView.findViewById(R.id.pressureStatus);
-        	pressureHeader = (TextView) rootView.findViewById(R.id.pressureHeader);
-        	metPressure = (TextView) rootView.findViewById(R.id.metPressure);
-        	humidStatus = (TextView) rootView.findViewById(R.id.humidStatus);
-        	humidHeader = (TextView) rootView.findViewById(R.id.humidHeader);
-        	metHumid = (TextView) rootView.findViewById(R.id.metHumid);
-        	lightStatus = (TextView) rootView.findViewById(R.id.lightStatus);
-        	lightHeader = (TextView) rootView.findViewById(R.id.lightHeader);
-        	light = (TextView) rootView.findViewById(R.id.light);
-        	proximityStatus = (TextView) rootView.findViewById(R.id.proximityStatus);
-        	proximityHeader = (TextView) rootView.findViewById(R.id.proximityHeader);
-        	proximity = (TextView) rootView.findViewById(R.id.proximity);
-        	
-        	isSensorViewReady = true;
-
-            return rootView;
-        }
-        
-        @Override
-        public void onDestroyView() {
-        	super.onDestroyView();
-        	isSensorViewReady = false;
-        }
-    }
-
-
-    /**
-     * The fragment which displays radio network data.
-     */
-    public static class RadioSectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        public RadioSectionFragment() {
-        }
-
-		@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-		@Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_radio, container, false);
-            
-            // Initialize controls
-        	rilGsmLayout = (LinearLayout) rootView.findViewById(R.id.rilGsmLayout);
-        	rilCells = (TableLayout) rootView.findViewById(R.id.rilCells);
-        	
-        	rilCdmaLayout = (LinearLayout) rootView.findViewById(R.id.rilCdmaLayout);
-        	rilCdmaCells = (TableLayout) rootView.findViewById(R.id.rilCdmaCells);
-        	
-        	rilLteLayout = (LinearLayout) rootView.findViewById(R.id.rilLteLayout);
-        	rilLteCells = (TableLayout) rootView.findViewById(R.id.rilLteCells);
-        	
-        	wifiAps = (LinearLayout) rootView.findViewById(R.id.wifiAps);
-
-        	rilGsmLayout.setVisibility(View.GONE);
-        	rilCdmaLayout.setVisibility(View.GONE);
-        	rilLteLayout.setVisibility(View.GONE);
-        	
-        	isRadioViewReady = true;
-        	
-        	//get current phone info (first update won't fire until the cell actually changes)
-			updateCellData(null, null, null);
-
-        	mWifiManager.startScan();
-        	
-            return rootView;
-        }
-        
-        @Override
-        public void onDestroyView() {
-        	super.onDestroyView();
-        	isRadioViewReady = false;
-        }
-    }
-    
-    
-    /**
-     * The fragment which displays the map view.
-     */
-    public static class MapSectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-        
-        OnlineTileSource onlineTileSource;
-
-        public MapSectionFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
-            
-            mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
-            
-            mapReattach.setVisibility(View.GONE);
-            isMapViewAttached = true;
-            
-    		OnClickListener clis = new OnClickListener () {
-    			@Override
-    			public void onClick(View v) {
-    				if (v == mapReattach) {
-    					isMapViewAttached = true;
-    					if (isMapViewReady) {
-    						mapReattach.setVisibility(View.GONE);
-    						updateMap();
-    					}
-    				}
-    			}
-    		};
-            mapReattach.setOnClickListener(clis);
-            
-            // Initialize controls
-            mapMap = new MapView(rootView.getContext());
-            ((FrameLayout) rootView).addView(mapMap, 0);
-
-            mapMap.setClickable(true);
-            mapMap.getMapScaleBar().setVisible(true);
-            mapMap.setBuiltInZoomControls(true);
-            mapMap.getMapZoomControls().setZoomLevelMin((byte) 10);
-            mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
-            
-            if (mapTileCache == null)
-	            mapTileCache = PersistentTileCache.createTileCache(rootView.getContext(), "MapQuest",
-	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
-	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
-
-            onlineTileSource = new OnlineTileSource(new String[]{
-            		"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
-            }, 80);
-            onlineTileSource.setName("MapQuest")
-            .setAlpha(false)
-            .setBaseUrl("/tiles/1.0.0/map/")
-            .setExtension("png")
-            .setParallelRequestsLimit(8)
-            .setProtocol("http")
-            .setTileSize(256)
-            .setZoomLevelMax((byte) 18)
-            .setZoomLevelMin((byte) 0);
-
-            GestureDetector gd = new GestureDetector(rootView.getContext(), 
-            		new GestureDetector.SimpleOnGestureListener() {
-            	public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            		mapReattach.setVisibility(View.VISIBLE);
-            		isMapViewAttached = false;
-            		return false;
-            	}
-            }
-            		);
-
-            mapMap.setGestureDetector(gd);
-
-            isMapViewReady = true;
-
-            return rootView;
-        }
-
-        @Override
-        public void onDestroyView() {
-        	if (mapTileCache != null)
-        		mapTileCache.destroy();
-        	if (mapMap != null) {
-        		mapMap.getModel().mapViewPosition.destroy();
-        		mapMap.destroy();
-        	}
-        	super.onDestroyView();
-        	isMapViewReady = false;
-        }
-
-        @Override
-        public void onPause() {
-        	super.onPause();
-        	mapDownloadLayer.onPause();
-        }
-
-        @Override
-        public void onResume() {
-        	super.onResume();
-        	mapDownloadLayer.onResume();
-        }
-
-        @Override
-        public void onStart() {
-        	super.onStart();
-            LayerManager layerManager = mapMap.getLayerManager();
-            Layers layers = layerManager.getLayers();
-            layers.clear();
-            
-            float lat = mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LAT, 360.0f);
-            float lon = mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LON, 360.0f);
-            
-            if ((lat < 360.0f) && (lon < 360.0f)) {
-                mapMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
-            }
-            
-            int zoom = mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
-            mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
-            
-            /*
-            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
-            		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
-
-            //FIXME: have user select map file
-            tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
-            
-            tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
-            
-            //tileRendererLayer.setTextScale(1.5f);
-            layers.add(tileRendererLayer);
-            */
-            
-            mapDownloadLayer = new TileDownloadLayer(mapTileCache,
-            		mapMap.getModel().mapViewPosition, onlineTileSource,
-            		AndroidGraphicFactory.INSTANCE);
-            layers.add(mapDownloadLayer);
-            
-            //parse list of location providers
-            updateLocationProviders(this.getContext());
-        }
-        
-        @Override
-        public void onStop() {
-        	LatLong center = mapMap.getModel().mapViewPosition.getCenter();
-        	byte zoom = mapMap.getModel().mapViewPosition.getZoomLevel();
-        	
-			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-			spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LAT, (float) center.latitude);
-			spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LON, (float) center.longitude);
-			spEditor.putInt(SettingsActivity.KEY_PREF_MAP_ZOOM, zoom);
-			spEditor.commit();
-
-			super.onStop();
-
-			if (mapMap != null)
-				mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
-			if (mapDownloadLayer != null)
-				mapDownloadLayer.onDestroy();
         }
     }
 }
