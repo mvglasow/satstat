@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
@@ -47,6 +48,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -79,6 +81,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -1358,7 +1361,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         super.onResume();
         isStopped = false;
         registerLocationProviders(this);
-        mLocationManager.addGpsStatusListener(this);
         mSensorManager.registerListener(this, mOrSensor, iSensorRate);
         mSensorManager.registerListener(this, mAccSensor, iSensorRate);
         mSensorManager.registerListener(this, mGyroSensor, iSensorRate);
@@ -1368,7 +1370,10 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         mSensorManager.registerListener(this, mPressureSensor, iSensorRate);
         mSensorManager.registerListener(this, mHumiditySensor, iSensorRate);
         mSensorManager.registerListener(this, mTempSensor, iSensorRate);
-        mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        	mTelephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
+        else
+        	Log.w("MainActivity", "ACCESS_COARSE_LOCATION permission not granted. Cell info will not be available.");
         
         // register for certain WiFi events indicating that new networks may be in range
         // An access point scan has completed, and results are available.
@@ -1587,17 +1592,27 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
             		providerLocations.put(pr, location);
             	}
             	if (!isStopped) {
-            		mLocationManager.requestLocationUpdates(pr, 0, 0, this);
-                    Log.d("MainActivity", "Registered with provider: " + pr);
+            		try {
+            			mLocationManager.requestLocationUpdates(pr, 0, 0, this);
+                        Log.d("MainActivity", "Registered with provider: " + pr);
+            		} catch (SecurityException e) {
+            			Log.w("MainActivity", "Permission not granted for " + pr + " location provider. Data display will not be available for this provider.");
+            		}
             	}
             } else {
                 Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
             }
         }
 		
-		// if GPS is not selected, request location updates but don't store location
-		if ((!providers.contains(LocationManager.GPS_PROVIDER)) && (!isStopped) && (allProviders.indexOf(LocationManager.GPS_PROVIDER) >= 0))
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        try {
+        	// if GPS is not selected, request location updates but don't store location
+        	if ((!providers.contains(LocationManager.GPS_PROVIDER)) && (!isStopped) && (allProviders.indexOf(LocationManager.GPS_PROVIDER) >= 0))
+        		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+        	mLocationManager.addGpsStatusListener(this);
+        } catch (SecurityException e) {
+        	Log.w("MainActivity", "Permission not granted for " + LocationManager.GPS_PROVIDER + " location provider. Data display will not be available for this provider.");
+        }
 	}
     
 	/**
@@ -1836,43 +1851,51 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	@SuppressLint("NewApi")
 	public static void updateCellData(CellLocation aLocation, SignalStrength signalStrength, List<CellInfo> aCellInfo) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			/*
-			 * CellInfo requires API 17+ and should in theory return all cells in view. In practice,
-			 * some devices do not implement it or return only a partial list. On some devices,
-			 * PhoneStateListener#onCellInfoChanged() will fire but always receive a null argument.
-			 */
-			List<CellInfo> cellInfo = (aCellInfo != null) ? aCellInfo : mTelephonyManager.getAllCellInfo();
-			mCellsGsm.updateAll(cellInfo);
-			mCellsCdma.updateAll(cellInfo);
-			mCellsLte.updateAll(cellInfo);
+			try {
+				/*
+				 * CellInfo requires API 17+ and should in theory return all cells in view. In practice,
+				 * some devices do not implement it or return only a partial list. On some devices,
+				 * PhoneStateListener#onCellInfoChanged() will fire but always receive a null argument.
+				 */
+				List<CellInfo> cellInfo = (aCellInfo != null) ? aCellInfo : mTelephonyManager.getAllCellInfo();
+				mCellsGsm.updateAll(cellInfo);
+				mCellsCdma.updateAll(cellInfo);
+				mCellsLte.updateAll(cellInfo);
+			} catch (SecurityException e) {
+				// Permission not granted, can't retrieve cell data
+			}
 		}
 		
-		/*
-		 * CellLocation should return the serving cell, unless it is LTE (in which case it should
-		 * return null). In practice, however, some devices do return LTE cells. The approach of
-		 * this method does not work well for devices with multiple radios.
-		 */
-		CellLocation location = (aLocation != null) ? aLocation : mTelephonyManager.getCellLocation();
-		String networkOperator = mTelephonyManager.getNetworkOperator();
-		mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
-		mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
-		mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
-		if (location instanceof GsmCellLocation) {
-			if (mLastNetworkGen < 4) {
-				mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
-				if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
-					((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
-			} else {
-				mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
+		try {
+			/*
+			 * CellLocation should return the serving cell, unless it is LTE (in which case it should
+			 * return null). In practice, however, some devices do return LTE cells. The approach of
+			 * this method does not work well for devices with multiple radios.
+			 */
+			CellLocation location = (aLocation != null) ? aLocation : mTelephonyManager.getCellLocation();
+			String networkOperator = mTelephonyManager.getNetworkOperator();
+			mCellsGsm.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			mCellsCdma.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			mCellsLte.removeSource(CellTower.SOURCE_CELL_LOCATION);
+			if (location instanceof GsmCellLocation) {
+				if (mLastNetworkGen < 4) {
+					mServingCell = mCellsGsm.update(networkOperator, (GsmCellLocation) location);
+					if ((mServingCell.getDbm() == CellTower.DBM_UNKNOWN) && (mServingCell instanceof CellTowerGsm))
+						((CellTowerGsm) mServingCell).setAsu(mLastCellAsu);
+				} else {
+					mServingCell = mCellsLte.update(networkOperator, (GsmCellLocation) location);
+					if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
+						((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
+				}
+			} else if (location instanceof CdmaCellLocation) {
+				mServingCell = mCellsCdma.update((CdmaCellLocation) location);
 				if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-					((CellTowerLte) mServingCell).setAsu(mLastCellAsu);
+					((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
 			}
-		} else if (location instanceof CdmaCellLocation) {
-			mServingCell = mCellsCdma.update((CdmaCellLocation) location);
-			if (mServingCell.getDbm() == CellTower.DBM_UNKNOWN)
-				((CellTowerCdma) mServingCell).setDbm(mLastCellDbm);
+			networkTimehandler.removeCallbacks(networkTimeRunnable);
+		} catch (SecurityException e) {
+			// Permission not granted, can't retrieve cell data
 		}
-		networkTimehandler.removeCallbacks(networkTimeRunnable);
 		
 		if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
 			if ((mLastNetworkGen != 0) && (mServingCell != null))
@@ -1912,13 +1935,18 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 					"Got SignalStrength but serving cell is null");
 		}
 
-		/*
-		 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
-		 * only GSM and successors' cells, but not CDMA cells.
-		 */
-		List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
-		mCellsGsm.updateAll(networkOperator, neighboringCells);
-		mCellsLte.updateAll(networkOperator, neighboringCells);
+		try {
+			/*
+			 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
+			 * only GSM and successors' cells, but not CDMA cells.
+			 */
+			List<NeighboringCellInfo> neighboringCells = mTelephonyManager.getNeighboringCellInfo();
+			String networkOperator = mTelephonyManager.getNetworkOperator();
+			mCellsGsm.updateAll(networkOperator, neighboringCells);
+			mCellsLte.updateAll(networkOperator, neighboringCells);
+		} catch (SecurityException e) {
+			// Permission not granted, can't retrieve cell data
+		}
 		
 		showCells();
 	}

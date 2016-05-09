@@ -198,18 +198,23 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, agpsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			alm.cancel(pi);
 
-			SharedPreferences.Editor spEditor = sharedPref.edit();
-			spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
 			LocationManager locman = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 			List<String> allProviders = locman.getAllProviders();
 			PendingIntent tempIntent = PendingIntent.getBroadcast(mContext, 0, mLocationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			Log.i(GpsEventReceiver.class.getSimpleName(), "Requesting AGPS data update");
-			if (allProviders.contains(LocationManager.GPS_PROVIDER))
-				locman.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, tempIntent);
-			locman.sendExtraCommand("gps", "force_xtra_injection", null);
-			locman.sendExtraCommand("gps", "force_time_injection", null);
-			locman.removeUpdates(tempIntent);
-			spEditor.commit();
+			try {
+				if (allProviders.contains(LocationManager.GPS_PROVIDER))
+					locman.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, tempIntent);
+				locman.sendExtraCommand("gps", "force_xtra_injection", null);
+				locman.sendExtraCommand("gps", "force_time_injection", null);
+				locman.removeUpdates(tempIntent);
+				
+				SharedPreferences.Editor spEditor = sharedPref.edit();
+				spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
+				spEditor.commit();
+			} catch (SecurityException e) {
+				Log.w(GpsEventReceiver.class.getSimpleName(), "Permissions not granted, cannot update AGPS data");
+			}
 			
 			if (freqMillis > 0) {
 				// if an update interval is set, prepare an alarm to trigger a new
