@@ -1084,12 +1084,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     @Override
     protected void onDestroy() {
 		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-		if (mapTileCache != null)
-			mapTileCache.destroy();
-		if (mapMap != null) {
-			mapMap.getModel().mapViewPosition.destroy();
-			mapMap.destroy();
-		}
 		super.onDestroy();
     }
     
@@ -1342,8 +1336,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if ((isMapViewReady) && (mapDownloadLayer != null))
-        	mapDownloadLayer.onPause();
 	}
 
     /**
@@ -1389,9 +1381,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
 
         wifiTimehandler.postDelayed(wifiTimeRunnable, WIFI_REFRESH_DELAY);
-        
-        if ((isMapViewReady) && (mapDownloadLayer != null))
-        	mapDownloadLayer.onResume();
     }
 
     /**
@@ -1562,10 +1551,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         // we'll just skip that so locations will get invalidated in any case
         //providerInvalidationHandler.removeCallbacksAndMessages(null);
         super.onStop();
-        if (mapMap != null)
-        	mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
-        if (mapDownloadLayer != null)
-        	mapDownloadLayer.onDestroy();
     }
     
 	/**
@@ -2455,6 +2440,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
          * fragment.
          */
         public static final String ARG_SECTION_NUMBER = "section_number";
+        
+        OnlineTileSource onlineTileSource;
 
         public MapSectionFragment() {
         }
@@ -2498,6 +2485,63 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	            		mapMap.getModel().displayModel.getTileSize(), 1f, 
 	            		mapMap.getModel().frameBufferModel.getOverdrawFactor());
 
+            onlineTileSource = new OnlineTileSource(new String[]{
+            		"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
+            }, 80);
+            onlineTileSource.setName("MapQuest")
+            .setAlpha(false)
+            .setBaseUrl("/tiles/1.0.0/map/")
+            .setExtension("png")
+            .setParallelRequestsLimit(8)
+            .setProtocol("http")
+            .setTileSize(256)
+            .setZoomLevelMax((byte) 18)
+            .setZoomLevelMin((byte) 0);
+
+            GestureDetector gd = new GestureDetector(rootView.getContext(), 
+            		new GestureDetector.SimpleOnGestureListener() {
+            	public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            		mapReattach.setVisibility(View.VISIBLE);
+            		isMapViewAttached = false;
+            		return false;
+            	}
+            }
+            		);
+
+            mapMap.setGestureDetector(gd);
+
+            isMapViewReady = true;
+
+            return rootView;
+        }
+
+        @Override
+        public void onDestroyView() {
+        	if (mapTileCache != null)
+        		mapTileCache.destroy();
+        	if (mapMap != null) {
+        		mapMap.getModel().mapViewPosition.destroy();
+        		mapMap.destroy();
+        	}
+        	super.onDestroyView();
+        	isMapViewReady = false;
+        }
+
+        @Override
+        public void onPause() {
+        	super.onPause();
+        	mapDownloadLayer.onPause();
+        }
+
+        @Override
+        public void onResume() {
+        	super.onResume();
+        	mapDownloadLayer.onResume();
+        }
+
+        @Override
+        public void onStart() {
+        	super.onStart();
             LayerManager layerManager = mapMap.getLayerManager();
             Layers layers = layerManager.getLayers();
             layers.clear();
@@ -2525,47 +2569,17 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
             layers.add(tileRendererLayer);
             */
             
-            OnlineTileSource onlineTileSource = new OnlineTileSource(new String[]{
-            		"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
-            		}, 80);
-            onlineTileSource.setName("MapQuest")
-            	.setAlpha(false)
-	            .setBaseUrl("/tiles/1.0.0/map/")
-	            .setExtension("png")
-	            .setParallelRequestsLimit(8)
-	            .setProtocol("http")
-	            .setTileSize(256)
-	            .setZoomLevelMax((byte) 18)
-	            .setZoomLevelMin((byte) 0);
-	        
             mapDownloadLayer = new TileDownloadLayer(mapTileCache,
             		mapMap.getModel().mapViewPosition, onlineTileSource,
             		AndroidGraphicFactory.INSTANCE);
             layers.add(mapDownloadLayer);
-            mapDownloadLayer.onResume();
             
-            GestureDetector gd = new GestureDetector(rootView.getContext(), 
-            	new GestureDetector.SimpleOnGestureListener() {
-	            	public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-	            		mapReattach.setVisibility(View.VISIBLE);
-	            		isMapViewAttached = false;
-	            		return false;
-	            	}
-            	}
-            );
-            
-            mapMap.setGestureDetector(gd);
-
-        	isMapViewReady = true;
-        	
             //parse list of location providers
-            updateLocationProviders(rootView.getContext());
-            
-            return rootView;
+            updateLocationProviders(this.getContext());
         }
         
         @Override
-        public void onDestroyView() {
+        public void onStop() {
         	LatLong center = mapMap.getModel().mapViewPosition.getCenter();
         	byte zoom = mapMap.getModel().mapViewPosition.getZoomLevel();
         	
@@ -2575,8 +2589,12 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			spEditor.putInt(SettingsActivity.KEY_PREF_MAP_ZOOM, zoom);
 			spEditor.commit();
 
-        	super.onDestroyView();
-        	isMapViewReady = false;
+			super.onStop();
+
+			if (mapMap != null)
+				mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
+			if (mapDownloadLayer != null)
+				mapDownloadLayer.onDestroy();
         }
     }
 }
