@@ -1081,6 +1081,12 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     @Override
     protected void onDestroy() {
 		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+		if (mapTileCache != null)
+			mapTileCache.destroy();
+		if (mapMap != null) {
+			mapMap.getModel().mapViewPosition.destroy();
+			mapMap.destroy();
+		}
 		super.onDestroy();
     }
     
@@ -1551,6 +1557,10 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         // we'll just skip that so locations will get invalidated in any case
         //providerInvalidationHandler.removeCallbacksAndMessages(null);
         super.onStop();
+        if (mapMap != null)
+        	mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
+        if (mapDownloadLayer != null)
+        	mapDownloadLayer.onDestroy();
     }
     
 	/**
