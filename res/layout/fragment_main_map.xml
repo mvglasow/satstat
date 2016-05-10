@@ -4,17 +4,18 @@
     android:layout_height="match_parent"
     android:layout_marginRight="12dp"
     android:layout_marginTop="12dp"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/mapReattach"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp"
-        android:background="@android:drawable/btn_default"
-        android:src="@drawable/ic_btn_reattach" />
+        android:src="@drawable/ic_btn_reattach"
+        app:fabSize="normal"
+        app:useCompatPadding="true"
+        app:backgroundTint="@color/accent" />
 
     	<!--
         android:background="#AA000000"

@@ -17,6 +17,8 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
     
+    <color name="accent">#FF9800</color>
+    
     <color name="gpsUsed">#80CBC4</color>
     <color name="gpsUnused">#F44336</color>
     
