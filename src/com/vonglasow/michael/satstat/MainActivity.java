@@ -161,9 +161,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	private long mHumidityLast = 0;
 	private long mTempLast = 0;
 
-	protected static MenuItem menu_action_record;
-	protected static MenuItem menu_action_stop_record;
-
 	/**
 	 * Converts screen rotation to orientation for devices with a naturally tall screen.
 	 */
