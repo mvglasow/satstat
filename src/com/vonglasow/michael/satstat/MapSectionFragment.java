@@ -35,6 +35,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.input.MapZoomControls.Orientation;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.LayerManager;
@@ -265,6 +266,7 @@ public class MapSectionFragment extends Fragment {
 			Bundle savedInstanceState) {
 		mainActivity = (MainActivity) this.getContext();
 		View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
+		float density = this.getContext().getResources().getDisplayMetrics().density;
 
 		mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
 
@@ -289,10 +291,15 @@ public class MapSectionFragment extends Fragment {
 
 		mapMap.setClickable(true);
 		mapMap.getMapScaleBar().setVisible(true);
+		mapMap.getMapScaleBar().setMarginVertical((int)(density * 16));
 		mapMap.setBuiltInZoomControls(true);
 		mapMap.getMapZoomControls().setZoomLevelMin((byte) 10);
 		mapMap.getMapZoomControls().setZoomLevelMax((byte) 20);
-
+		mapMap.getMapZoomControls().setZoomControlsOrientation(Orientation.VERTICAL_IN_OUT);
+		mapMap.getMapZoomControls().setZoomInResource(R.drawable.zoom_control_in);
+		mapMap.getMapZoomControls().setZoomOutResource(R.drawable.zoom_control_out);
+		mapMap.getMapZoomControls().setMarginHorizontal((int)(density * 4));
+		mapMap.getMapZoomControls().setMarginVertical((int)(density * 8));
 		providerLocations = new HashMap<String, Location>();
 
 		mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));

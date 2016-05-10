@@ -26,7 +26,7 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
+        android:layout_gravity="bottom|center"
         android:background="@color/halo"
         android:text="@string/mapquest_attribution"
         android:textAppearance="?android:attr/textAppearanceSmallInverse"
