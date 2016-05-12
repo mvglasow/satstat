@@ -532,7 +532,7 @@ public class MapSectionFragment extends Fragment {
 			// Marker layer
 			Drawable drawable = style.getDrawable(STYLE_MARKER);
 			Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
-			Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 9 / 20);
+			Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 10 / 24);
 			mapMarkers.put(pr, marker);
 			layers.add(marker);
 			marker.setVisible(visible);
