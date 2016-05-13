@@ -298,8 +298,8 @@ public class MapSectionFragment extends Fragment {
 		mapMap.getMapZoomControls().setZoomControlsOrientation(Orientation.VERTICAL_IN_OUT);
 		mapMap.getMapZoomControls().setZoomInResource(R.drawable.zoom_control_in);
 		mapMap.getMapZoomControls().setZoomOutResource(R.drawable.zoom_control_out);
-		mapMap.getMapZoomControls().setMarginHorizontal((int)(density * 4));
-		mapMap.getMapZoomControls().setMarginVertical((int)(density * 8));
+		mapMap.getMapZoomControls().setMarginHorizontal((int)(density * 8));
+		mapMap.getMapZoomControls().setMarginVertical((int)(density * 16));
 		providerLocations = new HashMap<String, Location>();
 
 		mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
