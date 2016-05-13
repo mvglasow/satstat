@@ -75,5 +75,6 @@
     </array>
     <color name="halo">#B2FFFFFF</color>
     <dimen name="bitmap_padding">2dp</dimen>
+    <dimen name="legend_rowheight">36dp</dimen>
     
 </resources>
