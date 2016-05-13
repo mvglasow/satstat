@@ -44,11 +44,11 @@ public class LegendActivity extends AppCompatActivity {
 		lpLayout.setMeasureWithLargestChildEnabled(false);
 
 		ImageView lpMarker = new ImageView(legendMapContainer.getContext());
-		LinearLayout.LayoutParams lpMarkerParams = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3);
-		int margin = legendMapContainer.getContext().getResources().getDimensionPixelSize(R.dimen.bitmap_padding);
+		LinearLayout.LayoutParams lpMarkerParams = new LinearLayout.LayoutParams(0, getResources().getDimensionPixelSize(R.dimen.legend_rowheight), 3);
+		int margin = getResources().getDimensionPixelSize(R.dimen.bitmap_padding);
 		lpMarkerParams.gravity = Gravity.CENTER;
 		lpMarker.setLayoutParams(lpMarkerParams);
-		lpMarker.setPadding(margin, margin, margin, margin);
+		lpMarker.setPadding(margin, 0, margin, 0);
 		lpMarker.setImageDrawable(drawable);
 		lpMarker.setScaleType(ScaleType.CENTER);
 		lpLayout.addView(lpMarker);
@@ -58,7 +58,7 @@ public class LegendActivity extends AppCompatActivity {
 		lpDescParams.gravity = Gravity.CENTER_VERTICAL;
 		lpDesc.setLayoutParams(lpDescParams);
 		lpDesc.setGravity(Gravity.CENTER_VERTICAL);
-		lpDesc.setTextAppearance(legendMapContainer.getContext(), android.R.style.TextAppearance_Medium);
+		lpDesc.setTextAppearance(this, R.style.TextAppearance_AppCompat_Medium);
 		lpDesc.setText(title);
 		lpLayout.addView(lpDesc);
 
