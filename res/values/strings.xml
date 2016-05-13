@@ -220,4 +220,11 @@
     <string name="title_legend_map">Map</string>
     <string name="title_legend_map_prov">Location from %s provider</string>
     <string name="title_legend_map_stale">Stale location from any provider</string>
+    <string name="title_nmea_001_032">GPS</string>
+    <string name="title_nmea_033_054">SBAS</string>
+    <string name="title_nmea_055_064">55–64</string>
+    <string name="title_nmea_065_088">GLONASS</string>
+    <string name="title_nmea_097_192">97–192</string>
+    <string name="title_nmea_193_195">QZSS</string>
+    <string name="title_nmea_201_235">Beidou</string>
 </resources>
