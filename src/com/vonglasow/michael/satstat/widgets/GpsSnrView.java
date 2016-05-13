@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.GpsSatellite;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -47,8 +48,8 @@ public class GpsSnrView extends View {
 	private Paint gridPaintStrong;
 	private Paint gridPaintNone;
 
-	//FIXME: should be DPI-dependent, this is OK for MDPI
-	private int gridStrokeWidth = 2;
+	private int gridStrokeWidth;
+	private float density;
 
 	/*
 	 * Which satellites to draw:
@@ -78,7 +79,7 @@ public class GpsSnrView extends View {
 	 */
 	public GpsSnrView(Context context) {
 		super(context);
-		doInit();
+		doInit(context);
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class GpsSnrView extends View {
 	 */
 	public GpsSnrView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		doInit();
+		doInit(context);
 	}
 
 	/**
@@ -97,10 +98,15 @@ public class GpsSnrView extends View {
 	 */
 	public GpsSnrView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		doInit();
+		doInit(context);
 	}
 
-	private void doInit() {
+	private void doInit(Context context) {
+		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+		density = metrics.density;
+		
+		gridStrokeWidth = Math.max(1, (int) (density));
+		
 		activePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		activePaint.setColor(Color.parseColor("#FF80CBC4")); // Teal 200
 		activePaint.setStyle(Paint.Style.FILL);
