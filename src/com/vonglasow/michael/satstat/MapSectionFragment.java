@@ -125,7 +125,7 @@ public class MapSectionFragment extends Fragment {
 	OnlineTileSource onlineTileSource;
 	private MapView mapMap;
 	private TileDownloadLayer mapDownloadLayer = null;
-	private TileCache mapTileCache = null;
+	private TileCache mapDownloadTileCache = null;
 	private ImageButton mapReattach;
 	private boolean isMapViewAttached = true;
 	private HashMap<String, Circle> mapCircles;
@@ -235,6 +235,65 @@ public class MapSectionFragment extends Fragment {
 		}
 		return styleName;
 	}
+	
+	
+	/**
+	 * Creates tile layers and associated tile caches for the map view.
+	 */
+	private void createLayers() {
+		LayerManager layerManager = mapMap.getLayerManager();
+		Layers layers = layerManager.getLayers();
+		layers.clear(); // FIXME do we need this here? shouldn't we do that in destroyLayers()?
+
+		/*
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
+        		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
+
+        //FIXME: have user select map file
+        tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
+
+        tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
+
+        //tileRendererLayer.setTextScale(1.5f);
+        layers.add(tileRendererLayer);
+		 */
+
+		if (mapDownloadTileCache == null)
+			mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
+					"MapQuest",
+					Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
+							mapMap.getModel().displayModel.getTileSize(),
+							mapMap.getModel().frameBufferModel.getOverdrawFactor(),
+							1f)),
+							mapMap.getModel().displayModel.getTileSize(),
+							true);
+
+		mapDownloadLayer = new TileDownloadLayer(mapDownloadTileCache,
+				mapMap.getModel().mapViewPosition, onlineTileSource,
+				AndroidGraphicFactory.INSTANCE);
+		layers.add(mapDownloadLayer);
+
+		//parse list of location providers
+		onLocationProvidersChanged(
+				mainActivity.mSharedPreferences.getStringSet(
+						SettingsActivity.KEY_PREF_LOC_PROV,
+						new HashSet<String>(Arrays.asList(
+								new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}
+								))));
+	}
+	
+	
+	/**
+	 * Destroys tile layers and associated tile caches for the map view.
+	 */
+	private void destroyLayers() {
+		if (mapDownloadLayer != null) {
+			if (mapMap != null)
+				mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
+			mapDownloadLayer.onDestroy();
+			mapDownloadLayer = null;
+		}
+	}
 
 
 	/**
@@ -310,16 +369,6 @@ public class MapSectionFragment extends Fragment {
 		providerInvalidationHandler = new Handler();
 		providerInvalidators = new HashMap<String, Runnable>();
 
-		if (mapTileCache == null)
-			mapTileCache = AndroidUtil.createExternalStorageTileCache(rootView.getContext(),
-					"MapQuest",
-					Math.round(AndroidUtil.getMinimumCacheSize(rootView.getContext(),
-							mapMap.getModel().displayModel.getTileSize(),
-							mapMap.getModel().frameBufferModel.getOverdrawFactor(),
-							1f)),
-							mapMap.getModel().displayModel.getTileSize(),
-							true);
-
 		onlineTileSource = new OnlineTileSource(new String[]{
 				"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
 		}, 80);
@@ -347,12 +396,26 @@ public class MapSectionFragment extends Fragment {
 
 		mainActivity.mapSectionFragment = this;
 
+		float lat = mainActivity.mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LAT, 360.0f);
+		float lon = mainActivity.mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LON, 360.0f);
+
+		if ((lat < 360.0f) && (lon < 360.0f)) {
+			mapMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
+		}
+
+		int zoom = mainActivity.mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
+		mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
+		
+		createLayers();
+
 		return rootView;
 	}
 
 	
 	@Override
 	public void onDestroyView() {
+		destroyLayers();
+
 		if (mainActivity.mapSectionFragment == this)
 			mainActivity.mapSectionFragment = null;
 
@@ -547,59 +610,16 @@ public class MapSectionFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		mapDownloadLayer.onPause();
+		if (mapDownloadLayer != null)
+			mapDownloadLayer.onPause();
 	}
 	
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mapDownloadLayer.onResume();
-	}
-	
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		LayerManager layerManager = mapMap.getLayerManager();
-		Layers layers = layerManager.getLayers();
-		layers.clear();
-
-		float lat = mainActivity.mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LAT, 360.0f);
-		float lon = mainActivity.mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LON, 360.0f);
-
-		if ((lat < 360.0f) && (lon < 360.0f)) {
-			mapMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
-		}
-
-		int zoom = mainActivity.mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
-		mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
-
-		/*
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
-        		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
-
-        //FIXME: have user select map file
-        tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
-
-        tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
-
-        //tileRendererLayer.setTextScale(1.5f);
-        layers.add(tileRendererLayer);
-		 */
-
-		mapDownloadLayer = new TileDownloadLayer(mapTileCache,
-				mapMap.getModel().mapViewPosition, onlineTileSource,
-				AndroidGraphicFactory.INSTANCE);
-		layers.add(mapDownloadLayer);
-
-		//parse list of location providers
-		onLocationProvidersChanged(
-				mainActivity.mSharedPreferences.getStringSet(
-						SettingsActivity.KEY_PREF_LOC_PROV,
-						new HashSet<String>(Arrays.asList(
-								new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}
-								))));
+		if (mapDownloadLayer != null)
+			mapDownloadLayer.onResume();
 	}
 	
 
@@ -615,11 +635,6 @@ public class MapSectionFragment extends Fragment {
 		spEditor.commit();
 
 		super.onStop();
-
-		if (mapMap != null)
-			mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
-		if (mapDownloadLayer != null)
-			mapDownloadLayer.onDestroy();
 	}
 
 
