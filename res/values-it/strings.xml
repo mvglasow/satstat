@@ -177,7 +177,7 @@
     <string name="title_legend_sensors">Sensori</string>
     <string name="title_legend_sensors_high">Accuratezza alta</string>
     <string name="title_legend_sensors_medium">Accuratezza media</string>
-    <string name="title_legend_sensors_low">Accuratezza basa</string>
+    <string name="title_legend_sensors_low">Accuratezza bassa</string>
     <string name="title_legend_sensors_unreliable">Inaffidabile</string>
     <string name="title_legend_radio">Radio</string>
     <string name="title_legend_radio_2g">Cellula 2G</string>
