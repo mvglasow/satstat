@@ -197,4 +197,11 @@
     <string name="title_legend_map">Karte</string>
     <string name="title_legend_map_prov">Standort von Quelle: %s</string>
     <string name="title_legend_map_stale">Veralteter Standort von beliebiger Quelle</string>
+    <string name="pref_wifi_sort">WLAN-Netze sortieren</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >Nach BSSID</item>
+        <item >Nach Name</item>
+        <item >Nach Kanal</item>
+        <item >Nach Signalstärke</item>
+    </string-array>
 </resources>

@@ -192,4 +192,11 @@
     <string name="title_legend_map">Mapa</string>
     <string name="title_legend_map_prov">Ubicació de la font %s</string>
     <string name="title_legend_map_stale">Ubicació gastada de qualsevol font</string>
+    <string name="pref_wifi_sort">Ordena les xarxes WiFi</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >Per BSSID</item>
+        <item >Per nom</item>
+        <item >Per canal</item>
+        <item >Per nivell del senyal</item>
+    </string-array>
 </resources>

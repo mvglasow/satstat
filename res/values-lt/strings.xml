@@ -191,4 +191,11 @@
     <string name="title_legend_map">Žemėlapis</string>
     <string name="title_legend_map_prov">%s šaltinio vietovė</string>
     <string name="title_legend_map_stale">Pasenusi bet kurio šaltinio vietovė</string>
+    <string name="pref_wifi_sort">Ryšioti WiFi tinklus</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >Pagal BSSID</item>
+        <item >Pagal pavadimimą</item>
+        <item >Pagal kanalą</item>
+        <item >Pagal signalo galią</item>
+    </string-array>
 </resources>
