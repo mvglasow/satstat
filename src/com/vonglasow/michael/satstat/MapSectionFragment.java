@@ -38,6 +38,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.input.MapZoomControls.Orientation;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.TileCache;
@@ -238,12 +239,13 @@ public class MapSectionFragment extends Fragment {
 	
 	
 	/**
-	 * Creates tile layers and associated tile caches for the map view.
+	 * Creates layers and associated tile caches for the map view.
+	 * 
+	 * @param createOverlays Whether to create overlays (circle and markers) or just tile layers
 	 */
-	private void createLayers() {
+	private void createLayers(boolean createOverlays) {
 		LayerManager layerManager = mapMap.getLayerManager();
 		Layers layers = layerManager.getLayers();
-		layers.clear(); // FIXME do we need this here? shouldn't we do that in destroyLayers()?
 
 		/*
         TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
@@ -274,25 +276,38 @@ public class MapSectionFragment extends Fragment {
 		layers.add(mapDownloadLayer);
 
 		//parse list of location providers
-		onLocationProvidersChanged(
-				mainActivity.mSharedPreferences.getStringSet(
-						SettingsActivity.KEY_PREF_LOC_PROV,
-						new HashSet<String>(Arrays.asList(
-								new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}
-								))));
+		if (createOverlays)
+			onLocationProvidersChanged(
+					mainActivity.mSharedPreferences.getStringSet(
+							SettingsActivity.KEY_PREF_LOC_PROV,
+							new HashSet<String>(Arrays.asList(
+									new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}
+									))));
 	}
 	
 	
 	/**
-	 * Destroys tile layers and associated tile caches for the map view.
+	 * Destroys layers and associated tile caches for the map view.
+	 * 
+	 * @param destroyOverlays Whether to destroy overlays (markers and circles) or just the tile layers
 	 */
-	private void destroyLayers() {
+	private void destroyLayers(boolean destroyOverlays) {
+		Layers layers = null;
+		if (mapMap != null)
+			layers = mapMap.getLayerManager().getLayers();
+		
 		if (mapDownloadLayer != null) {
-			if (mapMap != null)
-				mapMap.getLayerManager().getLayers().remove(mapDownloadLayer);
+			if (layers != null)
+				layers.remove(mapDownloadLayer);
 			mapDownloadLayer.onDestroy();
 			mapDownloadLayer = null;
 		}
+		
+		if (destroyOverlays && (layers != null))
+			for (Layer layer : layers) {
+				layer.onDestroy();
+				layers.remove(layer);
+			}
 	}
 
 
@@ -406,7 +421,7 @@ public class MapSectionFragment extends Fragment {
 		int zoom = mainActivity.mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
 		mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
 		
-		createLayers();
+		createLayers(true);
 
 		return rootView;
 	}
@@ -414,7 +429,7 @@ public class MapSectionFragment extends Fragment {
 	
 	@Override
 	public void onDestroyView() {
-		destroyLayers();
+		destroyLayers(true);
 
 		if (mainActivity.mapSectionFragment == this)
 			mainActivity.mapSectionFragment = null;
@@ -529,11 +544,10 @@ public class MapSectionFragment extends Fragment {
 		Layers layers = mapMap.getLayerManager().getLayers();
 
 		// remove all layers other than tile render layer from map
-		for (int i = 0; i < layers.size(); )
-			if ((layers.get(i) instanceof TileRendererLayer) || (layers.get(i) instanceof TileDownloadLayer)) {
-				i++;
-			} else {
-				layers.remove(i);
+		for (Layer layer : layers)
+			if (!(layer instanceof TileRendererLayer) && !(layer instanceof TileDownloadLayer)) {
+				layer.onDestroy();
+				layers.remove(layer);
 			}
 
 		for (String pr : providers) {
