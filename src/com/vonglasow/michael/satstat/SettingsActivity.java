@@ -60,6 +60,7 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
 	public static final int KEY_PREF_COORD_MGRS = 3;
 	public static final String KEY_PREF_UTC = "pref_utc";
 	public static final String KEY_PREF_CID = "pref_cid";
+	public static final String KEY_PREF_WIFI_SORT = "pref_wifi_sort";
 
 	private SharedPreferences mSharedPreferences;
 

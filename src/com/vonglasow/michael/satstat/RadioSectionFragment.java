@@ -27,6 +27,7 @@ import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
 import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import com.vonglasow.michael.satstat.data.CellTowerListGsm;
 import com.vonglasow.michael.satstat.data.CellTowerListLte;
 import com.vonglasow.michael.satstat.data.CellTowerLte;
 import com.vonglasow.michael.satstat.utils.WifiCapabilities;
+import com.vonglasow.michael.satstat.utils.WifiScanResultComparator;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -99,6 +101,7 @@ public class RadioSectionFragment extends Fragment {
 	private Runnable networkTimeRunnable = null;
 
 	List <ScanResult> scanResults = null;
+	WifiScanResultComparator wifiComparator;
 	private String selectedBSSID = "";
 	private Handler wifiTimehandler = null;
 	private Runnable wifiTimeRunnable = null;
@@ -383,6 +386,9 @@ public class RadioSectionFragment extends Fragment {
 					networkTimehandler.postDelayed(this, NETWORK_REFRESH_DELAY);
 			}
 		};
+		
+		wifiComparator = new WifiScanResultComparator();
+		wifiComparator.setCriterion(mainActivity.prefWifiSort);
 
 		wifiTimehandler = new Handler();
 		wifiTimeRunnable = new Runnable() {
@@ -470,6 +476,8 @@ public class RadioSectionFragment extends Fragment {
 	final void refreshWifiResults() {
 		if (scanResults != null) {
 			wifiAps.removeAllViews();
+			wifiComparator.setCriterion(mainActivity.prefWifiSort);
+			Collections.sort(scanResults, wifiComparator);
 			//add the selected network first
 			for (ScanResult result : scanResults) {
 				if (result.BSSID.equals(selectedBSSID)) {

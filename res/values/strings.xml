@@ -227,4 +227,17 @@
     <string name="title_nmea_097_192">97–192</string>
     <string name="title_nmea_193_195">QZSS</string>
     <string name="title_nmea_201_235">Beidou</string>
+    <string name="pref_wifi_sort">Sort WiFi networks</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >By BSSID</item>
+        <item >By name</item>
+        <item >By channel</item>
+        <item >By signal strength</item>
+    </string-array>
+    <string-array name="prefs_wifi_sort_values">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+        <item >3</item>
+    </string-array>
 </resources>

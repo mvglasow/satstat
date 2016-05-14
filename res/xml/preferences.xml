@@ -5,6 +5,7 @@
       <ListPreference android:key="pref_coord" android:title="@string/pref_coord" android:summary="%s" android:entries="@array/prefs_coord_keys" android:entryValues="@array/prefs_coord_values" android:defaultValue="0" />
       <CheckBoxPreference android:summary="@string/pref_utc_summary" android:defaultValue="false" android:title="@string/pref_utc" android:key="pref_utc"/>
       <CheckBoxPreference android:summary="@string/pref_cid_summary" android:defaultValue="false" android:title="@string/pref_cid" android:key="pref_cid"/>
+      <ListPreference android:key="pref_wifi_sort" android:title="@string/pref_wifi_sort" android:summary="%s" android:entries="@array/prefs_wifi_sort_keys" android:entryValues="@array/prefs_wifi_sort_values" android:defaultValue="0" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_map">
         <com.vonglasow.michael.satstat.widgets.LocProviderPreference android:key="pref_loc_prov" android:title="@string/pref_loc_prov" android:summary="@string/pref_loc_prov_summary" />
