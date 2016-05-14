@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Michael von Glasow.
+ * Copyright © 2014–2016 Michael von Glasow.
  * Portions copyright © 2007, 2012 The Android Open Source Project
  * 
  * This file is part of LSRN Tools.
@@ -18,7 +18,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.utils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

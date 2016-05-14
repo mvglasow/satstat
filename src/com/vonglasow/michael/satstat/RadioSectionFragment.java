@@ -37,6 +37,7 @@ import com.vonglasow.michael.satstat.data.CellTowerListCdma;
 import com.vonglasow.michael.satstat.data.CellTowerListGsm;
 import com.vonglasow.michael.satstat.data.CellTowerListLte;
 import com.vonglasow.michael.satstat.data.CellTowerLte;
+import com.vonglasow.michael.satstat.utils.WifiCapabilities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
