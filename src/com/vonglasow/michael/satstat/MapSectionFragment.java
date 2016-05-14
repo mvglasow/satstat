@@ -303,6 +303,11 @@ public class MapSectionFragment extends Fragment {
 			mapDownloadLayer = null;
 		}
 		
+		if (mapDownloadTileCache != null) {
+			mapDownloadTileCache.destroy();
+			mapDownloadTileCache = null;
+		}
+		
 		if (destroyOverlays && (layers != null))
 			for (Layer layer : layers) {
 				layer.onDestroy();
