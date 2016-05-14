@@ -191,6 +191,7 @@ public class RadioSectionFragment extends Fragment {
 
 
 	private final void addWifiResult(ScanResult result) {
+		// needed to pass a persistent reference to the OnClickListener
 		final ScanResult r = result;
 		android.view.View.OnClickListener clis = new android.view.View.OnClickListener () {
 
