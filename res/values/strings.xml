@@ -240,4 +240,6 @@
         <item >2</item>
         <item >3</item>
     </string-array>
+    <string name="pref_map_offline">Use offline map</string>
+    <string name="pref_map_offline_summary">Render maps on the device (requires downloading an offline map)</string>
 </resources>

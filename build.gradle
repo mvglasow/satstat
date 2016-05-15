@@ -60,5 +60,6 @@ android {
         compile 'org.mapsforge:mapsforge-map-reader:0.6.1'
         compile 'org.mapsforge:mapsforge-map-android:0.6.1'
         compile 'com.caverock:androidsvg:1.2.2-beta-1'
+        compile 'net.sf.kxml:kxml2:2.3.0'
     }
 }

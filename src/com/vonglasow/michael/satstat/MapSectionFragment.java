@@ -19,6 +19,7 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.input.MapZoomControls.Orientation;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.datastore.MultiMapDataStore;
+import org.mapsforge.map.datastore.MultiMapDataStore.DataPolicy;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
@@ -47,6 +50,9 @@ import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
 import org.mapsforge.map.layer.overlay.Circle;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.reader.header.MapFileException;
+import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 
 import android.content.Context;
@@ -59,6 +65,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -70,6 +77,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 /**
  * The fragment which displays the map view.
@@ -126,8 +134,11 @@ public class MapSectionFragment extends Fragment {
 	OnlineTileSource onlineTileSource;
 	private MapView mapMap;
 	private TileDownloadLayer mapDownloadLayer = null;
+	private TileRendererLayer mapRendererLayer = null;
 	private TileCache mapDownloadTileCache = null;
+	private TileCache mapRendererTileCache = null;
 	private ImageButton mapReattach;
+	private TextView mapAttribution;
 	private boolean isMapViewAttached = true;
 	private HashMap<String, Circle> mapCircles;
 	private HashMap<String, Marker> mapMarkers;
@@ -247,33 +258,60 @@ public class MapSectionFragment extends Fragment {
 		LayerManager layerManager = mapMap.getLayerManager();
 		Layers layers = layerManager.getLayers();
 
-		/*
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
-        		mapMap.getModel().mapViewPosition, false, AndroidGraphicFactory.INSTANCE);
+		if (mainActivity.prefMapOffline) {
+			// use offline map tiles
+			if (mapRendererTileCache == null)
+				mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
+						"InternalRenderTheme",
+						Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
+								mapMap.getModel().displayModel.getTileSize(),
+								mapMap.getModel().frameBufferModel.getOverdrawFactor(),
+								1f)),
+								mapMap.getModel().displayModel.getTileSize(),
+								true);
+			
+			MultiMapDataStore mapDataStore = new MultiMapDataStore(DataPolicy.DEDUPLICATE);
+			//FIXME: have user select map dir
+			File mapDir = new File(Environment.getExternalStorageDirectory(), "org.mapsforge/maps");
+			Log.i(TAG, String.format("Looking for maps in: %s", mapDir.getName()));
+			if (mapDir.exists() && mapDir.canRead() && mapDir.isDirectory())
+				for (File file : mapDir.listFiles())
+					if (file.isFile())
+						try {
+							MapFile mapFile = new MapFile(file);
+							mapDataStore.addMapDataStore(mapFile, false, false);
+							Log.i(TAG, String.format("Added map file: %s", file.getName()));
+						} catch (MapFileException e) {
+							// not a map file, skip
+							Log.w(TAG, String.format("Could not add map file: %s", file.getName()));
+						}
 
-        //FIXME: have user select map file
-        tileRendererLayer.setMapFile(new File(Environment.getExternalStorageDirectory(), "org.openbmap/maps/germany.map"));
+			mapRendererLayer = new TileRendererLayer(mapRendererTileCache, mapDataStore,
+					mapMap.getModel().mapViewPosition, false, true, false, AndroidGraphicFactory.INSTANCE);
 
-        tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
+			mapRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
 
-        //tileRendererLayer.setTextScale(1.5f);
-        layers.add(tileRendererLayer);
-		 */
+			//mapRendererLayer.setTextScale(1.5f); // FIXME
+			layers.add(mapRendererLayer);
+			mapAttribution.setText(R.string.osm_attribution);
+		} else {
+			// use online map tiles
+			if (mapDownloadTileCache == null)
+				mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
+						"MapQuest",
+						Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
+								mapMap.getModel().displayModel.getTileSize(),
+								mapMap.getModel().frameBufferModel.getOverdrawFactor(),
+								1f)),
+								mapMap.getModel().displayModel.getTileSize(),
+								true);
 
-		if (mapDownloadTileCache == null)
-			mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
-					"MapQuest",
-					Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
-							mapMap.getModel().displayModel.getTileSize(),
-							mapMap.getModel().frameBufferModel.getOverdrawFactor(),
-							1f)),
-							mapMap.getModel().displayModel.getTileSize(),
-							true);
-
-		mapDownloadLayer = new TileDownloadLayer(mapDownloadTileCache,
-				mapMap.getModel().mapViewPosition, onlineTileSource,
-				AndroidGraphicFactory.INSTANCE);
-		layers.add(mapDownloadLayer);
+			mapDownloadLayer = new TileDownloadLayer(mapDownloadTileCache,
+					mapMap.getModel().mapViewPosition, onlineTileSource,
+					AndroidGraphicFactory.INSTANCE);
+			layers.add(mapDownloadLayer);
+			mapAttribution.setText(R.string.mapquest_attribution);
+		}
 
 		//parse list of location providers
 		if (createOverlays)
@@ -303,11 +341,23 @@ public class MapSectionFragment extends Fragment {
 			mapDownloadLayer = null;
 		}
 		
+		if (mapRendererLayer != null) {
+			if (layers != null)
+				layers.remove(mapRendererLayer);
+			mapRendererLayer.onDestroy();
+			mapRendererLayer = null;
+		}
+		
 		if (mapDownloadTileCache != null) {
 			mapDownloadTileCache.destroy();
 			mapDownloadTileCache = null;
 		}
-		
+
+		if (mapRendererTileCache != null) {
+			mapRendererTileCache.destroy();
+			mapRendererTileCache = null;
+		}
+
 		if (destroyOverlays && (layers != null))
 			for (Layer layer : layers) {
 				layer.onDestroy();
@@ -348,6 +398,7 @@ public class MapSectionFragment extends Fragment {
 		float density = this.getContext().getResources().getDisplayMetrics().density;
 
 		mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
+		mapAttribution = (TextView) rootView.findViewById(R.id.mapAttribution);
 
 		mapReattach.setVisibility(View.GONE);
 		isMapViewAttached = true;
@@ -623,6 +674,17 @@ public class MapSectionFragment extends Fragment {
 
 		// move layers into view
 		updateMap();
+	}
+	
+	
+	/**
+	 * Called when the source for the base map layer changes.
+	 * 
+	 * This method destroys all tile layers and their associated tile caches while leaving overlays.
+	 */
+	void onMapSourceChanged() {
+		destroyLayers(false);
+		createLayers(false);
 	}
 	
 

@@ -9,6 +9,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_map">
         <com.vonglasow.michael.satstat.widgets.LocProviderPreference android:key="pref_loc_prov" android:title="@string/pref_loc_prov" android:summary="@string/pref_loc_prov_summary" />
+        <CheckBoxPreference android:summary="@string/pref_map_offline_summary" android:defaultValue="false" android:title="@string/pref_map_offline" android:key="pref_map_offline"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_notifications">
         <CheckBoxPreference android:summary="@string/pref_notify_summary" android:defaultValue="false" android:title="@string/pref_notify" android:key="pref_notify_fix"/>
