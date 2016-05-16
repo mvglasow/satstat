@@ -65,7 +65,6 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -270,9 +269,23 @@ public class MapSectionFragment extends Fragment {
 								mapMap.getModel().displayModel.getTileSize(),
 								true);
 			
+			/*
+			 * If the offline map path changes, we need to purge the cache. This ensures we don't serve stale
+			 * tiles generated from the old map set.
+			 * 
+			 * We accomplish this by comparing the current map path to the map path for which we last
+			 * instantiated a cache. If they differ, we flush the cache and store the new map path.
+			 */
+			String cachedPath = mainActivity.mSharedPreferences.getString(SettingsActivity.KEY_PREF_MAP_CACHED_PATH, "");
+			if (!cachedPath.equals(mainActivity.prefMapPath)) {
+				mapRendererTileCache.purge();
+				SharedPreferences.Editor spEditor = mainActivity.mSharedPreferences.edit();
+				spEditor.putString(SettingsActivity.KEY_PREF_MAP_CACHED_PATH, mainActivity.prefMapPath);
+				spEditor.commit();
+			}
+			
 			MultiMapDataStore mapDataStore = new MultiMapDataStore(DataPolicy.DEDUPLICATE);
-			//FIXME: have user select map dir
-			File mapDir = new File(Environment.getExternalStorageDirectory(), "org.mapsforge/maps");
+			File mapDir = new File(mainActivity.prefMapPath);
 			Log.i(TAG, String.format("Looking for maps in: %s", mapDir.getName()));
 			if (mapDir.exists() && mapDir.canRead() && mapDir.isDirectory())
 				for (File file : mapDir.listFiles())

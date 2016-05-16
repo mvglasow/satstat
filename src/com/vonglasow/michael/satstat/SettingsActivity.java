@@ -19,25 +19,32 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
+import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
-public class SettingsActivity extends AppCompatActivity implements OnSharedPreferenceChangeListener{
+public class SettingsActivity extends AppCompatActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener{
 
 	public static final String KEY_PREF_NOTIFY_FIX = "pref_notify_fix";
 	public static final String KEY_PREF_NOTIFY_SEARCH = "pref_notify_search";
@@ -54,6 +61,8 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
 	public static final String KEY_PREF_MAP_ZOOM = "pref_map_zoom";
 	public static final String KEY_PREF_UNIT_TYPE = "pref_unit_type";
 	public static final String KEY_PREF_MAP_OFFLINE = "pref_map_offline";
+	public static final String KEY_PREF_MAP_PATH = "pref_map_path";
+	public static final String KEY_PREF_MAP_CACHED_PATH = "pref_map_cached_path";
 	public static final String KEY_PREF_COORD = "pref_coord";
 	public static final int KEY_PREF_COORD_DECIMAL = 0;
 	public static final int KEY_PREF_COORD_MIN = 1;
@@ -63,7 +72,36 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
 	public static final String KEY_PREF_CID = "pref_cid";
 	public static final String KEY_PREF_WIFI_SORT = "pref_wifi_sort";
 
+	public static final int REQUEST_CODE_PICK_MAP_PATH = 1;
+
+	/**
+	 * A string array that specifies the name of the intent to use, and the scheme to use with it
+	 * when setting the data for the intent.
+	 */
+	private static final String[][] PICK_DIRECTORY_INTENTS = {
+		{ Intent.ACTION_PICK, "folder://" },                      // CM File Manager, Blackmoon File Browser, possibly others
+		{ "org.openintents.action.PICK_DIRECTORY", "file://" },   // OI File Manager, possibly others
+		{ "com.estrongs.action.PICK_DIRECTORY", "file://" },      // ES File Explorer
+		{ "com.androidworkz.action.PICK_DIRECTORY", "file://" }
+	};
+	
+	public static String defaultMapPath = new File(Environment.getExternalStorageDirectory(), "org.mapsforge/maps").getAbsolutePath();
+
 	private SharedPreferences mSharedPreferences;
+	Preference prefMapPath;
+	String prefMapPathValue = defaultMapPath;
+
+	@SuppressLint("NewApi")
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_CODE_PICK_MAP_PATH) {
+			if (resultCode == RESULT_OK) {
+				SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+				spEditor.putString(KEY_PREF_MAP_PATH, data.getData().getPath());
+				spEditor.commit();
+			}
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +151,40 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
 		return super.onOptionsItemSelected(item);
 	}
 
+
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		if (preference == prefMapPath) {
+			boolean success = false;
+			int i = 0;
+			do {
+				String intentAction = PICK_DIRECTORY_INTENTS[i][0];
+				String uriPrefix = PICK_DIRECTORY_INTENTS[i][1];
+				Intent intent = new Intent(intentAction);
+				if (uriPrefix != null)
+					intent.setData(Uri.parse(uriPrefix + prefMapPathValue));
+
+				try {
+					startActivityForResult(intent, REQUEST_CODE_PICK_MAP_PATH);
+					Log.i("SettingsActivity", String.format("Sending intent: %s", intentAction));
+					success = true;
+				} catch (ActivityNotFoundException e) {
+					// Try the next intent in the list
+					i++;
+				}
+			} while (!success && (i < PICK_DIRECTORY_INTENTS.length));
+
+			if (!success) {
+				//No app for folder browsing is installed, show a fallback dialog
+				//success = true;
+			}
+
+			return success;
+		} else
+			return false;
+	}
+
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -146,7 +218,23 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
                 final String summary = (String)prefUpdateFreq.getEntries()[index];         
                 prefUpdateFreq.setSummary(summary);
             }
+		} else if (key.equals(SettingsActivity.KEY_PREF_MAP_PATH)) {
+			SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
+			Preference prefMapPath = sf.findPreference(KEY_PREF_MAP_PATH);
+			prefMapPathValue = mSharedPreferences.getString(KEY_PREF_MAP_PATH, prefMapPathValue);
+			prefMapPath.setSummary(prefMapPathValue);
 		}
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
+		prefMapPath = sf.findPreference(KEY_PREF_MAP_PATH);
+		prefMapPathValue = mSharedPreferences.getString(KEY_PREF_MAP_PATH, prefMapPathValue);
+		prefMapPath.setSummary(prefMapPathValue);
+		prefMapPath.setOnPreferenceClickListener(this);
 	}
 
 	@Override

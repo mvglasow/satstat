@@ -187,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	boolean prefCid = false;
 	int prefWifiSort = 0;
 	boolean prefMapOffline = false;
+	String prefMapPath = SettingsActivity.defaultMapPath;
 
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 
@@ -347,6 +348,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, prefCid);
 		prefWifiSort = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
 		prefMapOffline = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_MAP_OFFLINE, prefMapOffline);
+		prefMapPath = mSharedPreferences.getString(SettingsActivity.KEY_PREF_MAP_PATH, prefMapPath);
 
         ActionBar actionBar = getSupportActionBar();
         
@@ -653,7 +655,12 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			prefWifiSort = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
 		} else if (key.equals(SettingsActivity.KEY_PREF_MAP_OFFLINE)) {
 			prefMapOffline = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_MAP_OFFLINE, prefMapOffline);
-			mapSectionFragment.onMapSourceChanged();
+			if (mapSectionFragment != null)
+				mapSectionFragment.onMapSourceChanged();
+		} else if (key.equals(SettingsActivity.KEY_PREF_MAP_PATH)) {
+			prefMapPath = sharedPreferences.getString(SettingsActivity.KEY_PREF_MAP_PATH, prefMapPath);
+			if (mapSectionFragment != null)
+				mapSectionFragment.onMapSourceChanged();
 		}
 	}
 
