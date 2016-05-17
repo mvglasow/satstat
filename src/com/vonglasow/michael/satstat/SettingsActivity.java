@@ -35,11 +35,15 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -96,13 +100,11 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_CODE_PICK_MAP_PATH) {
 			if (resultCode == RESULT_OK) {
-				SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-				spEditor.putString(KEY_PREF_MAP_PATH, data.getData().getPath());
-				spEditor.commit();
+				setMapPath(data.getData().getPath());
 			}
 		}
 	}
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -176,7 +178,29 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 
 			if (!success) {
 				//No app for folder browsing is installed, show a fallback dialog
-				//success = true;
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+				builder.setTitle(getString(R.string.pref_map_path));
+				builder.setMessage(getString(R.string.title_map_path));
+				final EditText input = new EditText(this);
+				input.setInputType(InputType.TYPE_CLASS_TEXT);
+				input.setText(prefMapPathValue);
+				builder.setView(input);
+
+				builder.setPositiveButton(getString(R.string.action_ok), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						setMapPath(input.getText().toString());
+					}
+				});
+
+				builder.setNegativeButton(getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// NOP
+					}
+				});
+
+				builder.show();
+				success = true;
 			}
 
 			return success;
@@ -241,6 +265,12 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	protected void onStop() {
 		mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
 		super.onStop();
+	}
+
+	protected void setMapPath(String path) {
+		SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+		spEditor.putString(KEY_PREF_MAP_PATH, path);
+		spEditor.commit();
 	}
 
 	public static class SettingsFragment extends PreferenceFragment {

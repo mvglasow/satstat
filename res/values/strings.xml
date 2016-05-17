@@ -243,4 +243,7 @@
     <string name="pref_map_offline">Use offline map</string>
     <string name="pref_map_offline_summary">Render maps on the device (requires downloading an offline map)</string>
      <string name="pref_map_path">Offline map folder</string>
+    <string name="title_map_path">Path to offline map folder:</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
 </resources>
