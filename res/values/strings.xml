@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation" >
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
     <string name="app_name">SatStat</string>
     <string name="action_settings">Settings</string>
     <string name="action_record">Record</string>
@@ -149,26 +148,28 @@
     <string name="pref_wifi_summary">Refresh AGPS data when my device connects to a WiFi network</string>
     <string name="pref_freq">Update frequency</string>
     <string name="pref_freq_summary">%s</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Every time</item>
-        <item >Once a day</item>
-        <item >Once in 2 days</item>
-        <item >Once in 3 days</item>
-        <item >Once in 4 days</item>
-        <item >Once in 5 days</item>
-        <item >Once in 6 days</item>
-        <item >Once a week</item>
+        <item>Every time</item>
+        <item>Once a day</item>
+        <item>Once in 2 days</item>
+        <item>Once in 3 days</item>
+        <item>Once in 4 days</item>
+        <item>Once in 5 days</item>
+        <item>Once in 6 days</item>
+        <item>Once a week</item>
     </string-array>
     <string-array name="prefs_freq_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
-        <item >4</item>
-        <item >5</item>
-        <item >6</item>
-        <item >7</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
     </string-array>
+
     <string name="pref_lastupdate">Last update</string>
     <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Networks</string>
@@ -180,18 +181,20 @@
     <string name="pref_unit">Use metric units</string>
     <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string>
     <string name="pref_coord">Coordinates</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Decimal degrees</item>
-        <item >Degrees, minutes</item>
-        <item >Degrees, minutes, seconds</item>
-        <item >MGRS</item>
+        <item>Decimal degrees</item>
+        <item>Degrees, minutes</item>
+        <item>Degrees, minutes, seconds</item>
+        <item>MGRS</item>
     </string-array>
     <string-array name="prefs_coord_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
+
     <string name="pref_utc">Display GPS time in UTC</string>
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
     <string name="pref_cid">Split UMTS/LTE cell IDs</string>
@@ -228,22 +231,25 @@
     <string name="title_nmea_193_195">QZSS</string>
     <string name="title_nmea_201_235">Beidou</string>
     <string name="pref_wifi_sort">Sort WiFi networks</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >By BSSID</item>
-        <item >By name</item>
-        <item >By channel</item>
-        <item >By signal strength</item>
+        <item>By BSSID</item>
+        <item>By name</item>
+        <item>By channel</item>
+        <item>By signal strength</item>
     </string-array>
     <string-array name="prefs_wifi_sort_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
+
     <string name="pref_map_offline">Use offline map</string>
     <string name="pref_map_offline_summary">Render maps on the device (requires downloading an offline map)</string>
-     <string name="pref_map_path">Offline map folder</string>
+    <string name="pref_map_path">Offline map folder</string>
     <string name="title_map_path">Path to offline map folder:</string>
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
+
 </resources>
