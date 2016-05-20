@@ -28,9 +28,9 @@
     <string name="title_gps_speed">Sebesség</string>
     <string name="title_gps_alt">Magasság</string>
     <string name="title_gps_time">Legutóbbi fix pozíció</string>
-    <string name="title_gps_bear">Haladási irány</string>
-    <string name="title_gps_orient">Nézeti irány</string>
-    <string name="title_gps_acc">Pontosság</string>
+    <string name="title_gps_bear">Hal. irány</string>
+    <string name="title_gps_orient">Néz. irány</string>
+    <string name="title_gps_acc">Hiba</string>
     <string name="title_gps_sats">Műholdak</string>
     <string name="title_gps_ttff">TTFF (mp)</string>
     <string name="value_none">–</string>
