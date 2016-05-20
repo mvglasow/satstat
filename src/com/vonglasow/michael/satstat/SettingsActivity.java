@@ -83,6 +83,8 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	/**
 	 * A string array that specifies the name of the intent to use, and the scheme to use with it
 	 * when setting the data for the intent.
+	 * 
+	 * @author k9mail, mvglasow
 	 */
 	private static final String[][] PICK_DIRECTORY_INTENTS = {
 		{ Intent.ACTION_PICK, "folder://" },                      // CM File Manager, Blackmoon File Browser, possibly others
@@ -156,6 +158,9 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	}
 
 
+	/**
+	 * @author k9mail, mvglasow
+	 */
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
 		if (preference == prefMapPath) {
