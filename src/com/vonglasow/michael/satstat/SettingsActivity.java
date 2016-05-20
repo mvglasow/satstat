@@ -37,10 +37,12 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -181,15 +183,29 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 				builder.setTitle(getString(R.string.pref_map_path));
-				builder.setMessage(getString(R.string.title_map_path));
-				final EditText input = new EditText(this);
-				input.setInputType(InputType.TYPE_CLASS_TEXT);
-				input.setText(prefMapPathValue);
-				builder.setView(input);
+				
+				LayoutInflater inflater = LayoutInflater.from(this);
+				final View alertView = inflater.inflate(R.layout.alert_map_path, null);
+				final EditText editPath = (EditText) alertView.findViewById(R.id.editPath);
+				editPath.setText(prefMapPathValue);
+				final ImageButton btnOiFilemanager = (ImageButton) alertView.findViewById(R.id.btn_oi_filemanager);
+				btnOiFilemanager.setTag(Uri.parse("market://details?id=org.openintents.filemanager"));
+				final ImageButton btnCmFilemanager = (ImageButton) alertView.findViewById(R.id.btn_cm_filemanager);
+				btnCmFilemanager.setTag(Uri.parse("market://details?id=com.cyanogenmod.filemanager.ics"));
+				final View.OnClickListener clickListener = new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if (v.getTag() instanceof Uri)
+						startActivity(new Intent(Intent.ACTION_VIEW, (Uri) v.getTag()));
+					}
+				};
+				builder.setView(alertView);
+				btnOiFilemanager.setOnClickListener(clickListener);
+				btnCmFilemanager.setOnClickListener(clickListener);
 
 				builder.setPositiveButton(getString(R.string.action_ok), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						setMapPath(input.getText().toString());
+						setMapPath(editPath.getText().toString());
 					}
 				});
 
