@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context="com.vonglasow.michael.satstat.LegendActivity" >
+    tools:context=".LegendActivity" >
 
     <ScrollView
         android:layout_width="fill_parent"
