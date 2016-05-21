@@ -21,6 +21,7 @@ package com.vonglasow.michael.satstat.ui;
 
 import java.util.Map;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.R.dimen;
 import com.vonglasow.michael.satstat.R.id;
@@ -45,11 +46,6 @@ import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 
 public class LegendActivity extends AppCompatActivity {
-	/*
-	 * Gray style for inactive location providers
-	 */
-	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
-
 	/*
 	 * Index into style arrays
 	 */
@@ -102,8 +98,8 @@ public class LegendActivity extends AppCompatActivity {
 		Map<String, ?> allPrefs = sharedPref.getAll();
 
 		for (String key: allPrefs.keySet())
-			if (key.startsWith(SettingsActivity.KEY_PREF_LOC_PROV_STYLE)) {
-				String provName = key.substring(SettingsActivity.KEY_PREF_LOC_PROV_STYLE.length());
+			if (key.startsWith(Const.KEY_PREF_LOC_PROV_STYLE)) {
+				String provName = key.substring(Const.KEY_PREF_LOC_PROV_STYLE.length());
 				String styleName = "";
 				try {
 					styleName = sharedPref.getString(key, styleName);
@@ -114,7 +110,7 @@ public class LegendActivity extends AppCompatActivity {
 					addLocationProvider(String.format(getString(R.string.title_legend_map_prov, provName)), styleName);
 			}
 
-		addLocationProvider(getString(R.string.title_legend_map_stale), LOCATION_PROVIDER_GRAY);
+		addLocationProvider(getString(R.string.title_legend_map_stale), Const.LOCATION_PROVIDER_GRAY);
 	}
 	
 	@Override

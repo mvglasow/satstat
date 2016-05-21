@@ -43,6 +43,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.R.id;
 import com.vonglasow.michael.satstat.R.layout;
@@ -171,13 +172,13 @@ public class GpsSectionFragment extends Fragment {
 			gpsAccuracyUnit.setText("");
 		}
 
-		if (mainActivity.prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
+		if (mainActivity.prefCoord == Const.KEY_PREF_COORD_DECIMAL) {
 			gpsCoordLayout.setVisibility(View.GONE);
 			gpsLatLayout.setVisibility(View.VISIBLE);
 			gpsLonLayout.setVisibility(View.VISIBLE);
 			gpsLat.setText(String.format("%.5f%s", location.getLatitude(), getString(R.string.unit_degree)));
 			gpsLon.setText(String.format("%.5f%s", location.getLongitude(), getString(R.string.unit_degree)));
-		} else if (mainActivity.prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
+		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_MIN) {
 			gpsCoordLayout.setVisibility(View.GONE);
 			gpsLatLayout.setVisibility(View.VISIBLE);
 			gpsLonLayout.setVisibility(View.VISIBLE);
@@ -189,7 +190,7 @@ public class GpsSectionFragment extends Fragment {
 			deg = (int) dec;
 			min = 60.0 * (dec - deg);
 			gpsLon.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
-		} else if (mainActivity.prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
+		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_SEC) {
 			gpsCoordLayout.setVisibility(View.GONE);
 			gpsLatLayout.setVisibility(View.VISIBLE);
 			gpsLonLayout.setVisibility(View.VISIBLE);
@@ -205,7 +206,7 @@ public class GpsSectionFragment extends Fragment {
 			min = (int) tmp;
 			sec = 60.0 * (tmp - min);
 			gpsLon.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
-		} else if (mainActivity.prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
+		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_MGRS) {
 			gpsLatLayout.setVisibility(View.GONE);
 			gpsLonLayout.setVisibility(View.GONE);
 			gpsCoordLayout.setVisibility(View.VISIBLE);

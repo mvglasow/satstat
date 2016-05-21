@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.vonglasow.michael.satstat.ui.SettingsActivity;
 import com.vonglasow.michael.satstat.utils.WifiCapabilities;
 
 import android.app.ActivityManager;
@@ -45,10 +44,6 @@ import android.widget.Toast;
 
 public class GpsEventReceiver extends BroadcastReceiver {
 
-	public static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
-	public static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
-	public static final String AGPS_DATA_EXPIRED = "com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED";
-	
 	/**
 	 * A dummy intent called when a location update is received.
 	 * <p>
@@ -61,9 +56,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 	 * received, it will be ignored.
 	 */
 	public static final String LOCATION_UPDATE_RECEIVED = "com.vonglasow.michael.satstat.LOCATION_UPDATE_RECEIVED";
-	public static final long MILLIS_PER_DAY = 86400000;
-	
-	private static Intent mAgpsIntent = new Intent(AGPS_DATA_EXPIRED);
+	private static Intent mAgpsIntent = new Intent(Const.AGPS_DATA_EXPIRED);
 	private static Intent mLocationIntent = new Intent(LOCATION_UPDATE_RECEIVED);
 	
 	@Override
@@ -73,16 +66,16 @@ public class GpsEventReceiver extends BroadcastReceiver {
 		// some logic to use the pre-1.7 setting KEY_PREF_UPDATE_WIFI as a
 		// fallback if KEY_PREF_UPDATE_NETWORKS is not set
 		Set<String> fallbackUpdateNetworks = new HashSet<String>();
-		if (sharedPref.getBoolean(SettingsActivity.KEY_PREF_UPDATE_WIFI, false)) {
-			fallbackUpdateNetworks.add(SettingsActivity.KEY_PREF_UPDATE_NETWORKS_WIFI);
+		if (sharedPref.getBoolean(Const.KEY_PREF_UPDATE_WIFI, false)) {
+			fallbackUpdateNetworks.add(Const.KEY_PREF_UPDATE_NETWORKS_WIFI);
 		}
-		Set<String> updateNetworks = sharedPref.getStringSet(SettingsActivity.KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
+		Set<String> updateNetworks = sharedPref.getStringSet(Const.KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
 		
-		if (intent.getAction().equals(GPS_ENABLED_CHANGE) || intent.getAction().equals(GPS_ENABLED_CHANGE)) {
+		if (intent.getAction().equals(Const.GPS_ENABLED_CHANGE) || intent.getAction().equals(Const.GPS_ENABLED_CHANGE)) {
 			//FIXME: why are we checking for the same intent twice? Should on of them be GPS_FIX_CHANGE?
 			// an application has connected to GPS or disconnected from it, check if notification needs updating
-			boolean notifyFix = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
-			boolean notifySearch = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
+			boolean notifyFix = sharedPref.getBoolean(Const.KEY_PREF_NOTIFY_FIX, false);
+			boolean notifySearch = sharedPref.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, false);
 			if (notifyFix || notifySearch) {
 				boolean isRunning = false;
 				ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -99,7 +92,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 				}
 			}
 		} else if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION) 
-				&& updateNetworks.contains(SettingsActivity.KEY_PREF_UPDATE_NETWORKS_WIFI)) {
+				&& updateNetworks.contains(Const.KEY_PREF_UPDATE_NETWORKS_WIFI)) {
 			// change in WiFi connectivity, check if we are connected and need to refresh AGPS
 			//FIXME: KEY_PREF_UPDATE_WIFI as fallback only
 			NetworkInfo netinfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
@@ -109,10 +102,10 @@ public class GpsEventReceiver extends BroadcastReceiver {
 			Log.i(this.getClass().getSimpleName(), "WiFi is connected");
 			refreshAgps(context, true, false);
 		} else if ((intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION )) ||
-				(intent.getAction().equals(AGPS_DATA_EXPIRED))) {
+				(intent.getAction().equals(Const.AGPS_DATA_EXPIRED))) {
 			// change in network connectivity or AGPS expiration timer fired
 			boolean isAgpsExpired = false;
-			if (intent.getAction().equals(AGPS_DATA_EXPIRED)) {
+			if (intent.getAction().equals(Const.AGPS_DATA_EXPIRED)) {
 				Log.i(this.getClass().getSimpleName(), "AGPS data expired, checking available networks");
 				isAgpsExpired = true;
 			}
@@ -124,7 +117,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 				type = Integer.toString(netinfo.getType());
 			} else {
 				// specific mobile data connections will be treated as TYPE_MOBILE
-				type = SettingsActivity.KEY_PREF_UPDATE_NETWORKS_MOBILE;
+				type = Const.KEY_PREF_UPDATE_NETWORKS_MOBILE;
 			}
 			if (!updateNetworks.contains(type)) return;
 			if (!isAgpsExpired)
@@ -156,13 +149,13 @@ public class GpsEventReceiver extends BroadcastReceiver {
 	 */
 	public static void refreshAgps(Context context, boolean enforceInterval, boolean wantFeedback) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-		long last = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_LAST, 0);
-		long freqDays = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));
+		long last = sharedPref.getLong(Const.KEY_PREF_UPDATE_LAST, 0);
+		long freqDays = Long.parseLong(sharedPref.getString(Const.KEY_PREF_UPDATE_FREQ, "0"));
 		long now = System.currentTimeMillis();
-		if (enforceInterval && (last + freqDays * MILLIS_PER_DAY > now)) return;
+		if (enforceInterval && (last + freqDays * Const.MILLIS_PER_DAY > now)) return;
 		//Log.d(GpsEventReceiver.class.getSimpleName(), String.format("refreshAgps, enforceInterval: %b, wantFeedback: %b", enforceInterval, wantFeedback));
 		
-		new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freqDays * MILLIS_PER_DAY);
+		new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freqDays * Const.MILLIS_PER_DAY);
 	}
 	
 	private static class AgpsUpdateTask extends AsyncTask<Object, Void, Integer> {
@@ -213,7 +206,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 				locman.removeUpdates(tempIntent);
 				
 				SharedPreferences.Editor spEditor = sharedPref.edit();
-				spEditor.putLong(SettingsActivity.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
+				spEditor.putLong(Const.KEY_PREF_UPDATE_LAST, System.currentTimeMillis());
 				spEditor.commit();
 			} catch (SecurityException e) {
 				Log.w(GpsEventReceiver.class.getSimpleName(), "Permissions not granted, cannot update AGPS data");

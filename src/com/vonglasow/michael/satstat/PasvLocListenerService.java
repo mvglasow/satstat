@@ -20,7 +20,6 @@
 package com.vonglasow.michael.satstat;
 
 import com.vonglasow.michael.satstat.ui.MainActivity;
-import com.vonglasow.michael.satstat.ui.SettingsActivity;
 
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
@@ -61,7 +60,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private int mStatus = GPS_INACTIVE;
 	
 	private boolean prefUnitType = true;
-	private int prefCoord = SettingsActivity.KEY_PREF_COORD_DECIMAL;
+	private int prefCoord = Const.KEY_PREF_COORD_DECIMAL;
 	private boolean mNotifyFix = false;
 	private boolean mNotifySearch = false;
 
@@ -72,11 +71,11 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		@Override
 		public void onReceive(Context c, Intent intent) {
 			if (intent == null) return;
-			if (intent.getAction().equals(GpsEventReceiver.GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
+			if (intent.getAction().equals(Const.GPS_ENABLED_CHANGE) && !intent.getBooleanExtra("enabled", true)) {
 				// GPS_ENABLED_CHANGE, enabled=false: GPS disabled, dismiss notification
 				mStatus = GPS_INACTIVE;
 				stopForeground(true);
-			} else if (intent.getAction().equals(GpsEventReceiver.GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
+			} else if (intent.getAction().equals(Const.GPS_FIX_CHANGE) && intent.getBooleanExtra("enabled", false)) {
 				// GPS_FIX_CHANGE, enabled=true: GPS got fix, will be taken care of in onLocationChanged
 				mStatus = GPS_FIX;
 			} else {
@@ -99,8 +98,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_ENABLED_CHANGE));
-		registerReceiver(mGpsStatusReceiver, new IntentFilter(GpsEventReceiver.GPS_FIX_CHANGE));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter(Const.GPS_ENABLED_CHANGE));
+		registerReceiver(mGpsStatusReceiver, new IntentFilter(Const.GPS_FIX_CHANGE));
 	}
 
 	@Override
@@ -155,11 +154,11 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 						(location.getLongitude() < 0)?
 								getString(R.string.value_W):"";
 			String title = "";
-			if (prefCoord == SettingsActivity.KEY_PREF_COORD_DECIMAL) {
+			if (prefCoord == Const.KEY_PREF_COORD_DECIMAL) {
 				title = String.format("%.5f%s%s %.5f%s%s",
 						lat, getString(R.string.unit_degree), ns,
 						lon, getString(R.string.unit_degree), ew);
-			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MIN) {
+			} else if (prefCoord == Const.KEY_PREF_COORD_MIN) {
 				double decY = lat;
 				double degY = (int) decY;
 				double minY = 60.0 * (decY - degY);
@@ -169,7 +168,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				title = String.format("%.0f%s %.3f' %s %.0f%s %.3f' %s",
 						degY, getString(R.string.unit_degree), minY + /*rounding*/ 0.0005, ns,
 						degX, getString(R.string.unit_degree), minX + /*rounding*/ 0.0005, ew);
-			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_SEC) {
+			} else if (prefCoord == Const.KEY_PREF_COORD_SEC) {
 				double decY = lat;
 				double degY = (int) decY;
 				double tmp = 60.0 * (decY - degY);
@@ -183,7 +182,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				title = String.format("%.0f%s %.0f' %.1f\" %s %.0f%s %.0f' %.1f\" %s",
 						degY, getString(R.string.unit_degree), minY, secY + /*rounding*/ 0.05, ns,
 						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.05, ew);
-			} else if (prefCoord == SettingsActivity.KEY_PREF_COORD_MGRS) {
+			} else if (prefCoord == Const.KEY_PREF_COORD_MGRS) {
 				title = new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M);
 			}
 
@@ -234,16 +233,16 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY_FIX) || key.equals(SettingsActivity.KEY_PREF_NOTIFY_SEARCH)) {
-			mNotifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, mNotifyFix);
-			mNotifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
+		if (key.equals(Const.KEY_PREF_NOTIFY_FIX) || key.equals(Const.KEY_PREF_NOTIFY_SEARCH)) {
+			mNotifyFix = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, mNotifyFix);
+			mNotifySearch = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 			if (!(mNotifyFix || mNotifySearch)) {
 				stopSelf();
 			}
-		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
-			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
-		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
-			prefCoord = Integer.valueOf(sharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
+		} else if (key.equals(Const.KEY_PREF_UNIT_TYPE)) {
+			prefUnitType = sharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
+		} else if (key.equals(Const.KEY_PREF_COORD)) {
+			prefCoord = Integer.valueOf(sharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		}
 	}
 
@@ -251,10 +250,10 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
-		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
-		mNotifyFix = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, mNotifyFix);
-		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
+		prefUnitType = mSharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
+		prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
+		mNotifyFix = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, mNotifyFix);
+		mNotifySearch = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 
 		if (mLocationManager.getAllProviders().indexOf(LocationManager.PASSIVE_PROVIDER) >= 0) {
 			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {

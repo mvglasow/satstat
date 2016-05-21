@@ -55,6 +55,7 @@ import org.mapsforge.map.reader.header.MapFileException;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.R.color;
 import com.vonglasow.michael.satstat.R.drawable;
@@ -95,41 +96,6 @@ public class MapSectionFragment extends Fragment {
 	 * fragment.
 	 */
 	public static final String ARG_SECTION_NUMBER = "section_number";
-
-	public static double EARTH_CIRCUMFERENCE = 40000000; // meters
-
-	/*
-	 * Indices into style arrays
-	 */
-	private static final int STYLE_MARKER = 0;
-	private static final int STYLE_STROKE = 1;
-	private static final int STYLE_FILL = 2;
-
-	/*
-	 * Styles for location providers
-	 */
-	private static final String [] LOCATION_PROVIDER_STYLES = {
-		"location_provider_blue",
-		"location_provider_green",
-		"location_provider_orange",
-		"location_provider_purple",
-		"location_provider_red"
-	};
-
-	/*
-	 * Blue style: default for network location provider
-	 */
-	private static final String LOCATION_PROVIDER_BLUE = "location_provider_blue";
-
-	/*
-	 * Red style: default for GPS location provider
-	 */
-	private static final String LOCATION_PROVIDER_RED = "location_provider_red";
-
-	/*
-	 * Gray style for inactive location providers
-	 */
-	private static final String LOCATION_PROVIDER_GRAY = "location_provider_gray";
 
 	private static final String KEY_LOCATION_STALE = "isStale";
 
@@ -200,15 +166,15 @@ public class MapSectionFragment extends Fragment {
 		// Circle layer
 		Circle circle = mapCircles.get(provider);
 		if (circle != null) {
-			circle.getPaintFill().setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
-			circle.getPaintStroke().setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
+			circle.getPaintFill().setColor(style.getColor(Const.STYLE_FILL, R.color.circle_gray_fill));
+			circle.getPaintStroke().setColor(style.getColor(Const.STYLE_STROKE, R.color.circle_gray_stroke));
 			needsRedraw = isStyleChanged && circle.isVisible();
 		}
 
 		//Marker layer
 		Marker marker = mapMarkers.get(provider);
 		if (marker != null) {
-			Drawable drawable = style.getDrawable(STYLE_MARKER);
+			Drawable drawable = style.getDrawable(Const.STYLE_MARKER);
 			Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
 			marker.setBitmap(bitmap);
 			needsRedraw = needsRedraw || (isStyleChanged && marker.isVisible());
@@ -244,11 +210,11 @@ public class MapSectionFragment extends Fragment {
 			 *   - The passive location provider forwards us an update from the new provider
 			 */
 			if (mAvailableProviderStyles.isEmpty())
-				mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
-			styleName = mainActivity.mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, mAvailableProviderStyles.get(0));
+				mAvailableProviderStyles.addAll(Arrays.asList(Const.LOCATION_PROVIDER_STYLES));
+			styleName = mainActivity.mSharedPreferences.getString(Const.KEY_PREF_LOC_PROV_STYLE + provider, mAvailableProviderStyles.get(0));
 			providerStyles.put(provider, styleName);
 			SharedPreferences.Editor spEditor = mainActivity.mSharedPreferences.edit();
-			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + provider, styleName);
+			spEditor.putString(Const.KEY_PREF_LOC_PROV_STYLE + provider, styleName);
 			spEditor.commit();
 		}
 		return styleName;
@@ -283,11 +249,11 @@ public class MapSectionFragment extends Fragment {
 			 * We accomplish this by comparing the current map path to the map path for which we last
 			 * instantiated a cache. If they differ, we flush the cache and store the new map path.
 			 */
-			String cachedPath = mainActivity.mSharedPreferences.getString(SettingsActivity.KEY_PREF_MAP_CACHED_PATH, "");
+			String cachedPath = mainActivity.mSharedPreferences.getString(Const.KEY_PREF_MAP_CACHED_PATH, "");
 			if (!cachedPath.equals(mainActivity.prefMapPath)) {
 				mapRendererTileCache.purge();
 				SharedPreferences.Editor spEditor = mainActivity.mSharedPreferences.edit();
-				spEditor.putString(SettingsActivity.KEY_PREF_MAP_CACHED_PATH, mainActivity.prefMapPath);
+				spEditor.putString(Const.KEY_PREF_MAP_CACHED_PATH, mainActivity.prefMapPath);
 				spEditor.commit();
 			}
 			
@@ -337,7 +303,7 @@ public class MapSectionFragment extends Fragment {
 		if (createOverlays)
 			onLocationProvidersChanged(
 					mainActivity.mSharedPreferences.getStringSet(
-							SettingsActivity.KEY_PREF_LOC_PROV,
+							Const.KEY_PREF_LOC_PROV,
 							new HashSet<String>(Arrays.asList(
 									new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}
 									))));
@@ -452,7 +418,7 @@ public class MapSectionFragment extends Fragment {
 		mapMap.getMapZoomControls().setMarginVertical((int)(density * 16));
 		providerLocations = new HashMap<String, Location>();
 
-		mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(LOCATION_PROVIDER_STYLES));
+		mAvailableProviderStyles = new ArrayList<String>(Arrays.asList(Const.LOCATION_PROVIDER_STYLES));
 
 		providerStyles = new HashMap<String, String>();
 		providerAppliedStyles = new HashMap<String, String>();
@@ -487,14 +453,14 @@ public class MapSectionFragment extends Fragment {
 
 		mainActivity.mapSectionFragment = this;
 
-		float lat = mainActivity.mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LAT, 360.0f);
-		float lon = mainActivity.mSharedPreferences.getFloat(SettingsActivity.KEY_PREF_MAP_LON, 360.0f);
+		float lat = mainActivity.mSharedPreferences.getFloat(Const.KEY_PREF_MAP_LAT, 360.0f);
+		float lon = mainActivity.mSharedPreferences.getFloat(Const.KEY_PREF_MAP_LON, 360.0f);
 
 		if ((lat < 360.0f) && (lon < 360.0f)) {
 			mapMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
 		}
 
-		int zoom = mainActivity.mSharedPreferences.getInt(SettingsActivity.KEY_PREF_MAP_ZOOM, 16);
+		int zoom = mainActivity.mSharedPreferences.getInt(Const.KEY_PREF_MAP_ZOOM, 16);
 		mapMap.getModel().mapViewPosition.setZoomLevel((byte) zoom);
 		
 		createLayers(true);
@@ -525,7 +491,7 @@ public class MapSectionFragment extends Fragment {
 			Location location = providerLocations.get(LocationManager.GPS_PROVIDER);
 			if (location != null)
 				markLocationAsStale(location);
-			applyLocationProviderStyle(this.getContext(), LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_GRAY);
+			applyLocationProviderStyle(this.getContext(), LocationManager.GPS_PROVIDER, Const.LOCATION_PROVIDER_GRAY);
 		}
 	}
 
@@ -540,7 +506,7 @@ public class MapSectionFragment extends Fragment {
 		// location from that provider as stale
 		if (Double.isNaN(location.getLatitude()) || Double.isNaN(location.getLongitude())) {
 			markLocationAsStale(providerLocations.get(location.getProvider()));
-			applyLocationProviderStyle(this.getContext(), location.getProvider(), LOCATION_PROVIDER_GRAY);
+			applyLocationProviderStyle(this.getContext(), location.getProvider(), Const.LOCATION_PROVIDER_GRAY);
 			return;
 		}
 
@@ -639,7 +605,7 @@ public class MapSectionFragment extends Fragment {
 						Location location = providerLocations.get(mProvider);
 						if (location != null)
 							markLocationAsStale(location);
-						applyLocationProviderStyle(ctx, mProvider, LOCATION_PROVIDER_GRAY);
+						applyLocationProviderStyle(ctx, mProvider, Const.LOCATION_PROVIDER_GRAY);
 					}
 				});
 			}
@@ -657,7 +623,7 @@ public class MapSectionFragment extends Fragment {
 					acc = 0;
 				visible = true;
 				if (isLocationStale(providerLocations.get(pr)))
-					styleName = LOCATION_PROVIDER_GRAY;
+					styleName = Const.LOCATION_PROVIDER_GRAY;
 				Log.d("MainActivity", pr + " has " + latLong.toString());
 			} else {
 				latLong = new LatLong(0, 0);
@@ -671,10 +637,10 @@ public class MapSectionFragment extends Fragment {
 			TypedArray style = res.obtainTypedArray(res.getIdentifier(styleName, "array", context.getPackageName()));
 			Paint fill = AndroidGraphicFactory.INSTANCE.createPaint();
 			float density = context.getResources().getDisplayMetrics().density;
-			fill.setColor(style.getColor(STYLE_FILL, R.color.circle_gray_fill));
+			fill.setColor(style.getColor(Const.STYLE_FILL, R.color.circle_gray_fill));
 			fill.setStyle(Style.FILL);
 			Paint stroke = AndroidGraphicFactory.INSTANCE.createPaint();
-			stroke.setColor(style.getColor(STYLE_STROKE, R.color.circle_gray_stroke));
+			stroke.setColor(style.getColor(Const.STYLE_STROKE, R.color.circle_gray_stroke));
 			stroke.setStrokeWidth(Math.max(1.5f * density, 1));
 			stroke.setStyle(Style.STROKE);
 			Circle circle = new Circle(latLong, acc, fill, stroke);
@@ -683,7 +649,7 @@ public class MapSectionFragment extends Fragment {
 			circle.setVisible(visible);
 
 			// Marker layer
-			Drawable drawable = style.getDrawable(STYLE_MARKER);
+			Drawable drawable = style.getDrawable(Const.STYLE_MARKER);
 			Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
 			Marker marker = new Marker(latLong, bitmap, 0, -bitmap.getHeight() * 10 / 24);
 			mapMarkers.put(pr, marker);
@@ -730,9 +696,9 @@ public class MapSectionFragment extends Fragment {
 		byte zoom = mapMap.getModel().mapViewPosition.getZoomLevel();
 
 		SharedPreferences.Editor spEditor = mainActivity.mSharedPreferences.edit();
-		spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LAT, (float) center.latitude);
-		spEditor.putFloat(SettingsActivity.KEY_PREF_MAP_LON, (float) center.longitude);
-		spEditor.putInt(SettingsActivity.KEY_PREF_MAP_ZOOM, zoom);
+		spEditor.putFloat(Const.KEY_PREF_MAP_LAT, (float) center.latitude);
+		spEditor.putFloat(Const.KEY_PREF_MAP_LON, (float) center.longitude);
+		spEditor.putInt(Const.KEY_PREF_MAP_ZOOM, zoom);
 		spEditor.commit();
 
 		super.onStop();
@@ -761,26 +727,26 @@ public class MapSectionFragment extends Fragment {
 		allProviders.remove(LocationManager.PASSIVE_PROVIDER);
 		if (allProviders.contains(LocationManager.GPS_PROVIDER)) {
 			providerStyles.put(LocationManager.GPS_PROVIDER,
-					mainActivity.mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.GPS_PROVIDER, LOCATION_PROVIDER_RED));
-			mAvailableProviderStyles.remove(LOCATION_PROVIDER_RED);
+					mainActivity.mSharedPreferences.getString(Const.KEY_PREF_LOC_PROV_STYLE + LocationManager.GPS_PROVIDER, Const.LOCATION_PROVIDER_RED));
+			mAvailableProviderStyles.remove(Const.LOCATION_PROVIDER_RED);
 			allProviders.remove(LocationManager.GPS_PROVIDER);
 		}
 		if (allProviders.contains(LocationManager.NETWORK_PROVIDER)) {
 			providerStyles.put(LocationManager.NETWORK_PROVIDER,
-					mainActivity.mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + LocationManager.NETWORK_PROVIDER, LOCATION_PROVIDER_BLUE));
-			mAvailableProviderStyles.remove(LOCATION_PROVIDER_BLUE);
+					mainActivity.mSharedPreferences.getString(Const.KEY_PREF_LOC_PROV_STYLE + LocationManager.NETWORK_PROVIDER, Const.LOCATION_PROVIDER_BLUE));
+			mAvailableProviderStyles.remove(Const.LOCATION_PROVIDER_BLUE);
 			allProviders.remove(LocationManager.NETWORK_PROVIDER);
 		}
 		for (String prov : allProviders) {
 			if (mAvailableProviderStyles.isEmpty())
-				mAvailableProviderStyles.addAll(Arrays.asList(LOCATION_PROVIDER_STYLES));
+				mAvailableProviderStyles.addAll(Arrays.asList(Const.LOCATION_PROVIDER_STYLES));
 			providerStyles.put(prov,
-					mainActivity.mSharedPreferences.getString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, mAvailableProviderStyles.get(0)));
+					mainActivity.mSharedPreferences.getString(Const.KEY_PREF_LOC_PROV_STYLE + prov, mAvailableProviderStyles.get(0)));
 			mAvailableProviderStyles.remove(providerStyles.get(prov));
 		};
 		SharedPreferences.Editor spEditor = mainActivity.mSharedPreferences.edit();
 		for (String prov : providerStyles.keySet())
-			spEditor.putString(SettingsActivity.KEY_PREF_LOC_PROV_STYLE + prov, providerStyles.get(prov));
+			spEditor.putString(Const.KEY_PREF_LOC_PROV_STYLE + prov, providerStyles.get(prov));
 		spEditor.commit();
 	}
 
@@ -804,7 +770,7 @@ public class MapSectionFragment extends Fragment {
 			if ((l != null) && (l.getProvider() != "")) {
 				double lat = l.getLatitude();
 				double lon = l.getLongitude();
-				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / EARTH_CIRCUMFERENCE):0;
+				double yRadius = l.hasAccuracy()?((l.getAccuracy() * 360.0f) / Const.EARTH_CIRCUMFERENCE):0;
 				double xRadius = l.hasAccuracy()?(yRadius * Math.abs(Math.cos(lat))):0;
 
 				double minLon = Math.max(lon - xRadius, -180);

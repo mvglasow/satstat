@@ -91,6 +91,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.GpsEventReceiver;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.R.drawable;
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	SharedPreferences mSharedPreferences;
 	
 	boolean prefUnitType = true;
-	int prefCoord = SettingsActivity.KEY_PREF_COORD_DECIMAL;
+	int prefCoord = Const.KEY_PREF_COORD_DECIMAL;
 	boolean prefUtc = false;
 	boolean prefCid = false;
 	int prefWifiSort = 0;
@@ -350,13 +351,13 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
-		prefUnitType = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
-		prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
-		prefUtc = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, prefUtc);
-		prefCid = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, prefCid);
-		prefWifiSort = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
-		prefMapOffline = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_MAP_OFFLINE, prefMapOffline);
-		prefMapPath = mSharedPreferences.getString(SettingsActivity.KEY_PREF_MAP_PATH, prefMapPath);
+		prefUnitType = mSharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
+		prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
+		prefUtc = mSharedPreferences.getBoolean(Const.KEY_PREF_UTC, prefUtc);
+		prefCid = mSharedPreferences.getBoolean(Const.KEY_PREF_CID, prefCid);
+		prefWifiSort = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
+		prefMapOffline = mSharedPreferences.getBoolean(Const.KEY_PREF_MAP_OFFLINE, prefMapOffline);
+		prefMapPath = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPath);
 
         ActionBar actionBar = getSupportActionBar();
         
@@ -648,25 +649,25 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     @Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals(SettingsActivity.KEY_PREF_LOC_PROV)) {
+		if (key.equals(Const.KEY_PREF_LOC_PROV)) {
 			// user selected or deselected location providers, refresh list
 			registerLocationProviders(this);
-		} else if (key.equals(SettingsActivity.KEY_PREF_UNIT_TYPE)) {
-			prefUnitType = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UNIT_TYPE, prefUnitType);
-		} else if (key.equals(SettingsActivity.KEY_PREF_COORD)) {
-			prefCoord = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_COORD, Integer.toString(prefCoord)));
-		} else if (key.equals(SettingsActivity.KEY_PREF_UTC)) {
-			prefUtc = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_UTC, prefUtc);
-		} else if (key.equals(SettingsActivity.KEY_PREF_CID)) {
-			prefCid = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_CID, prefCid);
-		} else if (key.equals(SettingsActivity.KEY_PREF_WIFI_SORT)) {
-			prefWifiSort = Integer.valueOf(mSharedPreferences.getString(SettingsActivity.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
-		} else if (key.equals(SettingsActivity.KEY_PREF_MAP_OFFLINE)) {
-			prefMapOffline = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_MAP_OFFLINE, prefMapOffline);
+		} else if (key.equals(Const.KEY_PREF_UNIT_TYPE)) {
+			prefUnitType = sharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
+		} else if (key.equals(Const.KEY_PREF_COORD)) {
+			prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
+		} else if (key.equals(Const.KEY_PREF_UTC)) {
+			prefUtc = sharedPreferences.getBoolean(Const.KEY_PREF_UTC, prefUtc);
+		} else if (key.equals(Const.KEY_PREF_CID)) {
+			prefCid = sharedPreferences.getBoolean(Const.KEY_PREF_CID, prefCid);
+		} else if (key.equals(Const.KEY_PREF_WIFI_SORT)) {
+			prefWifiSort = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
+		} else if (key.equals(Const.KEY_PREF_MAP_OFFLINE)) {
+			prefMapOffline = sharedPreferences.getBoolean(Const.KEY_PREF_MAP_OFFLINE, prefMapOffline);
 			if (mapSectionFragment != null)
 				mapSectionFragment.onMapSourceChanged();
-		} else if (key.equals(SettingsActivity.KEY_PREF_MAP_PATH)) {
-			prefMapPath = sharedPreferences.getString(SettingsActivity.KEY_PREF_MAP_PATH, prefMapPath);
+		} else if (key.equals(Const.KEY_PREF_MAP_PATH)) {
+			prefMapPath = sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPath);
 			if (mapSectionFragment != null)
 				mapSectionFragment.onMapSourceChanged();
 		}
@@ -700,7 +701,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	 * @param context
 	 */
 	protected void registerLocationProviders(Context context) {
-		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(SettingsActivity.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
+		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(Const.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
 		List<String> allProviders = locationManager.getAllProviders();
 		
 		locationManager.removeUpdates(this);

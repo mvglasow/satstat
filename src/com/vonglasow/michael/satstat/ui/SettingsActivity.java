@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.PasvLocListenerService;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.R.id;
@@ -32,7 +33,6 @@ import com.vonglasow.michael.satstat.R.string;
 import com.vonglasow.michael.satstat.R.xml;
 
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -58,32 +58,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
 public class SettingsActivity extends AppCompatActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener{
-
-	public static final String KEY_PREF_NOTIFY_FIX = "pref_notify_fix";
-	public static final String KEY_PREF_NOTIFY_SEARCH = "pref_notify_search";
-	public static final String KEY_PREF_UPDATE_WIFI = "pref_update_wifi";
-	public static final String KEY_PREF_UPDATE_NETWORKS = "pref_update_networks";
-	public static final String KEY_PREF_UPDATE_NETWORKS_WIFI = Integer.toString(ConnectivityManager.TYPE_WIFI);
-	public static final String KEY_PREF_UPDATE_NETWORKS_MOBILE = Integer.toString(ConnectivityManager.TYPE_MOBILE);
-	public static final String KEY_PREF_UPDATE_FREQ = "pref_update_freq";
-	public static final String KEY_PREF_UPDATE_LAST = "pref_update_last";
-	public static final String KEY_PREF_LOC_PROV = "pref_loc_prov";
-	public static final String KEY_PREF_LOC_PROV_STYLE = "pref_loc_prov_style.";
-	public static final String KEY_PREF_MAP_LAT = "pref_map_lat";
-	public static final String KEY_PREF_MAP_LON = "pref_map_lon";
-	public static final String KEY_PREF_MAP_ZOOM = "pref_map_zoom";
-	public static final String KEY_PREF_UNIT_TYPE = "pref_unit_type";
-	public static final String KEY_PREF_MAP_OFFLINE = "pref_map_offline";
-	public static final String KEY_PREF_MAP_PATH = "pref_map_path";
-	public static final String KEY_PREF_MAP_CACHED_PATH = "pref_map_cached_path";
-	public static final String KEY_PREF_COORD = "pref_coord";
-	public static final int KEY_PREF_COORD_DECIMAL = 0;
-	public static final int KEY_PREF_COORD_MIN = 1;
-	public static final int KEY_PREF_COORD_SEC = 2;
-	public static final int KEY_PREF_COORD_MGRS = 3;
-	public static final String KEY_PREF_UTC = "pref_utc";
-	public static final String KEY_PREF_CID = "pref_cid";
-	public static final String KEY_PREF_WIFI_SORT = "pref_wifi_sort";
 
 	public static final int REQUEST_CODE_PICK_MAP_PATH = 1;
 
@@ -134,21 +108,21 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 
         // some logic to use the pre-1.7 setting KEY_PREF_UPDATE_WIFI as a
 		// fallback if KEY_PREF_UPDATE_NETWORKS is not set
-		if (!mSharedPreferences.contains(KEY_PREF_UPDATE_NETWORKS)) {
+		if (!mSharedPreferences.contains(Const.KEY_PREF_UPDATE_NETWORKS)) {
 			Set<String> fallbackUpdateNetworks = new HashSet<String>();
-			if (mSharedPreferences.getBoolean(KEY_PREF_UPDATE_WIFI, false)) {
-				fallbackUpdateNetworks.add(KEY_PREF_UPDATE_NETWORKS_WIFI);
+			if (mSharedPreferences.getBoolean(Const.KEY_PREF_UPDATE_WIFI, false)) {
+				fallbackUpdateNetworks.add(Const.KEY_PREF_UPDATE_NETWORKS_WIFI);
 			}
 			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-			spEditor.putStringSet(KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
+			spEditor.putStringSet(Const.KEY_PREF_UPDATE_NETWORKS, fallbackUpdateNetworks);
 			spEditor.commit();
 		}
 		
 		// by default, show GPS and network location in map
-		if (!mSharedPreferences.contains(KEY_PREF_LOC_PROV)) {
+		if (!mSharedPreferences.contains(Const.KEY_PREF_LOC_PROV)) {
 			Set<String> defaultLocProvs = new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}));
 			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-			spEditor.putStringSet(KEY_PREF_LOC_PROV, defaultLocProvs);
+			spEditor.putStringSet(Const.KEY_PREF_LOC_PROV, defaultLocProvs);
 			spEditor.commit();
 		}
 	}
@@ -243,37 +217,37 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		
 		SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
-		Preference prefUpdateLast = sf.findPreference(KEY_PREF_UPDATE_LAST);
-        final long value = mSharedPreferences.getLong(KEY_PREF_UPDATE_LAST, 0);
+		Preference prefUpdateLast = sf.findPreference(Const.KEY_PREF_UPDATE_LAST);
+        final long value = mSharedPreferences.getLong(Const.KEY_PREF_UPDATE_LAST, 0);
         prefUpdateLast.setSummary(String.format(getString(R.string.pref_lastupdate_summary), value));
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals(SettingsActivity.KEY_PREF_NOTIFY_FIX) || key.equals(SettingsActivity.KEY_PREF_NOTIFY_SEARCH)) {
-			boolean notifyFix = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_FIX, false);
-			boolean notifySearch = sharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, false);
+		if (key.equals(Const.KEY_PREF_NOTIFY_FIX) || key.equals(Const.KEY_PREF_NOTIFY_SEARCH)) {
+			boolean notifyFix = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, false);
+			boolean notifySearch = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, false);
 			if (!(notifyFix || notifySearch)) {
 				Intent stopServiceIntent = new Intent(this, PasvLocListenerService.class);
 				this.stopService(stopServiceIntent);
 			}
-		} else if (key.equals(SettingsActivity.KEY_PREF_UPDATE_FREQ)) {
+		} else if (key.equals(Const.KEY_PREF_UPDATE_FREQ)) {
 			// this piece of code is necessary because Android has no way
 			// of updating the preference summary automatically. I am
 			// told the absence of such functionality is a feature...
 			SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
-			ListPreference prefUpdateFreq = (ListPreference) sf.findPreference(KEY_PREF_UPDATE_FREQ);
+			ListPreference prefUpdateFreq = (ListPreference) sf.findPreference(Const.KEY_PREF_UPDATE_FREQ);
             final String value = sharedPreferences.getString(key, key);
             final int index = prefUpdateFreq.findIndexOfValue(value);            
             if (index >= 0) {
                 final String summary = (String)prefUpdateFreq.getEntries()[index];         
                 prefUpdateFreq.setSummary(summary);
             }
-		} else if (key.equals(SettingsActivity.KEY_PREF_MAP_PATH)) {
+		} else if (key.equals(Const.KEY_PREF_MAP_PATH)) {
 			SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
-			Preference prefMapPath = sf.findPreference(KEY_PREF_MAP_PATH);
-			prefMapPathValue = mSharedPreferences.getString(KEY_PREF_MAP_PATH, prefMapPathValue);
+			Preference prefMapPath = sf.findPreference(Const.KEY_PREF_MAP_PATH);
+			prefMapPathValue = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPathValue);
 			prefMapPath.setSummary(prefMapPathValue);
 		}
 	}
@@ -283,8 +257,8 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 		super.onStart();
 
 		SettingsFragment sf = (SettingsFragment) getFragmentManager().findFragmentById(android.R.id.content);
-		prefMapPath = sf.findPreference(KEY_PREF_MAP_PATH);
-		prefMapPathValue = mSharedPreferences.getString(KEY_PREF_MAP_PATH, prefMapPathValue);
+		prefMapPath = sf.findPreference(Const.KEY_PREF_MAP_PATH);
+		prefMapPathValue = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPathValue);
 		prefMapPath.setSummary(prefMapPathValue);
 		prefMapPath.setOnPreferenceClickListener(this);
 	}
@@ -297,7 +271,7 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 
 	protected void setMapPath(String path) {
 		SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-		spEditor.putString(KEY_PREF_MAP_PATH, path);
+		spEditor.putString(Const.KEY_PREF_MAP_PATH, path);
 		spEditor.commit();
 	}
 
