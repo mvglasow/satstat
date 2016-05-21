@@ -670,6 +670,9 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			prefMapPath = sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPath);
 			if (mapSectionFragment != null)
 				mapSectionFragment.onMapSourceChanged();
+		} else if (key.equals(Const.KEY_PREF_MAP_PURGE)) {
+			if (sharedPreferences.getBoolean(Const.KEY_PREF_MAP_PURGE, false) && (mapSectionFragment != null))
+				mapSectionFragment.onMapSourceChanged();
 		}
 	}
 

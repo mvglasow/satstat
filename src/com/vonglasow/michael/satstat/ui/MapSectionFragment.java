@@ -234,7 +234,7 @@ public class MapSectionFragment extends Fragment {
 			// use offline map tiles
 			if (mapRendererTileCache == null)
 				mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
-						"InternalRenderTheme",
+						Const.TILE_CACHE_INTERNAL_RENDER_THEME,
 						Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
 								mapMap.getModel().displayModel.getTileSize(),
 								mapMap.getModel().frameBufferModel.getOverdrawFactor(),
@@ -284,7 +284,7 @@ public class MapSectionFragment extends Fragment {
 			// use online map tiles
 			if (mapDownloadTileCache == null)
 				mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
-						"MapQuest",
+						Const.TILE_CACHE_MAPQUEST,
 						Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
 								mapMap.getModel().displayModel.getTileSize(),
 								mapMap.getModel().frameBufferModel.getOverdrawFactor(),
@@ -307,6 +307,11 @@ public class MapSectionFragment extends Fragment {
 							new HashSet<String>(Arrays.asList(
 									new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}
 									))));
+		
+		// mark cache as purged
+		SharedPreferences.Editor spEditor = mainActivity.mSharedPreferences.edit();
+		spEditor.putBoolean(Const.KEY_PREF_MAP_PURGE, false);
+		spEditor.commit();
 	}
 	
 	
@@ -429,7 +434,7 @@ public class MapSectionFragment extends Fragment {
 		onlineTileSource = new OnlineTileSource(new String[]{
 				"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
 		}, 80);
-		onlineTileSource.setName("MapQuest")
+		onlineTileSource.setName(Const.TILE_CACHE_MAPQUEST)
 		.setAlpha(false)
 		.setBaseUrl("/tiles/1.0.0/map/")
 		.setExtension("png")

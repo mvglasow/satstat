@@ -110,6 +110,7 @@ public class Const {
 	public static final String KEY_PREF_MAP_OFFLINE = "pref_map_offline";
 	public static final String KEY_PREF_MAP_PATH = "pref_map_path";
 	public static final String KEY_PREF_MAP_CACHED_PATH = "pref_map_cached_path";
+	public static final String KEY_PREF_MAP_PURGE = "pref_map_purge";
 	public static final String KEY_PREF_COORD = "pref_coord";
 	public static final int KEY_PREF_COORD_DECIMAL = 0;
 	public static final int KEY_PREF_COORD_MIN = 1;
@@ -118,5 +119,17 @@ public class Const {
 	public static final String KEY_PREF_UTC = "pref_utc";
 	public static final String KEY_PREF_CID = "pref_cid";
 	public static final String KEY_PREF_WIFI_SORT = "pref_wifi_sort";
+
+
+	/**
+	 * Tile cache name for tiles downloaded from Mapquest
+	 */
+	public static final String TILE_CACHE_MAPQUEST = "MapQuest";
+
+
+	/**
+	 * Tile cache name for tiles rendered with internal render theme
+	 */
+	public static final String TILE_CACHE_INTERNAL_RENDER_THEME = "InternalRenderTheme";
 
 }

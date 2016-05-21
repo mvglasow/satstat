@@ -24,6 +24,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.layer.cache.TileCache;
+
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.PasvLocListenerService;
 import com.vonglasow.michael.satstat.R;
@@ -50,6 +53,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -79,6 +83,7 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	private SharedPreferences mSharedPreferences;
 	Preference prefMapPath;
 	String prefMapPathValue = defaultMapPath;
+	Preference prefMapPurge;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -206,6 +211,30 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 			}
 
 			return success;
+		} else if (preference == prefMapPurge) {
+			TileCache mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this,
+					Const.TILE_CACHE_INTERNAL_RENDER_THEME, 0, 256, true);
+			TileCache mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this,
+					Const.TILE_CACHE_MAPQUEST, 0, 256, true);
+			mapRendererTileCache.purge();
+			mapDownloadTileCache.purge();
+			mapRendererTileCache.destroy();
+			mapDownloadTileCache.destroy();
+			
+			/*
+			 * This is a hack to have the map view (if it is active) redraw the map:
+			 * Setting the preference to true causes the listener in MainView to fire.
+			 * The listener will, in turn, determine if a map view is active and, if so,
+			 * cause it to reload all tile layers, then reset the preference to false.
+			 */
+			SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+			spEditor.putBoolean(Const.KEY_PREF_MAP_PURGE, true);
+			spEditor.commit();
+			
+			String message = getString(R.string.status_map_purged);
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+			return true;
 		} else
 			return false;
 	}
@@ -261,6 +290,8 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 		prefMapPathValue = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPathValue);
 		prefMapPath.setSummary(prefMapPathValue);
 		prefMapPath.setOnPreferenceClickListener(this);
+		prefMapPurge = sf.findPreference(Const.KEY_PREF_MAP_PURGE);
+		prefMapPurge.setOnPreferenceClickListener(this);
 	}
 
 	@Override
