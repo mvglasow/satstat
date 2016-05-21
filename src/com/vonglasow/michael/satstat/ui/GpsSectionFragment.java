@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,6 +43,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.string;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 

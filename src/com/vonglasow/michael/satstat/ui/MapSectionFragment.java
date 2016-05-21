@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,6 +54,13 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.reader.header.MapFileException;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.util.MapViewProjection;
+
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.color;
+import com.vonglasow.michael.satstat.R.drawable;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.string;
 
 import android.content.Context;
 import android.content.SharedPreferences;

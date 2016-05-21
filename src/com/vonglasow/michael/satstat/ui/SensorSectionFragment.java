@@ -17,12 +17,19 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_HIGH;
 import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_LOW;
 import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM;
 import static android.hardware.SensorManager.SENSOR_STATUS_UNRELIABLE;
+
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.color;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.string;
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.Bundle;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 Michael von Glasow.
+ * Copyright © 2013–2016 Michael von Glasow.
  * 
  * This file is part of LSRN Tools.
  *
@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -91,7 +91,15 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.vonglasow.michael.satstat.GpsEventReceiver;
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.drawable;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.menu;
+import com.vonglasow.michael.satstat.R.raw;
+import com.vonglasow.michael.satstat.R.string;
+import com.vonglasow.michael.satstat.R.style;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerList;
 

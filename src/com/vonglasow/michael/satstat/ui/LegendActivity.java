@@ -1,6 +1,32 @@
-package com.vonglasow.michael.satstat;
+/*
+ * Copyright © 2013–2016 Michael von Glasow.
+ * 
+ * This file is part of LSRN Tools.
+ *
+ * LSRN Tools is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LSRN Tools is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.vonglasow.michael.satstat.ui;
 
 import java.util.Map;
+
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.dimen;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.string;
+import com.vonglasow.michael.satstat.R.style;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;

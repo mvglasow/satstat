@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.vonglasow.michael.satstat.ui.SettingsActivity;
 import com.vonglasow.michael.satstat.utils.WifiCapabilities;
 
 import android.app.ActivityManager;
@@ -153,7 +154,7 @@ public class GpsEventReceiver extends BroadcastReceiver {
 	 * @param wantFeedback Whether to display a toast informing the user about
 	 * the success of the operation.
 	 */
-	static void refreshAgps(Context context, boolean enforceInterval, boolean wantFeedback) {
+	public static void refreshAgps(Context context, boolean enforceInterval, boolean wantFeedback) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 		long last = sharedPref.getLong(SettingsActivity.KEY_PREF_UPDATE_LAST, 0);
 		long freqDays = Long.parseLong(sharedPref.getString(SettingsActivity.KEY_PREF_UPDATE_FREQ, "0"));

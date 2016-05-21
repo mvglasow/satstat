@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
 import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
@@ -31,6 +31,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.color;
+import com.vonglasow.michael.satstat.R.drawable;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.string;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
 import com.vonglasow.michael.satstat.data.CellTowerGsm;

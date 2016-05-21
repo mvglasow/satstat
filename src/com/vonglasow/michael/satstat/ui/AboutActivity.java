@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 Michael von Glasow.
+ * Copyright © 2013–2016 Michael von Glasow.
  * 
  * This file is part of LSRN Tools.
  *
@@ -17,7 +17,7 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +32,10 @@ import android.widget.TextView;
 import android.content.pm.PackageManager;
 
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.raw;
+import com.vonglasow.michael.satstat.R.string;
 
 public class AboutActivity extends AppCompatActivity {
 

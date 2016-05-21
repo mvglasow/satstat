@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 Michael von Glasow.
+ * Copyright © 2013–2016 Michael von Glasow.
  * 
  * This file is part of LSRN Tools.
  *
@@ -17,12 +17,19 @@
  * along with LSRN Tools.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.vonglasow.michael.satstat;
+package com.vonglasow.michael.satstat.ui;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.vonglasow.michael.satstat.PasvLocListenerService;
+import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.R.id;
+import com.vonglasow.michael.satstat.R.layout;
+import com.vonglasow.michael.satstat.R.string;
+import com.vonglasow.michael.satstat.R.xml;
 
 import android.location.LocationManager;
 import android.net.ConnectivityManager;

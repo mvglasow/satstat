@@ -19,6 +19,9 @@
 
 package com.vonglasow.michael.satstat;
 
+import com.vonglasow.michael.satstat.ui.MainActivity;
+import com.vonglasow.michael.satstat.ui.SettingsActivity;
+
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
 import android.Manifest;
