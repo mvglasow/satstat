@@ -1,26 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/pref_data">
-      <CheckBoxPreference android:summary="@string/pref_unit_summary" android:defaultValue="true" android:title="@string/pref_unit" android:key="pref_unit_type"/>
-      <ListPreference android:key="pref_coord" android:title="@string/pref_coord" android:summary="%s" android:entries="@array/prefs_coord_keys" android:entryValues="@array/prefs_coord_values" android:defaultValue="0" />
-      <CheckBoxPreference android:summary="@string/pref_utc_summary" android:defaultValue="false" android:title="@string/pref_utc" android:key="pref_utc"/>
-      <CheckBoxPreference android:summary="@string/pref_cid_summary" android:defaultValue="false" android:title="@string/pref_cid" android:key="pref_cid"/>
-      <ListPreference android:key="pref_wifi_sort" android:title="@string/pref_wifi_sort" android:summary="%s" android:entries="@array/prefs_wifi_sort_keys" android:entryValues="@array/prefs_wifi_sort_values" android:defaultValue="0" />
+
+    <PreferenceCategory android:title="@string/pref_data" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_unit_type"
+            android:summary="@string/pref_unit_summary"
+            android:title="@string/pref_unit" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/prefs_coord_keys"
+            android:entryValues="@array/prefs_coord_values"
+            android:key="pref_coord"
+            android:summary="%s"
+            android:title="@string/pref_coord" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_utc"
+            android:summary="@string/pref_utc_summary"
+            android:title="@string/pref_utc" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_cid"
+            android:summary="@string/pref_cid_summary"
+            android:title="@string/pref_cid" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/prefs_wifi_sort_keys"
+            android:entryValues="@array/prefs_wifi_sort_values"
+            android:key="pref_wifi_sort"
+            android:summary="%s"
+            android:title="@string/pref_wifi_sort" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_map">
-        <com.vonglasow.michael.satstat.widgets.LocProviderPreference android:key="pref_loc_prov" android:title="@string/pref_loc_prov" android:summary="@string/pref_loc_prov_summary" />
-        <CheckBoxPreference android:summary="@string/pref_map_offline_summary" android:defaultValue="false" android:title="@string/pref_map_offline" android:key="pref_map_offline"/>
-        <Preference android:key="pref_map_path" android:title="@string/pref_map_path" android:defaultValue="unset"/>
+    <PreferenceCategory android:title="@string/pref_map" >
+        <com.vonglasow.michael.satstat.widgets.LocProviderPreference
+            android:key="pref_loc_prov"
+            android:summary="@string/pref_loc_prov_summary"
+            android:title="@string/pref_loc_prov" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_map_offline"
+            android:summary="@string/pref_map_offline_summary"
+            android:title="@string/pref_map_offline" />
+
+        <Preference
+            android:defaultValue="unset"
+            android:key="pref_map_path"
+            android:title="@string/pref_map_path" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_notifications">
-        <CheckBoxPreference android:summary="@string/pref_notify_summary" android:defaultValue="false" android:title="@string/pref_notify" android:key="pref_notify_fix"/>
-        <CheckBoxPreference android:summary="@string/pref_search_summary" android:defaultValue="false" android:title="@string/pref_search" android:key="pref_notify_search"/>
+    <PreferenceCategory android:title="@string/pref_notifications" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_notify_fix"
+            android:summary="@string/pref_notify_summary"
+            android:title="@string/pref_notify" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_notify_search"
+            android:summary="@string/pref_search_summary"
+            android:title="@string/pref_search" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_agps" android:key="pref_agps">
-        <com.vonglasow.michael.satstat.widgets.NetworkTypePreference android:key="pref_update_networks" android:title="@string/pref_networks" android:summary="@string/pref_networks_summary" />
-        <ListPreference android:key="pref_update_freq" android:title="@string/pref_freq" android:summary="%s" android:entries="@array/prefs_freq_keys" android:entryValues="@array/prefs_freq_values" android:defaultValue="1"/>
-        <Preference android:key="pref_update_last" android:title="@string/pref_lastupdate" android:defaultValue="0"/>
-        </PreferenceCategory>
-    
+    <PreferenceCategory
+        android:key="pref_agps"
+        android:title="@string/pref_agps" >
+        <com.vonglasow.michael.satstat.widgets.NetworkTypePreference
+            android:key="pref_update_networks"
+            android:summary="@string/pref_networks_summary"
+            android:title="@string/pref_networks" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/prefs_freq_keys"
+            android:entryValues="@array/prefs_freq_values"
+            android:key="pref_update_freq"
+            android:summary="%s"
+            android:title="@string/pref_freq" />
+
+        <Preference
+            android:defaultValue="0"
+            android:key="pref_update_last"
+            android:title="@string/pref_lastupdate" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
