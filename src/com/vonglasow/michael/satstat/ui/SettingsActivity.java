@@ -83,6 +83,7 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	private SharedPreferences mSharedPreferences;
 	Preference prefMapPath;
 	String prefMapPathValue = defaultMapPath;
+	Preference prefMapDownload;
 	Preference prefMapPurge;
 
 	@SuppressLint("NewApi")
@@ -211,6 +212,9 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 			}
 
 			return success;
+		} else if (preference == prefMapDownload) {
+			startActivity(new Intent(this, MapDownloadActivity.class));
+			return true;
 		} else if (preference == prefMapPurge) {
 			TileCache mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this,
 					Const.TILE_CACHE_INTERNAL_RENDER_THEME, 0, 256, true);
@@ -290,6 +294,8 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 		prefMapPathValue = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPathValue);
 		prefMapPath.setSummary(prefMapPathValue);
 		prefMapPath.setOnPreferenceClickListener(this);
+		prefMapDownload = sf.findPreference(Const.KEY_PREF_MAP_DOWNLOAD);
+		prefMapDownload.setOnPreferenceClickListener(this);
 		prefMapPurge = sf.findPreference(Const.KEY_PREF_MAP_PURGE);
 		prefMapPurge.setOnPreferenceClickListener(this);
 	}

@@ -54,6 +54,8 @@ android {
         compile 'com.android.support:support-v4:23.2.1'
         compile 'com.android.support:appcompat-v7:23.2.1'
         compile 'com.android.support:design:23.2.1'
+        
+        compile 'commons-net:commons-net:3.5'
 
         compile 'org.mapsforge:mapsforge-core:0.6.1'
         compile 'org.mapsforge:mapsforge-map:0.6.1'

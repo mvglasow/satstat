@@ -254,8 +254,11 @@
     <string name="map_path_oi_filemanager">OI File Manager</string>
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
+    <string name="pref_map_download">Download offline map</string>
     <string name="pref_map_purge">Clear map tile cache</string>
     <string name="pref_map_purge_summary">Force all tiles to be fetched or rendered again, useful for troubleshooting</string>
     <string name="status_map_purged">Map tile cache cleared</string>
-    
+    <string name="title_activity_map_download">Download offline map</string>
+    <string name="hello_world">Downloading...</string>
+
 </resources>

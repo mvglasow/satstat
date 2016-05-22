@@ -110,6 +110,7 @@ public class Const {
 	public static final String KEY_PREF_MAP_OFFLINE = "pref_map_offline";
 	public static final String KEY_PREF_MAP_PATH = "pref_map_path";
 	public static final String KEY_PREF_MAP_CACHED_PATH = "pref_map_cached_path";
+	public static final String KEY_PREF_MAP_DOWNLOAD = "pref_map_download";
 	public static final String KEY_PREF_MAP_PURGE = "pref_map_purge";
 	public static final String KEY_PREF_COORD = "pref_coord";
 	public static final int KEY_PREF_COORD_DECIMAL = 0;
