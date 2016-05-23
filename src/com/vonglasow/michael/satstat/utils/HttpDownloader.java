@@ -28,23 +28,102 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import org.xml.sax.XMLReader;
+import com.vonglasow.michael.satstat.Const;
 
-import android.net.Uri;
-import android.text.Editable;
 import android.text.Html;
-import android.text.Html.TagHandler;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.URLSpan;
 import android.util.Log;
-import android.util.LogPrinter;
 
 /**
  * Provides methods to browse and download from HTTP sites with an FTP-like UI (folder lists).
  */
 public class HttpDownloader {
 	private static final String TAG = "HttpDownloader";
+	/**
+	 * @brief Retrieves information about a remote file or directory
+	 * 
+	 * @param url
+	 * @return A {@link com.vonglasow.michael.satstat.utils.RemoteFile} filled in with the data of
+	 * the remote file or directory, or {@code null} if an error occurred.
+	 */
+	private static RemoteFile getFileInfo(URL context, String href) {
+		String baseUrl = context.toString();
+		boolean isDirectory = false;
+		String name;
+		long size;
+		long timestamp;
+		URL url;
+		boolean isTypeKnown = false; // whether we know already if the target is a directory
+		HttpURLConnection http = null;
+		/*
+		Log.d(TAG, String.format("Download from:\n\tProtocol: %s\n\tHost: %s\n\tPort: %d\n\tUser: %s\n\tPath: %s",
+			url.getProtocol(),
+			url.getHost(),
+			url.getPort(),
+			url.getUserInfo(),
+			url.getPath()));
+		*/
+		try {
+			url = new URL(context, href);
+		} catch (MalformedURLException e) {
+			Log.w(TAG, String.format("%s is not a valid href, skipping", href));
+			return null;
+		}
+		Log.d(TAG, String.format("Getting information for %s:\n\tURL: %s", href, url.toString()));
+
+		if (href.endsWith("/")) {
+			name = href.substring(0, href.length() - 1);
+			if (!isTypeKnown)
+				isDirectory = true; // best guess, hence isTypeKnown remains false
+		} else
+			name = href;
+		try {
+			http = (HttpURLConnection) url.openConnection();
+			http.setRequestMethod("HEAD");
+			http.connect();
+			if (http.getContentType() != null) {
+				if (Const.CONTENT_TYPE_HTML.equals(http.getContentType()) || http.getContentType().startsWith(Const.CONTENT_TYPE_HTML + ";")) {
+					if (!isTypeKnown)
+						isDirectory = true; // best guess, hence isTypeKnown remains false
+				} else {
+					isTypeKnown = true;
+					isDirectory = false;
+				}
+			}
+			size = http.getContentLength();
+			timestamp = http.getLastModified();
+			Log.d(TAG, String.format("\tContent Type: %s\n\tSize: %d\n\tTimestamp: %d", http.getContentType(), http.getContentLength(), http.getLastModified()));
+		} catch (IOException e) {
+			Log.e(TAG, "IOException trying to connect: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (http != null)
+				http.disconnect();
+		}
+		return new RemoteFile(baseUrl, isDirectory, name, size, timestamp);
+	}
+	
+	
+	/**
+	 * @brief Determines if two URLs have the same port.
+	 * 
+	 * This method determines the port used by each of the two URLs (either an explicitly specified
+	 * port or, where absent, the default port) and compares them.
+	 * 
+	 * @param url1
+	 * @param url2
+	 * @return true if the URLs effectivels use the same port, false otherwise
+	 */
+	private static boolean isPortEqual(URL url1, URL url2) {
+		int port1 = (url1.getPort() > 0) ? url1.getPort() : url1.getDefaultPort();
+		int port2 = (url2.getPort() > 0) ? url2.getPort() : url2.getDefaultPort();
+		
+		return (port1 == port2);
+	}
+	
+	
 	/**
 	 * @brief Lists a remote directory.
 	 * 
@@ -57,7 +136,6 @@ public class HttpDownloader {
 		ArrayList<RemoteFile> rfiles = new ArrayList<RemoteFile>();
 		URL url;
 		HttpURLConnection http = null;
-		String htmlType = "text/html";
 		Spanned parsedHtml;
 		try {
 			url = new URL(urlStr);
@@ -79,7 +157,7 @@ public class HttpDownloader {
 			// FIXME this redirect check will barf on perfectly legit redirects (think Akamai)
 			if (!url.getHost().equals(http.getURL().getHost()))
 				throw new IOException("Unexpected redirection! Do you need to sign into your network first?");
-			if ((http.getContentType() == null) || (!htmlType.equals(http.getContentType()) && !http.getContentType().startsWith(htmlType + ";")))
+			if ((http.getContentType() == null) || (!Const.CONTENT_TYPE_HTML.equals(http.getContentType()) && !http.getContentType().startsWith(Const.CONTENT_TYPE_HTML + ";")))
 				throw new IOException(String.format("Response is not in HTML format, got %s", http.getContentType()));
 			
 			// read output into a stream which we can convert to a string so we can process it further
@@ -101,27 +179,49 @@ public class HttpDownloader {
 			// links get converted to URLSpan objects, examine them
 			URLSpan [] us = parsedHtml.getSpans(0, parsedHtml.length(), android.text.style.URLSpan.class);
 			for (URLSpan u : us) {
-				/*
-				 * TODO 
-				 * 1. if the URL is a full URL (with scheme and host name):
-				 *    a. if it contains the base URL, strip it for further processing
-				 *    b. else discard it and move on
-				 *    
-				 * 2. discard all of the following and move on:
-				 *    a. interactive URLs (containing question marks), they may be sort stuff
-				 *    b. anchor URLs (containing hash characters)
-				 *    
-				 * 3. if the URL is an absolute path (starts with a slash)
-				 *    a. if it contains the path of the base URL, strip it for further processing
-				 *    b. else discard it and move on
-				 *    c. if the target is more than one level below us, discard and move on
-				 *    
-				 * 4. congratulations, we have a child object, examine it
-				 */
-				Log.d(TAG, u.getURL());
+				String href = u.getURL();
+				Log.d(TAG, href);
+				
+				URL hrefUrl;
+				try {
+					hrefUrl = new URL(url, href);
+					if (!url.getProtocol().matches(hrefUrl.getProtocol())
+							|| !url.getHost().matches(hrefUrl.getHost())
+							|| !isPortEqual(url, hrefUrl))
+						continue;
+				} catch (MalformedURLException e) {
+					Log.w(TAG, String.format("%s is not a valid href, skipping", href));
+					continue;
+				}
+				// both URLs refer to the same protocol, host and port, therefore we can discard those parts
+				href = hrefUrl.getPath();
+				// href is now just a path (absolute or relative)
+				// get the base path (path from url, ensuring it ends with a slash)
+				String basePath = url.getPath();
+				if (basePath.charAt(basePath.length() - 1) != '/')
+					basePath = basePath + "/";
+				if (href.startsWith(basePath))
+					href = href.substring(basePath.length());
+				else if (href.startsWith("/"))
+					continue;
+				// href is now a relative path but may still contain queries or anchors
+				// query and ref are null if not specified (TODO what if they are specified but empty?)
+				//Log.d(TAG, String.format("\tquery: %s anchor: %s", hrefUrl.getQuery(), hrefUrl.getRef()));
+				if ((hrefUrl.getQuery() != null) && (!hrefUrl.getQuery().isEmpty()))
+					continue;
+				if ((hrefUrl.getRef() != null) && (!hrefUrl.getRef().isEmpty()))
+					continue;
+				// href is now a relative path, free of queries or anchors but any number of levels deep
+				if (href.substring(0, href.length() - 1).indexOf("/") >= 0)
+					continue;
+				// href points to an immediate child object, examine it
+				RemoteFile rf = getFileInfo(url, href);
+				if (rf == null)
+					continue;
+				rfiles.add(rf);
 			}
-			
-			return null; // TODO remove when we have an actual return value
+			// TODO Collections.sort(rfiles, new TBDComparator(;-));
+			return rfiles.toArray(new RemoteFile[]{});
 		} catch (IOException e) {
 			Log.e(TAG, "IOException trying to connect: " + e.getMessage());
 			e.printStackTrace();

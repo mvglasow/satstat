@@ -39,12 +39,12 @@ public class RemoteFile {
 	public String name;
 	
 	/**
-	 * The size of the file system object, in bytes.
+	 * The size of the file system object, in bytes (-1 if unknown).
 	 */
 	public long size;
 	
 	/**
-	 * The timestamp of the file system object. This is typically the last modification time.
+	 * The timestamp of the file system object. This is typically the last modification time. 0 if unknown.
 	 */
 	public long timestamp;
 	

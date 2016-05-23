@@ -133,4 +133,10 @@ public class Const {
 	 */
 	public static final String TILE_CACHE_INTERNAL_RENDER_THEME = "InternalRenderTheme";
 
+
+	/**
+	 * MIME type for HTML
+	 */
+	public static final String CONTENT_TYPE_HTML = "text/html";
+
 }
