@@ -34,6 +34,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -75,6 +76,19 @@ public class MapDownloadActivity extends AppCompatActivity {
 			dirDownloader.cancel(true);
 		super.onDestroy();
 	}
+	
+	private void onFolderListReady(RemoteFile[] rfiles) {
+		String result = "";
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+		df.setTimeZone(TimeZone.getDefault());
+		for (RemoteFile rf : rfiles)
+			result = result + String.format("\n\t%s \t%s \t%s \t%s",
+					rf.isDirectory ? "D" : "F",
+							df.format(new Date(rf.timestamp)),
+							rf.getFriendlySize(),
+							rf.name);
+		downloadText.setText(result);
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -87,16 +101,11 @@ public class MapDownloadActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private class DirDownloader extends AsyncTask<String, Void, String> {
+	private class DirDownloader extends AsyncTask<String, Void, RemoteFile[]> {
+		private static final String TAG = "DirDownloader";
 		@Override
-		protected String doInBackground(String... params) {
+		protected RemoteFile[] doInBackground(String... params) {
 			Uri uri = Uri.parse(params[0]);
-			String result = String.format("Download from:\n\tScheme: %s\n\tHost: %s\n\tPort: %d\n\tUser: %s\n\tPath: %s",
-				uri.getScheme(),
-				uri.getHost(),
-				uri.getPort(),
-				uri.getUserInfo(),
-				uri.getPath());
 			RemoteFile[] rfiles = null;
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
 			df.setTimeZone(TimeZone.getDefault());
@@ -108,22 +117,22 @@ public class MapDownloadActivity extends AppCompatActivity {
 			// TODO HTTPS
 			
 			if (rfiles == null)
-				result = result + "\n\nError – could not retrieve content!";
+				Log.w(TAG, "Error – could not retrieve content!");
 			else {
-				result = result + "\n\nRemote directory contents:";
+				Log.d(TAG, "Remote directory contents:");
 				for (RemoteFile rf : rfiles)
-					result = result + String.format("\n\t%s \t%s \t%s \t%s",
+					Log.d(TAG, String.format("\n\t%s \t%s \t%s \t%s",
 						rf.isDirectory ? "D" : "F",
 						df.format(new Date(rf.timestamp)),
 						rf.getFriendlySize(),
-						rf.name);
+						rf.name));
 			}
-			return result;
+			return rfiles;
 		}
 
-		protected void onPostExecute(String result) {
-			// TODO update UI with result string
-			downloadText.setText(result);
+		protected void onPostExecute(RemoteFile[] result) {
+			// TODO update UI with result
+			onFolderListReady(result);
 			downloadProgress.setVisibility(View.GONE);
 		}
 	}
