@@ -29,6 +29,13 @@ public class RemoteFile {
 	public String baseUrl;
 	
 	/**
+	 * The children of this object, i.e. files in this folder and direct subfolders. Valid for folders only.
+	 * A value of {@code null} indicates that a folder listing has not yet been retrieved, whereas an empty
+	 * array indicates a folder that is known to be empty.
+	 */
+	public RemoteFile[] children = null;
+	
+	/**
 	 * Whether the file system object is a directory or a regular file.
 	 */
 	public boolean isDirectory;
