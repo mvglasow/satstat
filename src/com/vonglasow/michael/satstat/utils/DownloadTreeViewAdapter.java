@@ -20,12 +20,20 @@
 
 package com.vonglasow.michael.satstat.utils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.vonglasow.michael.satstat.R;
 
 import pl.polidea.treeview.AbstractTreeViewAdapter;
 import pl.polidea.treeview.TreeNodeInfo;
 import pl.polidea.treeview.TreeStateManager;
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,12 +43,18 @@ import android.widget.TextView;
  * simple item description.
  * 
  */
-public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile> {
+public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile> implements RemoteDirListListener {
+	private static final String TAG = DownloadTreeViewAdapter.class.getSimpleName();
+	
+	TreeStateManager<RemoteFile> manager;
+	Map<RemoteDirListTask, RemoteFile> listTasks;
 
     public DownloadTreeViewAdapter(final Activity activity,
             final TreeStateManager<RemoteFile> treeStateManager,
             final int numberOfLevels) {
         super(activity, treeStateManager, numberOfLevels);
+        this.manager = treeStateManager;
+        listTasks = new HashMap<RemoteDirListTask, RemoteFile>();
     }
 
     @Override
@@ -85,12 +99,22 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     @Override
     public void handleItemClick(final View view, final Object id) {
         final RemoteFile rfile = (RemoteFile) id;
-        final TreeNodeInfo<RemoteFile> info = getManager().getNodeInfo(rfile);
         if (rfile.isDirectory) {
         	if (rfile.children != null)
         		super.handleItemClick(view, id);
         	else {
-        		// TODO load subdir
+        		String urlStr = "";
+        		try {
+        			URL baseUrl = new URL(rfile.baseUrl);
+        			URL url = new URL(baseUrl, rfile.name);
+        			urlStr = url.toString();
+        		} catch (MalformedURLException e) {
+        			Log.w(TAG, String.format("Cannot determine URL for %s from %s", rfile.name, rfile.baseUrl));
+        			return;
+        		}
+        		RemoteDirListTask task = new RemoteDirListTask(this, rfile);
+        		listTasks.put(task, rfile);
+        		task.execute(urlStr);
         	}
         } else {
         	// TODO download file
@@ -101,4 +125,15 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     public long getItemId(final int position) {
         return getTreeId(position).hashCode();
     }
+
+	@Override
+	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles) {
+		RemoteFile parent = listTasks.get(task);
+		
+		for (RemoteFile rf : rfiles)
+			manager.addAfterChild(parent, rf, null);
+
+		listTasks.remove(task);
+		// TODO handle item click (view will be null, should work)
+	}
 }

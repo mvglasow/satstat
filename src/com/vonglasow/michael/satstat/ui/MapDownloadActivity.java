@@ -70,7 +70,17 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 		downloadProgress = (ProgressBar) findViewById(R.id.downloadProgress);
 		treeView = (TreeViewList) findViewById(R.id.downloadList);
-		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 2); // FIXME number of levels is unlimited in theory
+		/*
+		 * FIXME: Android wants the number of distinct layouts, which here is the same as the number of
+		 * levels and in theory unlimited. Using more levels than specified here will cause exceptions which
+		 * are beyond our control (only system functions in the call stack) and semi-random (creating more
+		 * levels than specified will work initially but the code will barf sometime later, e.g. on scroll).
+		 * 
+		 * The maximum number of levels is currently 4 (multilingual/continent/country/region.map),
+		 * therefore 5 is safe even if another one level is added. However, if the layout on the server ever
+		 * changes and goes beyond that, we'll get semi-random crashes.
+		 */
+		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 5);
 		treeView.setAdapter(treeViewAdapter);
 		treeView.setCollapsible(true);
 		
