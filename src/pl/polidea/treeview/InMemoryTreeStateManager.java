@@ -48,7 +48,7 @@ public class InMemoryTreeStateManager<T> implements TreeStateManager<T> {
         this.visibleByDefault = visibleByDefault;
     }
 
-    private InMemoryTreeNode<T> getNodeFromTreeOrThrow(final T id) {
+    protected InMemoryTreeNode<T> getNodeFromTreeOrThrow(final T id) {
         if (id == null) {
             throw new NodeNotInTreeException("(null)");
         }

@@ -19,7 +19,12 @@
 
 package com.vonglasow.michael.satstat.ui;
 
+import pl.polidea.treeview.DownloadTreeStateManager;
+import pl.polidea.treeview.TreeBuilder;
+import pl.polidea.treeview.TreeViewList;
+
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.utils.DownloadTreeViewAdapter;
 import com.vonglasow.michael.satstat.utils.RemoteDirListTask;
 import com.vonglasow.michael.satstat.utils.RemoteDirListListener;
 import com.vonglasow.michael.satstat.utils.RemoteFile;
@@ -27,6 +32,7 @@ import com.vonglasow.michael.satstat.utils.RemoteFile;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -36,6 +42,7 @@ import android.widget.ProgressBar;
  * select maps to download.
  */
 public class MapDownloadActivity extends AppCompatActivity implements RemoteDirListListener {
+	private static final String TAG = MapDownloadActivity.class.getSimpleName();
 
 	// TODO the same URL is also available over HTTP (and there's also the Mapsforge download server as a fallback)
 	//public static final String MAP_DOWNLOAD_BASE_URL = "ftp://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
@@ -43,17 +50,30 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 	RemoteDirListTask dirListTask = null;
 	ProgressBar downloadProgress;
+	private TreeViewList treeView;
+	private DownloadTreeStateManager manager = null;
+	private TreeBuilder<RemoteFile> builder = null;
+	private DownloadTreeViewAdapter treeViewAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		manager = new DownloadTreeStateManager();
+		Log.d(TAG, manager.toString());
+		builder = new TreeBuilder<RemoteFile>(manager);
+
 		setContentView(R.layout.activity_map_download);
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		downloadProgress = (ProgressBar) findViewById(R.id.downloadProgress);
-
+		treeView = (TreeViewList) findViewById(R.id.downloadList);
+		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 2); // FIXME number of levels is unlimited in theory
+		treeView.setAdapter(treeViewAdapter);
+		treeView.setCollapsible(true);
+		
 		// get data from FTP
 		dirListTask = new RemoteDirListTask(this);
 		dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
@@ -80,5 +100,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	@Override
 	public void onRemoteDirListReady(RemoteFile[] rfiles) {
 		downloadProgress.setVisibility(View.GONE);
+		builder.clear();
+		for (RemoteFile rf : rfiles)
+			builder.sequentiallyAddNextNode(rf, 0);
 	}
 }
