@@ -19,11 +19,6 @@
 
 package com.vonglasow.michael.satstat.ui;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.utils.RemoteDirListTask;
 import com.vonglasow.michael.satstat.utils.RemoteDirListListener;
@@ -35,7 +30,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /**
  * An activity which displays a list of maps available on the download server and lets the user
@@ -48,7 +42,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	public static final String MAP_DOWNLOAD_BASE_URL = "http://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
 
 	RemoteDirListTask dirListTask = null;
-	TextView downloadText;
 	ProgressBar downloadProgress;
 
 	@Override
@@ -59,7 +52,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		downloadText = (TextView) findViewById(R.id.downloadText);
 		downloadProgress = (ProgressBar) findViewById(R.id.downloadProgress);
 
 		// get data from FTP
@@ -87,16 +79,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 	@Override
 	public void onRemoteDirListReady(RemoteFile[] rfiles) {
-		String result = "";
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
-		df.setTimeZone(TimeZone.getDefault());
 		downloadProgress.setVisibility(View.GONE);
-		for (RemoteFile rf : rfiles)
-			result = result + String.format("\n\t%s \t%s \t%s \t%s",
-					rf.isDirectory ? "D" : "F",
-							df.format(new Date(rf.timestamp)),
-							rf.getFriendlySize(),
-							rf.name);
-		downloadText.setText(result);
 	}
 }
