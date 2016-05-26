@@ -1,5 +1,7 @@
 package pl.polidea.treeview;
 
+import com.vonglasow.michael.satstat.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;

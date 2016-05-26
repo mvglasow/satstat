@@ -1,5 +1,7 @@
 package pl.polidea.treeview;
 
+import com.vonglasow.michael.satstat.R;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
