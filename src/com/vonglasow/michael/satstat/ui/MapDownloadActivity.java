@@ -75,7 +75,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeView.setCollapsible(true);
 		
 		// get data from FTP
-		dirListTask = new RemoteDirListTask(this);
+		dirListTask = new RemoteDirListTask(this, null);
 		dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
 	}
 
@@ -98,7 +98,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	}
 
 	@Override
-	public void onRemoteDirListReady(RemoteFile[] rfiles) {
+	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles) {
 		downloadProgress.setVisibility(View.GONE);
 		builder.clear();
 		for (RemoteFile rf : rfiles)

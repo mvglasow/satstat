@@ -29,5 +29,5 @@ public interface RemoteDirListListener {
 	 * 
 	 * @param rfiles An array of all objects in the remote directory.
 	 */
-	public void onRemoteDirListReady(RemoteFile[] rfiles);
+	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles);
 }

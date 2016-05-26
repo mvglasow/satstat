@@ -35,6 +35,7 @@ import android.util.Log;
 public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 	private static final String TAG = "DirDownloader";
 	private RemoteDirListListener listener = null;
+	private RemoteFile parent = null;
 	
 	/**
 	 * Creates a new {@code DirDownloader} task, and registers it with a listener.
@@ -42,9 +43,10 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 	 * @param listener The {@code com.vonglasow.michael.satstat.utils.RemoteDirListListener} which will
 	 * be notified when the task has completed.
 	 */
-	public RemoteDirListTask(RemoteDirListListener listener) {
+	public RemoteDirListTask(RemoteDirListListener listener, RemoteFile parent) {
 		super();
 		this.listener = listener;
+		this.parent = parent;
 	}
 	
 	
@@ -76,7 +78,9 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 	}
 
 	protected void onPostExecute(RemoteFile[] result) {
+		if (parent != null)
+			parent.children = result;
 		if (listener != null)
-			listener.onRemoteDirListReady(result);
+			listener.onRemoteDirListReady(this, result);
 	}
 }
