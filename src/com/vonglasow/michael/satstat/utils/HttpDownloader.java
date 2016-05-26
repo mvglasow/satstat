@@ -138,7 +138,10 @@ public class HttpDownloader {
 		HttpURLConnection http = null;
 		Spanned parsedHtml;
 		try {
-			url = new URL(urlStr);
+			String base = urlStr;
+			if (base.charAt(base.length() - 1) != '/')
+				base = base + "/";
+			url = new URL(base);
 		} catch (MalformedURLException e) {
 			Log.e(TAG, "MalformedURLException: " + e.getMessage());
 			e.printStackTrace();
@@ -198,8 +201,6 @@ public class HttpDownloader {
 				// href is now just a path (absolute or relative)
 				// get the base path (path from url, ensuring it ends with a slash)
 				String basePath = url.getPath();
-				if (basePath.charAt(basePath.length() - 1) != '/')
-					basePath = basePath + "/";
 				if (href.startsWith(basePath))
 					href = href.substring(basePath.length());
 				else if (href.startsWith("/"))
