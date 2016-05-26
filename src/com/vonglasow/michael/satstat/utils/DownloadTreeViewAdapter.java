@@ -22,10 +22,12 @@ package com.vonglasow.michael.satstat.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.vonglasow.michael.satstat.R;
 
@@ -36,6 +38,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -48,6 +51,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	
 	TreeStateManager<RemoteFile> manager;
 	Map<RemoteDirListTask, RemoteFile> listTasks;
+	
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
 
     public DownloadTreeViewAdapter(final Activity activity,
             final TreeStateManager<RemoteFile> treeStateManager,
@@ -55,6 +60,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         super(activity, treeStateManager, numberOfLevels);
         this.manager = treeStateManager;
         listTasks = new HashMap<RemoteDirListTask, RemoteFile>();
+        df.setTimeZone(TimeZone.getDefault());
     }
 
     @Override
@@ -91,7 +97,21 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         */
 
         TextView downloadListItem = (TextView) viewLayout.findViewById(R.id.downloadListItem);
+        TextView downloadSize = (TextView) viewLayout.findViewById(R.id.downloadSize);
+        TextView downloadDate = (TextView) viewLayout.findViewById(R.id.downloadDate);
+        ProgressBar downloadDirProgress = (ProgressBar) viewLayout.findViewById(R.id.downloadDirProgress);
         downloadListItem.setText(rfileName);
+        if (rfile.isDirectory) {
+        	downloadSize.setVisibility(View.GONE);
+        	downloadDate.setVisibility(View.GONE);
+        	downloadDirProgress.setVisibility(View.INVISIBLE);
+        } else {
+        	downloadSize.setText(rfile.getFriendlySize());
+        	downloadDate.setText(df.format(new Date(rfile.timestamp)));
+        	downloadSize.setVisibility(View.VISIBLE);
+        	downloadDate.setVisibility(View.VISIBLE);
+        	downloadDirProgress.setVisibility(View.GONE);
+        }
 
         return viewLayout;
     }
@@ -115,6 +135,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		RemoteDirListTask task = new RemoteDirListTask(this, rfile);
         		listTasks.put(task, rfile);
         		task.execute(urlStr);
+                ProgressBar downloadDirProgress = (ProgressBar) view.findViewById(R.id.downloadDirProgress);
+                downloadDirProgress.setVisibility(View.VISIBLE);
         	}
         } else {
         	// TODO download file
