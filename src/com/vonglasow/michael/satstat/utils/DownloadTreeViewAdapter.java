@@ -134,7 +134,10 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         	} else {
         		String urlStr = "";
         		try {
-        			URL baseUrl = new URL(rfile.baseUrl);
+        			String base = rfile.baseUrl;
+        			if (base.charAt(base.length() - 1) != '/')
+        				base = base + "/";
+        			URL baseUrl = new URL(base);
         			URL url = new URL(baseUrl, rfile.name);
         			urlStr = url.toString();
         		} catch (MalformedURLException e) {
