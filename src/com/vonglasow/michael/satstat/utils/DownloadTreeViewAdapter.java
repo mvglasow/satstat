@@ -156,6 +156,5 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 			manager.addAfterChild(parent, rf, null);
 
 		listTasks.remove(task);
-		// TODO handle item click (view will be null, should work)
 	}
 }
