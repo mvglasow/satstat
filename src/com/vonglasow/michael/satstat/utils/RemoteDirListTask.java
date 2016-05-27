@@ -42,6 +42,8 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 	 * 
 	 * @param listener The {@code com.vonglasow.michael.satstat.utils.RemoteDirListListener} which will
 	 * be notified when the task has completed.
+	 * @param parent The directory to be listed. When this task finishes, it populates the {@code children}
+	 * member of {@code parent} with the objects it retrieved. May be {@code null}.
 	 */
 	public RemoteDirListTask(RemoteDirListListener listener, RemoteFile parent) {
 		super();
