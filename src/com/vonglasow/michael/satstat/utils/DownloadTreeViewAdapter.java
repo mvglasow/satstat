@@ -40,6 +40,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This is a very simple adapter that provides very basic tree view with a
@@ -104,7 +105,10 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         if (rfile.isDirectory) {
         	downloadSize.setVisibility(View.GONE);
         	downloadDate.setVisibility(View.GONE);
-        	downloadDirProgress.setVisibility(View.INVISIBLE);
+        	if (listTasks.containsValue(rfile))
+        		downloadDirProgress.setVisibility(View.VISIBLE);
+        	else
+        		downloadDirProgress.setVisibility(View.INVISIBLE);
         } else {
         	downloadSize.setText(rfile.getFriendlySize());
         	downloadDate.setText(df.format(new Date(rfile.timestamp)));
@@ -120,9 +124,14 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     public void handleItemClick(final View view, final Object id) {
         final RemoteFile rfile = (RemoteFile) id;
         if (rfile.isDirectory) {
-        	if (rfile.children != null)
-        		super.handleItemClick(view, id);
-        	else {
+        	if (rfile.children != null) {
+        		if (rfile.children.length > 0)
+        			super.handleItemClick(view, id);
+        		else {
+        			String message = getActivity().getString(R.string.status_folder_empty);
+        			Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        		}
+        	} else {
         		String urlStr = "";
         		try {
         			URL baseUrl = new URL(rfile.baseUrl);
@@ -151,10 +160,14 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	@Override
 	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles) {
 		RemoteFile parent = listTasks.get(task);
-		
-		for (RemoteFile rf : rfiles)
-			manager.addAfterChild(parent, rf, null);
 
 		listTasks.remove(task);
+		
+		if (rfiles.length == 0) {
+			manager.refresh();
+			handleItemClick(null, parent);
+		} else
+			for (RemoteFile rf : rfiles)
+				manager.addAfterChild(parent, rf, null);
 	}
 }

@@ -65,6 +65,8 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 		
 		if (rfiles == null)
 			Log.w(TAG, "Error – could not retrieve content!");
+		else if (rfiles.length == 0)
+			Log.w(TAG, "Remote directory is empty.");
 		else {
 			Log.d(TAG, "Remote directory contents:");
 			for (RemoteFile rf : rfiles)

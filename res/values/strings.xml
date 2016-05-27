@@ -259,5 +259,6 @@
     <string name="pref_map_purge_summary">Force all tiles to be fetched or rendered again, useful for troubleshooting</string>
     <string name="status_map_purged">Map tile cache cleared</string>
     <string name="title_activity_map_download">Download offline map</string>
+    <string name="status_folder_empty">Folder is empty</string>
 
 </resources>
