@@ -83,6 +83,10 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 5);
 		treeView.setAdapter(treeViewAdapter);
 		treeView.setCollapsible(true);
+		treeView.setCollapsedDrawable(getResources().getDrawable(R.drawable.ic_expand_more));
+		treeView.setExpandedDrawable(getResources().getDrawable(R.drawable.ic_expand_less));
+		treeView.setIndentWidth(24);
+
 		
 		// get data from FTP
 		dirListTask = new RemoteDirListTask(this, null);

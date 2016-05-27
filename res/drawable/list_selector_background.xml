@@ -14,17 +14,17 @@
 	<!-- Even though these two point to the same resource, have two states so 
 		the drawable will invalidate itself when coming out of pressed state. -->
 	<item android:state_focused="true" android:state_enabled="false"
-		android:state_pressed="true" android:drawable="@drawable/list_selector_background_disabled" />
+		android:state_pressed="true" android:drawable="@android:color/transparent" />
 	<item android:state_focused="true" android:state_enabled="false"
-		android:drawable="@drawable/list_selector_background_disabled" />
+		android:drawable="@android:color/transparent" />
 
 	<item android:state_focused="true" android:state_pressed="true"
-		android:drawable="@drawable/list_selector_background_transition" />
+		android:drawable="@color/ripple_material_dark" />
 	<item android:state_focused="false" android:state_pressed="true"
-		android:drawable="@drawable/list_selector_background_transition" />
+		android:drawable="@color/ripple_material_dark" />
 
 	<item android:state_focused="true"
-		android:drawable="@drawable/list_selector_background_focus" />
+		android:drawable="@color/ripple_material_dark" />
 
 	<!-- !!hack!! to fill StateListDrawable.mStateListState with exactly 10 
 		items otherwise it will throw NPE on Android 1.6 -->

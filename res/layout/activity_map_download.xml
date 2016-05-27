@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context="${relativePackage}.${activityClass}" >
 
     <ProgressBar
@@ -13,6 +15,11 @@
     <pl.polidea.treeview.TreeViewList
         android:id="@+id/downloadList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="?android:attr/listDivider"
+        android:dividerHeight="1dp"
+        android:headerDividersEnabled="false"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="vertical" />
 
 </LinearLayout>
