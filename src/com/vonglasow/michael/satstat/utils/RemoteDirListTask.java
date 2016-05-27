@@ -33,7 +33,7 @@ import android.util.Log;
  * upon completion.
  */
 public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
-	private static final String TAG = "DirDownloader";
+	private static final String TAG = RemoteDirListTask.class.getSimpleName();
 	private RemoteDirListListener listener = null;
 	private RemoteFile parent = null;
 	
