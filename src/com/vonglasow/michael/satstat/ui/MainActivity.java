@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	boolean prefCid = false;
 	int prefWifiSort = 0;
 	boolean prefMapOffline = false;
-	String prefMapPath = SettingsActivity.defaultMapPath;
+	String prefMapPath = Const.MAP_PATH_DEFAULT;
 
 	/** 
 	 * The {@link PhoneStateListener} for getting radio network updates 

@@ -19,7 +19,10 @@
 
 package com.vonglasow.michael.satstat;
 
+import java.io.File;
+
 import android.net.ConnectivityManager;
+import android.os.Environment;
 
 /**
  * Constants used throughout the application.
@@ -138,5 +141,8 @@ public class Const {
 	 * MIME type for HTML
 	 */
 	public static final String CONTENT_TYPE_HTML = "text/html";
+
+
+	public static final String MAP_PATH_DEFAULT = new File(Environment.getExternalStorageDirectory(), "org.mapsforge/maps").getAbsolutePath();
 
 }

@@ -19,7 +19,6 @@
 
 package com.vonglasow.michael.satstat.ui;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +37,6 @@ import com.vonglasow.michael.satstat.R.xml;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -78,11 +76,9 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 		{ "com.androidworkz.action.PICK_DIRECTORY", "file://" }
 	};
 	
-	public static String defaultMapPath = new File(Environment.getExternalStorageDirectory(), "org.mapsforge/maps").getAbsolutePath();
-
 	private SharedPreferences mSharedPreferences;
 	Preference prefMapPath;
-	String prefMapPathValue = defaultMapPath;
+	String prefMapPathValue = Const.MAP_PATH_DEFAULT;
 	Preference prefMapDownload;
 	Preference prefMapPurge;
 
