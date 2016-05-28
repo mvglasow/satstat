@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -46,17 +46,21 @@
                 android:value=".ui.MainActivity" />
         </activity>
 
-        <receiver android:name="GpsEventReceiver">
+        <receiver android:name="GpsEventReceiver" >
             <intent-filter>
-                <action android:name="android.location.GPS_ENABLED_CHANGE"/>
-                <action android:name="android.location.GPS_FIX_CHANGE"/>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-                <action android:name="android.net.wifi.STATE_CHANGE"/>
-                <action android:name="com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED"/>
+                <action android:name="android.location.GPS_ENABLED_CHANGE" />
+                <action android:name="android.location.GPS_FIX_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED" />
             </intent-filter>
         </receiver>
 
-        <service android:name="PasvLocListenerService" android:exported="false" android:stopWithTask="false"></service>
+        <service
+            android:name="PasvLocListenerService"
+            android:exported="false"
+            android:stopWithTask="false" >
+        </service>
 
         <activity
             android:name=".ui.LegendActivity"
