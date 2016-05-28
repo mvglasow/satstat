@@ -23,13 +23,17 @@ import pl.polidea.treeview.DownloadTreeStateManager;
 import pl.polidea.treeview.TreeBuilder;
 import pl.polidea.treeview.TreeViewList;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.utils.DownloadObserver;
 import com.vonglasow.michael.satstat.utils.DownloadTreeViewAdapter;
 import com.vonglasow.michael.satstat.utils.RemoteDirListTask;
 import com.vonglasow.michael.satstat.utils.RemoteDirListListener;
 import com.vonglasow.michael.satstat.utils.RemoteFile;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -54,6 +58,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	private DownloadTreeStateManager manager = null;
 	private TreeBuilder<RemoteFile> builder = null;
 	private DownloadTreeViewAdapter treeViewAdapter;
+	SharedPreferences sharedPreferences;
+	private DownloadObserver downloadObserver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +97,11 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		// get data from FTP
 		dirListTask = new RemoteDirListTask(this, null);
 		dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
+		
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		downloadObserver = new DownloadObserver(sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT));
+		downloadObserver.addListener(treeViewAdapter);
+		// FIXME listen to preference changes
 	}
 
 	@Override
@@ -117,5 +128,17 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		builder.clear();
 		for (RemoteFile rf : rfiles)
 			builder.sequentiallyAddNextNode(rf, 0);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		downloadObserver.startWatching();
+	}
+	
+	@Override
+	protected void onStop() {
+		downloadObserver.stopWatching();
+		super.onStop();
 	}
 }
