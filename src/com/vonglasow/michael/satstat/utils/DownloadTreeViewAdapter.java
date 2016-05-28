@@ -20,8 +20,6 @@
 
 package com.vonglasow.michael.satstat.utils;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +33,6 @@ import pl.polidea.treeview.AbstractTreeViewAdapter;
 import pl.polidea.treeview.TreeNodeInfo;
 import pl.polidea.treeview.TreeStateManager;
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -132,18 +129,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         			Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         		}
         	} else {
-        		String urlStr = "";
-        		try {
-        			String base = rfile.baseUrl;
-        			if (base.charAt(base.length() - 1) != '/')
-        				base = base + "/";
-        			URL baseUrl = new URL(base);
-        			URL url = new URL(baseUrl, rfile.name);
-        			urlStr = url.toString();
-        		} catch (MalformedURLException e) {
-        			Log.w(TAG, String.format("Cannot determine URL for %s from %s", rfile.name, rfile.baseUrl));
-        			return;
-        		}
+        		String urlStr = UriHelper.getChildUriString(rfile.baseUrl, rfile.name);
         		RemoteDirListTask task = new RemoteDirListTask(this, rfile);
         		listTasks.put(task, rfile);
         		task.execute(urlStr);
