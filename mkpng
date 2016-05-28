@@ -1,0 +1,121 @@
+#!/bin/bash
+
+## Generates PNG drawables from all SVG files.
+
+SVG_PATH=./extra
+
+LDPI_PATH=./res/drawable-ldpi
+MDPI_PATH=./res/drawable-mdpi
+HDPI_PATH=./res/drawable-hdpi
+XHDPI_PATH=./res/drawable-xhdpi
+XXHDPI_PATH=./res/drawable-xxhdpi
+
+# Android density bins are:
+# LDPI:   120 dpi
+# MDPI:   160 dpi
+# HDPI:   240 dpi
+# XHDPI:  320 dpi
+# XXHDPI: 480 dpi
+
+# Default for icons is 1 SVG user unit ("px") = 1 dp.
+# However, both these units have their own conflicting definitions:
+# - 1 SVG user units = 1 pixel at 90 dpi.
+# - 1 dp = 1 pixel at MDPI (160 dpi).
+# Therefore, SVG export needs to use the following dpi values:
+
+LDPI_RES=67.5
+MDPI_RES=90
+HDPI_RES=135
+XHDPI_RES=180
+XXHDPI_RES=270
+
+
+## Creates a single PNG file from a given input SVG file at the given DPI resolution.
+##
+## If the output file exists and is newer than the input file, no action is taken.
+##
+## @param $1 The input SVG filename (full path)
+## @param $2 The output PNG filename (full path)
+## @param $3 The resolution in DPI
+function make_png_dpi {
+	if [[ -e $2 && $2 -nt $1 ]] ; then
+		echo Skipping $1 because $2 exists and is newer
+	else
+		echo inkscape --without-gui --export-area-page --export-dpi=$3 --export-png=$2 $1
+		inkscape --without-gui --export-area-page --export-dpi=$3 --export-png=$2 $1
+	fi
+}
+
+
+## Creates a single PNG file from a given input SVG file at the given width.
+##
+## If the output file exists and is newer than the input file, no action is taken.
+##
+## @param $1 The input SVG filename (full path)
+## @param $2 The output PNG filename (full path)
+## @param $3 The width in pixels
+function make_png_width {
+	if [[ -e $2 && $2 -nt $1 ]] ; then
+		echo Skipping $1 because $2 exists and is newer
+	else
+		echo inkscape --without-gui --export-area-page --export-width=$3 --export-png=$2 $1
+		inkscape --without-gui --export-area-page --export-width=$3 --export-png=$2 $1
+	fi
+}
+
+
+## Converts a SVG icon to PNG drawables using the default of 1 px = 1 dip.
+##
+## @param $1 The input SVG filename (path stripped)
+## @param $2 The output PNG filename (path stripped)
+function convert_by_dpi {
+	baresvgfile=$1
+	barepngfile=$2
+	make_png_dpi $SVG_PATH/$baresvgfile $LDPI_PATH/$barepngfile $LDPI_RES
+	make_png_dpi $SVG_PATH/$baresvgfile $MDPI_PATH/$barepngfile $MDPI_RES
+	make_png_dpi $SVG_PATH/$baresvgfile $HDPI_PATH/$barepngfile $HDPI_RES
+	make_png_dpi $SVG_PATH/$baresvgfile $XHDPI_PATH/$barepngfile $XHDPI_RES
+	make_png_dpi $SVG_PATH/$baresvgfile $XXHDPI_PATH/$barepngfile $XXHDPI_RES
+}
+
+
+## Converts a SVG icon to PNG drawables using a specified width.
+##
+## @param $1 The input SVG filename (path stripped)
+## @param $2 The output PNG filename (path stripped)
+## @param $3 The width for the converted PNG files, in dip
+function convert_by_width {
+	baresvgfile=$1
+	barepngfile=$2
+    width_mdpi=$3
+	# Derive other sizes from MDPI
+	# Ordered to do lossy operations (integer division) last
+	width_xhdpi=$(($width_mdpi * 2))
+	width_xxhdpi=$(($width_mdpi * 3))
+	width_hdpi=$(($width_xxhdpi / 2))
+	width_ldpi=$(($width_hdpi / 2))
+	make_png_width $SVG_PATH/$baresvgfile $LDPI_PATH/$barepngfile $width_ldpi
+	make_png_width $SVG_PATH/$baresvgfile $MDPI_PATH/$barepngfile $width_mdpi
+	make_png_width $SVG_PATH/$baresvgfile $HDPI_PATH/$barepngfile $width_hdpi
+	make_png_width $SVG_PATH/$baresvgfile $XHDPI_PATH/$barepngfile $width_xhdpi
+	make_png_width $SVG_PATH/$baresvgfile $XXHDPI_PATH/$barepngfile $width_xxhdpi
+}
+
+
+for svgfile in $SVG_PATH/*.svg
+do
+	# strip path from file name
+	baresvgfile=${svgfile#$SVG_PATH/}
+	barepngfile=${baresvgfile%.svg}.png
+	case $baresvgfile in
+		ic_context_marker_*.svg)
+			convert_by_width $baresvgfile $barepngfile 32
+			;;
+		ic_launcher.svg|ic_launcher_oi_filemanager.svg)
+			convert_by_width $baresvgfile $barepngfile 48
+			;;
+		*)
+			convert_by_dpi $baresvgfile $barepngfile
+	esac
+done
+
