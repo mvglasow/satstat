@@ -48,6 +48,8 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -127,18 +129,22 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         TextView downloadDate = (TextView) viewLayout.findViewById(R.id.downloadDate);
         ProgressBar downloadDirProgress = (ProgressBar) viewLayout.findViewById(R.id.downloadDirProgress);
         ProgressBar downloadFileProgress = (ProgressBar) view.findViewById(R.id.downloadFileProgress);
+        ImageView downloadIcon = (ImageView) view.findViewById(R.id.downloadIcon);
+        ImageButton downloadCancel = (ImageButton) view.findViewById(R.id.downloadCancel);
         downloadListItem.setText(rfileName);
         if (rfile.isDirectory) {
-        	view.setPadding(4, 4, 4, 4);
+        	view.setPadding(8, 8, 8, 8);
         	downloadSize.setVisibility(View.GONE);
         	downloadDate.setVisibility(View.GONE);
         	downloadFileProgress.setVisibility(View.GONE);
+        	downloadIcon.setVisibility(View.GONE);
+        	downloadCancel.setVisibility(View.GONE);
         	if (listTasks.containsValue(rfile))
         		downloadDirProgress.setVisibility(View.VISIBLE);
         	else
         		downloadDirProgress.setVisibility(View.INVISIBLE);
         } else {
-        	view.setPadding(4, 4, 4, 0);
+        	view.setPadding(8, 8, 8, 0);
         	downloadSize.setText(rfile.getFriendlySize());
         	downloadDate.setText(df.format(new Date(rfile.timestamp)));
         	downloadSize.setVisibility(View.VISIBLE);
@@ -148,8 +154,24 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		downloadFileProgress.setVisibility(View.VISIBLE);
         		downloadFileProgress.setMax((int) (rfile.size / 1024));
         		downloadFileProgress.setProgress(downloadsByRemoteFile.get(rfile).progress);
-        	} else
+        		downloadIcon.setVisibility(View.GONE);
+        		// TODO make button visible and set OnClickListener
+        		downloadCancel.setVisibility(View.INVISIBLE);
+        	} else {
+        		File mapFile = new File(
+        				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
+        				rfile.name);
         		downloadFileProgress.setVisibility(View.INVISIBLE);
+        		downloadCancel.setVisibility(View.GONE);
+        		if (!mapFile.exists())
+        			downloadIcon.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_file_download));
+        		else if (mapFile.lastModified() < rfile.timestamp)
+        			// TODO recheck this condition (granularity of timestamps, botched timezones)
+        			downloadIcon.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_refresh));
+        		else
+        			downloadIcon.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_check));
+        		downloadIcon.setVisibility(View.VISIBLE);
+        	}
         }
 
         return viewLayout;
