@@ -24,6 +24,14 @@ package com.vonglasow.michael.satstat.utils;
  */
 public interface DownloadStatusListener {
 	/**
+	 * Called when the local file has been deleted, e.g. when the download fails or is canceled.
+	 * 
+	 * @param path The local name of the file being downloaded, relative to the path being watched (this is
+	 * normally the map path).
+	 */
+	public void onDelete(String path);
+
+	/**
 	 * Called when the progress of a download has changed.
 	 * 
 	 * Since the progress of a download changes constantly, calls to this method are limited to one call per

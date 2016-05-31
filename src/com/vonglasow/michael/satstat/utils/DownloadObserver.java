@@ -78,6 +78,16 @@ public class DownloadObserver extends FileObserver {
 			// Useful for noticing a download has been started or resumed.
 			break;
 		case FileObserver.DELETE:
+			new Handler(Looper.getMainLooper()).post(new Runnable() {
+				@Override
+				public void run() {
+					synchronized (listeners) {
+						for (DownloadStatusListener listener : listeners)
+							listener.onDelete(path);
+					}
+				}
+			});
+			break;
 		case FileObserver.MOVED_FROM:
 			// These might come in handy for obvious reasons.
 			break;

@@ -48,6 +48,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -102,7 +103,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     public LinearLayout updateView(final View view,
             final TreeNodeInfo<RemoteFile> treeNodeInfo) {
         final LinearLayout viewLayout = (LinearLayout) view;
-        RemoteFile rfile = treeNodeInfo.getId();
+        final RemoteFile rfile = treeNodeInfo.getId();
         final String rfileName = rfile.name;
         
         /*
@@ -155,8 +156,29 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		downloadFileProgress.setMax((int) (rfile.size / 1024));
         		downloadFileProgress.setProgress(downloadsByRemoteFile.get(rfile).progress);
         		downloadIcon.setVisibility(View.GONE);
-        		// TODO make button visible and set OnClickListener
-        		downloadCancel.setVisibility(View.INVISIBLE);
+        		downloadCancel.setVisibility(View.VISIBLE);
+        		downloadCancel.setOnClickListener(new OnClickListener() {
+        			@Override
+        			public void onClick(View v) {
+        				DownloadInfo info = null;
+        				info = downloadsByRemoteFile.get(rfile);
+        				// TODO implement cancel by ID or URL (or whatever is available from DownloadManager)
+        				/*
+        				 * The last resort is to get the file by name: not 100% collision proof (as there may
+        				 * be map files of the same name in different directories), but since all map files
+        				 * end up in the same local directory, we won't have two downloads with the same name
+        				 * (this would cause problems much earlier).
+        				 */
+        				if (info == null)
+        					info = downloadsByName.get(rfileName);
+        				if (info == null)
+        					return;
+
+        				if (downloadManager.remove(info.reference) > 0) {
+        					removeDownload(info.reference, false);
+        				}
+        			}
+        		});
         	} else {
         		File mapFile = new File(
         				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
@@ -246,6 +268,11 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         return getTreeId(position).hashCode();
     }
 
+    @Override
+    public void onDelete(String path) {
+    	manager.refresh();
+    }
+
 	@Override
 	public void onDownloadProgress(String path) {
 		File mapFile = new File(
@@ -271,6 +298,35 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				manager.addAfterChild(parent, rf, null);
 	}
 	
+	/**
+	 * Called when a download has completed, failed or been canceled.
+	 * 
+	 * This removes the download from all internal data structures and cleans up backup copies, if any: If
+	 * the download was successful, the backup file is deleted. If the download failed or was canceled, the
+	 * incompletely downloaded file is deleted and the backup file is moved to its original location. Finally
+	 * a refresh of the UI is triggered to reflect the new state of the file.
+	 * 
+	 * @param reference The reference used by DownloadManager.
+	 * @param success True if the download completed successfully, false if it failed or was canceled.
+	 */
+	private void removeDownload(long reference, boolean success) {
+		DownloadInfo info = downloadsByReference.get(reference);
+		downloadsByReference.remove(reference);
+		downloadsByName.remove(info.localFile.getName());
+		downloadsByRemoteFile.remove(info.remoteFile);
+		if (info.backupFile != null) {
+			if (success)
+				info.backupFile.delete();
+			else {
+				// restore old backup file
+				if (info.localFile.exists())
+					info.localFile.delete();
+				info.backupFile.renameTo(info.localFile);
+			}
+		}
+		manager.refresh();
+	}
+
 	private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -280,44 +336,35 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				DownloadManager.Query query = new DownloadManager.Query();
 				query.setFilterById(reference);
 				Cursor cursor = downloadManager.query(query);
-				cursor.moveToFirst();
+				if (!cursor.moveToFirst())
+					/*
+					 * The download is no longer in the list. This may happen for downloads which were
+					 * canceled by the user.
+					 */
+					return;
 				int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
 				//int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-				DownloadInfo info = downloadsByReference.get(reference);
-				if (info != null)
-					switch (status) {
-					case DownloadManager.STATUS_SUCCESSFUL:
-						// The file was downloaded successfully
-						downloadsByReference.remove(reference);
-						downloadsByName.remove(info.localFile.getName());
-						downloadsByRemoteFile.remove(info.remoteFile);
-						if (info.backupFile != null)
-							info.backupFile.delete();
-						manager.refresh();
-						Toast.makeText(getActivity(), "Download completed", Toast.LENGTH_SHORT).show();
-						break;
-					case DownloadManager.STATUS_FAILED:
-						// The download failed
-						downloadsByReference.remove(reference);
-						downloadsByName.remove(info.localFile.getName());
-						downloadsByRemoteFile.remove(info.remoteFile);
-						if (info.backupFile != null) {
-							// restore old backup file
-							if (info.localFile.exists())
-								info.localFile.delete();
-							info.backupFile.renameTo(info.localFile);
-						}
-						manager.refresh();
-						break;
-					case DownloadManager.STATUS_PAUSED:
-						// The download was paused, update status once more
+				switch (status) {
+				case DownloadManager.STATUS_SUCCESSFUL:
+					// The file was downloaded successfully
+					removeDownload(reference, true);
+					Toast.makeText(getActivity(), "Download completed", Toast.LENGTH_SHORT).show();
+					break;
+				case DownloadManager.STATUS_FAILED:
+					// The download failed
+					removeDownload(reference, false);
+					break;
+				case DownloadManager.STATUS_PAUSED:
+					// The download was paused, update status once more
+					DownloadInfo info = downloadsByReference.get(reference);
+					if (info != null)
 						onDownloadProgress(info.localFile.getName());
-						break;
-						//case DownloadManager.STATUS_PENDING:
-						// The download is waiting to start.
-						//case DownloadManager.STATUS_RUNNING:
-						// The download is running.
-					}
+					break;
+					//case DownloadManager.STATUS_PENDING:
+					// The download is waiting to start.
+					//case DownloadManager.STATUS_RUNNING:
+					// The download is running.
+				}
 			} else if (intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
 				// TODO
 			}
