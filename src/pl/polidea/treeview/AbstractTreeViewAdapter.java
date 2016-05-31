@@ -40,15 +40,6 @@ public abstract class AbstractTreeViewAdapter<T> extends BaseAdapter implements
     private Drawable indicatorBackgroundDrawable;
     private Drawable rowBackgroundDrawable;
 
-    private final OnClickListener indicatorClickListener = new OnClickListener() {
-        @Override
-        public void onClick(final View v) {
-            @SuppressWarnings("unchecked")
-            final T id = (T) v.getTag();
-            expandCollapse(id);
-        }
-    };
-
     private boolean collapsible;
     private final Activity activity;
 
@@ -241,14 +232,10 @@ public abstract class AbstractTreeViewAdapter<T> extends BaseAdapter implements
         final ImageView image = (ImageView) layout
                 .findViewById(R.id.treeview_list_item_image);
         image.setImageDrawable(getDrawable(nodeInfo));
-        image.setBackgroundDrawable(getDrawableOrDefaultBackground(indicatorBackgroundDrawable));
         image.setScaleType(ScaleType.CENTER);
         image.setTag(nodeInfo.getId());
-        if (nodeInfo.isWithChildren() && collapsible) {
-            image.setOnClickListener(indicatorClickListener);
-        } else {
-            image.setOnClickListener(null);
-        }
+        image.setOnClickListener(null);
+        image.setClickable(false);
         layout.setTag(nodeInfo.getId());
         final FrameLayout frameLayout = (FrameLayout) layout
                 .findViewById(R.id.treeview_list_item_frame);
