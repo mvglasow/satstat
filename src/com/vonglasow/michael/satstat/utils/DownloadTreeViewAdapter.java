@@ -72,7 +72,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	DownloadManager downloadManager;
 	SharedPreferences sharedPreferences;
 	
-	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
 
     public DownloadTreeViewAdapter(final Activity activity,
             final TreeStateManager<RemoteFile> treeStateManager,
