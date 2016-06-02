@@ -49,12 +49,14 @@ public class FtpDownloader {
 		FTPClient ftp;
 		Uri uri = Uri.parse(url);
 		boolean error = false;
+		/*
 		Log.d(TAG, String.format("Download from:\n\tScheme: %s\n\tHost: %s\n\tPort: %d\n\tUser: %s\n\tPath: %s",
 			uri.getScheme(),
 			uri.getHost(),
 			uri.getPort(),
 			uri.getUserInfo(),
 			uri.getPath()));
+		 */
 
 		// TODO consider FTPHTTP, FTPS
 		ftp = new FTPClient();

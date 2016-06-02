@@ -70,7 +70,7 @@ public class HttpDownloader {
 			Log.w(TAG, String.format("%s is not a valid href, skipping", href));
 			return null;
 		}
-		Log.d(TAG, String.format("Getting information for %s:\n\tURL: %s", href, url.toString()));
+		//Log.d(TAG, String.format("Getting information for %s:\n\tURL: %s", href, url.toString()));
 
 		if (href.endsWith("/")) {
 			name = href.substring(0, href.length() - 1);
@@ -93,7 +93,7 @@ public class HttpDownloader {
 			}
 			size = http.getContentLength();
 			timestamp = http.getLastModified();
-			Log.d(TAG, String.format("\tContent Type: %s\n\tSize: %d\n\tTimestamp: %d", http.getContentType(), http.getContentLength(), http.getLastModified()));
+			//Log.d(TAG, String.format("\tContent Type: %s\n\tSize: %d\n\tTimestamp: %d", http.getContentType(), http.getContentLength(), http.getLastModified()));
 		} catch (IOException e) {
 			Log.e(TAG, "IOException trying to connect: " + e.getMessage());
 			e.printStackTrace();
@@ -148,12 +148,14 @@ public class HttpDownloader {
 			return null;
 		}
 		boolean error = false;
+		/*
 		Log.d(TAG, String.format("Download from:\n\tProtocol: %s\n\tHost: %s\n\tPort: %d\n\tUser: %s\n\tPath: %s",
 			url.getProtocol(),
 			url.getHost(),
 			url.getPort(),
 			url.getUserInfo(),
 			url.getPath()));
+		 */
 		try {
 			http = (HttpURLConnection) url.openConnection();
 			InputStream in = new BufferedInputStream(http.getInputStream());
@@ -183,7 +185,7 @@ public class HttpDownloader {
 			URLSpan [] us = parsedHtml.getSpans(0, parsedHtml.length(), android.text.style.URLSpan.class);
 			for (URLSpan u : us) {
 				String href = u.getURL();
-				Log.d(TAG, href);
+				//Log.d(TAG, href);
 				
 				URL hrefUrl;
 				try {
