@@ -44,7 +44,7 @@ public class TreeBuilder<T> {
      *            child id
      */
     public synchronized void addRelation(final T parent, final T child) {
-        Log.d(TAG, "Adding relation parent:" + parent + " -> child: " + child);
+        //Log.d(TAG, "Adding relation parent:" + parent + " -> child: " + child);
         manager.addAfterChild(parent, child, null);
         lastAddedId = child;
         lastLevel = manager.getLevel(child);
@@ -64,7 +64,7 @@ public class TreeBuilder<T> {
      *            its level
      */
     public synchronized void sequentiallyAddNextNode(final T id, final int level) {
-        Log.d(TAG, "Adding sequentiall node " + id + " at level " + level);
+        //Log.d(TAG, "Adding sequentiall node " + id + " at level " + level);
         if (lastAddedId == null) {
             addNodeToParentOneLevelDown(null, id, level);
         } else {

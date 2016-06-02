@@ -153,17 +153,17 @@ public abstract class AbstractTreeViewAdapter<T> extends BaseAdapter implements
     @Override
     public final View getView(final int position, final View convertView,
             final ViewGroup parent) {
-        Log.d(TAG, "Creating a view based on " + convertView
-                + " with position " + position);
+        //Log.d(TAG, "Creating a view based on " + convertView
+        //        + " with position " + position);
         final TreeNodeInfo<T> nodeInfo = getTreeNodeInfo(position);
         if (convertView == null) {
-            Log.d(TAG, "Creating the view a new");
+            //Log.d(TAG, "Creating the view a new");
             final LinearLayout layout = (LinearLayout) layoutInflater.inflate(
                     getTreeListItemWrapperId(), null);
             return populateTreeItem(layout, getNewChildView(nodeInfo),
                     nodeInfo, true);
         } else {
-            Log.d(TAG, "Reusing the view");
+            //Log.d(TAG, "Reusing the view");
             final LinearLayout linear = (LinearLayout) convertView;
             final FrameLayout frameLayout = (FrameLayout) linear
                     .findViewById(R.id.treeview_list_item_frame);
