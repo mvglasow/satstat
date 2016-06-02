@@ -87,9 +87,22 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         // FIXME listen to preference changes
-        activity.registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        activity.registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
-        // FIXME we need to unregister this listener, eventually...
+        registerIntentReceiver();
+    }
+
+    /**
+     * Registers the intent receiver for download events.
+     */
+    public void registerIntentReceiver() {
+    	getActivity().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    	getActivity().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+    }
+
+    /**
+     * Unregisters the intent receivers for download events.
+     */
+    public void unregisterIntentReceiver() {
+    	getActivity().unregisterReceiver(downloadReceiver);
     }
 
     @Override
