@@ -101,6 +101,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		downloadObserver = new DownloadObserver(sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT));
 		downloadObserver.addListener(treeViewAdapter);
+		treeViewAdapter.registerIntentReceiver();
 		// FIXME listen to preference changes
 	}
 
@@ -108,6 +109,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	protected void onDestroy() {
 		if ((dirListTask != null) && (!dirListTask.isCancelled()))
 			dirListTask.cancel(true);
+		treeViewAdapter.unregisterIntentReceiver();
 		downloadObserver.removeListener(treeViewAdapter);
 		super.onDestroy();
 	}
