@@ -348,14 +348,17 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				DownloadManager.Query query = new DownloadManager.Query();
 				query.setFilterById(reference);
 				Cursor cursor = downloadManager.query(query);
-				if (!cursor.moveToFirst())
+				if (!cursor.moveToFirst()) {
 					/*
 					 * The download is no longer in the list. This may happen for downloads which were
 					 * canceled by the user.
 					 */
+					cursor.close();
 					return;
+				}
 				int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
 				//int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+				cursor.close();
 				switch (status) {
 				case DownloadManager.STATUS_SUCCESSFUL:
 					// The file was downloaded successfully
