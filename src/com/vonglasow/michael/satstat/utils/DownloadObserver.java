@@ -52,6 +52,17 @@ public class DownloadObserver extends FileObserver {
 		lastProgress = new HashMap<String, Long>();
 	}
 
+	/**
+	 * Adds a new listener.
+	 * 
+	 * {@code startListening()} must be called manually when the listener is ready to receive events.
+	 * Otherwise, it is not guaranteed that the listener will receive events.
+	 * 
+	 * When the listener no longer needs to receive events, it should call {@link #removeListener(DownloadStatusListener)}
+	 * immediately.
+	 * 
+	 * @param listener The new listener to add
+	 */
 	public void addListener(DownloadStatusListener listener) {
 		synchronized (listeners) {
 			listeners.add(listener);
@@ -112,6 +123,17 @@ public class DownloadObserver extends FileObserver {
 		}
 	}
 
+	/**
+	 * Removes a listener.
+	 * 
+	 * After removing, the listener will no longer receive any events. It is recommended to call this method
+	 * as soon as the receiver no longer needs to receive events, as there is no other way to disable updates
+	 * for a single receiver.
+	 * 
+	 * When the last listener is removed, the {@code stopWatching()} method is called.
+	 * 
+	 * @param listener The listener to remove
+	 */
 	public void removeListener(DownloadStatusListener listener) {
 		synchronized (listeners) {
 			listeners.remove(listener);
