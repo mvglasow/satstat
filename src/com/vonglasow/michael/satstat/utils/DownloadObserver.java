@@ -115,6 +115,8 @@ public class DownloadObserver extends FileObserver {
 	public void removeListener(DownloadStatusListener listener) {
 		synchronized (listeners) {
 			listeners.remove(listener);
+			if (listeners.isEmpty())
+				this.stopWatching();
 		}
 	}
 }
