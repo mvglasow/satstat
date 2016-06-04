@@ -147,7 +147,6 @@ public class HttpDownloader {
 			e.printStackTrace();
 			return null;
 		}
-		boolean error = false;
 		/*
 		Log.d(TAG, String.format("Download from:\n\tProtocol: %s\n\tHost: %s\n\tPort: %d\n\tUser: %s\n\tPath: %s",
 			url.getProtocol(),

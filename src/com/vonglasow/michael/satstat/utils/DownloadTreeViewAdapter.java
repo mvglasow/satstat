@@ -21,8 +21,6 @@
 package com.vonglasow.michael.satstat.utils;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -338,10 +336,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				query.setFilterById(reference);
 				Cursor cursor = downloadManager.query(query);
 				if (!cursor.moveToFirst()) {
-					/*
-					 * The download is no longer in the list. This may happen for downloads which were
-					 * canceled by the user.
-					 */
 					cursor.close();
 					return;
 				}
