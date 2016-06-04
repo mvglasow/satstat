@@ -278,7 +278,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				Long reference = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
 				String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
 				if (file.equals(new File(path))) {
-					Log.d(TAG, String.format("onDownloadProgress: Download %d, local file %s", reference, path));
 					info = downloadsByReference.get(reference);
 					if (info != null) {
 						info.downloadFile = file;
