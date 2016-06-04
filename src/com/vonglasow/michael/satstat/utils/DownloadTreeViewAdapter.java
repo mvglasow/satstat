@@ -226,20 +226,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		File mapFile = new File(
         				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
         				rfile.name);
-        		File backupFile = null;
-        		if (mapFile.exists()) {
-        			// We already have a map file, move it out of the way and delete it once the download finishes
-        			String backupName = mapFile.getPath();
-        			int slashPos = backupName.lastIndexOf('/');
-        			int dotPos = backupName.lastIndexOf('.');
-        			if (dotPos > slashPos)
-        				backupName = backupName.substring(0, dotPos) + ".old" + backupName.substring(dotPos, backupName.length());
-        			else
-        				backupName = backupName + ".old";
-        			backupFile = new File(backupName);
-        			mapFile.renameTo(backupFile);
-        			Log.d(TAG, String.format("Existing map file %s renamed to %s", mapFile.getName(), backupFile.getName()));
-        		}
+        		// FIXME prevent multiple downloads with same map file name
         		
         		Uri uri = rfile.getUri();
         		DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -250,7 +237,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		request.setDestinationUri(destUri);
         		Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
         		Long reference = downloadManager.enqueue(request);
-        		DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference, backupFile);
+        		DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference);
         		downloadsByReference.put(reference, info);
         		downloadsByUri.put(rfile.getUri(), info);
         		downloadsByFile.put(mapFile, info);
@@ -275,6 +262,29 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	@Override
 	public void onDownloadProgress(File file) {
 		DownloadInfo info = downloadsByFile.get(file);
+		if (info == null) {
+			/* First progress report for a renamed file */
+			DownloadManager.Query query = new DownloadManager.Query();
+			query.setFilterByStatus(~(DownloadManager.STATUS_FAILED | DownloadManager.STATUS_SUCCESSFUL));
+			Cursor cursor = downloadManager.query(query);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				return;
+			}
+			do {
+				Long reference = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
+				String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+				if (file.equals(new File(path))) {
+					Log.d(TAG, String.format("onDownloadProgress: Download %d, local file %s", reference, path));
+					info = downloadsByReference.get(reference);
+					if (info != null) {
+						info.downloadFile = file;
+						downloadsByFile.put(info.downloadFile, info);
+					}
+				}
+			} while (cursor.moveToNext());
+			cursor.close();
+		}
 		if (info != null)
 			info.progress = (int) (file.length() / 1024);
 		manager.refresh();
@@ -309,17 +319,12 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		DownloadInfo info = downloadsByReference.get(reference);
 		downloadsByReference.remove(reference);
 		downloadsByUri.remove(info.uri);
-		downloadsByFile.remove(info.localFile);
-		if (info.backupFile != null) {
-			if (success)
-				info.backupFile.delete();
-			else {
-				// restore old backup file
-				if (info.localFile.exists())
-					info.localFile.delete();
-				info.backupFile.renameTo(info.localFile);
-			}
-		}
+		downloadsByFile.remove(info.targetFile);
+		downloadsByFile.remove(info.downloadFile);
+		// if we're refreshing an existing map file, do the swap operation now
+		if (success && !info.targetFile.equals(info.downloadFile) && info.downloadFile.exists())
+			if (!info.targetFile.exists() || info.targetFile.delete())
+				info.downloadFile.renameTo(info.targetFile);
 		manager.refresh();
 	}
 
@@ -357,7 +362,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 					// The download was paused, update status once more
 					DownloadInfo info = downloadsByReference.get(reference);
 					if (info != null)
-						onDownloadProgress(info.localFile);
+						onDownloadProgress(info.targetFile);
 					break;
 					//case DownloadManager.STATUS_PENDING:
 					// The download is waiting to start.
@@ -385,9 +390,17 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		private Uri uri;
 		
 		/**
-		 * The local name of the downloaded file (relative to the map path).
+		 * The local map file at which the map will be saved once the download finishes.
 		 */
-		private File localFile;
+		private File targetFile;
+		
+		/**
+		 * The file to which the map is being downloaded.
+		 * 
+		 * When downloading a map for the first time, this is equal to {@code targetFile}.
+		 * When an existing map is being replaced, this is different from {@code targetFile}.
+		 */
+		private File downloadFile;
 		
 		/**
 		 * The reference under which the download manager tracks the download.
@@ -395,23 +408,17 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		private long reference;
 		
 		/**
-		 * An existing file at {@code localFile} prior to download, which has been moved to a different name
-		 * and will be deleted once the download finishes.
-		 */
-		private File backupFile;
-		
-		/**
 		 * Download progress in kiB.
 		 */
 		private int progress;
 		
-		private DownloadInfo(RemoteFile remoteFile, Uri uri, File localFile, long reference, File backupFile) {
+		private DownloadInfo(RemoteFile remoteFile, Uri uri, File targetFile, long reference) {
 			super();
 			this.remoteFile = remoteFile;
 			this.uri = uri;
-			this.localFile = localFile;
+			this.targetFile = targetFile;
+			this.downloadFile = targetFile;
 			this.reference = reference;
-			this.backupFile = backupFile;
 			this.progress = 0;
 		}
 	}
