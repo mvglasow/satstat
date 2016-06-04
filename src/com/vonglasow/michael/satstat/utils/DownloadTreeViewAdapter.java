@@ -224,7 +224,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         			Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         		}
         	} else {
-        		String urlStr = UriHelper.getChildUriString(rfile.baseUrl, rfile.name);
+        		String urlStr = rfile.getUriString();
         		// Retrieve directory contents from server
         		RemoteDirListTask task = new RemoteDirListTask(this, rfile);
         		listTasks.put(task, rfile);
@@ -254,7 +254,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         			Log.d(TAG, String.format("Existing map file %s renamed to %s", mapFile.getName(), backupFile.getName()));
         		}
         		
-        		Uri uri = UriHelper.getChildUri(rfile.baseUrl, rfile.name);
+        		Uri uri = rfile.getUri();
         		DownloadManager.Request request = new DownloadManager.Request(uri);
         		//request.setTitle(rfile.name);
         		//request.setDescription("SatStat map download");
