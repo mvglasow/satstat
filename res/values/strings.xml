@@ -260,5 +260,6 @@
     <string name="status_map_purged">Map tile cache cleared</string>
     <string name="title_activity_map_download">Download offline map</string>
     <string name="status_folder_empty">Folder is empty</string>
+    <string name="status_already_downloading">A download for a map of the same name is already in progress</string>
 
 </resources>

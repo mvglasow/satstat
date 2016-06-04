@@ -224,7 +224,12 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		File mapFile = new File(
         				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
         				rfile.name);
-        		// FIXME prevent multiple downloads with same map file name
+
+        		if (downloadsByFile.containsKey(mapFile)) {
+        			// prevent multiple downloads with same map file name
+        			Toast.makeText(getActivity(), getActivity().getString(R.string.status_already_downloading), Toast.LENGTH_LONG).show();
+        			return;
+        		}
         		
         		Uri uri = rfile.getUri();
         		DownloadManager.Request request = new DownloadManager.Request(uri);
