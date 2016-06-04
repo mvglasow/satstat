@@ -66,9 +66,9 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	
 	TreeStateManager<RemoteFile> manager;
 	Map<RemoteDirListTask, RemoteFile> listTasks;
-	Map<RemoteFile, DownloadInfo> downloadsByRemoteFile;
 	Map<Long, DownloadInfo> downloadsByReference;
-	Map<String, DownloadInfo> downloadsByName;
+	Map<Uri, DownloadInfo> downloadsByUri;
+	Map<File, DownloadInfo> downloadsByFile;
 	DownloadManager downloadManager;
 	SharedPreferences sharedPreferences;
 	
@@ -80,9 +80,9 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         super(activity, treeStateManager, numberOfLevels);
         this.manager = treeStateManager;
         listTasks = new HashMap<RemoteDirListTask, RemoteFile>();
-        downloadsByRemoteFile = new HashMap<RemoteFile, DownloadInfo>();
         downloadsByReference = new HashMap<Long, DownloadInfo>();
-        downloadsByName = new HashMap<String, DownloadInfo>();
+        downloadsByUri = new HashMap<Uri, DownloadInfo>();
+        downloadsByFile = new HashMap<File, DownloadInfo>();
         df.setTimeZone(TimeZone.getDefault());
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -116,7 +116,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
             final TreeNodeInfo<RemoteFile> treeNodeInfo) {
         final LinearLayout viewLayout = (LinearLayout) view;
         final RemoteFile rfile = treeNodeInfo.getId();
-        final String rfileName = rfile.name;
+        String rfileName = rfile.name;
         
         /*
         final TextView descriptionView = (TextView) viewLayout
@@ -163,29 +163,16 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         	downloadSize.setVisibility(View.VISIBLE);
         	downloadDate.setVisibility(View.VISIBLE);
         	downloadDirProgress.setVisibility(View.GONE);
-        	if (downloadsByRemoteFile.containsKey(rfile)) {
+        	if (downloadsByUri.containsKey(rfile.getUri())) {
+        		final DownloadInfo info = downloadsByUri.get(rfile.getUri());
         		downloadFileProgress.setVisibility(View.VISIBLE);
         		downloadFileProgress.setMax((int) (rfile.size / 1024));
-        		downloadFileProgress.setProgress(downloadsByRemoteFile.get(rfile).progress);
+        		downloadFileProgress.setProgress(downloadsByUri.get(rfile.getUri()).progress);
         		downloadIcon.setVisibility(View.GONE);
         		downloadCancel.setVisibility(View.VISIBLE);
         		downloadCancel.setOnClickListener(new OnClickListener() {
         			@Override
         			public void onClick(View v) {
-        				DownloadInfo info = null;
-        				info = downloadsByRemoteFile.get(rfile);
-        				// TODO implement cancel by ID or URL (or whatever is available from DownloadManager)
-        				/*
-        				 * The last resort is to get the file by name: not 100% collision proof (as there may
-        				 * be map files of the same name in different directories), but since all map files
-        				 * end up in the same local directory, we won't have two downloads with the same name
-        				 * (this would cause problems much earlier).
-        				 */
-        				if (info == null)
-        					info = downloadsByName.get(rfileName);
-        				if (info == null)
-        					return;
-
         				if (downloadManager.remove(info.reference) > 0) {
         					removeDownload(info.reference, false);
         				}
@@ -234,7 +221,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         	}
         } else {
         	// check if a download is already in progress
-        	if (!downloadsByRemoteFile.containsValue(rfile)) {
+        	if (!downloadsByUri.containsValue(rfile.getUri())) {
         		// Download file
         		File mapFile = new File(
         				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
@@ -264,9 +251,9 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         		Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
         		Long reference = downloadManager.enqueue(request);
         		DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference, backupFile);
-        		downloadsByRemoteFile.put(rfile, info);
         		downloadsByReference.put(reference, info);
-        		downloadsByName.put(mapFile.getName(), info);
+        		downloadsByUri.put(rfile.getUri(), info);
+        		downloadsByFile.put(mapFile, info);
                 ProgressBar downloadFileProgress = (ProgressBar) view.findViewById(R.id.downloadFileProgress);
                 downloadFileProgress.setVisibility(View.VISIBLE);
                 downloadFileProgress.setMax((int) (rfile.size / 1024));
@@ -290,7 +277,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		File mapFile = new File(
 				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
 				path);
-		DownloadInfo info = downloadsByName.get(path);
+		DownloadInfo info = downloadsByFile.get(mapFile);
 		if (info != null)
 			info.progress = (int) (mapFile.length() / 1024);
 		manager.refresh();
@@ -324,8 +311,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	private void removeDownload(long reference, boolean success) {
 		DownloadInfo info = downloadsByReference.get(reference);
 		downloadsByReference.remove(reference);
-		downloadsByName.remove(info.localFile.getName());
-		downloadsByRemoteFile.remove(info.remoteFile);
+		downloadsByUri.remove(info.uri);
+		downloadsByFile.remove(info.localFile);
 		if (info.backupFile != null) {
 			if (success)
 				info.backupFile.delete();
