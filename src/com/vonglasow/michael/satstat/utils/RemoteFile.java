@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat.utils;
 
+import java.util.Locale;
+
 import android.net.Uri;
 
 /**
@@ -68,18 +70,18 @@ public class RemoteFile {
 
 	public String getFriendlySize() {
 		if (size < 1024)
-			return String.format("%d", size);
+			return String.format(Locale.getDefault(), "%d", size);
 		float tmp = size / 1024;
 		if (tmp < 1024)
-			return String.format("%.1fk", tmp);
+			return String.format(Locale.getDefault(), "%.1fk", tmp);
 		tmp /= 1024;
 		if (tmp < 1024)
-			return String.format("%.1fM", tmp);
+			return String.format(Locale.getDefault(), "%.1fM", tmp);
 		tmp /= 1024;
 		if (tmp < 1024)
-			return String.format("%.1fG", tmp);
+			return String.format(Locale.getDefault(), "%.1fG", tmp);
 		tmp /= 1024;
-		return String.format("%.1fT", tmp);
+		return String.format(Locale.getDefault(), "%.1fT", tmp);
 	}
 
 	/**
