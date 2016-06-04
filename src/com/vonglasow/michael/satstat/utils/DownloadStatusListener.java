@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat.utils;
 
+import java.io.File;
+
 /**
  * Receives notifications about the status of a download.
  */
@@ -26,10 +28,9 @@ public interface DownloadStatusListener {
 	/**
 	 * Called when the local file has been deleted, e.g. when the download fails or is canceled.
 	 * 
-	 * @param path The local name of the file being downloaded, relative to the path being watched (this is
-	 * normally the map path).
+	 * @param path The file being downloaded.
 	 */
-	public void onDelete(String path);
+	public void onDelete(File file);
 
 	/**
 	 * Called when the progress of a download has changed.
@@ -37,8 +38,7 @@ public interface DownloadStatusListener {
 	 * Since the progress of a download changes constantly, calls to this method are limited to one call per
 	 * second for each file.
 	 * 
-	 * @param path The local name of the file being downloaded, relative to the path being watched (this is
-	 * normally the map path).
+	 * @param path The file being downloaded.
 	 */
-	public void onDownloadProgress(String path);
+	public void onDownloadProgress(File file);
 }

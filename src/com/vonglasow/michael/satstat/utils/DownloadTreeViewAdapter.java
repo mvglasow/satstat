@@ -268,18 +268,15 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     }
 
     @Override
-    public void onDelete(String path) {
+    public void onDelete(File file) {
     	manager.refresh();
     }
 
 	@Override
-	public void onDownloadProgress(String path) {
-		File mapFile = new File(
-				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
-				path);
-		DownloadInfo info = downloadsByFile.get(mapFile);
+	public void onDownloadProgress(File file) {
+		DownloadInfo info = downloadsByFile.get(file);
 		if (info != null)
-			info.progress = (int) (mapFile.length() / 1024);
+			info.progress = (int) (file.length() / 1024);
 		manager.refresh();
 	}
 
@@ -360,7 +357,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 					// The download was paused, update status once more
 					DownloadInfo info = downloadsByReference.get(reference);
 					if (info != null)
-						onDownloadProgress(info.localFile.getName());
+						onDownloadProgress(info.localFile);
 					break;
 					//case DownloadManager.STATUS_PENDING:
 					// The download is waiting to start.

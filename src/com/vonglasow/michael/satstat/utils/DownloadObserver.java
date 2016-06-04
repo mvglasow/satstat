@@ -20,6 +20,7 @@
 
 package com.vonglasow.michael.satstat.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,11 +46,13 @@ public class DownloadObserver extends FileObserver {
 
 	private List<DownloadStatusListener> listeners;
 	private Map<String, Long> lastProgress;
+	private String parentPath;
 
-	public DownloadObserver(String path) {
-		super(path, flags);
+	public DownloadObserver(String parentPath) {
+		super(parentPath, flags);
 		listeners = new ArrayList<DownloadStatusListener>();
 		lastProgress = new HashMap<String, Long>();
+		this.parentPath = parentPath;
 	}
 
 	/**
@@ -70,13 +73,15 @@ public class DownloadObserver extends FileObserver {
 	}
 
 	@Override
-	public void onEvent(int event, final String path) {
+	public void onEvent(int event, String path) {
 		// This runs in a separate thread.
 		//Log.d(TAG, "onEvent(" + event + ", " + path + ")");
 
 		if (path == null) {
 			return;
 		}
+
+		final File file = new File(parentPath, path);
 
 		switch (event) {
 		case FileObserver.CLOSE_WRITE:
@@ -94,7 +99,7 @@ public class DownloadObserver extends FileObserver {
 				public void run() {
 					synchronized (listeners) {
 						for (DownloadStatusListener listener : listeners)
-							listener.onDelete(path);
+							listener.onDelete(file);
 					}
 				}
 			});
@@ -113,7 +118,7 @@ public class DownloadObserver extends FileObserver {
 					public void run() {
 						synchronized (listeners) {
 							for (DownloadStatusListener listener : listeners)
-								listener.onDownloadProgress(path);
+								listener.onDownloadProgress(file);
 						}
 					}
 				});
