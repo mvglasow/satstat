@@ -66,7 +66,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		super.onCreate(savedInstanceState);
 		
 		manager = new DownloadTreeStateManager();
-		Log.d(TAG, manager.toString());
 		builder = new TreeBuilder<RemoteFile>(manager);
 
 		setContentView(R.layout.activity_map_download);
