@@ -43,6 +43,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -62,6 +63,8 @@ import android.widget.Toast;
 public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile> implements DownloadStatusListener, RemoteDirListListener {
 	private static final String TAG = DownloadTreeViewAdapter.class.getSimpleName();
 	
+	private static final String KEY_DOWNLOAD = "download";
+
 	TreeStateManager<RemoteFile> manager;
 	Map<RemoteDirListTask, RemoteFile> listTasks;
 	Map<Long, DownloadInfo> downloadsByReference;
@@ -85,6 +88,36 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         // FIXME listen to preference changes
+    }
+
+    /**
+     * Returns information about all active downloads as a bundle.
+     */
+    public Bundle getDownloadsAsBundle() {
+    	Bundle result = new Bundle();
+    	int i = 0;
+    	for (DownloadInfo info : downloadsByUri.values()) {
+    		result.putBundle(String.format("%s[%d]", KEY_DOWNLOAD, i), info.toBundle());
+    		i++;
+    	}
+    	return result;
+    }
+
+    /**
+     * Imports active download information from a bundle.
+     * 
+     * @param bundle A {@code Bundle} as exported by {@link #getDownloadsAsBundle()}.
+     */
+    public void addDownloadsFromBundle(Bundle bundle) {
+    	for (int i = 0; bundle.containsKey(String.format("%s[%d]", KEY_DOWNLOAD, i)); i++) {
+    		DownloadInfo info = new DownloadInfo(bundle.getBundle(String.format("%s[%d]", KEY_DOWNLOAD, i)));
+    		downloadsByReference.put(info.reference, info);
+    		downloadsByUri.put(info.uri, info);
+    		downloadsByFile.put(info.downloadFile, info);
+    		downloadsByFile.put(info.targetFile, info);
+    	}
+
+    	// FIXME delete downloads which are no longer active (completed or failed since bundle was created)
     }
 
     /**
@@ -379,6 +412,12 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	 * Information about a download in progress.
 	 */
 	private class DownloadInfo {
+		private static final String KEY_URI = "uri";
+		private static final String KEY_TARGET_FILE = "targetFile";
+		private static final String KEY_DOWNLOAD_FILE = "downloadFile";
+		private static final String KEY_REFERENCE = "reference";
+		private static final String KEY_PROGRESS = "progress";
+
 		/**
 		 * The RemoteFile representing the file being downloaded.
 		 */
@@ -411,7 +450,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		 * Download progress in kiB.
 		 */
 		private int progress;
-		
+
 		private DownloadInfo(RemoteFile remoteFile, Uri uri, File targetFile, long reference) {
 			super();
 			this.remoteFile = remoteFile;
@@ -420,6 +459,34 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 			this.downloadFile = targetFile;
 			this.reference = reference;
 			this.progress = 0;
+		}
+
+		private DownloadInfo(Bundle bundle) {
+			super();
+			/*
+			 * Check if the bundle contains all the fields we need and throw an exception if one is missing.
+			 * Exceptions:
+			 * - remoteFile is not checked because it is currently unimplemented TODO
+			 * - progress is not checked (if missing, zero will be assumed until the first update)
+			 */
+			if (!(bundle.containsKey(KEY_URI) && bundle.containsKey(KEY_TARGET_FILE) && bundle.containsKey(KEY_DOWNLOAD_FILE) && bundle.containsKey(KEY_REFERENCE)))
+				throw new IllegalArgumentException("Missing data in bundle");
+			this.uri = Uri.parse(bundle.getString(KEY_URI));
+			this.targetFile = new File(bundle.getString(KEY_TARGET_FILE));
+			this.downloadFile = new File(bundle.getString(KEY_DOWNLOAD_FILE));
+			this.reference = bundle.getLong(KEY_REFERENCE);
+			this.progress = bundle.getInt(KEY_PROGRESS, progress);
+		}
+
+		private Bundle toBundle() {
+			Bundle result = new Bundle();
+			// FIXME remote file (currently not used)
+			result.putString(KEY_URI, uri.toString());
+			result.putString(KEY_TARGET_FILE, targetFile.getAbsolutePath());
+			result.putString(KEY_DOWNLOAD_FILE, downloadFile.getAbsolutePath());
+			result.putLong(KEY_REFERENCE, reference);
+			result.putInt(KEY_PROGRESS, progress);
+			return result;
 		}
 	}
 }
