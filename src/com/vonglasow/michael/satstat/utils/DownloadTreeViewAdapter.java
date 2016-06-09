@@ -320,13 +320,15 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	private void removeDownload(long reference, boolean success) {
 		DownloadInfo info = downloadsByReference.get(reference);
 		downloadsByReference.remove(reference);
-		downloadsByUri.remove(info.uri);
-		downloadsByFile.remove(info.targetFile);
-		downloadsByFile.remove(info.downloadFile);
-		// if we're refreshing an existing map file, do the swap operation now
-		if (success && !info.targetFile.equals(info.downloadFile) && info.downloadFile.exists())
-			if (!info.targetFile.exists() || info.targetFile.delete())
-				info.downloadFile.renameTo(info.targetFile);
+		if (info != null) {
+			downloadsByUri.remove(info.uri);
+			downloadsByFile.remove(info.targetFile);
+			downloadsByFile.remove(info.downloadFile);
+			// if we're refreshing an existing map file, do the swap operation now
+			if (success && !info.targetFile.equals(info.downloadFile) && info.downloadFile.exists())
+				if (!info.targetFile.exists() || info.targetFile.delete())
+					info.downloadFile.renameTo(info.targetFile);
+		}
 		manager.refresh();
 	}
 
