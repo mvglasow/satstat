@@ -75,9 +75,18 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
 
-    public DownloadTreeViewAdapter(final Activity activity,
+    /**
+     * 
+     * @param activity
+     * @param treeStateManager
+     * @param numberOfLevels
+     * @param downloads A {@code Bundle} as exported by {@link #getDownloadsAsBundle()}, which will be used
+     * to populate the list of downloads in progress. This argument may be {@code null}.
+     */
+	public DownloadTreeViewAdapter(final Activity activity,
             final TreeStateManager<RemoteFile> treeStateManager,
-            final int numberOfLevels) {
+            final int numberOfLevels,
+            Bundle downloads) {
         super(activity, treeStateManager, numberOfLevels);
         this.manager = treeStateManager;
         listTasks = new HashMap<RemoteDirListTask, RemoteFile>();
@@ -88,6 +97,17 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         // FIXME listen to preference changes
+        if (downloads != null) {
+        	for (int i = 0; downloads.containsKey(String.format("%s[%d]", KEY_DOWNLOAD, i)); i++) {
+        		DownloadInfo info = new DownloadInfo(downloads.getBundle(String.format("%s[%d]", KEY_DOWNLOAD, i)));
+        		downloadsByReference.put(info.reference, info);
+        		downloadsByUri.put(info.uri, info);
+        		downloadsByFile.put(info.downloadFile, info);
+        		downloadsByFile.put(info.targetFile, info);
+        	}
+
+        	// FIXME delete downloads which are no longer active (completed or failed since bundle was created)
+        }
     }
 
     /**
@@ -101,23 +121,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     		i++;
     	}
     	return result;
-    }
-
-    /**
-     * Imports active download information from a bundle.
-     * 
-     * @param bundle A {@code Bundle} as exported by {@link #getDownloadsAsBundle()}.
-     */
-    public void addDownloadsFromBundle(Bundle bundle) {
-    	for (int i = 0; bundle.containsKey(String.format("%s[%d]", KEY_DOWNLOAD, i)); i++) {
-    		DownloadInfo info = new DownloadInfo(bundle.getBundle(String.format("%s[%d]", KEY_DOWNLOAD, i)));
-    		downloadsByReference.put(info.reference, info);
-    		downloadsByUri.put(info.uri, info);
-    		downloadsByFile.put(info.downloadFile, info);
-    		downloadsByFile.put(info.targetFile, info);
-    	}
-
-    	// FIXME delete downloads which are no longer active (completed or failed since bundle was created)
     }
 
     /**
