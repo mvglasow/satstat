@@ -52,6 +52,9 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	//public static final String MAP_DOWNLOAD_BASE_URL = "ftp://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
 	public static final String MAP_DOWNLOAD_BASE_URL = "http://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
 
+	private static final String STATE_KEY_TREE_MANAGER = "treeManager";
+	private static final String STATE_KEY_DOWNLOADS = "downloads";
+
 	RemoteDirListTask dirListTask = null;
 	ProgressBar downloadProgress;
 	private TreeViewList treeView;
@@ -65,7 +68,10 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		manager = new DownloadTreeStateManager();
+		if (savedInstanceState != null)
+			manager = (DownloadTreeStateManager) savedInstanceState.getSerializable(STATE_KEY_TREE_MANAGER);
+		if (manager == null)
+			manager = new DownloadTreeStateManager();
 		builder = new TreeBuilder<RemoteFile>(manager);
 
 		setContentView(R.layout.activity_map_download);
@@ -86,6 +92,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		 * changes and goes beyond that, we'll get semi-random crashes.
 		 */
 		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 5);
+		if ((savedInstanceState != null) && (savedInstanceState.containsKey(STATE_KEY_DOWNLOADS)))
+			treeViewAdapter.addDownloadsFromBundle(savedInstanceState.getBundle(STATE_KEY_DOWNLOADS));
 		treeView.setAdapter(treeViewAdapter);
 		treeView.setCollapsible(true);
 		treeView.setCollapsedDrawable(getResources().getDrawable(R.drawable.ic_expand_more));
@@ -93,9 +101,13 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeView.setIndentWidth(24);
 
 		
-		// get data from FTP
-		dirListTask = new RemoteDirListTask(this, null);
-		dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
+		// FIXME test if list is empty, not if we have a saved state
+		if (savedInstanceState == null) {
+			downloadProgress.setVisibility(View.VISIBLE);
+			// get data from FTP
+			dirListTask = new RemoteDirListTask(this, null);
+			dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
+		}
 		
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		downloadObserver = new DownloadObserver(sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT));
@@ -138,6 +150,13 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		downloadObserver.startWatching();
 	}
 	
+	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		outState.putSerializable(STATE_KEY_TREE_MANAGER, manager);
+		outState.putBundle(STATE_KEY_DOWNLOADS, treeViewAdapter.getDownloadsAsBundle());
+		super.onSaveInstanceState(outState);
+	}
+
 	@Override
 	protected void onStop() {
 		downloadObserver.stopWatching();

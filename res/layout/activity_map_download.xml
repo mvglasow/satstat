@@ -10,7 +10,8 @@
     <ProgressBar
         android:id="@+id/downloadProgress"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <pl.polidea.treeview.TreeViewList
         android:id="@+id/downloadList"
