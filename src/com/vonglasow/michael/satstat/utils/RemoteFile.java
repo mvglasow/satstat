@@ -19,6 +19,7 @@
 
 package com.vonglasow.michael.satstat.utils;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import android.net.Uri;
@@ -26,7 +27,10 @@ import android.net.Uri;
 /**
  * Describes a file system object that can be fetched from a remote (HTTP or FTP) server.
  */
-public class RemoteFile {
+// Implementing Serializable is required for saving DownloadTreeStateManager to a Bundle
+public class RemoteFile implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The URL of the containing folder.
 	 */
