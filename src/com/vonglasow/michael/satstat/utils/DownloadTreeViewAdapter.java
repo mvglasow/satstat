@@ -64,8 +64,6 @@ import android.widget.Toast;
 public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile> implements DownloadStatusListener, RemoteDirListListener {
 	private static final String TAG = DownloadTreeViewAdapter.class.getSimpleName();
 	
-	private static final String KEY_DOWNLOAD = "download";
-
 	TreeStateManager<RemoteFile> manager;
 	Map<RemoteDirListTask, RemoteFile> listTasks;
 	Map<Long, DownloadInfo> downloadsByReference;
@@ -426,12 +424,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	 * Information about a download in progress.
 	 */
 	private class DownloadInfo {
-		private static final String KEY_URI = "uri";
-		private static final String KEY_TARGET_FILE = "targetFile";
-		private static final String KEY_DOWNLOAD_FILE = "downloadFile";
-		private static final String KEY_REFERENCE = "reference";
-		private static final String KEY_PROGRESS = "progress";
-
 		/**
 		 * The RemoteFile representing the file being downloaded.
 		 */
