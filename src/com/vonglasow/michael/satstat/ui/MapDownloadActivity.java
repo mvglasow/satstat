@@ -155,7 +155,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	@Override
 	protected void onSaveInstanceState(final Bundle outState) {
 		outState.putSerializable(STATE_KEY_TREE_MANAGER, manager);
-		outState.putBundle(STATE_KEY_DOWNLOADS, treeViewAdapter.getDownloadsAsBundle());
 		super.onSaveInstanceState(outState);
 	}
 

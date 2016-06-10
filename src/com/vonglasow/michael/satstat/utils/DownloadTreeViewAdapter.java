@@ -97,30 +97,27 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         // FIXME listen to preference changes
-        if (downloads != null) {
-        	for (int i = 0; downloads.containsKey(String.format("%s[%d]", KEY_DOWNLOAD, i)); i++) {
-        		DownloadInfo info = new DownloadInfo(downloads.getBundle(String.format("%s[%d]", KEY_DOWNLOAD, i)));
-        		downloadsByReference.put(info.reference, info);
-        		downloadsByUri.put(info.uri, info);
-        		downloadsByFile.put(info.downloadFile, info);
-        		downloadsByFile.put(info.targetFile, info);
-        	}
 
-        	// FIXME delete downloads which are no longer active (completed or failed since bundle was created)
+        DownloadManager.Query query = new DownloadManager.Query();
+        query.setFilterByStatus(~(DownloadManager.STATUS_FAILED | DownloadManager.STATUS_SUCCESSFUL));
+        Cursor cursor = downloadManager.query(query);
+        if (!cursor.moveToFirst()) {
+        	cursor.close();
+        	return;
         }
-    }
-
-    /**
-     * Returns information about all active downloads as a bundle.
-     */
-    public Bundle getDownloadsAsBundle() {
-    	Bundle result = new Bundle();
-    	int i = 0;
-    	for (DownloadInfo info : downloadsByUri.values()) {
-    		result.putBundle(String.format("%s[%d]", KEY_DOWNLOAD, i), info.toBundle());
-    		i++;
-    	}
-    	return result;
+        do {
+        	Long reference = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
+        	Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI)));
+        	File downloadFile = new File(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME)));
+        	File targetFile = new File(downloadFile.getParent(), uri.getLastPathSegment());
+        	int progress = (int) (cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)) / 1024);
+        	DownloadInfo info = new DownloadInfo(uri, targetFile, downloadFile, reference, progress);
+        	downloadsByReference.put(info.reference, info);
+        	downloadsByUri.put(info.uri, info);
+        	downloadsByFile.put(info.downloadFile, info);
+        	downloadsByFile.put(info.targetFile, info);
+        } while (cursor.moveToNext());
+        cursor.close();
     }
 
     /**
@@ -464,32 +461,13 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 			this.progress = 0;
 		}
 
-		private DownloadInfo(Bundle bundle) {
+		private DownloadInfo(Uri uri, File targetFile, File downloadFile, long reference, int progress) {
 			super();
-			/*
-			 * Check if the bundle contains all the fields we need and throw an exception if one is missing.
-			 * Exceptions:
-			 * - remoteFile is not checked because it is currently unimplemented TODO
-			 * - progress is not checked (if missing, zero will be assumed until the first update)
-			 */
-			if (!(bundle.containsKey(KEY_URI) && bundle.containsKey(KEY_TARGET_FILE) && bundle.containsKey(KEY_DOWNLOAD_FILE) && bundle.containsKey(KEY_REFERENCE)))
-				throw new IllegalArgumentException("Missing data in bundle");
-			this.uri = Uri.parse(bundle.getString(KEY_URI));
-			this.targetFile = new File(bundle.getString(KEY_TARGET_FILE));
-			this.downloadFile = new File(bundle.getString(KEY_DOWNLOAD_FILE));
-			this.reference = bundle.getLong(KEY_REFERENCE);
-			this.progress = bundle.getInt(KEY_PROGRESS, progress);
-		}
-
-		private Bundle toBundle() {
-			Bundle result = new Bundle();
-			// FIXME remote file (currently not used)
-			result.putString(KEY_URI, uri.toString());
-			result.putString(KEY_TARGET_FILE, targetFile.getAbsolutePath());
-			result.putString(KEY_DOWNLOAD_FILE, downloadFile.getAbsolutePath());
-			result.putLong(KEY_REFERENCE, reference);
-			result.putInt(KEY_PROGRESS, progress);
-			return result;
+			this.uri = uri;
+			this.targetFile = targetFile;
+			this.downloadFile = downloadFile;
+			this.reference = reference;
+			this.progress = progress;
 		}
 	}
 }
