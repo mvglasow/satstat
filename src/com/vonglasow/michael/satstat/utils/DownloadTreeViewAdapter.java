@@ -75,6 +75,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
 
+	private boolean isReleased = true;
+
     /**
      * 
      * @param activity
@@ -121,18 +123,25 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     }
 
     /**
-     * Registers the intent receiver for download events.
+     * Registers the receiver for download events.
      */
     public void registerIntentReceiver() {
-    	getActivity().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    	getActivity().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+    	getActivity().getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    	getActivity().getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+    	isReleased = false;
     }
-
+    
     /**
-     * Unregisters the intent receivers for download events.
+     * Notifies the DownloadTreeViewer that the caller no longer needs the receiver.
+     * 
+     * Calling this method will unregister the receiver only if no downloads are currently in progress. If
+     * downloads are in progress, a flag will be set, causing the receiver to be unregistered after the last
+     * download has finished.
      */
-    public void unregisterIntentReceiver() {
-    	getActivity().unregisterReceiver(downloadReceiver);
+    public void releaseIntentReceiver() {
+    	isReleased = true;
+    	if (downloadsByUri.isEmpty())
+    		getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
     }
 
     @Override
@@ -362,6 +371,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				if (!info.targetFile.exists() || info.targetFile.delete())
 					info.downloadFile.renameTo(info.targetFile);
 		}
+		if (isReleased && downloadsByUri.isEmpty())
+			getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
 		manager.refresh();
 	}
 

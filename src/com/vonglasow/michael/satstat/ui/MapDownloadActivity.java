@@ -122,7 +122,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	protected void onDestroy() {
 		if ((dirListTask != null) && (!dirListTask.isCancelled()))
 			dirListTask.cancel(true);
-		treeViewAdapter.unregisterIntentReceiver();
+		treeViewAdapter.releaseIntentReceiver();
 		downloadObserver.removeListener(treeViewAdapter);
 		super.onDestroy();
 	}
