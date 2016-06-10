@@ -30,6 +30,7 @@ import java.util.TimeZone;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
+import com.vonglasow.michael.satstat.ui.MapDownloadActivity;
 
 import pl.polidea.treeview.AbstractTreeViewAdapter;
 import pl.polidea.treeview.TreeNodeInfo;
@@ -414,7 +415,9 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 					// The download is running.
 				}
 			} else if (intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
-				// TODO
+				Intent mapDownloadIntent = new Intent(getActivity().getApplicationContext(), MapDownloadActivity.class);
+				mapDownloadIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				getActivity().startActivity(mapDownloadIntent);
 			}
 		}
 	};
