@@ -66,10 +66,15 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		Bundle state = savedInstanceState;
+
+		if (state == null)
+			state = this.getIntent().getBundleExtra(Const.KEY_SAVED_INSTANCE_STATE);
+
+		super.onCreate(state);
 		
-		if (savedInstanceState != null) {
-			manager = (DownloadTreeStateManager) savedInstanceState.getSerializable(STATE_KEY_TREE_MANAGER);
+		if (state != null) {
+			manager = (DownloadTreeStateManager) state.getSerializable(STATE_KEY_TREE_MANAGER);
 		}
 		if (manager == null)
 			manager = new DownloadTreeStateManager();
@@ -101,7 +106,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 		
 		// FIXME test if list is empty, not if we have a saved state
-		if (savedInstanceState == null) {
+		if (state == null) {
 			downloadProgress.setVisibility(View.VISIBLE);
 			// get data from FTP
 			dirListTask = new RemoteDirListTask(this, null);
@@ -157,6 +162,12 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 	@Override
 	protected void onStop() {
+		if (treeViewAdapter != null) {
+			Bundle outState = new Bundle();
+			this.onSaveInstanceState(outState);
+			treeViewAdapter.storeInstanceState(outState);
+		}
+
 		downloadObserver.stopWatching();
 		super.onStop();
 	}

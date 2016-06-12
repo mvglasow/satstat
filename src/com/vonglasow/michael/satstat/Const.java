@@ -145,4 +145,10 @@ public class Const {
 
 	public static final String MAP_PATH_DEFAULT = new File(Environment.getExternalStorageDirectory(), "org.mapsforge/maps").getAbsolutePath();
 
+
+	/**
+	 * Key for a previously saved state of an {@code Activity} instance
+	 */
+	public static final String KEY_SAVED_INSTANCE_STATE = "savedInstanceState";
+
 }

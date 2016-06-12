@@ -71,6 +71,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	Map<File, DownloadInfo> downloadsByFile;
 	DownloadManager downloadManager;
 	SharedPreferences sharedPreferences;
+	Bundle savedInstanceState = null;
 	
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
 
@@ -367,9 +368,29 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				if (!info.targetFile.exists() || info.targetFile.delete())
 					info.downloadFile.renameTo(info.targetFile);
 		}
-		if (isReleased && downloadsByUri.isEmpty())
-			getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
+		if (downloadsByUri.isEmpty()) {
+			/*
+			 * All downloads have finished. The saved instance state is no longer needed, and if the activity
+			 * has indicated it no longer needs the receiver, we can unregister from it as well.
+			 */
+			this.storeInstanceState(null);
+			if (isReleased)
+				getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
+		}
 		manager.refresh();
+	}
+
+	/**
+	 * Stores the state of the associated {@link MapDownloadActivity}.
+	 * 
+	 * This is needed to recreate the activity when the download notification is tapped. When that happens,
+	 * the Intent which restarts the activity will have a Bundle extra named {@code KEY_SAVED_INSTANCE_STATE},
+	 * which contains the object stored with this method.
+	 * 
+	 * @param savedInstanceState The saved instance state
+	 */
+	public void storeInstanceState(Bundle savedInstanceState) {
+		this.savedInstanceState = savedInstanceState;
 	}
 
 	private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
@@ -412,6 +433,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 			} else if (intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
 				Intent mapDownloadIntent = new Intent(getActivity().getApplicationContext(), MapDownloadActivity.class);
 				mapDownloadIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				if (savedInstanceState != null)
+					mapDownloadIntent.putExtra(Const.KEY_SAVED_INSTANCE_STATE, savedInstanceState);
 				getActivity().startActivity(mapDownloadIntent);
 			}
 		}
