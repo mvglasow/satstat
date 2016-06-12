@@ -68,11 +68,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Bundle savedDownloads = null;
-
 		if (savedInstanceState != null) {
 			manager = (DownloadTreeStateManager) savedInstanceState.getSerializable(STATE_KEY_TREE_MANAGER);
-			savedDownloads = savedInstanceState.getBundle(STATE_KEY_DOWNLOADS);
 		}
 		if (manager == null)
 			manager = new DownloadTreeStateManager();
@@ -95,7 +92,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		 * therefore 5 is safe even if another one level is added. However, if the layout on the server ever
 		 * changes and goes beyond that, we'll get semi-random crashes.
 		 */
-		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 5, savedDownloads);
+		treeViewAdapter = new DownloadTreeViewAdapter(this, manager, 5);
 		treeView.setAdapter(treeViewAdapter);
 		treeView.setCollapsible(true);
 		treeView.setCollapsedDrawable(getResources().getDrawable(R.drawable.ic_expand_more));

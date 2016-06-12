@@ -81,13 +81,10 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
      * @param activity
      * @param treeStateManager
      * @param numberOfLevels
-     * @param downloads A {@code Bundle} as exported by {@link #getDownloadsAsBundle()}, which will be used
-     * to populate the list of downloads in progress. This argument may be {@code null}.
      */
 	public DownloadTreeViewAdapter(final Activity activity,
             final TreeStateManager<RemoteFile> treeStateManager,
-            final int numberOfLevels,
-            Bundle downloads) {
+            final int numberOfLevels) {
         super(activity, treeStateManager, numberOfLevels);
         this.manager = treeStateManager;
         listTasks = new HashMap<RemoteDirListTask, RemoteFile>();
