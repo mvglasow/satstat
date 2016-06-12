@@ -432,10 +432,10 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				}
 			} else if (intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
 				Intent mapDownloadIntent = new Intent(getActivity().getApplicationContext(), MapDownloadActivity.class);
-				mapDownloadIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				mapDownloadIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				if (savedInstanceState != null)
 					mapDownloadIntent.putExtra(Const.KEY_SAVED_INSTANCE_STATE, savedInstanceState);
-				getActivity().startActivity(mapDownloadIntent);
+				getActivity().getApplicationContext().startActivity(mapDownloadIntent);
 			}
 		}
 	};
