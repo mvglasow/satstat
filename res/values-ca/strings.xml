@@ -99,7 +99,9 @@
         &lt;br/&gt;
         &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
         &lt;/p&gt;&lt;p&gt;
-        Copyright &#169; 2013 – 2016 Michael von Glasow
+        Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
+        &lt;br/&gt;
+        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -192,4 +194,11 @@
     <string name="title_legend_map">Mapa</string>
     <string name="title_legend_map_prov">Ubicació de la font %s</string>
     <string name="title_legend_map_stale">Ubicació gastada de qualsevol font</string>
+    <string name="pref_wifi_sort">Ordena les xarxes WiFi</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >Per BSSID</item>
+        <item >Per nom</item>
+        <item >Per canal</item>
+        <item >Per nivell del senyal</item>
+    </string-array>
 </resources>

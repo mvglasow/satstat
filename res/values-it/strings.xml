@@ -99,7 +99,9 @@
         &lt;br/&gt;
         &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
         &lt;/p&gt;&lt;p&gt;
-        Copyright &#169; 2013, 2014 Michael von Glasow
+        Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
+        &lt;br/&gt;
+        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -177,7 +179,7 @@
     <string name="title_legend_sensors">Sensori</string>
     <string name="title_legend_sensors_high">Accuratezza alta</string>
     <string name="title_legend_sensors_medium">Accuratezza media</string>
-    <string name="title_legend_sensors_low">Accuratezza basa</string>
+    <string name="title_legend_sensors_low">Accuratezza bassa</string>
     <string name="title_legend_sensors_unreliable">Inaffidabile</string>
     <string name="title_legend_radio">Radio</string>
     <string name="title_legend_radio_2g">Cellula 2G</string>
@@ -192,4 +194,11 @@
     <string name="title_legend_map">Mappa</string>
     <string name="title_legend_map_prov">Posizione di fonte: %s</string>
     <string name="title_legend_map_stale">Posizione superata di qualsiasi fonte</string>
+    <string name="pref_wifi_sort">Ordina reti WiFi</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >Per BSSID</item>
+        <item >Per nome</item>
+        <item >Per canale</item>
+        <item >Per potenza segnale</item>
+    </string-array>
 </resources>

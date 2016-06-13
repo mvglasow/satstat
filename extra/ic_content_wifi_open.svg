@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,79 +7,48 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="96"
-   height="96"
-   id="svg2996"
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="ic_content_wifi_open.svg"
-   inkscape:export-filename="/home/michael/src/lsrntools/extra/ic_content_wifi_open.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
-  <defs
-     id="defs2998">
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath572">
-      <path
-         inkscape:connector-curvature="0"
-         d="M 0,96 96,96 96,0 0,0 0,96 z"
-         id="path574" />
-    </clipPath>
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="6.6145833"
-     inkscape:cx="35.466091"
-     inkscape:cy="48.532733"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     inkscape:window-width="1440"
-     inkscape:window-height="831"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
-     inkscape:snap-global="false"
-     showguides="true"
-     objecttolerance="10000"
-     gridtolerance="10000"
-     guidetolerance="10000">
-    <inkscape:grid
-       type="xygrid"
-       id="grid3004"
-       empspacing="12"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true" />
-  </sodipodi:namedview>
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="ic_content_wifi_open.svg">
   <metadata
-     id="metadata3001">
+     id="metadata10">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g
-     id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     transform="translate(0,64)">
-    <path
-       inkscape:connector-curvature="0"
-       id="path578"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 65.825772,-15.684533 0,-18.739503 c 0,-8.73346 -6.119742,-17.576183 -17.825772,-17.576183 -11.704958,0 -17.828986,8.842723 -17.828986,17.576183 l 0,11.416808 7.506941,0 0,-11.416808 c 0,-4.853589 3.228585,-10.071384 10.322045,-10.071384 7.092389,0 10.323115,5.217795 10.323115,10.071384 l 0,18.739503 -36.969115,0 0,35.684752 53.292,0 0,-35.684752 -8.820228,0 z" />
-  </g>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1126"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="9.8333333"
+     inkscape:cx="-1.7288136"
+     inkscape:cy="12"
+     inkscape:window-x="1366"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <path
+     d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"
+     id="path4"
+     style="fill:#ffffff" />
 </svg>
