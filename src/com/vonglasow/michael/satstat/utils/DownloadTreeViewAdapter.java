@@ -36,9 +36,11 @@ import pl.polidea.treeview.AbstractTreeViewAdapter;
 import pl.polidea.treeview.TreeNodeInfo;
 import pl.polidea.treeview.TreeStateManager;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -241,7 +243,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         	// check if a download is already in progress
         	if (!downloadsByUri.containsValue(rfile.getUri())) {
         		// Download file
-        		File mapFile = new File(
+        		final File mapFile = new File(
         				sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT),
         				rfile.name);
 
@@ -251,23 +253,28 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         			return;
         		}
         		
-        		Uri uri = rfile.getUri();
-        		DownloadManager.Request request = new DownloadManager.Request(uri);
-        		//request.setTitle(rfile.name);
-        		//request.setDescription("SatStat map download");
-        		//request.setDestinationInExternalFilesDir(getActivity(), dirType, subPath)
-        		Uri destUri = Uri.fromFile(mapFile);
-        		request.setDestinationUri(destUri);
-        		Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
-        		Long reference = downloadManager.enqueue(request);
-        		DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference);
-        		downloadsByReference.put(reference, info);
-        		downloadsByUri.put(rfile.getUri(), info);
-        		downloadsByFile.put(mapFile, info);
-                ProgressBar downloadFileProgress = (ProgressBar) view.findViewById(R.id.downloadFileProgress);
-                downloadFileProgress.setVisibility(View.VISIBLE);
-                downloadFileProgress.setMax((int) (rfile.size / 1024));
-                downloadFileProgress.setProgress(0);
+        		// check if we have a current version
+        		// TODO recheck this condition (granularity of timestamps, botched timezones)
+        		if (mapFile.exists() && (mapFile.lastModified() >= rfile.timestamp)) {
+        			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        			builder.setMessage(getActivity().getString(R.string.confirm_download));
+
+        			builder.setPositiveButton(getActivity().getString(R.string.action_yes), new DialogInterface.OnClickListener() {
+        				public void onClick(DialogInterface dialog, int whichButton) {
+        					startDownload(rfile, mapFile, view);
+        				}
+        			});
+
+        			builder.setNegativeButton(getActivity().getString(R.string.action_no), new DialogInterface.OnClickListener() {
+        				public void onClick(DialogInterface dialog, int whichButton) {
+        					// NOP
+        				}
+        			});
+        			
+        			builder.show();
+        		} else
+        			startDownload(rfile, mapFile, view);
         	}
         }
     }
@@ -360,6 +367,33 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		}
 		manager.refresh();
 	}
+    
+    /**
+     * Starts a map download.
+     * 
+     * @param rfile The remote file to download
+     * @param mapFile The local file to which the map will be saved
+     * @param view The {@code View} displaying the map file
+     */
+    private void startDownload(RemoteFile rfile, File mapFile, View view) {
+    	Uri uri = rfile.getUri();
+    	DownloadManager.Request request = new DownloadManager.Request(uri);
+    	//request.setTitle(rfile.name);
+    	//request.setDescription("SatStat map download");
+    	//request.setDestinationInExternalFilesDir(getActivity(), dirType, subPath)
+    	Uri destUri = Uri.fromFile(mapFile);
+    	request.setDestinationUri(destUri);
+    	Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
+    	Long reference = downloadManager.enqueue(request);
+    	DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference);
+    	downloadsByReference.put(reference, info);
+    	downloadsByUri.put(rfile.getUri(), info);
+    	downloadsByFile.put(mapFile, info);
+    	ProgressBar downloadFileProgress = (ProgressBar) view.findViewById(R.id.downloadFileProgress);
+    	downloadFileProgress.setVisibility(View.VISIBLE);
+    	downloadFileProgress.setMax((int) (rfile.size / 1024));
+    	downloadFileProgress.setProgress(0);
+    }
 
 	/**
 	 * Stores the state of the associated {@link MapDownloadActivity}.

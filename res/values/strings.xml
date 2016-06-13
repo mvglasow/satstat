@@ -263,5 +263,8 @@
     <string name="title_activity_map_download">Download offline map</string>
     <string name="status_folder_empty">Folder is empty</string>
     <string name="status_already_downloading">A download for a map of the same name is already in progress</string>
-
+    <string name="confirm_download">It seems you already have an up-to-date copy of this map. Do you want to download it anyway?</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
+    
 </resources>
