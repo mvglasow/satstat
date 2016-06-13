@@ -155,25 +155,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         final RemoteFile rfile = treeNodeInfo.getId();
         String rfileName = rfile.name;
         
-        /*
-        final TextView descriptionView = (TextView) viewLayout
-                .findViewById(R.id.demo_list_item_description);
-        final TextView levelView = (TextView) viewLayout
-                .findViewById(R.id.demo_list_item_level);
-        descriptionView.setText(getDescription(treeNodeInfo.getId()));
-        levelView.setText(Integer.toString(treeNodeInfo.getLevel()));
-        final CheckBox box = (CheckBox) viewLayout
-                .findViewById(R.id.demo_list_checkbox);
-        box.setTag(treeNodeInfo.getId());
-        if (treeNodeInfo.isWithChildren()) {
-            box.setVisibility(View.GONE);
-        } else {
-            box.setVisibility(View.VISIBLE);
-            box.setChecked(selected.contains(treeNodeInfo.getId()));
-        }
-        box.setOnCheckedChangeListener(onCheckedChange);
-        */
-
         TextView downloadListItem = (TextView) viewLayout.findViewById(R.id.downloadListItem);
         TextView downloadSize = (TextView) viewLayout.findViewById(R.id.downloadSize);
         TextView downloadDate = (TextView) viewLayout.findViewById(R.id.downloadDate);
