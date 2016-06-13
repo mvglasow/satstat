@@ -48,9 +48,10 @@ import android.widget.ProgressBar;
 public class MapDownloadActivity extends AppCompatActivity implements RemoteDirListListener {
 	private static final String TAG = MapDownloadActivity.class.getSimpleName();
 
-	// TODO the same URL is also available over HTTP (and there's also the Mapsforge download server as a fallback)
+	// FTP is also available but we don't support it yet
 	//public static final String MAP_DOWNLOAD_BASE_URL = "ftp://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
 	public static final String MAP_DOWNLOAD_BASE_URL = "http://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
+	// TODO there's also the Mapsforge download server as a fallback
 
 	private static final String STATE_KEY_TREE_MANAGER = "treeManager";
 	private static final String STATE_KEY_DOWNLOADS = "downloads";
