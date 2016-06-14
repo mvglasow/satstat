@@ -25,7 +25,6 @@ import pl.polidea.treeview.TreeViewList;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.utils.DownloadObserver;
 import com.vonglasow.michael.satstat.utils.DownloadTreeViewAdapter;
 import com.vonglasow.michael.satstat.utils.RemoteDirListTask;
 import com.vonglasow.michael.satstat.utils.RemoteDirListListener;
@@ -63,7 +62,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	private TreeBuilder<RemoteFile> builder = null;
 	private DownloadTreeViewAdapter treeViewAdapter;
 	SharedPreferences sharedPreferences;
-	private DownloadObserver downloadObserver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +113,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		}
 		
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		downloadObserver = new DownloadObserver(sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, Const.MAP_PATH_DEFAULT));
-		downloadObserver.addListener(treeViewAdapter);
 		treeViewAdapter.registerIntentReceiver();
 		// FIXME listen to preference changes
 	}
@@ -126,7 +122,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		if ((dirListTask != null) && (!dirListTask.isCancelled()))
 			dirListTask.cancel(true);
 		treeViewAdapter.releaseIntentReceiver();
-		downloadObserver.removeListener(treeViewAdapter);
 		super.onDestroy();
 	}
 	
@@ -152,7 +147,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	@Override
 	protected void onStart() {
 		super.onStart();
-		downloadObserver.startWatching();
 	}
 	
 	@Override
@@ -169,7 +163,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 			treeViewAdapter.storeInstanceState(outState);
 		}
 
-		downloadObserver.stopWatching();
 		super.onStop();
 	}
 }

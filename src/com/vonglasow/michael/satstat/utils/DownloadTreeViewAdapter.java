@@ -47,6 +47,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -63,8 +64,13 @@ import android.widget.Toast;
  * simple item description.
  * 
  */
-public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile> implements DownloadStatusListener, RemoteDirListListener {
+public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile> implements RemoteDirListListener {
 	private static final String TAG = DownloadTreeViewAdapter.class.getSimpleName();
+	
+	/**
+	 * Progress update delay in milliseconds
+	 */
+	private static final int PROGRESS_DELAY = 1000;
 	
 	TreeStateManager<RemoteFile> manager;
 	Map<RemoteDirListTask, RemoteFile> listTasks;
@@ -76,7 +82,10 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	Bundle savedInstanceState = null;
 	
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+	
+	Handler handler = new Handler();
 
+	private boolean isProgressCheckerRunning = false;
 	private boolean isReleased = true;
 
     /**
@@ -99,6 +108,19 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         // FIXME listen to preference changes
 
+        checkProgress();
+        if (!downloadsByReference.isEmpty())
+        	startProgressChecker();
+    }
+	
+	/**
+	 * Checks download progress.
+	 * 
+	 * This will populate the download lists with any items that are missing, which would be the case if
+	 * downloads are already in progress as the Activity is started, or if the download manager has renamed
+	 * the downloaded file to avoid overwriting an existing one.
+	 */
+	private void checkProgress() {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterByStatus(~(DownloadManager.STATUS_FAILED | DownloadManager.STATUS_SUCCESSFUL));
         Cursor cursor = downloadManager.query(query);
@@ -107,19 +129,43 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         	return;
         }
         do {
+        	/*
+        	 * The download manager will not supply a local file name until the download has started.
+        	 * We therefore need to cover all possible cases:
+        	 * - No DownloadInfo yet (file objects may or may not be null)
+        	 * - DownloadInfo exists but has no files
+        	 * - DownloadInfo exists but does not have the file actually used by the download manager
+        	 */
+        	DownloadInfo info;
         	Long reference = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
         	Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI)));
-        	File downloadFile = new File(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME)));
-        	File targetFile = new File(downloadFile.getParent(), uri.getLastPathSegment());
+        	String downloadFileName = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+        	File downloadFile = (downloadFileName != null) ? new File(downloadFileName) : null;
+        	File targetFile = (downloadFile != null) ? new File(downloadFile.getParent(), uri.getLastPathSegment()) : null;
         	int progress = (int) (cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)) / 1024);
-        	DownloadInfo info = new DownloadInfo(uri, targetFile, downloadFile, reference, progress);
-        	downloadsByReference.put(info.reference, info);
-        	downloadsByUri.put(info.uri, info);
-        	downloadsByFile.put(info.downloadFile, info);
-        	downloadsByFile.put(info.targetFile, info);
+        	if (downloadsByReference.containsKey(reference)) {
+        		info = downloadsByReference.get(reference);
+        		if (downloadFile != null) {
+        			if ((info.downloadFile == null) || (!info.downloadFile.equals(info.targetFile)))
+        				info.downloadFile = downloadFile;
+        			if (info.targetFile == null)
+        				info.targetFile = targetFile;
+        		}
+        		info.progress = progress;
+        	} else {
+            	info = new DownloadInfo(uri, targetFile, downloadFile, reference, progress);
+            	downloadsByReference.put(info.reference, info);
+            	downloadsByUri.put(info.uri, info);
+            	if (info.targetFile != null)
+            		downloadsByFile.put(info.targetFile, info);
+        	}
+        	if ((downloadFile != null) && (!downloadsByFile.containsKey(downloadFile))) {
+        		info.downloadFile = downloadFile;
+        		downloadsByFile.put(info.downloadFile, info);
+        	}
         } while (cursor.moveToNext());
         cursor.close();
-    }
+	}
 
     /**
      * Registers the receiver for download events.
@@ -136,9 +182,12 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
      * Calling this method will unregister the receiver only if no downloads are currently in progress. If
      * downloads are in progress, a flag will be set, causing the receiver to be unregistered after the last
      * download has finished.
+     * 
+     * This will also stop the progress checker.
      */
     public void releaseIntentReceiver() {
     	isReleased = true;
+    	stopProgressChecker();
     	if (downloadsByUri.isEmpty())
     		getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
     }
@@ -284,41 +333,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         return getTreeId(position).hashCode();
     }
 
-    @Override
-    public void onDelete(File file) {
-    	manager.refresh();
-    }
-
-	@Override
-	public void onDownloadProgress(File file) {
-		DownloadInfo info = downloadsByFile.get(file);
-		if (info == null) {
-			/* First progress report for a renamed file */
-			DownloadManager.Query query = new DownloadManager.Query();
-			query.setFilterByStatus(~(DownloadManager.STATUS_FAILED | DownloadManager.STATUS_SUCCESSFUL));
-			Cursor cursor = downloadManager.query(query);
-			if (!cursor.moveToFirst()) {
-				cursor.close();
-				return;
-			}
-			do {
-				Long reference = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
-				String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-				if (file.equals(new File(path))) {
-					info = downloadsByReference.get(reference);
-					if (info != null) {
-						info.downloadFile = file;
-						downloadsByFile.put(info.downloadFile, info);
-					}
-				}
-			} while (cursor.moveToNext());
-			cursor.close();
-		}
-		if (info != null)
-			info.progress = (int) (file.length() / 1024);
-		manager.refresh();
-	}
-
 	@Override
 	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles) {
 		RemoteFile parent = listTasks.get(task);
@@ -371,6 +385,8 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     /**
      * Starts a map download.
      * 
+     * This will also start the progress checker.
+     * 
      * @param rfile The remote file to download
      * @param mapFile The local file to which the map will be saved
      * @param view The {@code View} displaying the map file
@@ -393,6 +409,27 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     	downloadFileProgress.setVisibility(View.VISIBLE);
     	downloadFileProgress.setMax((int) (rfile.size / 1024));
     	downloadFileProgress.setProgress(0);
+    	startProgressChecker();
+    }
+    
+    /**
+     * Starts watching download progress.
+     * 
+     * This method is safe to call multiple times. Starting an already running progress checker is a no-op.
+     */
+    private void startProgressChecker() {
+    	if (!isProgressCheckerRunning) {
+    		progressChecker.run();
+    		isProgressCheckerRunning = true;
+    	}
+    }
+    
+    /**
+     * Stops watching download progress.
+     */
+    private void stopProgressChecker() {
+    	handler.removeCallbacks(progressChecker);
+    	isProgressCheckerRunning = false;
     }
 
 	/**
@@ -407,6 +444,21 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	public void storeInstanceState(Bundle savedInstanceState) {
 		this.savedInstanceState = savedInstanceState;
 	}
+	
+	/**
+	 * Checks download progress and updates status, then re-schedules itself.
+	 */
+	private Runnable progressChecker = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				checkProgress();
+				manager.refresh();
+			} finally {
+				handler.postDelayed(progressChecker, PROGRESS_DELAY);
+			}
+		}
+	};
 
 	private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
 		@Override
@@ -436,14 +488,10 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 					break;
 				case DownloadManager.STATUS_PAUSED:
 					// The download was paused, update status once more
-					DownloadInfo info = downloadsByReference.get(reference);
-					if (info != null)
-						onDownloadProgress(info.targetFile);
+					checkProgress();
+					manager.refresh();
 					break;
-					//case DownloadManager.STATUS_PENDING:
-					// The download is waiting to start.
-					//case DownloadManager.STATUS_RUNNING:
-					// The download is running.
+				// The other status values are unusable because they don't fire reliably.
 				}
 			} else if (intent.getAction().equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
 				Intent mapDownloadIntent = new Intent(getActivity().getApplicationContext(), MapDownloadActivity.class);
