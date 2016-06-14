@@ -21,6 +21,7 @@ package com.vonglasow.michael.satstat;
 
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -31,6 +32,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -40,6 +42,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
@@ -251,12 +254,14 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		mNotifySearch = mSharedPreferences.getBoolean(SettingsActivity.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 
 		if (mLocationManager.getAllProviders().indexOf(LocationManager.PASSIVE_PROVIDER) >= 0) {
-			mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+				mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+				mLocationManager.addGpsStatusListener(this);
+			} else
+				Log.w("PasvLocListenerService", "ACCESS_FINE_LOCATION permission not granted. Data display will not be available.");
 		} else {
 			Log.w("PasvLocListenerService", "No passive location provider found. Data display will not be available.");
 		}
-
-        mLocationManager.addGpsStatusListener(this);
 
         mBuilder = new NotificationCompat.Builder(this)
 		.setSmallIcon(R.drawable.ic_stat_notify_location)
