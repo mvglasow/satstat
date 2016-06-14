@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation" >
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
     <string name="app_name">SatStat</string>
     <string name="action_settings">Beállítások</string>
     <string name="action_record">Rögzítés</string>
@@ -166,7 +165,7 @@
     <string name="pref_data">Adatmegjelenítés</string>
     <string name="pref_unit">Metrikus mértékegységek használata</string>
     <string name="pref_unit_summary">Kikapcsolva angolszász mértékegységek fognak megjelenni (kivéve az érzékelők lapján)</string>
-    <string name="pref_coord">Coordinates</string>
+    <string name="pref_coord">Koordináták</string>
     <string-array name="prefs_coord_keys">
         <item >Tizedes fok</item>
         <item >Fok, tizedes perc</item>
@@ -175,8 +174,8 @@
     </string-array>
     <string name="pref_utc">GPS idő megjelenítése UTC-ben</string>
     <string name="pref_utc_summary">A GPS fix pozíció megjelenítése UTC szerint helyi idő helyett.</string>
-    <string name="pref_cid">Split UMTS/LTE cell IDs</string>
-    <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
+    <string name="pref_cid">UMTS/LTE cella ID-k különválasztása</string>
+    <string name="pref_cid_summary">Cella ID-k különválasztása RNCID/CID vagy eNodeB/sector ID szerint</string>
     <string name="osm_attribution">© OpenStreetMap</string>
     <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Jelmagyarázat</string>
@@ -201,4 +200,40 @@
     <string name="title_legend_map">Térkép</string>
     <string name="title_legend_map_prov">Pozíció %s forrásból</string>
     <string name="title_legend_map_stale">Pontatlan pozíció bármely forrásból</string>
+    <string name="title_nmea_001_032">GPS</string>
+    <string name="title_nmea_033_054">SBAS</string>
+    <string name="title_nmea_055_064">55–64</string>
+    <string name="title_nmea_065_088">GLONASS</string>
+    <string name="title_nmea_097_192">97–192</string>
+    <string name="title_nmea_193_195">QZSS</string>
+    <string name="title_nmea_201_235">Beidou</string>
+    <string name="pref_wifi_sort">WiFi hálózatok rendezése</string>
+
+    <string-array name="prefs_wifi_sort_keys">
+        <item>BSSID szerint</item>
+        <item>Név szerint</item>
+        <item>Csatorna szerint</item>
+        <item>Jel erősség szerint</item>
+    </string-array>
+
+    <string name="pref_map_offline">Offline térkép használata</string>
+    <string name="pref_map_offline_summary">Térkép rajzolása az eszközön (le kell tölteni hozzá egy térképet)</string>
+    <string name="pref_map_path">Térkép könyvtára</string>
+    <string name="map_path_title">Elérési út a térkép könyvtárához:</string>
+    <string name="map_path_fileman">A térkép könyvtárának kitallózásához telepíteni kell egy támogatott fájlkezelőt.</string>
+    <string name="map_path_cm_filemanager">CM File Manager</string>
+    <string name="map_path_oi_filemanager">OI File Manager</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Mégse</string>
+    <string name="pref_map_download">Offline térkép letöltése</string>
+    <string name="pref_map_purge">Térképcsempék gyorsítótárának törlése</string>
+    <string name="pref_map_purge_summary">Az összes térképcsempe újratöltésének vagy újrarajzolásának kényszerítése. Hibakereséshez hasznos lehet</string>
+    <string name="status_map_purged">A térképcsempék gyorsítótára kiürítve</string>
+    <string name="title_activity_map_download">Offline térkép letöltése</string>
+    <string name="status_folder_empty">A könyvtár üres</string>
+    <string name="status_already_downloading">Egy azonos nevű térkép letöltése már folyamatban van</string>
+    <string name="confirm_download">Úgy tűnik, már megvan a legfrissebb változatod ebből a térképből. Biztos le akarod tölteni?</string>
+    <string name="action_yes">Igen</string>
+    <string name="action_no">Nem</string>
+    
 </resources>
