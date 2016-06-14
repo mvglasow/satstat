@@ -372,10 +372,11 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		}
 		if (downloadsByUri.isEmpty()) {
 			/*
-			 * All downloads have finished. The saved instance state is no longer needed, and if the activity
-			 * has indicated it no longer needs the receiver, we can unregister from it as well.
+			 * All downloads have finished. We no longer need the saved instance state and progress checker, 
+			 * and if the activity has been destroyed, we can unregister the broadcast receiver as well.
 			 */
 			this.storeInstanceState(null);
+			stopProgressChecker();
 			if (isReleased)
 				getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
 		}
