@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation" >
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
     <string name="app_name">SatStat</string>
     <string name="action_settings">Settings</string>
     <string name="action_record">Record</string>
@@ -107,7 +106,9 @@
         &lt;br/&gt;
         &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
         &lt;/p&gt;&lt;p&gt;
-        Copyright &#169; 2013 – 2016 Michael von Glasow
+        Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
+        &lt;br/&gt;
+        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -149,26 +150,28 @@
     <string name="pref_wifi_summary">Refresh AGPS data when my device connects to a WiFi network</string>
     <string name="pref_freq">Update frequency</string>
     <string name="pref_freq_summary">%s</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Every time</item>
-        <item >Once a day</item>
-        <item >Once in 2 days</item>
-        <item >Once in 3 days</item>
-        <item >Once in 4 days</item>
-        <item >Once in 5 days</item>
-        <item >Once in 6 days</item>
-        <item >Once a week</item>
+        <item>Every time</item>
+        <item>Once a day</item>
+        <item>Once in 2 days</item>
+        <item>Once in 3 days</item>
+        <item>Once in 4 days</item>
+        <item>Once in 5 days</item>
+        <item>Once in 6 days</item>
+        <item>Once a week</item>
     </string-array>
     <string-array name="prefs_freq_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
-        <item >4</item>
-        <item >5</item>
-        <item >6</item>
-        <item >7</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
     </string-array>
+
     <string name="pref_lastupdate">Last update</string>
     <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Networks</string>
@@ -180,18 +183,20 @@
     <string name="pref_unit">Use metric units</string>
     <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string>
     <string name="pref_coord">Coordinates</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Decimal degrees</item>
-        <item >Degrees, minutes</item>
-        <item >Degrees, minutes, seconds</item>
-        <item >MGRS</item>
+        <item>Decimal degrees</item>
+        <item>Degrees, minutes</item>
+        <item>Degrees, minutes, seconds</item>
+        <item>MGRS</item>
     </string-array>
     <string-array name="prefs_coord_values">
-        <item >0</item>
-        <item >1</item>
-        <item >2</item>
-        <item >3</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
+
     <string name="pref_utc">Display GPS time in UTC</string>
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
     <string name="pref_cid">Split UMTS/LTE cell IDs</string>
@@ -220,4 +225,46 @@
     <string name="title_legend_map">Map</string>
     <string name="title_legend_map_prov">Location from %s provider</string>
     <string name="title_legend_map_stale">Stale location from any provider</string>
+    <string name="title_nmea_001_032">GPS</string>
+    <string name="title_nmea_033_054">SBAS</string>
+    <string name="title_nmea_055_064">55–64</string>
+    <string name="title_nmea_065_088">GLONASS</string>
+    <string name="title_nmea_097_192">97–192</string>
+    <string name="title_nmea_193_195">QZSS</string>
+    <string name="title_nmea_201_235">Beidou</string>
+    <string name="pref_wifi_sort">Sort WiFi networks</string>
+
+    <string-array name="prefs_wifi_sort_keys">
+        <item>By BSSID</item>
+        <item>By name</item>
+        <item>By channel</item>
+        <item>By signal strength</item>
+    </string-array>
+    <string-array name="prefs_wifi_sort_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string name="pref_map_offline">Use offline map</string>
+    <string name="pref_map_offline_summary">Render maps on the device (requires downloading an offline map)</string>
+    <string name="pref_map_path">Offline map folder</string>
+    <string name="map_path_title">Path to offline map folder:</string>
+    <string name="map_path_fileman">To browse for the offline map folder, you need to install a supported file manager.</string>
+    <string name="map_path_cm_filemanager">CM File Manager</string>
+    <string name="map_path_oi_filemanager">OI File Manager</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="pref_map_download">Download offline map</string>
+    <string name="pref_map_purge">Clear map tile cache</string>
+    <string name="pref_map_purge_summary">Force all tiles to be fetched or rendered again, useful for troubleshooting</string>
+    <string name="status_map_purged">Map tile cache cleared</string>
+    <string name="title_activity_map_download">Download offline map</string>
+    <string name="status_folder_empty">Folder is empty</string>
+    <string name="status_already_downloading">A download for a map of the same name is already in progress</string>
+    <string name="confirm_download">It seems you already have an up-to-date copy of this map. Do you want to download it anyway?</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
+    
 </resources>

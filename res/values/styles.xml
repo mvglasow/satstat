@@ -17,6 +17,8 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
     
+    <color name="accent">#FF9800</color>
+    
     <color name="gpsUsed">#80CBC4</color>
     <color name="gpsUnused">#F44336</color>
     
@@ -29,8 +31,8 @@
     <color name="gen3">#80CBC4</color>
     <color name="gen4">#9C27B0</color>
     
-    <color name="circle_blue_stroke">#FF00BCD4</color>
-    <color name="circle_blue_fill">#4D00BCD4</color>
+    <color name="circle_blue_stroke">#FF2196F3</color>
+    <color name="circle_blue_fill">#4D2196F3</color>
     <color name="circle_purple_stroke">#FF9C27B0</color>
     <color name="circle_purple_fill">#4D9C27B0</color>
     <color name="circle_green_stroke">#FF8BC344</color>
@@ -73,5 +75,6 @@
     </array>
     <color name="halo">#B2FFFFFF</color>
     <dimen name="bitmap_padding">2dp</dimen>
+    <dimen name="legend_rowheight">36dp</dimen>
     
 </resources>

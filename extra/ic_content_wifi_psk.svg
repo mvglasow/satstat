@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,107 +7,57 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="96"
-   height="96"
-   id="svg2996"
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="ic_content_wifi_psk.svg"
-   inkscape:export-filename="/home/michael/src/lsrntools/extra/ic_content_wifi_pskure.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
-  <defs
-     id="defs2998">
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath572">
-      <path
-         inkscape:connector-curvature="0"
-         d="M 0,96 96,96 96,0 0,0 0,96 z"
-         id="path574" />
-    </clipPath>
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath584">
-      <path
-         inkscape:connector-curvature="0"
-         d="M 0,96 96,96 96,0 0,0 0,96 z"
-         id="path586" />
-    </clipPath>
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="6.6145833"
-     inkscape:cx="47.697638"
-     inkscape:cy="48"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     inkscape:window-width="1440"
-     inkscape:window-height="831"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
-     inkscape:snap-global="false"
-     showguides="true"
-     objecttolerance="10000"
-     gridtolerance="10000"
-     guidetolerance="10000">
-    <inkscape:grid
-       type="xygrid"
-       id="grid3004"
-       empspacing="12"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true" />
-  </sodipodi:namedview>
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="ic_content_wifi_psk.svg">
   <metadata
-     id="metadata3001">
+     id="metadata10">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g
-     id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     transform="translate(0,64)">
-    <path
-       inkscape:connector-curvature="0"
-       id="path590"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 71.513247,4.0615871 c 0,-1.638995 1.091216,-3.40136698 3.486754,-3.40136698 2.395537,0 3.486392,1.76237198 3.486392,3.40136698 l 0,3.885468 -6.973146,0 0,-3.885468 z m 9.507256,3.885468 0,-3.885468 c 0,-2.949829 -2.067015,-5.936201 -6.020502,-5.936201 -3.95385,0 -6.02195,2.986372 -6.02195,5.936201 l 0,3.885468 -2.978051,0 L 66,20 l 18,0 0,-12.0529449 -2.979497,0 z" />
-    <path
-       id="path1219"
-       d="m 69.140045,-10.620521 c -0.457332,0.486666 -1.22933,0.513332 -1.717329,0.05733 L 42.528115,-33.808459 c -0.486665,-0.455999 -1.287996,-0.455999 -1.775995,0 l -24.271936,22.626606 c -0.489332,0.458666 -1.259996,0.429332 -1.715995,-0.06 l -2.48666,-2.666659 c -0.455999,-0.486666 -0.427999,-1.259997 0.06,-1.715996 l 28.417258,-26.491929 c 0.489332,-0.455999 1.28933,-0.455999 1.778662,0.0027 l 29.035923,27.111928 c 0.486665,0.455999 0.514665,1.22933 0.05733,1.718663 l -2.48666,2.662659 z"
-       inkscape:connector-curvature="0"
-       style="fill:#000000;fill-opacity:1" />
-    <g
-       style="fill:#000000;fill-opacity:1"
-       id="g1221"
-       transform="matrix(1.3333298,0,0,1.3333298,-157.99402,-682.64674)">
-      <path
-         style="fill:#000000;fill-opacity:1"
-         inkscape:connector-curvature="0"
-         d="m 149.725,489.777 -15.345,14.305 v 14.83 c 0,0.504 0.414,0.918 0.919,0.918 h 10.085 v -12.857 c 0,-0.504 0.414,-0.918 0.919,-0.918 h 7.347 c 0.506,0 0.918,0.414 0.918,0.918 v 12.857 h 10.119 c 0.505,0 0.918,-0.414 0.918,-0.918 v -14.307 l -15.88,-14.828 z"
-         id="path1223" />
-      <path
-         style="fill:#000000;fill-opacity:1"
-         inkscape:connector-curvature="0"
-         d="m 165.543,482.311 c 0,-0.506 -0.414,-0.92 -0.919,-0.92 h -5.51 c -0.505,0 -0.918,0.414 -0.918,0.92 v 1.604 l 7.347,6.918 v -8.522 z"
-         id="path1225" />
-    </g>
-  </g>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1126"
+     id="namedview6"
+     showgrid="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:zoom="38.333333"
+     inkscape:cx="12"
+     inkscape:cy="12"
+     inkscape:window-x="1366"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4138" />
+  </sodipodi:namedview>
+  <path
+     id="path6"
+     d="m 21,16 -3,0 0,-1.5 c 0,-0.83 0.67,-1.5 1.5,-1.5 0.83,0 1.5,0.67 1.5,1.5 l 0,1.5 z m 1,0 0,-1.5 C 22,13.12 20.88,12 19.5,12 18.12,12 17,13.12 17,14.5 l 0,1.5 c -0.55,0 -1,0.45 -1,1 l 0,4 c 0,0.55 0.45,1 1,1 l 5,0 c 0.55,0 1,-0.45 1,-1 l 0,-4 c 0,-0.55 -0.45,-1 -1,-1 z M 11,3 1,12 l 3,0 0,8 5,0 0,-6 4,0 0,6 1,0 0,-3 c 0,-0.865238 0.402181,-1.613472 1,-2.164062 L 15,14.5 c 0,-2.240471 1.692502,-4.111604 3.851562,-4.433594 L 11,3 Z"
+     style="fill:#ffffff" />
 </svg>

@@ -98,7 +98,9 @@
         &lt;br/&gt;
         &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
         &lt;/p&gt;&lt;p&gt;
-        Copyright &#169; 2013, 2014 Michael von Glasow
+        Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
+        &lt;br/&gt;
+        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         Ce programme est un logiciel libre; vous pouvez le redistribuer ou le
         modifier suivant les termes de la GNU General Public License telle que publiée
@@ -186,4 +188,11 @@
     <string name="title_legend_map">Carte</string>
     <!-- <string name="title_legend_map_prov">Location from %s provider</string> -->
     <!-- <string name="title_legend_map_stale">Stale location from any provider</string> -->
+    <string name="pref_wifi_sort">Trier les reseaux WiFi</string>
+    <string-array name="prefs_wifi_sort_keys">
+        <item >Par BSSID</item>
+        <item >Par nom</item>
+        <item >Par canal</item>
+        <item >Par niveau du signal</item>
+    </string-array>
 </resources>
