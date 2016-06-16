@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat.ui;
 
+import java.util.List;
+
 import pl.polidea.treeview.DownloadTreeStateManager;
 import pl.polidea.treeview.TreeBuilder;
 import pl.polidea.treeview.TreeViewList;
@@ -103,8 +105,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeView.setIndentWidth(24);
 
 		
-		// FIXME test if list is empty, not if we have a saved state
-		if (state == null) {
+		List<RemoteFile> topItems = manager.getChildren(null);
+		if ((topItems == null) || (topItems.size() == 0)) {
 			downloadProgress.setVisibility(View.VISIBLE);
 			// get data from FTP
 			dirListTask = new RemoteDirListTask(this, null);
