@@ -32,9 +32,7 @@ import com.vonglasow.michael.satstat.utils.RemoteDirListTask;
 import com.vonglasow.michael.satstat.utils.RemoteDirListListener;
 import com.vonglasow.michael.satstat.utils.RemoteFile;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
