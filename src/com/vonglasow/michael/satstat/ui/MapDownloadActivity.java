@@ -61,7 +61,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	private DownloadTreeStateManager manager = null;
 	private TreeBuilder<RemoteFile> builder = null;
 	private DownloadTreeViewAdapter treeViewAdapter;
-	SharedPreferences sharedPreferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +111,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 			dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
 		}
 		
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		treeViewAdapter.registerIntentReceiver();
-		// FIXME listen to preference changes
 	}
 
 	@Override

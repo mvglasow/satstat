@@ -106,7 +106,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         df.setTimeZone(TimeZone.getDefault());
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        // FIXME listen to preference changes
 
         checkProgress();
         if (!downloadsByReference.isEmpty())
