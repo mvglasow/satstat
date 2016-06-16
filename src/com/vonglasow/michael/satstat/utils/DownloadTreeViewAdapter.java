@@ -378,6 +378,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 			stopProgressChecker();
 			if (isReleased)
 				getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
+			Toast.makeText(getActivity(), getActivity().getString(R.string.status_downloads_completed), Toast.LENGTH_SHORT).show();
 		}
 		manager.refresh();
 	}
@@ -480,7 +481,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				case DownloadManager.STATUS_SUCCESSFUL:
 					// The file was downloaded successfully
 					removeDownload(reference, true);
-					Toast.makeText(getActivity(), "Download completed", Toast.LENGTH_SHORT).show();
 					break;
 				case DownloadManager.STATUS_FAILED:
 					// The download failed

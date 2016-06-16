@@ -266,5 +266,6 @@
     <string name="confirm_download">It seems you already have an up-to-date copy of this map. Do you want to download it anyway?</string>
     <string name="action_yes">Yes</string>
     <string name="action_no">No</string>
+    <string name="status_downloads_completed">All downloads have completed</string>
     
 </resources>
