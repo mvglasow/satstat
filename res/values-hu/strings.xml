@@ -235,5 +235,6 @@
     <string name="confirm_download">Úgy tűnik, már megvan a legfrissebb változatod ebből a térképből. Biztos le akarod tölteni?</string>
     <string name="action_yes">Igen</string>
     <string name="action_no">Nem</string>
+    <string name="status_downloads_completed">Minden letöltés befejeződött</string>
     
 </resources>
