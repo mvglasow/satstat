@@ -57,9 +57,8 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
 		df.setTimeZone(TimeZone.getDefault());
 		// FIXME scheme may be null
-		if (uri.getScheme().equals("http"))
+		if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
 			rfiles = HttpDownloader.list(params[0]);
-		// TODO HTTPS
 		
 		if (rfiles == null)
 			Log.w(TAG, "Error – could not retrieve content!");
