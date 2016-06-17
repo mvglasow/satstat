@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.vonglasow.michael.satstat.Const;
 
@@ -40,6 +41,9 @@ import android.util.Log;
  */
 public class HttpDownloader {
 	private static final String TAG = "HttpDownloader";
+	
+	private static final RemoteFileComparator comparator = new RemoteFileComparator();
+	
 	/**
 	 * @brief Retrieves information about a remote file or directory
 	 * 
@@ -222,7 +226,7 @@ public class HttpDownloader {
 					continue;
 				rfiles.add(rf);
 			}
-			// TODO Collections.sort(rfiles, new TBDComparator(;-));
+			Collections.sort(rfiles, comparator);
 			return rfiles.toArray(new RemoteFile[]{});
 		} catch (IOException e) {
 			Log.e(TAG, "IOException trying to connect: " + e.getMessage());
