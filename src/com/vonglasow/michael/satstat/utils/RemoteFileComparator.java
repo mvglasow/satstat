@@ -4,7 +4,7 @@ import java.text.Collator;
 import java.util.Comparator;
 
 /**
- * A Comparator for RemoteFiles.
+ * A Comparator for {@link RemoteFile}s.
  * 
  * Sorting is done by name, which may alternate between files and directories (unlike the customary file
  * manager experience, where directories tend to be listed first). Sort order is determined by the default

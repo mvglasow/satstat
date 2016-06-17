@@ -176,7 +176,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     }
     
     /**
-     * Notifies the DownloadTreeViewer that the caller no longer needs the receiver.
+     * Notifies the {@code DownloadTreeViewAdapter} that the caller no longer needs the receiver.
      * 
      * Calling this method will unregister the receiver only if no downloads are currently in progress. If
      * downloads are in progress, a flag will be set, causing the receiver to be unregistered after the last
@@ -390,7 +390,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
      * 
      * @param rfile The remote file to download
      * @param mapFile The local file to which the map will be saved
-     * @param view The {@code View} displaying the map file
+     * @param view The {@link View} displaying the map file
      */
     private void startDownload(RemoteFile rfile, File mapFile, View view) {
     	Uri uri = rfile.getUri();

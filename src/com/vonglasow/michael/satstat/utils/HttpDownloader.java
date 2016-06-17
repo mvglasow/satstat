@@ -48,8 +48,8 @@ public class HttpDownloader {
 	 * @brief Retrieves information about a remote file or directory
 	 * 
 	 * @param url
-	 * @return A {@link com.vonglasow.michael.satstat.utils.RemoteFile} filled in with the data of
-	 * the remote file or directory, or {@code null} if an error occurred.
+	 * @return A {@link RemoteFile} filled in with the data of the remote file or directory, or {@code null}
+	 * if an error occurred.
 	 */
 	private static RemoteFile getFileInfo(URL context, String href) {
 		String baseUrl = context.toString();
@@ -118,7 +118,7 @@ public class HttpDownloader {
 	 * 
 	 * @param url1
 	 * @param url2
-	 * @return true if the URLs effectivels use the same port, false otherwise
+	 * @return true if the URLs effectively use the same port, false otherwise
 	 */
 	private static boolean isPortEqual(URL url1, URL url2) {
 		int port1 = (url1.getPort() > 0) ? url1.getPort() : url1.getDefaultPort();
