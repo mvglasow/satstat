@@ -37,10 +37,9 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 	private RemoteFile parent = null;
 	
 	/**
-	 * Creates a new {@code DirDownloader} task, and registers it with a listener.
+	 * Creates a new {@code RemoteDirListTask} task, and registers it with a listener.
 	 * 
-	 * @param listener The {@code com.vonglasow.michael.satstat.utils.RemoteDirListListener} which will
-	 * be notified when the task has completed.
+	 * @param listener The {@link RemoteDirListListener} which will be notified when the task has completed.
 	 * @param parent The directory to be listed. When this task finishes, it populates the {@code children}
 	 * member of {@code parent} with the objects it retrieved. May be {@code null}.
 	 */
@@ -57,10 +56,10 @@ public class RemoteDirListTask extends AsyncTask<String, Void, RemoteFile[]> {
 		RemoteFile[] rfiles = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
 		df.setTimeZone(TimeZone.getDefault());
-		// FIXME scheme may be null
-		if (uri.getScheme().equals("http"))
+		if (uri.getScheme() == null)
+			return null;
+		if (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
 			rfiles = HttpDownloader.list(params[0]);
-		// TODO HTTPS
 		
 		if (rfiles == null)
 			Log.w(TAG, "Error – could not retrieve content!");

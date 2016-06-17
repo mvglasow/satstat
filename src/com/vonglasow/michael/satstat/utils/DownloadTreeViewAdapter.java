@@ -106,7 +106,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
         df.setTimeZone(TimeZone.getDefault());
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        // FIXME listen to preference changes
 
         checkProgress();
         if (!downloadsByReference.isEmpty())
@@ -177,7 +176,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     }
     
     /**
-     * Notifies the DownloadTreeViewer that the caller no longer needs the receiver.
+     * Notifies the {@code DownloadTreeViewAdapter} that the caller no longer needs the receiver.
      * 
      * Calling this method will unregister the receiver only if no downloads are currently in progress. If
      * downloads are in progress, a flag will be set, causing the receiver to be unregistered after the last
@@ -372,12 +371,14 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 		}
 		if (downloadsByUri.isEmpty()) {
 			/*
-			 * All downloads have finished. The saved instance state is no longer needed, and if the activity
-			 * has indicated it no longer needs the receiver, we can unregister from it as well.
+			 * All downloads have finished. We no longer need the saved instance state and progress checker, 
+			 * and if the activity has been destroyed, we can unregister the broadcast receiver as well.
 			 */
 			this.storeInstanceState(null);
+			stopProgressChecker();
 			if (isReleased)
 				getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
+			Toast.makeText(getActivity(), getActivity().getString(R.string.status_downloads_completed), Toast.LENGTH_SHORT).show();
 		}
 		manager.refresh();
 	}
@@ -389,7 +390,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
      * 
      * @param rfile The remote file to download
      * @param mapFile The local file to which the map will be saved
-     * @param view The {@code View} displaying the map file
+     * @param view The {@link View} displaying the map file
      */
     private void startDownload(RemoteFile rfile, File mapFile, View view) {
     	Uri uri = rfile.getUri();
@@ -480,7 +481,6 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				case DownloadManager.STATUS_SUCCESSFUL:
 					// The file was downloaded successfully
 					removeDownload(reference, true);
-					Toast.makeText(getActivity(), "Download completed", Toast.LENGTH_SHORT).show();
 					break;
 				case DownloadManager.STATUS_FAILED:
 					// The download failed

@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.vonglasow.michael.satstat.Const;
 
@@ -40,12 +41,15 @@ import android.util.Log;
  */
 public class HttpDownloader {
 	private static final String TAG = "HttpDownloader";
+	
+	private static final RemoteFileComparator comparator = new RemoteFileComparator();
+	
 	/**
 	 * @brief Retrieves information about a remote file or directory
 	 * 
 	 * @param url
-	 * @return A {@link com.vonglasow.michael.satstat.utils.RemoteFile} filled in with the data of
-	 * the remote file or directory, or {@code null} if an error occurred.
+	 * @return A {@link RemoteFile} filled in with the data of the remote file or directory, or {@code null}
+	 * if an error occurred.
 	 */
 	private static RemoteFile getFileInfo(URL context, String href) {
 		String baseUrl = context.toString();
@@ -114,7 +118,7 @@ public class HttpDownloader {
 	 * 
 	 * @param url1
 	 * @param url2
-	 * @return true if the URLs effectivels use the same port, false otherwise
+	 * @return true if the URLs effectively use the same port, false otherwise
 	 */
 	private static boolean isPortEqual(URL url1, URL url2) {
 		int port1 = (url1.getPort() > 0) ? url1.getPort() : url1.getDefaultPort();
@@ -222,7 +226,7 @@ public class HttpDownloader {
 					continue;
 				rfiles.add(rf);
 			}
-			// TODO Collections.sort(rfiles, new TBDComparator(;-));
+			Collections.sort(rfiles, comparator);
 			return rfiles.toArray(new RemoteFile[]{});
 		} catch (IOException e) {
 			Log.e(TAG, "IOException trying to connect: " + e.getMessage());

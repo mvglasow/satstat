@@ -19,6 +19,8 @@
 
 package com.vonglasow.michael.satstat.ui;
 
+import java.util.List;
+
 import pl.polidea.treeview.DownloadTreeStateManager;
 import pl.polidea.treeview.TreeBuilder;
 import pl.polidea.treeview.TreeViewList;
@@ -30,9 +32,7 @@ import com.vonglasow.michael.satstat.utils.RemoteDirListTask;
 import com.vonglasow.michael.satstat.utils.RemoteDirListListener;
 import com.vonglasow.michael.satstat.utils.RemoteFile;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -49,7 +49,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 	// FTP is also available but we don't support it yet
 	//public static final String MAP_DOWNLOAD_BASE_URL = "ftp://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
-	public static final String MAP_DOWNLOAD_BASE_URL = "http://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
+	public static final String MAP_DOWNLOAD_BASE_URL = "https://ftp-stud.hs-esslingen.de/pub/Mirrors/download.mapsforge.org/maps/";
 	// TODO there's also the Mapsforge download server as a fallback
 
 	private static final String STATE_KEY_TREE_MANAGER = "treeManager";
@@ -61,7 +61,6 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	private DownloadTreeStateManager manager = null;
 	private TreeBuilder<RemoteFile> builder = null;
 	private DownloadTreeViewAdapter treeViewAdapter;
-	SharedPreferences sharedPreferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,17 +103,15 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeView.setIndentWidth(24);
 
 		
-		// FIXME test if list is empty, not if we have a saved state
-		if (state == null) {
+		List<RemoteFile> topItems = manager.getChildren(null);
+		if ((topItems == null) || (topItems.size() == 0)) {
 			downloadProgress.setVisibility(View.VISIBLE);
 			// get data from FTP
 			dirListTask = new RemoteDirListTask(this, null);
 			dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
 		}
 		
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		treeViewAdapter.registerIntentReceiver();
-		// FIXME listen to preference changes
 	}
 
 	@Override
