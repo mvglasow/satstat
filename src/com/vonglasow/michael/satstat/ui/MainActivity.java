@@ -94,13 +94,6 @@ import android.widget.LinearLayout;
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.GpsEventReceiver;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.drawable;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.menu;
-import com.vonglasow.michael.satstat.R.raw;
-import com.vonglasow.michael.satstat.R.string;
-import com.vonglasow.michael.satstat.R.style;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerList;
 

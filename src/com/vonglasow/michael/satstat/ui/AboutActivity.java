@@ -32,10 +32,6 @@ import android.widget.TextView;
 import android.content.pm.PackageManager;
 
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.raw;
-import com.vonglasow.michael.satstat.R.string;
 
 public class AboutActivity extends AppCompatActivity {
 

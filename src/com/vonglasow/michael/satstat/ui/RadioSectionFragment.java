@@ -19,11 +19,6 @@
 
 package com.vonglasow.michael.satstat.ui;
 
-import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
-import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
-import static android.telephony.PhoneStateListener.LISTEN_DATA_CONNECTION_STATE;
-import static android.telephony.PhoneStateListener.LISTEN_NONE;
-import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
 import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 
@@ -32,11 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.color;
-import com.vonglasow.michael.satstat.R.drawable;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
 import com.vonglasow.michael.satstat.data.CellTowerGsm;
@@ -47,21 +37,16 @@ import com.vonglasow.michael.satstat.data.CellTowerLte;
 import com.vonglasow.michael.satstat.utils.WifiCapabilities;
 import com.vonglasow.michael.satstat.utils.WifiScanResultComparator;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.telephony.CellInfo;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;

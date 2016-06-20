@@ -57,12 +57,6 @@ import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.color;
-import com.vonglasow.michael.satstat.R.drawable;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;

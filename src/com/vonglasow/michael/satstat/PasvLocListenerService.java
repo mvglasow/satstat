@@ -24,7 +24,6 @@ import com.vonglasow.michael.satstat.ui.MainActivity;
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
 import android.Manifest;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.support.v4.app.TaskStackBuilder;

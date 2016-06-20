@@ -29,11 +29,6 @@ import org.mapsforge.map.layer.cache.TileCache;
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.PasvLocListenerService;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
-import com.vonglasow.michael.satstat.R.xml;
-
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
