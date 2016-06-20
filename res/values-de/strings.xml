@@ -105,7 +105,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
         der GNU General Public License, wie von der Free Software Foundation,
@@ -206,4 +206,22 @@
         <item >Nach Kanal</item>
         <item >Nach Signalstärke</item>
     </string-array>
+    <string name="pref_map_offline">Offline-Karte benutzen</string>
+    <string name="pref_map_offline_summary">Karten auf dem Gerät rendern (Download einer Offline-Karte erforderlich)</string>
+    <string name="pref_map_path">Ordner für Offline-Karten</string>
+    <string name="map_path_title">Pfad des Ordners für Offline-Karten:</string>
+    <string name="map_path_fileman">Um nach dem Ordner für Offline-Karten zu suchen, benötigen Sie einen unterstützten Dateimanager.</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="pref_map_download">Offline-Karte herunterladen</string>
+    <string name="pref_map_purge">Karten-Cache löschen</string>
+    <string name="pref_map_purge_summary">Alle Kacheln werden neu heruntergeladen oder gerendert, hilfreich bei der Fehlersuche</string>
+    <string name="status_map_purged">Karten-Cache gelöscht</string>
+    <string name="title_activity_map_download">Offline-Karte herunterladen</string>
+    <string name="status_folder_empty">Ordner ist leer</string>
+    <string name="status_already_downloading">Ein Download für eine Karte mit gleichem Namen läuft bereits</string>
+    <string name="confirm_download">Sie haben offensichtlich bereits eine aktuelle Version dieser Karte. Trotzdem herunterladen?</string>
+    <string name="action_yes">Ja</string>
+    <string name="action_no">Nein</string>
+    <string name="status_downloads_completed">Alle Downloads sind abgeschlossen</string>
 </resources>

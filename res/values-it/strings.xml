@@ -101,7 +101,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -201,4 +201,22 @@
         <item >Per canale</item>
         <item >Per potenza segnale</item>
     </string-array>
+    <string name="pref_map_offline">Utilizza mappa offline</string>
+    <string name="pref_map_offline_summary">Renderizza le mappe sul dispositivo (bisogna scaricare una mappa offline)</string>
+    <string name="pref_map_path">Cartella per mappe offline</string>
+    <string name="map_path_title">Percorso della cartella per mappe offline:</string>
+    <string name="map_path_fileman">Per poter selezionare la cartella, bisogna installare un file manager supportato.</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="pref_map_download">Scarica mappa offline</string>
+    <string name="pref_map_purge">Svuotare tile cache</string>
+    <string name="pref_map_purge_summary">Tutte le tile saranno scaricate o renderizzate di nuovo, utile in caso di problemi</string>
+    <string name="status_map_purged">Tile cache svuotato</string>
+    <string name="title_activity_map_download">Scarica mappa offline</string>
+    <string name="status_folder_empty">La cartella è vuota</string>
+    <string name="status_already_downloading">Un download per una mappa dello stesso nome è già in corso</string>
+    <string name="confirm_download">Sembra che già abbia una copia attuale di questa mappa. Vuoi scaricarla lo stesso?</string>
+    <string name="action_yes">Sì</string>
+    <string name="action_no">No</string>
+    <string name="status_downloads_completed">Tutti i download hanno finito</string>
 </resources>

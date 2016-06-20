@@ -100,7 +100,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         Ce programme est un logiciel libre; vous pouvez le redistribuer ou le
         modifier suivant les termes de la GNU General Public License telle que publiée
@@ -195,4 +195,8 @@
         <item >Par canal</item>
         <item >Par niveau du signal</item>
     </string-array>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_yes">Oui</string>
+    <string name="action_no">Non</string>
 </resources>

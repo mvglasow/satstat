@@ -100,7 +100,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -200,4 +200,22 @@
         <item >Pagal kanalą</item>
         <item >Pagal signalo galią</item>
     </string-array>
+    <string name="pref_map_offline">Naudoti offline žemėlapį</string>
+    <string name="pref_map_offline_summary">Atvaizduoti žemėlapius įrenginyje (reikės atsisiųsti offline žemėlapį)</string>
+    <string name="pref_map_path">Offline žemėlapių aplankas</string>
+    <string name="map_path_title">Offline žemėlapių aplankas:</string>
+    <string name="map_path_fileman">Kad galėtumete peržvelgti aplankus, reikia įdiegti palaikomą failų tvarkyklę.</string>
+    <string name="action_ok">Gerai</string>
+    <string name="action_cancel">Atšaukti</string>
+    <string name="pref_map_download">Atsisiųsti offline žemėlapį</string>
+    <string name="pref_map_purge">Išvalyti talpykloje saugomas kaladėles</string>
+    <string name="pref_map_purge_summary">Visos žemėlapio kaladėlės bus parsiunčiamos arba atvaizduojamos iš naujo, naudinga bėdašaudystei</string>
+    <string name="status_map_purged">Talpykloje saugomos kaladėlės išvalytos</string>
+    <string name="title_activity_map_download">Atsisiųsti offline žemėlapį</string>
+    <string name="status_folder_empty">Aplankas yra tuščias</string>
+    <string name="status_already_downloading">Jau vyksta to pačio pavadinimo žemėlapio atsisiuntimas</string>
+    <string name="confirm_download">Atrodo, kad jau turite šio žemėlapio naujausią versiją. Ar jį norite vis tiek atsisiųsti?</string>
+    <string name="action_yes">Taip</string>
+    <string name="action_no">Ne</string>
+    <string name="status_downloads_completed">Visi atsisiuntimai yra pabaigti</string>
 </resources>
