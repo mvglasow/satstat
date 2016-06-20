@@ -8,9 +8,9 @@
     <string name="action_agps">Reload AGPS data</string>
     <string name="action_legend">Legend</string>
     <string name="action_about">About</string>
-    <string name="dot">&#x25a0;</string>
-    <string name="smallDot">&#x25fc;</string>
-    <string name="dotSpace">&#x25a0;&#x00a0;</string>
+    <string name="dot" translatable="false">&#x25a0;</string>
+    <string name="smallDot" translatable="false">&#x25fc;</string>
+    <string name="dotSpace" translatable="false">&#x25a0;&#x00a0;</string>
     <string name="error_write_file">Error writing to file</string>
     <string name="error_ext_storage">External storage not available</string>
     <string name="info_start_rec">Started recording</string>
@@ -149,7 +149,7 @@
     <string name="pref_wifi">On WiFi connect</string>
     <string name="pref_wifi_summary">Refresh AGPS data when my device connects to a WiFi network</string>
     <string name="pref_freq">Update frequency</string>
-    <string name="pref_freq_summary">%s</string>
+    <string name="pref_freq_summary" translatable="false">%s</string>
 
     <string-array name="prefs_freq_keys">
         <item>Every time</item>
@@ -161,7 +161,7 @@
         <item>Once in 6 days</item>
         <item>Once a week</item>
     </string-array>
-    <string-array name="prefs_freq_values">
+    <string-array name="prefs_freq_values" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -190,7 +190,7 @@
         <item>Degrees, minutes, seconds</item>
         <item>MGRS</item>
     </string-array>
-    <string-array name="prefs_coord_values">
+    <string-array name="prefs_coord_values" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -201,8 +201,8 @@
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
     <string name="pref_cid">Split UMTS/LTE cell IDs</string>
     <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="osm_attribution" translatable="false">© OpenStreetMap</string>
+    <string name="mapquest_attribution" translatable="false">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Legend</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Satellite used in fix</string>
@@ -240,7 +240,7 @@
         <item>By channel</item>
         <item>By signal strength</item>
     </string-array>
-    <string-array name="prefs_wifi_sort_values">
+    <string-array name="prefs_wifi_sort_values" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
