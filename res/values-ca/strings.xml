@@ -140,16 +140,18 @@
     <string name="pref_wifi">En connexion WiFi</string>
     <string name="pref_wifi_summary">Actualitza dades AGPS quan el meu dispositiu es connecta amb una xarxa WiFi</string>
     <string name="pref_freq">Freqüència</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Cada cop</item>
-        <item >Un cop cada dia</item>
-        <item >Un cop cada 2 dies</item>
-        <item >Un cop cada 3 dies</item>
-        <item >Un cop cada 4 dies</item>
-        <item >Un cop cada 5 dies</item>
-        <item >Un cop cada 6 dies</item>
-        <item >Un cop cada setmana</item>
+        <item>Cada cop</item>
+        <item>Un cop cada dia</item>
+        <item>Un cop cada 2 dies</item>
+        <item>Un cop cada 3 dies</item>
+        <item>Un cop cada 4 dies</item>
+        <item>Un cop cada 5 dies</item>
+        <item>Un cop cada 6 dies</item>
+        <item>Un cop cada setmana</item>
     </string-array>
+
     <string name="pref_lastupdate">Última actualització</string>
     <string name="pref_networks">Xarxes</string>
     <string name="pref_networks_summary">Actualitza dades AGPS quan el meu dispositiu es connecta amb una de les xarxes seleccionades</string>
@@ -160,12 +162,14 @@
     <string name="pref_unit">Utilitza unitats mètriques</string>
     <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
     <string name="pref_coord">Coordenades</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Graus</item>
-        <item >Graus i minuts</item>
-        <item >Graus, minuts i segons</item>
-        <item >MGRS</item>
+        <item>Graus</item>
+        <item>Graus i minuts</item>
+        <item>Graus, minuts i segons</item>
+        <item>MGRS</item>
     </string-array>
+
     <string name="pref_utc">Mostra temps GPS en UTC</string>
     <string name="pref_utc_summary">Utilitza UTC en comptes de temps local per mostrar el temps GPS</string>
     <string name="pref_cid">Subdivideix l\'ID de cel·les UMTS/LTE</string>
@@ -195,12 +199,14 @@
     <string name="title_legend_map_prov">Ubicació de la font %s</string>
     <string name="title_legend_map_stale">Ubicació gastada de qualsevol font</string>
     <string name="pref_wifi_sort">Ordena les xarxes WiFi</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >Per BSSID</item>
-        <item >Per nom</item>
-        <item >Per canal</item>
-        <item >Per nivell del senyal</item>
+        <item>Per BSSID</item>
+        <item>Per nom</item>
+        <item>Per canal</item>
+        <item>Per nivell del senyal</item>
     </string-array>
+
     <string name="pref_map_offline">Utilitza mapa offline</string>
     <string name="pref_map_offline_summary">Renderitza les mapes en el dispositiu (es necessita baixar una mapa offline)</string>
     <string name="pref_map_path">Carpeta per a les mapes offline</string>
@@ -219,4 +225,5 @@
     <string name="action_yes">Sí</string>
     <string name="action_no">No</string>
     <string name="status_downloads_completed">Totes les baixades s\'han completades</string>
+
 </resources>

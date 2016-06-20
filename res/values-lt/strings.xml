@@ -139,16 +139,18 @@
     <string name="pref_wifi">Prisijungus prie WiFi tinklo</string>
     <string name="pref_wifi_summary">Atnaujinti AGPS duomenis, kai mano įranga prisijungs prie WiFi tinklo</string>
     <string name="pref_freq">Atnaujinimų dažnis</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Kiekvieną kartą</item>
-        <item >Vieną kartą kasdien</item>
-        <item >Vieną kartą kas 2 dienas</item>
-        <item >Vieną kartą kas 3 dienas</item>
-        <item >Vieną kartą kas 4 dienas</item>
-        <item >Vieną kartą kas 5 dienas</item>
-        <item >Vieną kartą kas 6 dienas</item>
-        <item >Vieną kartą kas savaitę</item>
+        <item>Kiekvieną kartą</item>
+        <item>Vieną kartą kasdien</item>
+        <item>Vieną kartą kas 2 dienas</item>
+        <item>Vieną kartą kas 3 dienas</item>
+        <item>Vieną kartą kas 4 dienas</item>
+        <item>Vieną kartą kas 5 dienas</item>
+        <item>Vieną kartą kas 6 dienas</item>
+        <item>Vieną kartą kas savaitę</item>
     </string-array>
+
     <string name="pref_lastupdate">Paskutinkart atnaujinta</string>
     <string name="pref_networks">Tinklai</string>
     <string name="pref_networks_summary">Atnaujinti AGPS duomenis, kai mano įranga prisijungs prie vieno iš išrinktųjų tinklų</string>
@@ -159,12 +161,14 @@
     <string name="pref_unit">Naudoti metrinius vienetus</string>
     <string name="pref_unit_summary">Jeigu neišrinkta, bus naudojami JAV matavimo vinetai (išskyrus jutikliams)</string>
     <string name="pref_coord">Koordinatės</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Laipsniais</item>
-        <item >Laipsniais ir minutėmis</item>
-        <item >Laipsniais, minutėmis ir sekundėmis</item>
-        <item >MGRS</item>
+        <item>Laipsniais</item>
+        <item>Laipsniais ir minutėmis</item>
+        <item>Laipsniais, minutėmis ir sekundėmis</item>
+        <item>MGRS</item>
     </string-array>
+
     <string name="pref_utc">Nurodyti GPS laiką UTC</string>
     <string name="pref_utc_summary">Naudoti UTC vietienio laiko juosto vietoj GPS laiko nurodymui</string>
     <string name="pref_cid">Sudalyti UMTS/LTE ląstelių ID kodus</string>
@@ -194,12 +198,14 @@
     <string name="title_legend_map_prov">%s šaltinio vietovė</string>
     <string name="title_legend_map_stale">Pasenusi bet kurio šaltinio vietovė</string>
     <string name="pref_wifi_sort">Ryšioti WiFi tinklus</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >Pagal BSSID</item>
-        <item >Pagal pavadimimą</item>
-        <item >Pagal kanalą</item>
-        <item >Pagal signalo galią</item>
+        <item>Pagal BSSID</item>
+        <item>Pagal pavadimimą</item>
+        <item>Pagal kanalą</item>
+        <item>Pagal signalo galią</item>
     </string-array>
+
     <string name="pref_map_offline">Naudoti offline žemėlapį</string>
     <string name="pref_map_offline_summary">Atvaizduoti žemėlapius įrenginyje (reikės atsisiųsti offline žemėlapį)</string>
     <string name="pref_map_path">Offline žemėlapių aplankas</string>
@@ -218,4 +224,5 @@
     <string name="action_yes">Taip</string>
     <string name="action_no">Ne</string>
     <string name="status_downloads_completed">Visi atsisiuntimai yra pabaigti</string>
+
 </resources>
