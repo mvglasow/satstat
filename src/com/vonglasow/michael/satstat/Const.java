@@ -45,6 +45,7 @@ public class Const {
 	public static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	public static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
 	public static final String AGPS_DATA_EXPIRED = "com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED";
+	public static final String DOWNLOAD_RECEIVER_REGISTERED = "com.vonglasow.michael.satstat.DOWNLOAD_RECEIVER_REGISTERED";
 	
 	
 	/**

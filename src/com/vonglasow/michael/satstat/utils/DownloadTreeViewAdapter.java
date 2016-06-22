@@ -170,9 +170,20 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
      * Registers the receiver for download events.
      */
     public void registerIntentReceiver() {
+    	getActivity().getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(Const.DOWNLOAD_RECEIVER_REGISTERED));
     	getActivity().getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     	getActivity().getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
     	isReleased = false;
+    	/*
+    	 * Send a DOWNLOAD_RECEIVER_REGISTERED broadcast, causing all released receivers to unregister.
+    	 * Since sendBroadcast() is asynchronous, this may not be 100% safe against race conditions: if a
+    	 * download finishes (or the download notification gets clicked) in the short window between sending
+    	 * and receiving the broadcast, the intent for the download would be processed twice. This is not
+    	 * a problem as the related code is safe to run multiple times as long as this happens in an atomic
+    	 * manner, which is the case as long as they are run from the main thread's queue. 
+    	 */
+    	Intent registeredIntent = new Intent(Const.DOWNLOAD_RECEIVER_REGISTERED);
+    	getActivity().sendBroadcast(registeredIntent);
     }
     
     /**
@@ -354,6 +365,11 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	 * incompletely downloaded file is deleted and the backup file is moved to its original location. Finally
 	 * a refresh of the UI is triggered to reflect the new state of the file.
 	 * 
+	 * This method is safe to invoke from multiple instances holding identical download lists, as long as the
+	 * calls are made in sequence (which is the case if they are invoked from the main thread's message loop.)
+	 * This is important as race conditions between registering a new receiver and unregistering a previous
+	 * one are possible, though unlikely.
+	 * 
 	 * @param reference The reference used by DownloadManager.
 	 * @param success True if the download completed successfully, false if it failed or was canceled.
 	 */
@@ -462,6 +478,12 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 	};
 
 	private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+		/*
+		 * This method is safe to invoke from multiple instances holding identical download lists, as long as
+		 * the calls are made in sequence (which is the case if they are invoked from the main thread's
+		 * message loop.) This is important as race conditions between registering a new receiver and
+		 * unregistering a previous one are possible, though unlikely.
+		 */
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
@@ -499,6 +521,12 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 				if (savedInstanceState != null)
 					mapDownloadIntent.putExtra(Const.KEY_SAVED_INSTANCE_STATE, savedInstanceState);
 				getActivity().getApplicationContext().startActivity(mapDownloadIntent);
+			} else if (intent.getAction().equals(Const.DOWNLOAD_RECEIVER_REGISTERED)) {
+				/*
+				 * A new download receiver has been registered. If we're released, unregister.
+				 */
+				if (isReleased)
+					getActivity().getApplicationContext().unregisterReceiver(downloadReceiver);
 			}
 		}
 	};
