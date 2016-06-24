@@ -65,6 +65,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -90,6 +91,7 @@ import android.view.Surface;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.GpsEventReceiver;
@@ -98,6 +100,8 @@ import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerList;
 
 public class MainActivity extends AppCompatActivity implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, SensorEventListener {
+	private static final String TAG = MainActivity.class.getSimpleName();
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -475,7 +479,10 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     	int itemId = item.getItemId();
 		if (itemId == R.id.action_agps) {
 			Log.i(this.getLocalClassName(), "User requested AGPS data update");
-			GpsEventReceiver.refreshAgps(this, false, true);
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+				GpsEventReceiver.refreshAgps(this, false, true);
+			else
+				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_REFRESH_AGPS);
 			return true;
 		} else if (itemId == R.id.action_settings) {
 			startActivity(new Intent(this, SettingsActivity.class));
@@ -491,11 +498,6 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		}
     }
     
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
     /**
      * Called when a location provider is disabled. Does nothing.
      */
@@ -505,38 +507,42 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
      * Called when a location provider is enabled. Does nothing.
      */
     public void onProviderEnabled(String provider) {}
-
+    
     @Override
-    protected void onResume() {
-        super.onResume();
-        isStopped = false;
-        registerLocationProviders(this);
-        sensorManager.registerListener(this, mOrSensor, iSensorRate);
-        sensorManager.registerListener(this, mAccSensor, iSensorRate);
-        sensorManager.registerListener(this, mGyroSensor, iSensorRate);
-        sensorManager.registerListener(this, mMagSensor, iSensorRate);
-        sensorManager.registerListener(this, mLightSensor, iSensorRate);
-        sensorManager.registerListener(this, mProximitySensor, iSensorRate);
-        sensorManager.registerListener(this, mPressureSensor, iSensorRate);
-        sensorManager.registerListener(this, mHumiditySensor, iSensorRate);
-        sensorManager.registerListener(this, mTempSensor, iSensorRate);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        	telephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
-        else
-        	Log.w("MainActivity", "ACCESS_COARSE_LOCATION permission not granted. Cell info will not be available.");
-        
-        // register for certain WiFi events indicating that new networks may be in range
-        // An access point scan has completed, and results are available.
-        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        
-        // The state of Wi-Fi connectivity has changed.
-        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
-        
-        // The RSSI (signal strength) has changed.
-        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
-        
-        // A connection to the supplicant has been established or the connection to the supplicant has been lost.
-        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    	if ((requestCode == Const.PERM_REQUEST_PHONE_STATE_LISTENER) && (grantResults.length > 0)) {
+    		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+    			registerPhoneStateListener();
+    		else {
+    			String message = getString(R.string.status_perm_location);
+    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    			Log.w(TAG, "ACCESS_COARSE_LOCATION permission not granted. Cell info will not be available.");
+    		}
+    	} else if ((requestCode == Const.PERM_REQUEST_REFRESH_AGPS) && (grantResults.length > 0)) {
+    		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+    			GpsEventReceiver.refreshAgps(this, false, true);
+    		else {
+    			String message = getString(R.string.status_perm_refresh_agps);
+    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    			Log.w(TAG, "Location permission not granted, cannot update AGPS data");
+    		}
+    	} else if ((requestCode == Const.PERM_REQUEST_LOCATION_UPDATES) && (grantResults.length > 0)) {
+    		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+    			requestLocationUpdates();
+    		else {
+    			String message = getString(R.string.status_perm_location);
+    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    			Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Location info will not be available.");
+    		}
+    	} else if ((requestCode == Const.PERM_REQUEST_CELL_INFO) && (grantResults.length > 0)) {
+    		if ((grantResults[0] == PackageManager.PERMISSION_GRANTED) && (radioSectionFragment != null))
+    			radioSectionFragment.updateCellData(null, null, null);
+    		else {
+    			String message = getString(R.string.status_perm_location);
+    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    			Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Cell info will not be available.");
+    		}
+    	}
     }
 
     /**
@@ -669,6 +675,39 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		}
 	}
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isStopped = false;
+        registerLocationProviders(this);
+        sensorManager.registerListener(this, mOrSensor, iSensorRate);
+        sensorManager.registerListener(this, mAccSensor, iSensorRate);
+        sensorManager.registerListener(this, mGyroSensor, iSensorRate);
+        sensorManager.registerListener(this, mMagSensor, iSensorRate);
+        sensorManager.registerListener(this, mLightSensor, iSensorRate);
+        sensorManager.registerListener(this, mProximitySensor, iSensorRate);
+        sensorManager.registerListener(this, mPressureSensor, iSensorRate);
+        sensorManager.registerListener(this, mHumiditySensor, iSensorRate);
+        sensorManager.registerListener(this, mTempSensor, iSensorRate);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        	registerPhoneStateListener();
+        else
+        	ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_PHONE_STATE_LISTENER);
+        
+        // register for certain WiFi events indicating that new networks may be in range
+        // An access point scan has completed, and results are available.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        
+        // The state of Wi-Fi connectivity has changed.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+        
+        // The RSSI (signal strength) has changed.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
+        
+        // A connection to the supplicant has been established or the connection to the supplicant has been lost.
+        registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+    }
+
     /**
      * Called when a location provider's status changes. Does nothing.
      */
@@ -698,24 +737,46 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	 */
 	protected void registerLocationProviders(Context context) {
 		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(Const.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
-		List<String> allProviders = locationManager.getAllProviders();
-		
 		locationManager.removeUpdates(this);
 		
 		if (mapSectionFragment != null)
 			mapSectionFragment.onLocationProvidersChanged(providers);
+		
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+			requestLocationUpdates();
+		else
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_LOCATION_UPDATES);
+	}
+	
+	/**
+	 * Registers the {@link PhoneStateListener} for all necessary events
+	 */
+	private void registerPhoneStateListener() {
+		telephonyManager.listen(mPhoneStateListener, (LISTEN_CELL_INFO | LISTEN_CELL_LOCATION | LISTEN_DATA_CONNECTION_STATE | LISTEN_SIGNAL_STRENGTHS));
+	}
+	
+	/**
+	 * Requests location updates from the selected location providers.
+	 * 
+	 * This method is intended to be called by {@link #registerLocationProviders(Context)} or by
+	 * {@link #onRequestPermissionsResult(int, String[], int[])}, depending on whether permissions need to be
+	 * requested.
+	 */
+	private void requestLocationUpdates() {
+		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(Const.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
+		List<String> allProviders = locationManager.getAllProviders();
 		
 		if (!isStopped) {
 			for (String pr : providers) {
 				if (allProviders.indexOf(pr) >= 0) {
 					try {
 						locationManager.requestLocationUpdates(pr, 0, 0, this);
-						Log.d("MainActivity", "Registered with provider: " + pr);
+						Log.d(TAG, "Registered with provider: " + pr);
 					} catch (SecurityException e) {
-						Log.w("MainActivity", "Permission not granted for " + pr + " location provider. Data display will not be available for this provider.");
+						Log.w(TAG, "Permission not granted for " + pr + " location provider. Data display will not be available for this provider.");
 					}
 				} else {
-					Log.w("MainActivity", "No " + pr + " location provider found. Data display will not be available for this provider.");
+					Log.w(TAG, "No " + pr + " location provider found. Data display will not be available for this provider.");
 				}
 			}
 		}

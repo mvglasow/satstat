@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
@@ -37,16 +38,20 @@ import com.vonglasow.michael.satstat.data.CellTowerLte;
 import com.vonglasow.michael.satstat.utils.WifiCapabilities;
 import com.vonglasow.michael.satstat.utils.WifiScanResultComparator;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.telephony.CellInfo;
 import android.telephony.CellLocation;
 import android.telephony.NeighboringCellInfo;
@@ -392,7 +397,10 @@ public class RadioSectionFragment extends Fragment {
 		};
 
 		//get current phone info (first update won't fire until the cell actually changes)
-		updateCellData(null, null, null);
+		if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+			updateCellData(null, null, null);
+		else
+			ActivityCompat.requestPermissions(mainActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_CELL_INFO);
 		//and make sure we have the correct network type
 		onNetworkTypeChanged(mainActivity.telephonyManager.getNetworkType());
 
