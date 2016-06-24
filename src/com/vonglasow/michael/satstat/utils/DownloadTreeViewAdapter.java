@@ -410,23 +410,27 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
      */
     private void startDownload(RemoteFile rfile, File mapFile, View view) {
     	Uri uri = rfile.getUri();
-    	DownloadManager.Request request = new DownloadManager.Request(uri);
-    	//request.setTitle(rfile.name);
-    	//request.setDescription("SatStat map download");
-    	//request.setDestinationInExternalFilesDir(getActivity(), dirType, subPath)
     	Uri destUri = Uri.fromFile(mapFile);
-    	request.setDestinationUri(destUri);
-    	Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
-    	Long reference = downloadManager.enqueue(request);
-    	DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference);
-    	downloadsByReference.put(reference, info);
-    	downloadsByUri.put(rfile.getUri(), info);
-    	downloadsByFile.put(mapFile, info);
-    	ProgressBar downloadFileProgress = (ProgressBar) view.findViewById(R.id.downloadFileProgress);
-    	downloadFileProgress.setVisibility(View.VISIBLE);
-    	downloadFileProgress.setMax((int) (rfile.size / 1024));
-    	downloadFileProgress.setProgress(0);
-    	startProgressChecker();
+    	try {
+    		DownloadManager.Request request = new DownloadManager.Request(uri);
+    		//request.setTitle(rfile.name);
+    		//request.setDescription("SatStat map download");
+    		//request.setDestinationInExternalFilesDir(getActivity(), dirType, subPath)
+    		request.setDestinationUri(destUri);
+    		Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
+    		Long reference = downloadManager.enqueue(request);
+    		DownloadInfo info = new DownloadInfo(rfile, uri, mapFile, reference);
+    		downloadsByReference.put(reference, info);
+    		downloadsByUri.put(rfile.getUri(), info);
+    		downloadsByFile.put(mapFile, info);
+    		ProgressBar downloadFileProgress = (ProgressBar) view.findViewById(R.id.downloadFileProgress);
+    		downloadFileProgress.setVisibility(View.VISIBLE);
+    		downloadFileProgress.setMax((int) (rfile.size / 1024));
+    		downloadFileProgress.setProgress(0);
+    		startProgressChecker();
+    	} catch (SecurityException e) {
+    		Log.w(TAG, String.format("Permission not granted to download %s to %s", uri.toString(), destUri.toString()));
+    	}
     }
     
     /**
