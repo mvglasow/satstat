@@ -733,6 +733,7 @@ public class RadioSectionFragment extends Fragment {
 				mCellsLte.updateAll(cellInfo);
 			} catch (SecurityException e) {
 				// Permission not granted, can't retrieve cell data
+				Log.w(TAG, "Permission not granted, TelephonyManager#getAllCellInfo() failed");
 			}
 		}
 
@@ -765,6 +766,7 @@ public class RadioSectionFragment extends Fragment {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
 		} catch (SecurityException e) {
 			// Permission not granted, can't retrieve cell data
+			Log.w(TAG, "Permission not granted, cannot retrieve cell location");
 		}
 
 		if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
@@ -816,6 +818,7 @@ public class RadioSectionFragment extends Fragment {
 			mCellsLte.updateAll(networkOperator, neighboringCells);
 		} catch (SecurityException e) {
 			// Permission not granted, can't retrieve cell data
+			Log.w(TAG, "Permission not granted, cannot get neighboring cell info");
 		}
 
 		showCells();
