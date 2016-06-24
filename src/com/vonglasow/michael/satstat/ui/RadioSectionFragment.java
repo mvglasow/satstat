@@ -807,6 +807,16 @@ public class RadioSectionFragment extends Fragment {
 					"Got SignalStrength but serving cell is null");
 		}
 
+		updateNeighboringCellInfo();
+
+		showCells();
+	}
+
+
+	/**
+	 * Requeries neighboring cells
+	 */
+	protected void updateNeighboringCellInfo() {
 		try {
 			/*
 			 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
@@ -820,19 +830,5 @@ public class RadioSectionFragment extends Fragment {
 			// Permission not granted, can't retrieve cell data
 			Log.w(TAG, "Permission not granted, cannot get neighboring cell info");
 		}
-
-		showCells();
-	}
-
-
-	/**
-	 * Requeries neighboring cells
-	 */
-	protected void updateNeighboringCellInfo() {
-		// this may not be supported on some devices (returns no data)
-		String networkOperator = mainActivity.telephonyManager.getNetworkOperator();
-		List<NeighboringCellInfo> neighboringCells = mainActivity.telephonyManager.getNeighboringCellInfo();
-		mCellsGsm.updateAll(networkOperator, neighboringCells);
-		mCellsLte.updateAll(networkOperator, neighboringCells);
 	}
 }
