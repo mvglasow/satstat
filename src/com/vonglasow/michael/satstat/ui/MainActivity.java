@@ -651,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			String key) {
 		if (key.equals(Const.KEY_PREF_LOC_PROV)) {
 			// user selected or deselected location providers, refresh list
-			registerLocationProviders(this);
+			registerLocationProviders();
 		} else if (key.equals(Const.KEY_PREF_UNIT_TYPE)) {
 			prefUnitType = sharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
 		} else if (key.equals(Const.KEY_PREF_COORD)) {
@@ -680,7 +680,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     protected void onStart() {
         super.onStart();
         isStopped = false;
-        registerLocationProviders(this);
+        registerLocationProviders();
         sensorManager.registerListener(this, mOrSensor, iSensorRate);
         sensorManager.registerListener(this, mAccSensor, iSensorRate);
         sensorManager.registerListener(this, mGyroSensor, iSensorRate);
@@ -736,9 +736,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     
 	/**
 	 * Registers for updates with selected location providers.
-	 * @param context
 	 */
-	protected void registerLocationProviders(Context context) {
+	protected void registerLocationProviders() {
 		Set<String> providers = new HashSet<String>(mSharedPreferences.getStringSet(Const.KEY_PREF_LOC_PROV, new HashSet<String>(Arrays.asList(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}))));
 		locationManager.removeUpdates(this);
 		
