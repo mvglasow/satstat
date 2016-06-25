@@ -183,8 +183,13 @@ public class Const {
 	public static final int PERM_REQUEST_STARTUP = 6;
 
 	/**
+	 * Permission request when using offline map
+	 */
+	public static final int PERM_REQUEST_OFFLINE_MAP = 7;
+
+	/**
 	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
 	 */
-	public static final int PERM_REQUEST_MAX = 6;
+	public static final int PERM_REQUEST_MAX = 7;
 
 }

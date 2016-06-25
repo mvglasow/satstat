@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	LocationManager locationManager;
 	SensorManager sensorManager;
 	
-	boolean[] permsRequested = new boolean[Const.PERM_REQUEST_MAX];
+	boolean[] permsRequested = new boolean[Const.PERM_REQUEST_MAX + 1];
 
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
@@ -541,7 +541,16 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     				Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Location and cell info will not be available.");
     			} // if grantResults[i]
     		} else if (permissions[i].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-    			// TODO allow access to the map
+    			if (permsRequested[Const.PERM_REQUEST_OFFLINE_MAP] && (mapSectionFragment != null)) {
+    				if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+    					mapSectionFragment.onMapSourceChanged();
+    					permsRequested[Const.PERM_REQUEST_OFFLINE_MAP] = false;
+    				} else {
+    					String message = getString(R.string.status_perm_offline_map);
+    					Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    					Log.w(TAG, "WRITE_EXTERNAL_STORAGE permission not granted. Offline map will not be available.");
+    				}
+    			}
     		} // if permissions[i].equals()
     	// for i
     }
@@ -666,6 +675,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			prefMapOffline = sharedPreferences.getBoolean(Const.KEY_PREF_MAP_OFFLINE, prefMapOffline);
 			if (mapSectionFragment != null)
 				mapSectionFragment.onMapSourceChanged();
+			if (prefMapOffline && (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED))
+				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.PERM_REQUEST_OFFLINE_MAP);
 		} else if (key.equals(Const.KEY_PREF_MAP_PATH)) {
 			prefMapPath = sharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPath);
 			if (mapSectionFragment != null)
@@ -707,6 +718,17 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         
         // A connection to the supplicant has been established or the connection to the supplicant has been lost.
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+
+		permsRequested[Const.PERM_REQUEST_OFFLINE_MAP] = prefMapOffline;
+
+		/*
+		 * Refresh map layers when offline map is selected and we have storage permission
+		 * (it might have been granted while we were gone, in which case we wouldn't have the layer)
+		 */
+		if (prefMapOffline
+				&& (mapSectionFragment != null)
+				&& (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED))
+			mapSectionFragment.onMapSourceChanged();
 
         requestPermissions();
     }
@@ -795,16 +817,19 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	}
 	
 	private void requestPermissions() {
-		ArrayList<String> perms = new ArrayList<String>(Arrays.asList(new String[]{
-				Manifest.permission.ACCESS_FINE_LOCATION,
-				Manifest.permission.WRITE_EXTERNAL_STORAGE
-		}));
+		ArrayList<String> perms = new ArrayList<String>();
 
-		for (int i = 0; i < perms.size(); )
-			if (ContextCompat.checkSelfPermission(this, perms.get(i)) == PackageManager.PERMISSION_GRANTED)
-				perms.remove(i);
-			else
-				i++;
+		if (permsRequested[Const.PERM_REQUEST_PHONE_STATE_LISTENER]
+				|| permsRequested[Const.PERM_REQUEST_LOCATION_UPDATES]
+				|| permsRequested[Const.PERM_REQUEST_CELL_INFO]) {
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+				perms.add(Manifest.permission.ACCESS_FINE_LOCATION);
+		}
+
+		if (permsRequested[Const.PERM_REQUEST_OFFLINE_MAP]) {
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+				perms.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		}
 
 		if (perms.size() > 0)
 			ActivityCompat.requestPermissions(this, perms.toArray(new String[]{}), Const.PERM_REQUEST_STARTUP);

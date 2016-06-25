@@ -57,8 +57,11 @@ import org.mapsforge.map.util.MapViewProjection;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -69,6 +72,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -224,8 +228,11 @@ public class MapSectionFragment extends Fragment {
 		LayerManager layerManager = mapMap.getLayerManager();
 		Layers layers = layerManager.getLayers();
 
-		if (mainActivity.prefMapOffline) {
-			// use offline map tiles
+		if (mainActivity.prefMapOffline && (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+			/*
+			 * If offline maps are enabled AND we have storage permission, use offline map tiles.
+			 * Skip this step if we don't have permission, else we would pollute the cache with blank tiles.
+			 */
 			if (mapRendererTileCache == null)
 				mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
 						Const.TILE_CACHE_INTERNAL_RENDER_THEME,
@@ -272,9 +279,9 @@ public class MapSectionFragment extends Fragment {
 			mapRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
 
 			//mapRendererLayer.setTextScale(1.5f); // FIXME
-			layers.add(mapRendererLayer);
+			layers.add(0, mapRendererLayer);
 			mapAttribution.setText(R.string.osm_attribution);
-		} else {
+		} else if (!mainActivity.prefMapOffline) {
 			// use online map tiles
 			if (mapDownloadTileCache == null)
 				mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
@@ -289,9 +296,10 @@ public class MapSectionFragment extends Fragment {
 			mapDownloadLayer = new TileDownloadLayer(mapDownloadTileCache,
 					mapMap.getModel().mapViewPosition, onlineTileSource,
 					AndroidGraphicFactory.INSTANCE);
-			layers.add(mapDownloadLayer);
+			layers.add(0, mapDownloadLayer);
 			mapAttribution.setText(R.string.mapquest_attribution);
-		}
+		} else
+			mapAttribution.setText("");
 
 		//parse list of location providers
 		if (createOverlays)

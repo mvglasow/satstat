@@ -270,5 +270,6 @@
     <string name="status_perm_map_download">To download offline maps, you must grant permission to access files</string>
     <string name="status_perm_location">No location or radio information will be shown unless you grant permission to access the device\'s location</string>
     <string name="status_perm_refresh_agps">To refresh AGPS data, you must grant permission to access the device\'s location</string>
+    <string name="status_perm_offline_map">To use offline maps, you must grant permission to access files</string>
 
 </resources>
