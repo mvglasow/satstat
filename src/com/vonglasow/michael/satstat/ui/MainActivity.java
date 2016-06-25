@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -147,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	LocationManager locationManager;
 	SensorManager sensorManager;
 	
+	boolean[] permsRequested = new boolean[Const.PERM_REQUEST_MAX];
+
 	private Sensor mOrSensor;
 	private Sensor mAccSensor;
 	private Sensor mGyroSensor;
@@ -510,39 +513,37 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    	if ((requestCode == Const.PERM_REQUEST_PHONE_STATE_LISTENER) && (grantResults.length > 0)) {
-    		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-    			registerPhoneStateListener();
-    		else {
-    			String message = getString(R.string.status_perm_location);
-    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    			Log.w(TAG, "ACCESS_COARSE_LOCATION permission not granted. Cell info will not be available.");
-    		}
-    	} else if ((requestCode == Const.PERM_REQUEST_REFRESH_AGPS) && (grantResults.length > 0)) {
-    		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-    			GpsEventReceiver.refreshAgps(this, false, true);
-    		else {
-    			String message = getString(R.string.status_perm_refresh_agps);
-    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    			Log.w(TAG, "Location permission not granted, cannot update AGPS data");
-    		}
-    	} else if ((requestCode == Const.PERM_REQUEST_LOCATION_UPDATES) && (grantResults.length > 0)) {
-    		if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-    			requestLocationUpdates();
-    		else {
-    			String message = getString(R.string.status_perm_location);
-    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    			Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Location info will not be available.");
-    		}
-    	} else if ((requestCode == Const.PERM_REQUEST_CELL_INFO) && (grantResults.length > 0)) {
-    		if ((grantResults[0] == PackageManager.PERMISSION_GRANTED) && (radioSectionFragment != null))
-    			radioSectionFragment.updateCellData(null, null, null);
-    		else {
-    			String message = getString(R.string.status_perm_location);
-    			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    			Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Cell info will not be available.");
-    		}
-    	}
+    	for (int i = 0; i < grantResults.length; i++)
+    		if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+    			if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+    				if (permsRequested[Const.PERM_REQUEST_PHONE_STATE_LISTENER]) {
+    					registerPhoneStateListener();
+    					permsRequested[Const.PERM_REQUEST_PHONE_STATE_LISTENER] = false;
+    				}
+    				if (permsRequested[Const.PERM_REQUEST_LOCATION_UPDATES]) {
+    					requestLocationUpdates();
+    					permsRequested[Const.PERM_REQUEST_LOCATION_UPDATES] = false;
+    				}
+    				if (permsRequested[Const.PERM_REQUEST_CELL_INFO]) {
+    					if (radioSectionFragment != null)
+    						radioSectionFragment.updateCellData(null, null, null);
+    					permsRequested[Const.PERM_REQUEST_CELL_INFO] = false;
+    				}
+    				if (requestCode == Const.PERM_REQUEST_REFRESH_AGPS)
+    					GpsEventReceiver.refreshAgps(this, false, true);
+    			} else if (requestCode == Const.PERM_REQUEST_REFRESH_AGPS) {
+    				String message = getString(R.string.status_perm_refresh_agps);
+    				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    				Log.w(TAG, "Location permission not granted, cannot update AGPS data");
+    			} else {
+    				String message = getString(R.string.status_perm_location);
+    				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    				Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Location and cell info will not be available.");
+    			} // if grantResults[i]
+    		} else if (permissions[i].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+    			// TODO allow access to the map
+    		} // if permissions[i].equals()
+    	// for i
     }
 
     /**
@@ -692,7 +693,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         	registerPhoneStateListener();
         else
-        	ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_PHONE_STATE_LISTENER);
+        	permsRequested[Const.PERM_REQUEST_PHONE_STATE_LISTENER] = true;
         
         // register for certain WiFi events indicating that new networks may be in range
         // An access point scan has completed, and results are available.
@@ -706,6 +707,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         
         // A connection to the supplicant has been established or the connection to the supplicant has been lost.
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+
+        requestPermissions();
     }
 
     /**
@@ -745,7 +748,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
 			requestLocationUpdates();
 		else
-			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_LOCATION_UPDATES);
+			permsRequested[Const.PERM_REQUEST_LOCATION_UPDATES] = true;
 	}
 	
 	/**
@@ -792,6 +795,22 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         }
 	}
 	
+	private void requestPermissions() {
+		ArrayList<String> perms = new ArrayList<String>(Arrays.asList(new String[]{
+				Manifest.permission.ACCESS_FINE_LOCATION,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE
+		}));
+
+		for (int i = 0; i < perms.size(); )
+			if (ContextCompat.checkSelfPermission(this, perms.get(i)) == PackageManager.PERMISSION_GRANTED)
+				perms.remove(i);
+			else
+				i++;
+
+		if (perms.size() > 0)
+			ActivityCompat.requestPermissions(this, perms.toArray(new String[]{}), Const.PERM_REQUEST_STARTUP);
+	}
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

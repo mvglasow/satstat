@@ -400,7 +400,7 @@ public class RadioSectionFragment extends Fragment {
 		if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
 			updateCellData(null, null, null);
 		else
-			ActivityCompat.requestPermissions(mainActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_CELL_INFO);
+			mainActivity.permsRequested[Const.PERM_REQUEST_CELL_INFO] = true;
 		//and make sure we have the correct network type
 		onNetworkTypeChanged(mainActivity.telephonyManager.getNetworkType());
 

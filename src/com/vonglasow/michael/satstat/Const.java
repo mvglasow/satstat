@@ -177,4 +177,14 @@ public class Const {
 	 */
 	public static final int PERM_REQUEST_CELL_INFO = 5;
 
+	/**
+	 * Permission request on startup (all UI permissions)
+	 */
+	public static final int PERM_REQUEST_STARTUP = 6;
+
+	/**
+	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
+	 */
+	public static final int PERM_REQUEST_MAX = 6;
+
 }
