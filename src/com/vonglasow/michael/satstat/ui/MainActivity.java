@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         	       (rot == Surface.ROTATION_0 || rot == Surface.ROTATION_180) ||
         	       config.orientation == Configuration.ORIENTATION_PORTRAIT &&
         	       (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270));
-        Log.d("MainActivity", "isWideScreen=" + Boolean.toString(isWideScreen));
+        Log.d(TAG, "isWideScreen=" + Boolean.toString(isWideScreen));
         
         // Create the adapter that will return a fragment for each of the
         // primary sections of the app.
@@ -481,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     public boolean onOptionsItemSelected(MenuItem item) {
     	int itemId = item.getItemId();
 		if (itemId == R.id.action_agps) {
-			Log.i(this.getLocalClassName(), "User requested AGPS data update");
+			Log.i(TAG, "User requested AGPS data update");
 			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
 				GpsEventReceiver.refreshAgps(this, false, true);
 			else
@@ -727,7 +727,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
         	unregisterReceiver(mWifiScanReceiver);
         } catch (IllegalArgumentException e) {
         	// sometimes the receiver isn't registered, make sure we don't crash
-        	Log.d(this.getLocalClassName(), "WifiScanReceiver was never registered, caught exception");
+        	Log.d(TAG, "WifiScanReceiver was never registered, caught exception");
         }
         // we'll just skip that so locations will get invalidated in any case
         //providerInvalidationHandler.removeCallbacksAndMessages(null);
@@ -791,7 +791,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 
         	locationManager.addGpsStatusListener(this);
         } catch (SecurityException e) {
-        	Log.w("MainActivity", "Permission not granted for " + LocationManager.GPS_PROVIDER + " location provider. Data display will not be available for this provider.");
+        	Log.w(TAG, "Permission not granted for " + LocationManager.GPS_PROVIDER + " location provider. Data display will not be available for this provider.");
         }
 	}
 	
