@@ -105,7 +105,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -146,16 +146,18 @@
     <string name="pref_wifi">WiFi kapcsolatkor</string>
     <string name="pref_wifi_summary">AGPS adat frissítése, ha az eszközöm WiFi hálózaton van</string>
     <string name="pref_freq">Frissítési gyakoriság</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Minden alkalommal</item>
-        <item >Naponta egyszer</item>
-        <item >Kétnaponta</item>
-        <item >Háromnaponta</item>
-        <item >Négynaponta</item>
-        <item >Ötnaponta</item>
-        <item >Hatnaponta</item>
-        <item >Hetente egyszer</item>
+        <item>Minden alkalommal</item>
+        <item>Naponta egyszer</item>
+        <item>Kétnaponta</item>
+        <item>Háromnaponta</item>
+        <item>Négynaponta</item>
+        <item>Ötnaponta</item>
+        <item>Hatnaponta</item>
+        <item>Hetente egyszer</item>
     </string-array>
+
     <string name="pref_lastupdate">Utolsó frissítés</string>
     <string name="pref_networks">Hálózatok</string>
     <string name="pref_networks_summary">AGPS adat frissítése, ha az eszközöm valamelyik kiválasztott hálózathoz csatlakozik</string>
@@ -166,12 +168,14 @@
     <string name="pref_unit">Metrikus mértékegységek használata</string>
     <string name="pref_unit_summary">Kikapcsolva angolszász mértékegységek fognak megjelenni (kivéve az érzékelők lapján)</string>
     <string name="pref_coord">Koordináták</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Tizedes fok</item>
-        <item >Fok, tizedes perc</item>
-        <item >Fok, perc, másodperc</item>
-        <item >MGRS</item>
+        <item>Tizedes fok</item>
+        <item>Fok, tizedes perc</item>
+        <item>Fok, perc, másodperc</item>
+        <item>MGRS</item>
     </string-array>
+
     <string name="pref_utc">GPS idő megjelenítése UTC-ben</string>
     <string name="pref_utc_summary">A GPS fix pozíció megjelenítése UTC szerint helyi idő helyett.</string>
     <string name="pref_cid">UMTS/LTE cella ID-k különválasztása</string>
@@ -236,5 +240,5 @@
     <string name="action_yes">Igen</string>
     <string name="action_no">Nem</string>
     <string name="status_downloads_completed">Minden letöltés befejeződött</string>
-    
+
 </resources>

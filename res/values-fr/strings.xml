@@ -100,7 +100,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         Ce programme est un logiciel libre; vous pouvez le redistribuer ou le
         modifier suivant les termes de la GNU General Public License telle que publiée
@@ -134,16 +134,18 @@
     <string name="pref_wifi">A la connexion WiFi</string>
     <string name="pref_wifi_summary">Recharger données AGPS lorsque mon appareil se connecte à un réseau WiFi</string>
     <string name="pref_freq">Fréquence</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Chaque fois</item>
-        <item >Une fois par jour</item>
-        <item >Une fois chaque 2 jours</item>
-        <item >Une fois chaque 3 jours</item>
-        <item >Une fois chaque 4 jours</item>
-        <item >Une fois chaque 5 jours</item>
-        <item >Une fois chaque 6 jours</item>
-        <item >Une fois par semaine</item>
+        <item>Chaque fois</item>
+        <item>Une fois par jour</item>
+        <item>Une fois chaque 2 jours</item>
+        <item>Une fois chaque 3 jours</item>
+        <item>Une fois chaque 4 jours</item>
+        <item>Une fois chaque 5 jours</item>
+        <item>Une fois chaque 6 jours</item>
+        <item>Une fois par semaine</item>
     </string-array>
+
     <string name="pref_lastupdate">Dernière mise à jour</string>
     <string name="pref_networks">Réseaux</string>
     <string name="pref_networks_summary">Recharger données AGPS lorsque mon appareil se connecte à un des réseaux selectionnés</string>
@@ -154,11 +156,12 @@
     <!-- <string name="pref_unit">Use metric units</string> -->
     <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
     <string name="pref_coord">Coordonnées</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Degrés</item>
-        <item >Degrés et minutes</item>
-        <item >Degrés, minutes et secondes</item>
-        <item >MGRS</item>
+        <item>Degrés</item>
+        <item>Degrés et minutes</item>
+        <item>Degrés, minutes et secondes</item>
+        <item>MGRS</item>
     </string-array>
     <!-- <string name="pref_utc">Display GPS time in UTC</string> -->
     <!-- <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string> -->
@@ -189,10 +192,17 @@
     <!-- <string name="title_legend_map_prov">Location from %s provider</string> -->
     <!-- <string name="title_legend_map_stale">Stale location from any provider</string> -->
     <string name="pref_wifi_sort">Trier les reseaux WiFi</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >Par BSSID</item>
-        <item >Par nom</item>
-        <item >Par canal</item>
-        <item >Par niveau du signal</item>
+        <item>Par BSSID</item>
+        <item>Par nom</item>
+        <item>Par canal</item>
+        <item>Par niveau du signal</item>
     </string-array>
+
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_yes">Oui</string>
+    <string name="action_no">Non</string>
+
 </resources>

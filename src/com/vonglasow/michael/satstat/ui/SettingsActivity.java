@@ -29,11 +29,8 @@ import org.mapsforge.map.layer.cache.TileCache;
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.PasvLocListenerService;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
-import com.vonglasow.michael.satstat.R.xml;
 
+import android.Manifest;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,6 +39,8 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +57,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 
 public class SettingsActivity extends AppCompatActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener{
 
@@ -209,7 +209,10 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 
 			return success;
 		} else if (preference == prefMapDownload) {
-			startActivity(new Intent(this, MapDownloadActivity.class));
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+				startActivity(new Intent(this, MapDownloadActivity.class));
+			else
+				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.PERM_REQUEST_MAP_DOWNLOAD);
 			return true;
 		} else if (preference == prefMapPurge) {
 			TileCache mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this,
@@ -237,6 +240,19 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 			return true;
 		} else
 			return false;
+	}
+
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+		if ((requestCode == Const.PERM_REQUEST_MAP_DOWNLOAD) && (grantResults.length > 0)) {
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+				startActivity(new Intent(this, MapDownloadActivity.class));
+			else {
+				String message = getString(R.string.status_perm_map_download);
+				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+			}
+		}
 	}
 
 

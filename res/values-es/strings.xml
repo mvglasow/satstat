@@ -101,7 +101,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -140,16 +140,18 @@
     <string name="pref_wifi">En conexión WiFi</string>
     <string name="pref_wifi_summary">Actualizar dados AGPS al establecer una conexión a una red WiFi</string>
     <string name="pref_freq">Frecuencia de actualización</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Cada vez</item>
-        <item >Una vez cada día</item>
-        <item >Una vez cada 2 días</item>
-        <item >Una vez cada 3 días</item>
-        <item >Una vez cada 4 días</item>
-        <item >Una vez cada 5 días</item>
-        <item >Una vez cada 7 días</item>
-        <item >Una vez cada semana</item>
+        <item>Cada vez</item>
+        <item>Una vez cada día</item>
+        <item>Una vez cada 2 días</item>
+        <item>Una vez cada 3 días</item>
+        <item>Una vez cada 4 días</item>
+        <item>Una vez cada 5 días</item>
+        <item>Una vez cada 7 días</item>
+        <item>Una vez cada semana</item>
     </string-array>
+
     <string name="pref_lastupdate">Última actualización</string>
     <string name="pref_networks">Redes</string>
     <string name="pref_networks_summary">Actualizar dados AGPS al establecer una conexión a una de las redes seleccionadas</string>
@@ -160,11 +162,12 @@
     <string name="pref_unit">Usar unidades métricas</string>
     <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
     <string name="pref_coord">Coordenadas</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Grados (notación decimal)</item>
-        <item >Grados y minutos</item>
-        <item >Grados, minutos y segundos</item>
-        <item >MGRS</item>
+        <item>Grados (notación decimal)</item>
+        <item>Grados y minutos</item>
+        <item>Grados, minutos y segundos</item>
+        <item>MGRS</item>
     </string-array>
     <!-- <string name="pref_utc">Display GPS time in UTC</string> -->
     <!-- <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string> -->
@@ -195,10 +198,31 @@
     <string name="title_legend_map_prov">Ubicación de fuente %s</string>
     <!-- <string name="title_legend_map_stale">Stale location from any provider</string> -->
     <string name="pref_wifi_sort">Ordenar las redes WiFi</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >Por BSSID</item>
-        <item >Por nombre</item>
-        <item >Por canal</item>
-        <item >Por livel del señal</item>
+        <item>Por BSSID</item>
+        <item>Por nombre</item>
+        <item>Por canal</item>
+        <item>Por livel del señal</item>
     </string-array>
+
+    <string name="pref_map_offline">Usar mapa offline</string>
+    <string name="pref_map_offline_summary">Renderizar las mapas en el dispositivo (se necesita descargar una mapa offline)</string>
+    <string name="pref_map_path">Carpeta para mapas offline</string>
+    <string name="map_path_title">Ruta a la carpeta para mapas offline:</string>
+    <string name="map_path_fileman">Para poder seleccionar la carpeta, necesita instalar un administrador de archivos soportado.</string>
+    <string name="action_ok">Aceptar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="pref_map_download">Descargar mapa offline</string>
+    <string name="pref_map_purge">Borrar tiles en caché</string>
+    <string name="pref_map_purge_summary">Todos los tiles serán descargados o renderizados de nuevo, útil en caso de problemas</string>
+    <string name="status_map_purged">Los tiles en cache están borrados</string>
+    <string name="title_activity_map_download">Descargar mapa offline</string>
+    <string name="status_folder_empty">La carpeta está vacía</string>
+    <string name="status_already_downloading">Una descarga de una mapa del mismo nombre ya está en curso</string>
+    <string name="confirm_download">Parece que ya tienes una copia actual de esta mapa. ¿Quieres descargarla sin embargo?</string>
+    <string name="action_yes">Si</string>
+    <string name="action_no">No</string>
+    <string name="status_downloads_completed">Todas las descargas están terminadas</string>
+
 </resources>

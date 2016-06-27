@@ -45,6 +45,7 @@ public class Const {
 	public static final String GPS_ENABLED_CHANGE = "android.location.GPS_ENABLED_CHANGE";
 	public static final String GPS_FIX_CHANGE = "android.location.GPS_FIX_CHANGE";
 	public static final String AGPS_DATA_EXPIRED = "com.vonglasow.michael.satstat.AGPS_DATA_EXPIRED";
+	public static final String DOWNLOAD_RECEIVER_REGISTERED = "com.vonglasow.michael.satstat.DOWNLOAD_RECEIVER_REGISTERED";
 	
 	
 	/**
@@ -150,5 +151,45 @@ public class Const {
 	 * Key for a previously saved state of an {@code Activity} instance
 	 */
 	public static final String KEY_SAVED_INSTANCE_STATE = "savedInstanceState";
+	
+	/**
+	 * Permission request when launching the map download dialog
+	 */
+	public static final int PERM_REQUEST_MAP_DOWNLOAD = 1;
+
+	/**
+	 * Permission request when registering phone state listener
+	 */
+	public static final int PERM_REQUEST_PHONE_STATE_LISTENER = 2;
+
+	/**
+	 * Permission request when refreshing AGPS data
+	 */
+	public static final int PERM_REQUEST_REFRESH_AGPS = 3;
+
+	/**
+	 * Permission request when requesting location updates
+	 */
+	public static final int PERM_REQUEST_LOCATION_UPDATES = 4;
+
+	/**
+	 * Permission request when requesting cell information
+	 */
+	public static final int PERM_REQUEST_CELL_INFO = 5;
+
+	/**
+	 * Permission request on startup (all UI permissions)
+	 */
+	public static final int PERM_REQUEST_STARTUP = 6;
+
+	/**
+	 * Permission request when using offline map
+	 */
+	public static final int PERM_REQUEST_OFFLINE_MAP = 7;
+
+	/**
+	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
+	 */
+	public static final int PERM_REQUEST_MAX = 7;
 
 }

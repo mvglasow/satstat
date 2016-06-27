@@ -105,7 +105,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
         der GNU General Public License, wie von der Free Software Foundation,
@@ -144,16 +144,18 @@
     <string name="pref_wifi">Bei WLAN-Verbindung</string>
     <string name="pref_wifi_summary">AGPS-Daten aktualisieren, wenn sich mein Gerät mit einem WLAN-Netzwerk verbindet</string>
     <string name="pref_freq">Aktualisierungsintervall</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Jedes Mal</item>
-        <item >Einmal täglich</item>
-        <item >Einmal alle 2 Tage</item>
-        <item >Einmal alle 3 Tage</item>
-        <item >Einmal alle 4 Tage</item>
-        <item >Einmal alle 5 Tage</item>
-        <item >Einmal alle 6 Tage</item>
-        <item >Einmal pro Woche</item>
+        <item>Jedes Mal</item>
+        <item>Einmal täglich</item>
+        <item>Einmal alle 2 Tage</item>
+        <item>Einmal alle 3 Tage</item>
+        <item>Einmal alle 4 Tage</item>
+        <item>Einmal alle 5 Tage</item>
+        <item>Einmal alle 6 Tage</item>
+        <item>Einmal pro Woche</item>
     </string-array>
+
     <string name="pref_lastupdate">Letzte Aktualisierung</string>
     <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Netze</string>
@@ -165,12 +167,14 @@
     <string name="pref_unit">Metrische Einheiten verwenden</string>
     <string name="pref_unit_summary">Wenn abgewählt, werden amerikanische Maßeinheiten verwendet (Ausnahme Sensoransicht)</string>
     <string name="pref_coord">Koordinaten</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Grad (dezimal)</item>
-        <item >Grad, Minuten</item>
-        <item >Grad, Minuten, Sekunden</item>
-        <item >MGRS</item>
+        <item>Grad (dezimal)</item>
+        <item>Grad, Minuten</item>
+        <item>Grad, Minuten, Sekunden</item>
+        <item>MGRS</item>
     </string-array>
+
     <string name="pref_utc">GPS-Zeit in UTC anzeigen</string>
     <string name="pref_utc_summary">GPS-Zeit in UTC statt in Ortszeit anzeigen</string>
     <string name="pref_cid">UMTS/LTE Cell-IDs teilen</string>
@@ -200,10 +204,31 @@
     <string name="title_legend_map_prov">Standort von Quelle: %s</string>
     <string name="title_legend_map_stale">Veralteter Standort von beliebiger Quelle</string>
     <string name="pref_wifi_sort">WLAN-Netze sortieren</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >Nach BSSID</item>
-        <item >Nach Name</item>
-        <item >Nach Kanal</item>
-        <item >Nach Signalstärke</item>
+        <item>Nach BSSID</item>
+        <item>Nach Name</item>
+        <item>Nach Kanal</item>
+        <item>Nach Signalstärke</item>
     </string-array>
+
+    <string name="pref_map_offline">Offline-Karte benutzen</string>
+    <string name="pref_map_offline_summary">Karten auf dem Gerät rendern (Download einer Offline-Karte erforderlich)</string>
+    <string name="pref_map_path">Ordner für Offline-Karten</string>
+    <string name="map_path_title">Pfad des Ordners für Offline-Karten:</string>
+    <string name="map_path_fileman">Um nach dem Ordner für Offline-Karten zu suchen, benötigen Sie einen unterstützten Dateimanager.</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="pref_map_download">Offline-Karte herunterladen</string>
+    <string name="pref_map_purge">Karten-Cache löschen</string>
+    <string name="pref_map_purge_summary">Alle Kacheln werden neu heruntergeladen oder gerendert, hilfreich bei der Fehlersuche</string>
+    <string name="status_map_purged">Karten-Cache gelöscht</string>
+    <string name="title_activity_map_download">Offline-Karte herunterladen</string>
+    <string name="status_folder_empty">Ordner ist leer</string>
+    <string name="status_already_downloading">Ein Download für eine Karte mit gleichem Namen läuft bereits</string>
+    <string name="confirm_download">Sie haben offensichtlich bereits eine aktuelle Version dieser Karte. Trotzdem herunterladen?</string>
+    <string name="action_yes">Ja</string>
+    <string name="action_no">Nein</string>
+    <string name="status_downloads_completed">Alle Downloads sind abgeschlossen</string>
+
 </resources>

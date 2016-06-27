@@ -25,11 +25,6 @@ import static android.hardware.SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM;
 import static android.hardware.SensorManager.SENSOR_STATUS_UNRELIABLE;
 
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.color;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.Bundle;

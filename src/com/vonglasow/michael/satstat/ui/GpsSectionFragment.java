@@ -45,9 +45,6 @@ import android.widget.TextView;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
 import com.vonglasow.michael.satstat.widgets.GpsSnrView;
 import com.vonglasow.michael.satstat.widgets.GpsStatusView;
 

@@ -19,11 +19,6 @@
 
 package com.vonglasow.michael.satstat.ui;
 
-import static android.telephony.PhoneStateListener.LISTEN_CELL_INFO;
-import static android.telephony.PhoneStateListener.LISTEN_CELL_LOCATION;
-import static android.telephony.PhoneStateListener.LISTEN_DATA_CONNECTION_STATE;
-import static android.telephony.PhoneStateListener.LISTEN_NONE;
-import static android.telephony.PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
 import static android.telephony.TelephonyManager.PHONE_TYPE_CDMA;
 import static android.telephony.TelephonyManager.PHONE_TYPE_GSM;
 
@@ -31,12 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.color;
-import com.vonglasow.michael.satstat.R.drawable;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
 import com.vonglasow.michael.satstat.data.CellTower;
 import com.vonglasow.michael.satstat.data.CellTowerCdma;
 import com.vonglasow.michael.satstat.data.CellTowerGsm;
@@ -51,15 +42,14 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.telephony.CellInfo;
@@ -407,7 +397,10 @@ public class RadioSectionFragment extends Fragment {
 		};
 
 		//get current phone info (first update won't fire until the cell actually changes)
-		updateCellData(null, null, null);
+		if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+			updateCellData(null, null, null);
+		else
+			mainActivity.permsRequested[Const.PERM_REQUEST_CELL_INFO] = true;
 		//and make sure we have the correct network type
 		onNetworkTypeChanged(mainActivity.telephonyManager.getNetworkType());
 
@@ -748,6 +741,7 @@ public class RadioSectionFragment extends Fragment {
 				mCellsLte.updateAll(cellInfo);
 			} catch (SecurityException e) {
 				// Permission not granted, can't retrieve cell data
+				Log.w(TAG, "Permission not granted, TelephonyManager#getAllCellInfo() failed");
 			}
 		}
 
@@ -780,6 +774,7 @@ public class RadioSectionFragment extends Fragment {
 			networkTimehandler.removeCallbacks(networkTimeRunnable);
 		} catch (SecurityException e) {
 			// Permission not granted, can't retrieve cell data
+			Log.w(TAG, "Permission not granted, cannot retrieve cell location");
 		}
 
 		if ((mServingCell == null) || (mServingCell.getGeneration() <= 0)) {
@@ -820,6 +815,16 @@ public class RadioSectionFragment extends Fragment {
 					"Got SignalStrength but serving cell is null");
 		}
 
+		updateNeighboringCellInfo();
+
+		showCells();
+	}
+
+
+	/**
+	 * Requeries neighboring cells
+	 */
+	protected void updateNeighboringCellInfo() {
 		try {
 			/*
 			 * NeighboringCellInfo is not supported on some devices and will return no data. It lists
@@ -831,20 +836,7 @@ public class RadioSectionFragment extends Fragment {
 			mCellsLte.updateAll(networkOperator, neighboringCells);
 		} catch (SecurityException e) {
 			// Permission not granted, can't retrieve cell data
+			Log.w(TAG, "Permission not granted, cannot get neighboring cell info");
 		}
-
-		showCells();
-	}
-
-
-	/**
-	 * Requeries neighboring cells
-	 */
-	protected void updateNeighboringCellInfo() {
-		// this may not be supported on some devices (returns no data)
-		String networkOperator = mainActivity.telephonyManager.getNetworkOperator();
-		List<NeighboringCellInfo> neighboringCells = mainActivity.telephonyManager.getNeighboringCellInfo();
-		mCellsGsm.updateAll(networkOperator, neighboringCells);
-		mCellsLte.updateAll(networkOperator, neighboringCells);
 	}
 }

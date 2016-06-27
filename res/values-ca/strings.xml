@@ -101,7 +101,7 @@
         &lt;/p&gt;&lt;p&gt;
         Copyright &#169; 2013 – 2016 Michael von Glasow and contributors
         &lt;br/&gt;
-        Portions &#169; dokkaebi, Jonathan Stott, k9mail, mapsforge.org, Polidea
+        Portions &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -140,16 +140,18 @@
     <string name="pref_wifi">En connexion WiFi</string>
     <string name="pref_wifi_summary">Actualitza dades AGPS quan el meu dispositiu es connecta amb una xarxa WiFi</string>
     <string name="pref_freq">Freqüència</string>
+
     <string-array name="prefs_freq_keys">
-        <item >Cada cop</item>
-        <item >Un cop cada dia</item>
-        <item >Un cop cada 2 dies</item>
-        <item >Un cop cada 3 dies</item>
-        <item >Un cop cada 4 dies</item>
-        <item >Un cop cada 5 dies</item>
-        <item >Un cop cada 6 dies</item>
-        <item >Un cop cada setmana</item>
+        <item>Cada cop</item>
+        <item>Un cop cada dia</item>
+        <item>Un cop cada 2 dies</item>
+        <item>Un cop cada 3 dies</item>
+        <item>Un cop cada 4 dies</item>
+        <item>Un cop cada 5 dies</item>
+        <item>Un cop cada 6 dies</item>
+        <item>Un cop cada setmana</item>
     </string-array>
+
     <string name="pref_lastupdate">Última actualització</string>
     <string name="pref_networks">Xarxes</string>
     <string name="pref_networks_summary">Actualitza dades AGPS quan el meu dispositiu es connecta amb una de les xarxes seleccionades</string>
@@ -157,15 +159,17 @@
     <string name="pref_loc_prov">Fonts d\'ubicació</string>
     <string name="pref_loc_prov_summary">Mostra les fonts d\'ubicació seleccionades al mapa</string>
     <string name="pref_data">Representació de dades</string>
-    <string name="pref_unit">Utilitzar unitats mètriques</string>
+    <string name="pref_unit">Utilitza unitats mètriques</string>
     <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
     <string name="pref_coord">Coordenades</string>
+
     <string-array name="prefs_coord_keys">
-        <item >Graus</item>
-        <item >Graus i minuts</item>
-        <item >Graus, minuts i segons</item>
-        <item >MGRS</item>
+        <item>Graus</item>
+        <item>Graus i minuts</item>
+        <item>Graus, minuts i segons</item>
+        <item>MGRS</item>
     </string-array>
+
     <string name="pref_utc">Mostra temps GPS en UTC</string>
     <string name="pref_utc_summary">Utilitza UTC en comptes de temps local per mostrar el temps GPS</string>
     <string name="pref_cid">Subdivideix l\'ID de cel·les UMTS/LTE</string>
@@ -195,10 +199,31 @@
     <string name="title_legend_map_prov">Ubicació de la font %s</string>
     <string name="title_legend_map_stale">Ubicació gastada de qualsevol font</string>
     <string name="pref_wifi_sort">Ordena les xarxes WiFi</string>
+
     <string-array name="prefs_wifi_sort_keys">
-        <item >Per BSSID</item>
-        <item >Per nom</item>
-        <item >Per canal</item>
-        <item >Per nivell del senyal</item>
+        <item>Per BSSID</item>
+        <item>Per nom</item>
+        <item>Per canal</item>
+        <item>Per nivell del senyal</item>
     </string-array>
+
+    <string name="pref_map_offline">Utilitza mapa offline</string>
+    <string name="pref_map_offline_summary">Renderitza les mapes en el dispositiu (es necessita baixar una mapa offline)</string>
+    <string name="pref_map_path">Carpeta per a les mapes offline</string>
+    <string name="map_path_title">Ruta a la carpeta per a les mapes offline:</string>
+    <string name="map_path_fileman">Per poder seleccionar la carpeta, es necessita instal·lar un gestor d\'arxius suportat.</string>
+    <string name="action_ok">D\'acord</string>
+    <string name="action_cancel">Cancel·la</string>
+    <string name="pref_map_download">Baixar mapa offline</string>
+    <string name="pref_map_purge">Esborrar les teseles a memòria cau</string>
+    <string name="pref_map_purge_summary">Todes les teseles seran baixades o renderitzades de nou, útil en cas de problemes</string>
+    <string name="status_map_purged">Les teseles a memòria cau han estat esborrades</string>
+    <string name="title_activity_map_download">Baixar mapa offline</string>
+    <string name="status_folder_empty">La carpeta està buida</string>
+    <string name="status_already_downloading">S\'està ja baixant una mapa del meteix nom</string>
+    <string name="confirm_download">Sembla que ja tens una còpia actual d\'aquesta mapa. Vols baixar-la tanmateix?</string>
+    <string name="action_yes">Sí</string>
+    <string name="action_no">No</string>
+    <string name="status_downloads_completed">Totes les baixades s\'han completades</string>
+
 </resources>

@@ -23,12 +23,6 @@ import java.util.Map;
 
 import com.vonglasow.michael.satstat.Const;
 import com.vonglasow.michael.satstat.R;
-import com.vonglasow.michael.satstat.R.dimen;
-import com.vonglasow.michael.satstat.R.id;
-import com.vonglasow.michael.satstat.R.layout;
-import com.vonglasow.michael.satstat.R.string;
-import com.vonglasow.michael.satstat.R.style;
-
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
