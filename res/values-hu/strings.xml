@@ -240,5 +240,9 @@
     <string name="action_yes">Igen</string>
     <string name="action_no">Nem</string>
     <string name="status_downloads_completed">Minden letöltés befejeződött</string>
+    <string name="status_perm_map_download">Offline térkép letöltéséhez engedélyezned kell a hozzáférést a Tárolóhoz</string>
+    <string name="status_perm_location">A pozíció és a hálózati információk megjelenítéséhez engedélyezned kell a hozzáférést az eszköz helyadataihoz</string>
+    <string name="status_perm_refresh_agps">Az AGPS adatok frissítéséhez engedélyezned kell a hozzáférést az eszköz helyadataihoz</string>
+    <string name="status_perm_offline_map">Offline térkép letöltéséhez engedélyezned kell a hozzáférést a Tárolóhoz</string>
 
 </resources>
