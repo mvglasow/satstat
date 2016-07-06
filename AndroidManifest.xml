@@ -81,6 +81,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.SettingsActivity" />
         </activity>
+        <activity
+            android:name=".utils.PermissionHelper$PermissionRequestActivity" >
+        </activity>
     </application>
 
 </manifest>

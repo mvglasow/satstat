@@ -153,6 +153,26 @@ public class Const {
 	public static final String KEY_SAVED_INSTANCE_STATE = "savedInstanceState";
 	
 	/**
+	 * Key for a {@link ResultReceiver}
+	 */
+	public static final String KEY_RESULT_RECEIVER = "resultReceiver";
+	
+	/**
+	 * Key for an array of permissions
+	 */
+	public static final String KEY_PERMISSIONS = "permissions";
+	
+	/**
+	 * Key for an array of permission grant results
+	 */
+	public static final String KEY_GRANT_RESULTS = "grantResults";
+	
+	/**
+	 * Key for a request code
+	 */
+	public static final String KEY_REQUEST_CODE = "requestCode";
+	
+	/**
 	 * Permission request when launching the map download dialog
 	 */
 	public static final int PERM_REQUEST_MAP_DOWNLOAD = 1;
@@ -186,10 +206,15 @@ public class Const {
 	 * Permission request when using offline map
 	 */
 	public static final int PERM_REQUEST_OFFLINE_MAP = 7;
+	
+	/**
+	 * Permission request sent by {@link PasvLocListener}
+	 */
+	public static final int PERM_REQUEST_PASV_LOCATION = 8;
 
 	/**
 	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
 	 */
-	public static final int PERM_REQUEST_MAX = 7;
+	public static final int PERM_REQUEST_MAX = 8;
 
 }

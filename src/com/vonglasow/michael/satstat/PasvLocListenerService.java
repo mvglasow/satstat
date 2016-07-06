@@ -20,12 +20,14 @@
 package com.vonglasow.michael.satstat;
 
 import com.vonglasow.michael.satstat.ui.MainActivity;
+import com.vonglasow.michael.satstat.utils.PermissionHelper;
 
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -46,7 +48,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener {
+public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, OnRequestPermissionsResultCallback {
 
 	// The unique ID for the notification
 	private static final int ONGOING_NOTIFICATION = 1;
@@ -97,6 +99,12 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		mNotifyFix = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, mNotifyFix);
+		mNotifySearch = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
+		if (mNotifyFix || mNotifySearch)
+			requestPermissions();
+
 		registerReceiver(mGpsStatusReceiver, new IntentFilter(Const.GPS_ENABLED_CHANGE));
 		registerReceiver(mGpsStatusReceiver, new IntentFilter(Const.GPS_FIX_CHANGE));
 	}
@@ -230,6 +238,18 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	}
 
 	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+		boolean isGranted = false;
+		for (int i = 0; i < grantResults.length; i++)
+			if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && (grantResults[i] == PackageManager.PERMISSION_GRANTED))
+				isGranted = true;
+		if (isGranted)
+			requestLocationUpdates();
+		else
+			Log.w("PasvLocListenerService", "ACCESS_FINE_LOCATION permission not granted. Location notifications will not be available.");
+	}
+
+	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (key.equals(Const.KEY_PREF_NOTIFY_FIX) || key.equals(Const.KEY_PREF_NOTIFY_SEARCH)) {
@@ -237,7 +257,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			mNotifySearch = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 			if (!(mNotifyFix || mNotifySearch)) {
 				stopSelf();
-			}
+			} else
+				requestPermissions();
 		} else if (key.equals(Const.KEY_PREF_UNIT_TYPE)) {
 			prefUnitType = sharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
 		} else if (key.equals(Const.KEY_PREF_COORD)) {
@@ -247,18 +268,15 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
-
 		prefUnitType = mSharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
 		prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		mNotifyFix = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, mNotifyFix);
 		mNotifySearch = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
 
 		if (mLocationManager.getAllProviders().indexOf(LocationManager.PASSIVE_PROVIDER) >= 0) {
-			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-				mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
-				mLocationManager.addGpsStatusListener(this);
-			} else
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+				requestLocationUpdates();
+			else
 				Log.w("PasvLocListenerService", "ACCESS_FINE_LOCATION permission not granted. Data display will not be available.");
 		} else {
 			Log.w("PasvLocListenerService", "No passive location provider found. Data display will not be available.");
@@ -305,6 +323,25 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			startForeground(ONGOING_NOTIFICATION, mBuilder.build());
 		} else {
 			stopForeground(true);
+		}
+	}
+	
+	private void requestLocationUpdates() {
+		mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+		mLocationManager.addGpsStatusListener(this);
+	}
+	
+	private void requestPermissions() {
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			Log.i("PasvLocListenerService", "ACCESS_FINE_LOCATION permission not granted, asking for it...");
+			
+			// TODO proper notification content
+			PermissionHelper.requestPermissions(this,
+					new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+					Const.PERM_REQUEST_PASV_LOCATION,
+					getString(R.string.notify_perm_title),
+					getString(R.string.notify_perm_body),
+					R.drawable.ic_security);
 		}
 	}
 }
