@@ -94,6 +94,7 @@ public class PermissionHelper {
 		.setSmallIcon(notificationIcon)
 		.setContentTitle(notificationTitle)
 		.setContentText(notificationText)
+		.setOngoing(true)
 		//.setCategory(Notification.CATEGORY_STATUS)
 		.setAutoCancel(true)
 		.setWhen(0)
