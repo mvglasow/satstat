@@ -243,8 +243,11 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		for (int i = 0; i < grantResults.length; i++)
 			if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && (grantResults[i] == PackageManager.PERMISSION_GRANTED))
 				isGranted = true;
-		if (isGranted)
+		if (isGranted) {
 			requestLocationUpdates();
+			if (mNotifySearch && (mStatus != GPS_INACTIVE))
+				showStatusNoLocation();
+		}
 		else
 			Log.w("PasvLocListenerService", "ACCESS_FINE_LOCATION permission not granted. Location notifications will not be available.");
 	}
@@ -315,12 +318,15 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 
 	public void showStatusNoLocation() {
 		if (mNotifySearch && (mStatus != GPS_INACTIVE)) {
-			mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
-			mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
-			mBuilder.setContentText(getString(R.string.notify_nolocation_body));
-			mBuilder.setStyle(null);
-			
-			startForeground(ONGOING_NOTIFICATION, mBuilder.build());
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+				mBuilder.setSmallIcon(R.drawable.ic_stat_notify_nolocation);
+				mBuilder.setContentTitle(getString(R.string.notify_nolocation_title));
+				mBuilder.setContentText(getString(R.string.notify_nolocation_body));
+				mBuilder.setStyle(null);
+
+				startForeground(ONGOING_NOTIFICATION, mBuilder.build());
+			} else
+				requestPermissions();
 		} else {
 			stopForeground(true);
 		}
