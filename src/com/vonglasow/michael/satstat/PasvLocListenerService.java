@@ -338,7 +338,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			// TODO proper notification content
 			PermissionHelper.requestPermissions(this,
 					new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-					Const.PERM_REQUEST_PASV_LOCATION,
+					Const.PERM_REQUEST_LOCATION_NOTIFICATION,
 					getString(R.string.notify_perm_title),
 					getString(R.string.notify_perm_body),
 					R.drawable.ic_security);

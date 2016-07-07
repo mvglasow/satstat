@@ -208,9 +208,9 @@ public class Const {
 	public static final int PERM_REQUEST_OFFLINE_MAP = 7;
 	
 	/**
-	 * Permission request sent by {@link PasvLocListener}
+	 * Permission request for location access, sent via notification
 	 */
-	public static final int PERM_REQUEST_PASV_LOCATION = 8;
+	public static final int PERM_REQUEST_LOCATION_NOTIFICATION = 8;
 
 	/**
 	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
