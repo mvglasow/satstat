@@ -20,8 +20,6 @@
 package com.vonglasow.michael.satstat.utils;
 
 import com.vonglasow.michael.satstat.Const;
-import com.vonglasow.michael.satstat.ui.MainActivity;
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
