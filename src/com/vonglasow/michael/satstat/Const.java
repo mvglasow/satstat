@@ -213,8 +213,13 @@ public class Const {
 	public static final int PERM_REQUEST_LOCATION_NOTIFICATION = 8;
 
 	/**
+	 * Permission request for location access made while changing settings
+	 */
+	public static final int PERM_REQUEST_LOCATION_PREF = 9;
+
+	/**
 	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
 	 */
-	public static final int PERM_REQUEST_MAX = 8;
+	public static final int PERM_REQUEST_MAX = 9;
 
 }
