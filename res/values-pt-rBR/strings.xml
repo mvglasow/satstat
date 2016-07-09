@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <string name="app_name">SatStat</string>
+    <string name="action_settings">Configurações</string>
+    <string name="action_record">Gravar</string>
+    <string name="action_stop_record">Parar gravação</string>
+    <string name="action_agps">Recarregar dados AGPS</string>
+    <string name="action_legend">Legenda</string>
+    <string name="action_about">Sobre</string>
+    <string name="dot" translatable="false">&#x25a0;</string>
+    <string name="smallDot" translatable="false">&#x25fc;</string>
+    <string name="dotSpace" translatable="false">&#x25a0;&#x00a0;</string>
+    <string name="error_write_file">Erro ao escrever para arquivo</string>
+    <string name="error_ext_storage">Armazenamento externo não disponível</string>
+    <string name="info_start_rec">Gravação iniciada</string>
+    <string name="notify_record_title">Gravando dados do sensor</string>
+    <string name="notify_record_body">Toque para parar a gravação</string>
+    <string name="status_agps">Dados AGPS recarregados solicitados – note que o Android não reporta sucesso ou falha</string>
+    <string name="status_agps_captive">Não foi possível atualizar os dados – abra o navegador, autentique-se na rede e tente novamente</string>
+    <string name="status_agps_error">Sem rede disponível, não foi possível recarregar os dados AGPS</string>
+    <string name="title_section1">GPS</string>
+    <string name="title_section2">Sensores</string>
+    <string name="title_section3">Rádio</string>
+    <string name="title_section4">Mapa</string>
+    <string name="title_gps_lat">Latitude</string>
+    <string name="title_gps_lon">Longitude</string>
+    <string name="title_gps_coord">Coordenadas</string>
+    <string name="title_gps_decl">Decl.</string>
+    <string name="title_gps_speed">Velocidade</string>
+    <string name="title_gps_alt">Elevação</string>
+    <string name="title_gps_time">Último Fix Obtido</string>
+    <string name="title_gps_bear">Rolamento</string>
+    <string name="title_gps_orient">Orientação</string>
+    <string name="title_gps_acc">Erro</string>
+    <string name="title_gps_sats">Satélites</string>
+    <string name="title_gps_ttff">TTFF (s)</string>
+    <string name="value_none">–</string>
+    <string name="value_N">N</string>
+    <string name="value_NNE">NNE</string>
+    <string name="value_NE">NE</string>
+    <string name="value_ENE">ENE</string>
+    <string name="value_E">E</string>
+    <string name="value_ESE">ESE</string>
+    <string name="value_SE">SE</string>
+    <string name="value_SSE">SSE</string>
+    <string name="value_S">S</string>
+    <string name="value_SSW">SSW</string>
+    <string name="value_SW">SW</string>
+    <string name="value_WSW">WSW</string>
+    <string name="value_W">W</string>
+    <string name="value_WNW">WNW</string>
+    <string name="value_NW">NW</string>
+    <string name="value_NNW">NNW</string>
+    <string name="title_sensor_acc">Aceleração e Gravidade</string>
+    <string name="title_sensors_accTotal">Σg (m/s²)</string>
+    <string name="title_sensors_accX">gx (m/s²)</string>
+    <string name="title_sensors_accY">gy (m/s²)</string>
+    <string name="title_sensors_accZ">gz (m/s²)</string>
+    <string name="title_sensor_rot">Rotação</string>
+    <string name="title_sensors_rotTotal">Σω (rad/s)</string>
+    <string name="title_sensors_rotX">ωx (rad/s)</string>
+    <string name="title_sensors_rotY">ωy (rad/s)</string>
+    <string name="title_sensors_rotZ">ωz (rad/s)</string>
+    <string name="title_sensor_or">Orientação</string>
+    <string name="title_sensors_orAzimuth">Azimute</string>
+    <string name="title_sensors_orAziText">Orientação</string>
+    <string name="title_sensors_orPitch">Passo</string>
+    <string name="title_sensors_orRoll">Rolo</string>
+    <string name="title_sensor_mag">Campo magnético</string>
+    <string name="title_sensors_magTotal">ΣB (µT)</string>
+    <string name="title_sensors_magX">Bx (µT)</string>
+    <string name="title_sensors_magY">By (µT)</string>
+    <string name="title_sensors_magZ">Bz (µT)</string>
+    <string name="title_sensor_met">Meteorologia</string>
+    <string name="title_sensors_metTemp">&#x00a0;°C</string>
+    <string name="title_sensors_metPressure">&#x00a0;hPa</string>
+    <string name="title_sensors_metHumid">Umidade relativa (%)</string>
+    <string name="title_sensor_misc">Diversas</string>
+    <string name="title_sensors_light">&#x00a0;lux</string>
+    <string name="title_sensors_proximity">Proximidade (cm)</string>
+    <string name="title_radio_gsm">GSM</string>
+    <string name="title_radio_mcc">MCC</string>
+    <string name="title_radio_mnc">MNC</string>
+    <string name="title_radio_cellid">ID da célula</string>
+    <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_psc">PSC</string>
+    <string name="title_radio_asu">ASU</string>
+    <string name="title_radio_cdma">CDMA</string>
+    <string name="title_radio_sid">SID</string>
+    <string name="title_radio_nid">NID</string>
+    <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_lte">LTE</string>
+    <string name="title_radio_tac">TAC</string>
+    <string name="title_radio_pci">PCI</string>
+    <string name="title_radio_wifi">WiFi</string>
+    <string name="title_radio_mac">BSSID (MAC)</string>
+    <string name="title_radio_channel">Ch</string>
+    <string name="title_radio_level">dBm</string>
+    <string name="title_activity_about">Sobre</string>
+    <string name="about_caption">Localização, Sensor e Estado da Rede de Rádio</string>
+    <string name="about_version">Versão</string>
+    <string name="about_text">&lt;p&gt;
+		Se alguma coisa não funcionar da forma que deveria, ou se você tem uma ideia para fazer este
+		aplicativo ainda maior, por favor informe-a em:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat/issues&gt;https://github.com/mvglasow/satstat/issues&lt;/a&gt;
+        &lt;/p&gt;&lt;p&gt;
+        Copyright &#169; 2013 – 2016 Michael von Glasow e contribuidores
+        &lt;br/&gt;
+        Porções &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
+        &lt;/p&gt;&lt;p&gt;
+		Este programa é software livre: você pode redistribuí-lo e/ou modificá-
+        lo sob os termos da Licença Pública Geral GNU, conforme publicado pela
+        Free Software Foundation, tanto a versão 3 da Licença, ou
+		(a seu critério) qualquer versão posterior.
+        &lt;/p&gt;&lt;p&gt;
+		Este programa é distribuído na esperança de que possa ser útil,
+		mas SEM QUAISQUER GARANTIAS; sem mesmo a garantia implícita de
+		COMERCIABILIDADE ou ADEQUAÇÃO PARA UM FIM PARTICULAR. Veja a
+        Licença Pública Geral GNU para mais detalhes.
+        &lt;/p&gt;&lt;p&gt;
+		Você deve ter recebido uma cópia da Licença Pública Geral GNU junto a
+		este programa. Se não, veja
+        &lt;a href="http://www.gnu.org/licenses/"&gt;http://www.gnu.org/licenses/&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        Dados e informações de mapa fornecidos por MapQuest, 
+        &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; 
+        e contribuidores, 
+        &lt;a href="http://wiki.openstreetmap.org/wiki/Legal_FAQ#3a._I_would_like_to_use_OpenStreetMap_maps._How_should_I_credit_you.3F"&gt;ODbL&lt;/a&gt;.
+        &lt;/p&gt;&lt;p&gt;
+        O código-fonte para este aplicativo está em:
+        &lt;br/&gt;
+        &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
+    <string name="unit_degree">°</string>
+    <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_mph">&#x00a0;mph</string>
+    <string name="unit_meter">&#x00a0;m</string>
+    <string name="unit_feet">&#x00a0;ft</string>
+    <string name="pref_notify">Arrumar notificação do GPS</string>
+    <string name="pref_notify_summary">Notifique-me quando um aplicativo obter minha localização do GPS</string>
+    <string name="pref_search">Notificação de busca do GPS</string>
+    <string name="pref_search_summary">Notifique-me quando um aplicativo estiver procurando pela minha localização</string>
+    <string name="title_activity_settings">Configurações</string>
+    <string name="notify_nolocation_title">Busca por localização</string>
+    <string name="notify_nolocation_body">Toque para ver o estado</string>
+    <string name="pref_notifications">Notificações</string>
+    <string name="pref_agps">Atualização de dados AGPS</string>
+    <string name="pref_wifi">Ao conectar no WiFi</string>
+    <string name="pref_wifi_summary">Atualizar dados AGPS quando meu dispositivo se conectar a uma rede WiFi</string>
+    <string name="pref_freq">Frequência de atualização</string>
+    <string name="pref_freq_summary" translatable="false">%s</string>
+
+    <string-array name="prefs_freq_keys">
+        <item>A cada hora</item>
+        <item>Uma vez por dia</item>
+        <item>Uma vez a cada 2 dias</item>
+        <item>Uma vez a cada 3 dias</item>
+        <item>Uma vez a cada 4 dias</item>
+        <item>Uma vez a cada 5 dias</item>
+        <item>Uma vez a cada 6 dias</item>
+        <item>Uma vez por semana</item>
+    </string-array>
+    <string-array name="prefs_freq_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <string name="pref_lastupdate">Última atualização</string>
+    <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
+    <string name="pref_networks">Redes</string>
+    <string name="pref_networks_summary">Atualizar dados AGPS quando meu dispositivo se conectar a uma das redes selecionadas</string>
+    <string name="pref_map">Mapa</string>
+    <string name="pref_loc_prov">Fontes de Localização</string>
+    <string name="pref_loc_prov_summary">Exibir fontes de localização selecionadas no mapa</string>
+    <string name="pref_data">Exibição de dados</string>
+    <string name="pref_unit">Usar unidades métricas</string>
+    <string name="pref_unit_summary">Se não checado, unidades imperiais serão utilizadas (exceto em visualização de sensor)</string>
+    <string name="pref_coord">Coordenadas</string>
+
+    <string-array name="prefs_coord_keys">
+        <item>Decimal graus</item>
+        <item>Graus, minutos</item>
+        <item>Graus, minutos, segundos</item>
+        <item>MGRS</item>
+    </string-array>
+    <string-array name="prefs_coord_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string name="pref_utc">Exibir hora do GPS em UTC</string>
+    <string name="pref_utc_summary">Exibir hora corrigida do GPS em UTC em vez do horário local</string>
+    <string name="pref_cid">Dividir identificação de células UMTS/LTE</string>
+    <string name="pref_cid_summary">Dividir identificação de células em RNCID/CID ou eNodeB/sector ID</string>
+    <string name="osm_attribution" translatable="false">© OpenStreetMap</string>
+    <string name="mapquest_attribution" translatable="false">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="title_activity_legend">Legenda</string>
+    <string name="title_legend_gps">GPS</string>
+    <string name="title_legend_gps_used">Satélite usado na correção</string>
+    <string name="title_legend_gps_unused">Satélite não usado na correção</string>
+    <string name="title_legend_sensors">Sensores</string>
+    <string name="title_legend_sensors_high">Precisão alta</string>
+    <string name="title_legend_sensors_medium">Precisão média</string>
+    <string name="title_legend_sensors_low">Precisão baixa</string>
+    <string name="title_legend_sensors_unreliable">Não confiável</string>
+    <string name="title_legend_radio">Rádio</string>
+    <string name="title_legend_radio_2g">Célula 2G</string>
+    <string name="title_legend_radio_3g">Célula 3G</string>
+    <string name="title_legend_radio_4g">Célula 4G</string>
+    <string name="title_legend_radio_open">WiFi aberto</string>
+    <string name="title_legend_radio_wep">Segurança WEP</string>
+    <string name="title_legend_radio_psk">Segurança WPA-PSK (pessoal)</string>
+    <string name="title_legend_radio_eap">Segurança WPA-EAP (empresarial)</string>
+    <string name="title_legend_radio_adhoc">WiFi Ad-hoc</string>
+    <string name="title_legend_radio_unknown">Tipo de WiFi desconhecido</string>
+    <string name="title_legend_map">Mapa</string>
+    <string name="title_legend_map_prov">Localização do provedor %s</string>
+    <string name="title_legend_map_stale">Localização velha de qualquer provedor</string>
+    <string name="title_nmea_001_032">GPS</string>
+    <string name="title_nmea_033_054">SBAS</string>
+    <string name="title_nmea_055_064">55–64</string>
+    <string name="title_nmea_065_088">GLONASS</string>
+    <string name="title_nmea_097_192">97–192</string>
+    <string name="title_nmea_193_195">QZSS</string>
+    <string name="title_nmea_201_235">Beidou</string>
+    <string name="pref_wifi_sort">Ordenar redes WiFi</string>
+
+    <string-array name="prefs_wifi_sort_keys">
+        <item>Por BSSID</item>
+        <item>Por nome</item>
+        <item>Por canal</item>
+        <item>Por intensidade do sinal</item>
+    </string-array>
+    <string-array name="prefs_wifi_sort_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string name="pref_map_offline">Usar mapa offline</string>
+    <string name="pref_map_offline_summary">Renderizar mapas no dispositivo (requer baixar um mapa offline)</string>
+    <string name="pref_map_path">Pasta de mapas offline</string>
+    <string name="map_path_title">Caminho para a pasta de mapas offline:</string>
+    <string name="map_path_fileman">Para navegar para a pasta de mapas offline, você precisa instalar um gerenciador de arquivos suportado.</string>
+    <string name="map_path_cm_filemanager">CM File Manager</string>
+    <string name="map_path_oi_filemanager">OI File Manager</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="pref_map_download">Baixar mapa offline</string>
+    <string name="pref_map_purge">Limpar cache de ladrilos de mapa</string>
+    <string name="pref_map_purge_summary">Forçar todos os ladrilhos a serem buscados ou renderizados novamente, útil para solução de problemas</string>
+    <string name="status_map_purged">Cache de ladrilhos de mapas limpo</string>
+    <string name="title_activity_map_download">Baixar mapa offline</string>
+    <string name="status_folder_empty">A pasta está vazia</string>
+    <string name="status_already_downloading">Um download para um mapa de mesmo nome já está em progresso</string>
+    <string name="confirm_download">Parece que você já possui uma cópia atualizada deste mapa. Você quer baixá-lo mesmo assim?</string>
+    <string name="action_yes">Sim</string>
+    <string name="action_no">Não</string>
+    <string name="status_downloads_completed">Todos os downloads foram completados</string>
+
+</resources>
