@@ -79,9 +79,7 @@ public class PermissionHelper {
 		permIntent.putExtra(Const.KEY_PERMISSIONS, permissions);
 		permIntent.putExtra(Const.KEY_REQUEST_CODE, requestCode);
 
-		// TODO review the TaskStackBuilder/PendingIntent stuff
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-		stackBuilder.addParentStack(PermissionRequestActivity.class);
 		stackBuilder.addNextIntent(permIntent);
 
 		PendingIntent permPendingIntent =
