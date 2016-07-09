@@ -79,16 +79,8 @@ public class PermissionHelper {
 		permIntent.putExtra(Const.KEY_PERMISSIONS, permissions);
 		permIntent.putExtra(Const.KEY_REQUEST_CODE, requestCode);
 
-		// TODO review the TaskStackBuilder/PendingIntent stuff
-		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-		stackBuilder.addParentStack(PermissionRequestActivity.class);
-		stackBuilder.addNextIntent(permIntent);
-
-		PendingIntent permPendingIntent =
-				stackBuilder.getPendingIntent(
-						0,
-						PendingIntent.FLAG_UPDATE_CURRENT
-						);
+		PendingIntent permPendingIntent = PendingIntent.getActivity(context, requestCode, permIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
 		.setSmallIcon(notificationIcon)
