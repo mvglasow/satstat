@@ -40,6 +40,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -516,6 +517,9 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     	for (int i = 0; i < grantResults.length; i++)
     		if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
     			if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+    				NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    				notificationManager.cancel(Const.PERM_REQUEST_LOCATION_NOTIFICATION);
+
     				if (permsRequested[Const.PERM_REQUEST_PHONE_STATE_LISTENER]) {
     					registerPhoneStateListener();
     					permsRequested[Const.PERM_REQUEST_PHONE_STATE_LISTENER] = false;

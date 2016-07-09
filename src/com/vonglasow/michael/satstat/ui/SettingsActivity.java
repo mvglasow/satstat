@@ -52,7 +52,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -254,7 +256,10 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			}
 		} else if ((requestCode == Const.PERM_REQUEST_LOCATION_PREF) && (grantResults.length > 0)) {
-			if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				notificationManager.cancel(Const.PERM_REQUEST_LOCATION_NOTIFICATION);
+			} else
 				Log.i(TAG, "ACCESS_FINE_LOCATION permission not granted, a notification will appear when it is needed");
 		}
 	}
