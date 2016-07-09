@@ -514,6 +514,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    	StringBuilder messageBuilder = new StringBuilder();
     	for (int i = 0; i < grantResults.length; i++)
     		if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
     			if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
@@ -536,27 +537,35 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     				if (requestCode == Const.PERM_REQUEST_REFRESH_AGPS)
     					GpsEventReceiver.refreshAgps(this, false, true);
     			} else if (requestCode == Const.PERM_REQUEST_REFRESH_AGPS) {
-    				String message = getString(R.string.status_perm_refresh_agps);
-    				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    				if (messageBuilder.length() > 0)
+    					messageBuilder.append("\n");
+    				messageBuilder.append(getString(R.string.status_perm_refresh_agps));
     				Log.w(TAG, "Location permission not granted, cannot update AGPS data");
     			} else {
-    				String message = getString(R.string.status_perm_location);
-    				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    				if (messageBuilder.length() > 0)
+    					messageBuilder.append("\n");
+    				messageBuilder.append(getString(R.string.status_perm_location));
     				Log.w(TAG, "ACCESS_FINE_LOCATION permission not granted. Location and cell info will not be available.");
     			} // if grantResults[i]
     		} else if (permissions[i].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-    			if (permsRequested[Const.PERM_REQUEST_OFFLINE_MAP] && (mapSectionFragment != null)) {
-    				if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+    			if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+    				if (permsRequested[Const.PERM_REQUEST_OFFLINE_MAP] && (mapSectionFragment != null)) {
     					mapSectionFragment.onMapSourceChanged();
     					permsRequested[Const.PERM_REQUEST_OFFLINE_MAP] = false;
-    				} else {
-    					String message = getString(R.string.status_perm_offline_map);
-    					Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    					Log.w(TAG, "WRITE_EXTERNAL_STORAGE permission not granted. Offline map will not be available.");
     				}
+    			} else {
+    				if (messageBuilder.length() > 0)
+    					messageBuilder.append("\n");
+    				messageBuilder.append(getString(R.string.status_perm_offline_map));
+    				Log.w(TAG, "WRITE_EXTERNAL_STORAGE permission not granted. Offline map will not be available.");
     			}
     		} // if permissions[i].equals()
     	// for i
+    	String message = messageBuilder.toString();
+    	if (!message.isEmpty()) {
+    		int length = (message.contains("\n")) ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+    		Toast.makeText(this, message, length).show();
+    	}
     }
 
     /**
