@@ -8,9 +8,6 @@
     <string name="action_agps">Recarregar dados AGPS</string>
     <string name="action_legend">Legenda</string>
     <string name="action_about">Sobre</string>
-    <string name="dot" translatable="false">&#x25a0;</string>
-    <string name="smallDot" translatable="false">&#x25fc;</string>
-    <string name="dotSpace" translatable="false">&#x25a0;&#x00a0;</string>
     <string name="error_write_file">Erro ao escrever para arquivo</string>
     <string name="error_ext_storage">Armazenamento externo não disponível</string>
     <string name="info_start_rec">Gravação iniciada</string>
@@ -110,18 +107,18 @@
         &lt;br/&gt;
         Porções &#169; Jonathan Stott, k9mail, mapsforge.org, Polidea
         &lt;/p&gt;&lt;p&gt;
-		Este programa é software livre: você pode redistribuí-lo e/ou modificá-
-        lo sob os termos da Licença Pública Geral GNU, conforme publicado pela
-        Free Software Foundation, tanto a versão 3 da Licença, ou
-		(a seu critério) qualquer versão posterior.
+        Este programa é um software livre; você pode redistribuí-lo e/ou
+        modificá-lo dentro dos termos da Licença Pública Geral GNU como
+        publicada pela Fundação do Software Livre (FSF); na versão 3 da
+        Licença, ou (na sua opinião) qualquer versão.
         &lt;/p&gt;&lt;p&gt;
-		Este programa é distribuído na esperança de que possa ser útil,
-		mas SEM QUAISQUER GARANTIAS; sem mesmo a garantia implícita de
-		COMERCIABILIDADE ou ADEQUAÇÃO PARA UM FIM PARTICULAR. Veja a
-        Licença Pública Geral GNU para mais detalhes.
+        Este programa é distribuído na esperança de que possa ser útil,
+        mas SEM NENHUMA GARANTIA; sem uma garantia implícita de ADEQUAÇÃO
+        a qualquer MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a
+        Licença Pública Geral GNU para maiores detalhes.
         &lt;/p&gt;&lt;p&gt;
-		Você deve ter recebido uma cópia da Licença Pública Geral GNU junto a
-		este programa. Se não, veja
+        Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
+        com este programa. Se não, veja
         &lt;a href="http://www.gnu.org/licenses/"&gt;http://www.gnu.org/licenses/&lt;/a&gt;.
         &lt;/p&gt;&lt;p&gt;
         Dados e informações de mapa fornecidos por MapQuest, 
@@ -149,7 +146,6 @@
     <string name="pref_wifi">Ao conectar no WiFi</string>
     <string name="pref_wifi_summary">Atualizar dados AGPS quando meu dispositivo se conectar a uma rede WiFi</string>
     <string name="pref_freq">Frequência de atualização</string>
-    <string name="pref_freq_summary" translatable="false">%s</string>
 
     <string-array name="prefs_freq_keys">
         <item>A cada hora</item>
@@ -160,16 +156,6 @@
         <item>Uma vez a cada 5 dias</item>
         <item>Uma vez a cada 6 dias</item>
         <item>Uma vez por semana</item>
-    </string-array>
-    <string-array name="prefs_freq_values" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
     </string-array>
 
     <string name="pref_lastupdate">Última atualização</string>
@@ -190,19 +176,11 @@
         <item>Graus, minutos, segundos</item>
         <item>MGRS</item>
     </string-array>
-    <string-array name="prefs_coord_values" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <string name="pref_utc">Exibir hora do GPS em UTC</string>
     <string name="pref_utc_summary">Exibir hora corrigida do GPS em UTC em vez do horário local</string>
     <string name="pref_cid">Dividir identificação de células UMTS/LTE</string>
     <string name="pref_cid_summary">Dividir identificação de células em RNCID/CID ou eNodeB/sector ID</string>
-    <string name="osm_attribution" translatable="false">© OpenStreetMap</string>
-    <string name="mapquest_attribution" translatable="false">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Legenda</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Satélite usado na correção</string>
@@ -239,12 +217,6 @@
         <item>Por nome</item>
         <item>Por canal</item>
         <item>Por intensidade do sinal</item>
-    </string-array>
-    <string-array name="prefs_wifi_sort_values" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
     </string-array>
 
     <string name="pref_map_offline">Usar mapa offline</string>
