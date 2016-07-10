@@ -547,40 +547,24 @@ public class RadioSectionFragment extends Fragment {
 	}
 
 
-	protected void showCellCdma(CellTowerCdma cell) {
-		TableRow row = new TableRow(rilCdmaCells.getContext());
-		row.setWeightSum(26);
+	protected void showCellCdma(CellTowerCdma cellTower) {
+		TableRow row = (TableRow) mainActivity.getLayoutInflater().inflate(R.layout.ril_list_item, null);
+		TextView type = (TextView) row.findViewById(R.id.type);
+		TextView sid = (TextView) row.findViewById(R.id.sid);
+		TextView nid = (TextView) row.findViewById(R.id.nid);
+		TextView bsid = (TextView) row.findViewById(R.id.bsid);
+		TextView dbm = (TextView) row.findViewById(R.id.dbm);
 
-		TextView newType = new TextView(rilCdmaCells.getContext());
-		newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-		newType.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newType.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-		newType.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
-		row.addView(newType);
+		type.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cellTower.getGeneration())));
+		type.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
 
-		TextView newSid = new TextView(rilCdmaCells.getContext());
-		newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 6));
-		newSid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newSid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getSid()));
-		row.addView(newSid);
+		sid.setText(formatCellData(rilCdmaCells.getContext(), null, cellTower.getSid()));
 
-		TextView newNid = new TextView(rilCdmaCells.getContext());
-		newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-		newNid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newNid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getNid()));
-		row.addView(newNid);
+		nid.setText(formatCellData(rilCdmaCells.getContext(), null, cellTower.getNid()));
 
-		TextView newBsid = new TextView(rilCdmaCells.getContext());
-		newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-		newBsid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newBsid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getBsid()));
-		row.addView(newBsid);
+		bsid.setText(formatCellData(rilCdmaCells.getContext(), null, cellTower.getBsid()));
 
-		TextView newDbm = new TextView(rilCdmaCells.getContext());
-		newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-		newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newDbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cell.getDbm()));
-		row.addView(newDbm);
+		dbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cellTower.getDbm()));
 
 		rilCdmaCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
