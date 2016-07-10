@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 Michael von Glasow.
+ * Copyright © 2013–2016 Michael von Glasow.
  * 
  * This file is part of LSRN Tools.
  *
@@ -23,8 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.vonglasow.michael.satstat.utils.PermissionHelper;
 import com.vonglasow.michael.satstat.utils.WifiCapabilities;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlarmManager;
@@ -33,16 +35,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 public class GpsEventReceiver extends BroadcastReceiver {
+	public static final String TAG = GpsEventReceiver.class.getSimpleName();
 
 	/**
 	 * A dummy intent called when a location update is received.
@@ -155,7 +160,17 @@ public class GpsEventReceiver extends BroadcastReceiver {
 		if (enforceInterval && (last + freqDays * Const.MILLIS_PER_DAY > now)) return;
 		//Log.d(GpsEventReceiver.class.getSimpleName(), String.format("refreshAgps, enforceInterval: %b, wantFeedback: %b", enforceInterval, wantFeedback));
 		
-		new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freqDays * Const.MILLIS_PER_DAY);
+		if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+			new AgpsUpdateTask(wantFeedback).execute(context, mAgpsIntent, sharedPref, freqDays * Const.MILLIS_PER_DAY);
+		else {
+			Log.i(TAG, "Requesting permissions to update AGPS data");
+			PermissionHelper.requestPermissions((SatStatApplication) (context.getApplicationContext()),
+					new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+					Const.PERM_REQUEST_LOCATION_NOTIFICATION,
+					context.getString(R.string.notify_perm_title),
+					context.getString(R.string.notify_perm_body),
+					R.drawable.ic_security);
+		}
 	}
 	
 	private static class AgpsUpdateTask extends AsyncTask<Object, Void, Integer> {

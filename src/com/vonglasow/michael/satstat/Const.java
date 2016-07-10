@@ -111,6 +111,7 @@ public class Const {
 	public static final String KEY_PREF_MAP_LON = "pref_map_lon";
 	public static final String KEY_PREF_MAP_ZOOM = "pref_map_zoom";
 	public static final String KEY_PREF_UNIT_TYPE = "pref_unit_type";
+	public static final String KEY_PREF_KNOTS = "pref_unit_knots";
 	public static final String KEY_PREF_MAP_OFFLINE = "pref_map_offline";
 	public static final String KEY_PREF_MAP_PATH = "pref_map_path";
 	public static final String KEY_PREF_MAP_CACHED_PATH = "pref_map_cached_path";
@@ -153,6 +154,26 @@ public class Const {
 	public static final String KEY_SAVED_INSTANCE_STATE = "savedInstanceState";
 	
 	/**
+	 * Key for a {@link ResultReceiver}
+	 */
+	public static final String KEY_RESULT_RECEIVER = "resultReceiver";
+	
+	/**
+	 * Key for an array of permissions
+	 */
+	public static final String KEY_PERMISSIONS = "permissions";
+	
+	/**
+	 * Key for an array of permission grant results
+	 */
+	public static final String KEY_GRANT_RESULTS = "grantResults";
+	
+	/**
+	 * Key for a request code
+	 */
+	public static final String KEY_REQUEST_CODE = "requestCode";
+	
+	/**
 	 * Permission request when launching the map download dialog
 	 */
 	public static final int PERM_REQUEST_MAP_DOWNLOAD = 1;
@@ -186,10 +207,20 @@ public class Const {
 	 * Permission request when using offline map
 	 */
 	public static final int PERM_REQUEST_OFFLINE_MAP = 7;
+	
+	/**
+	 * Permission request for location access, sent via notification
+	 */
+	public static final int PERM_REQUEST_LOCATION_NOTIFICATION = 8;
+
+	/**
+	 * Permission request for location access made while changing settings
+	 */
+	public static final int PERM_REQUEST_LOCATION_PREF = 9;
 
 	/**
 	 * Highest numerical value currently defined for any {@code PERM_REQUEST} constant
 	 */
-	public static final int PERM_REQUEST_MAX = 7;
+	public static final int PERM_REQUEST_MAX = 9;
 
 }

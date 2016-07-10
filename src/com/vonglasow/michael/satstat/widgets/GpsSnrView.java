@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013 Michael von Glasow.
+ * Copyright © 2013–2016 Michael von Glasow.
  * 
  * This file is part of LSRN Tools.
  *

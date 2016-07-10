@@ -52,7 +52,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -60,6 +62,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 
 public class SettingsActivity extends AppCompatActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener{
+	public static final String TAG = SettingsActivity.class.getSimpleName();
 
 	public static final int REQUEST_CODE_PICK_MAP_PATH = 1;
 
@@ -252,6 +255,12 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 				String message = getString(R.string.status_perm_map_download);
 				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			}
+		} else if ((requestCode == Const.PERM_REQUEST_LOCATION_PREF) && (grantResults.length > 0)) {
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				notificationManager.cancel(Const.PERM_REQUEST_LOCATION_NOTIFICATION);
+			} else
+				Log.i(TAG, "ACCESS_FINE_LOCATION permission not granted, a notification will appear when it is needed");
 		}
 	}
 
@@ -270,12 +279,15 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		boolean needsLocationPerm = false;
 		if (key.equals(Const.KEY_PREF_NOTIFY_FIX) || key.equals(Const.KEY_PREF_NOTIFY_SEARCH)) {
 			boolean notifyFix = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, false);
 			boolean notifySearch = sharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, false);
 			if (!(notifyFix || notifySearch)) {
 				Intent stopServiceIntent = new Intent(this, PasvLocListenerService.class);
 				this.stopService(stopServiceIntent);
+			} else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				needsLocationPerm = true;
 			}
 		} else if (key.equals(Const.KEY_PREF_UPDATE_FREQ)) {
 			// this piece of code is necessary because Android has no way
@@ -294,7 +306,15 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 			Preference prefMapPath = sf.findPreference(Const.KEY_PREF_MAP_PATH);
 			prefMapPathValue = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPathValue);
 			prefMapPath.setSummary(prefMapPathValue);
+		} else if (key.equals(Const.KEY_PREF_UPDATE_NETWORKS)) {
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				Set<String> updateNetworks = sharedPreferences.getStringSet(Const.KEY_PREF_UPDATE_NETWORKS, new HashSet<String>());
+				if (!updateNetworks.isEmpty())
+					needsLocationPerm = true;
+			}
 		}
+		if (needsLocationPerm)
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Const.PERM_REQUEST_LOCATION_PREF);
 	}
 
 	@Override

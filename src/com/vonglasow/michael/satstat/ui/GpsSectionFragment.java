@@ -246,13 +246,15 @@ public class GpsSectionFragment extends Fragment {
 
 		if (location.hasSpeed()) {
 			Float getSpeed = (float) 0.0;
-			if(mainActivity.prefUnitType) {
+			if (mainActivity.prefKnots) {
+				getSpeed = (float)(location.getSpeed() * 1.943844f);
+			} else if (mainActivity.prefUnitType) {
 				getSpeed = (float)(location.getSpeed() * 3.6f);
 			} else {
-				getSpeed = (float)(location.getSpeed() * 3.6f * 2.23694f);
+				getSpeed = (float)(location.getSpeed() * 2.23694f);
 			}
 			gpsSpeed.setText(String.format("%.0f", getSpeed));
-			gpsSpeedUnit.setText(getString(((mainActivity.prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
+			gpsSpeedUnit.setText(getString(((mainActivity.prefKnots) ? R.string.unit_kn : (mainActivity.prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
 		} else {
 			gpsSpeed.setText(getString(R.string.value_none));
 			gpsSpeedUnit.setText("");

@@ -547,152 +547,92 @@ public class RadioSectionFragment extends Fragment {
 	}
 
 
-	protected void showCellCdma(CellTowerCdma cell) {
-		TableRow row = new TableRow(rilCdmaCells.getContext());
-		row.setWeightSum(26);
+	protected void showCellCdma(CellTowerCdma cellTower) {
+		TableRow row = (TableRow) mainActivity.getLayoutInflater().inflate(R.layout.ril_list_item, null);
+		TextView type = (TextView) row.findViewById(R.id.type);
+		TextView sid = (TextView) row.findViewById(R.id.sid);
+		TextView nid = (TextView) row.findViewById(R.id.nid);
+		TextView bsid = (TextView) row.findViewById(R.id.bsid);
+		TextView dbm = (TextView) row.findViewById(R.id.dbm);
 
-		TextView newType = new TextView(rilCdmaCells.getContext());
-		newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-		newType.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newType.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-		newType.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
-		row.addView(newType);
+		type.setTextColor(rilCdmaCells.getContext().getResources().getColor(getColorFromGeneration(cellTower.getGeneration())));
+		type.setText(rilCdmaCells.getContext().getResources().getString(R.string.smallDot));
 
-		TextView newSid = new TextView(rilCdmaCells.getContext());
-		newSid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 6));
-		newSid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newSid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getSid()));
-		row.addView(newSid);
+		sid.setText(formatCellData(rilCdmaCells.getContext(), null, cellTower.getSid()));
 
-		TextView newNid = new TextView(rilCdmaCells.getContext());
-		newNid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-		newNid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newNid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getNid()));
-		row.addView(newNid);
+		nid.setText(formatCellData(rilCdmaCells.getContext(), null, cellTower.getNid()));
 
-		TextView newBsid = new TextView(rilCdmaCells.getContext());
-		newBsid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-		newBsid.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newBsid.setText(formatCellData(rilCdmaCells.getContext(), null, cell.getBsid()));
-		row.addView(newBsid);
+		bsid.setText(formatCellData(rilCdmaCells.getContext(), null, cellTower.getBsid()));
 
-		TextView newDbm = new TextView(rilCdmaCells.getContext());
-		newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-		newDbm.setTextAppearance(rilCdmaCells.getContext(), android.R.style.TextAppearance_Medium);
-		newDbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cell.getDbm()));
-		row.addView(newDbm);
+		dbm.setText(formatCellDbm(rilCdmaCells.getContext(), null, cellTower.getDbm()));
 
 		rilCdmaCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
 
-	protected void showCellGsm(CellTowerGsm cell) {
-		TableRow row = new TableRow(rilCells.getContext());
-		row.setWeightSum(29);
+	protected void showCellGsm(CellTowerGsm cellTower) {
+		TableRow row = (TableRow) mainActivity.getLayoutInflater().inflate(R.layout.ril_list_item, null);
+		TextView type = (TextView) row.findViewById(R.id.type);
+		TextView mcc = (TextView) row.findViewById(R.id.mcc);
+		TextView mnc = (TextView) row.findViewById(R.id.mnc);
+		TextView area = (TextView) row.findViewById(R.id.area);
+		TextView cell = (TextView) row.findViewById(R.id.cell);
+		TextView unit = (TextView) row.findViewById(R.id.unit);
+		TextView dbm = (TextView) row.findViewById(R.id.dbm);
 
-		TextView newType = new TextView(rilCells.getContext());
-		newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-		newType.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newType.setTextColor(rilCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-		newType.setText(rilCells.getContext().getResources().getString(R.string.smallDot));
-		row.addView(newType);
+		type.setTextColor(rilCells.getContext().getResources().getColor(getColorFromGeneration(cellTower.getGeneration())));
+		type.setText(rilCells.getContext().getResources().getString(R.string.smallDot));
 
-		TextView newMcc = new TextView(rilCells.getContext());
-		newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newMcc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMcc.setText(formatCellData(rilCells.getContext(), "%03d", cell.getMcc()));
-		row.addView(newMcc);
+		mcc.setText(formatCellData(rilCells.getContext(), "%03d", cellTower.getMcc()));
 
-		TextView newMnc = new TextView(rilCells.getContext());
-		newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newMnc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMnc.setText(formatCellData(rilCells.getContext(), "%02d", cell.getMnc()));
-		row.addView(newMnc);
+		mnc.setText(formatCellData(rilCells.getContext(), "%02d", cellTower.getMnc()));
 
-		TextView newLac = new TextView(rilCells.getContext());
-		newLac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-		newLac.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newLac.setText(formatCellData(rilCells.getContext(), null, cell.getLac()));
-		row.addView(newLac);
+		area.setText(formatCellData(rilCells.getContext(), null, cellTower.getLac()));
 
-		TextView newCid = new TextView(rilCells.getContext());
-		newCid.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-		newCid.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		if ((mainActivity.prefCid) && (cell.getCid() != CellTower.UNKNOWN) && (cell.getCid() > 0x0ffff)) {
-			int rtcid = cell.getCid() / 0x10000;
-			int cid = cell.getCid() % 0x10000;
-			newCid.setText(String.format("%d-%d", rtcid, cid));
+		if ((mainActivity.prefCid) && (cellTower.getCid() != CellTower.UNKNOWN) && (cellTower.getCid() > 0x0ffff)) {
+			int rtcid = cellTower.getCid() / 0x10000;
+			int cid = cellTower.getCid() % 0x10000;
+			cell.setText(String.format("%d-%d", rtcid, cid));
 		} else
-			newCid.setText(formatCellData(rilCells.getContext(), null, cell.getCid()));
-		row.addView(newCid);
+			cell.setText(formatCellData(rilCells.getContext(), null, cellTower.getCid()));
 
-		TextView newPsc = new TextView(rilCells.getContext());
-		newPsc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newPsc.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newPsc.setText(formatCellData(rilCells.getContext(), null, cell.getPsc()));
-		row.addView(newPsc);
+		unit.setText(formatCellData(rilCells.getContext(), null, cellTower.getPsc()));
 
-		TextView newDbm = new TextView(rilCells.getContext());
-		newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-		newDbm.setTextAppearance(rilCells.getContext(), android.R.style.TextAppearance_Medium);
-		newDbm.setText(formatCellDbm(rilCells.getContext(), null, cell.getDbm()));
-		row.addView(newDbm);
+		dbm.setText(formatCellDbm(rilCells.getContext(), null, cellTower.getDbm()));
 
 		rilCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
 
-	protected void showCellLte(CellTowerLte cell) {
-		TableRow row = new TableRow(rilLteCells.getContext());
-		row.setWeightSum(29);
+	protected void showCellLte(CellTowerLte cellTower) {
+		TableRow row = (TableRow) mainActivity.getLayoutInflater().inflate(R.layout.ril_list_item, null);
+		TextView type = (TextView) row.findViewById(R.id.type);
+		TextView mcc = (TextView) row.findViewById(R.id.mcc);
+		TextView mnc = (TextView) row.findViewById(R.id.mnc);
+		TextView area = (TextView) row.findViewById(R.id.area);
+		TextView cell = (TextView) row.findViewById(R.id.cell);
+		TextView unit = (TextView) row.findViewById(R.id.unit);
+		TextView dbm = (TextView) row.findViewById(R.id.dbm);
 
-		TextView newType = new TextView(rilLteCells.getContext());
-		newType.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 2));
-		newType.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newType.setTextColor(rilLteCells.getContext().getResources().getColor(getColorFromGeneration(cell.getGeneration())));
-		newType.setText(rilLteCells.getContext().getResources().getString(R.string.smallDot));
-		row.addView(newType);
+		type.setTextColor(rilLteCells.getContext().getResources().getColor(getColorFromGeneration(cellTower.getGeneration())));
+		type.setText(rilLteCells.getContext().getResources().getString(R.string.smallDot));
 
-		TextView newMcc = new TextView(rilLteCells.getContext());
-		newMcc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newMcc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMcc.setText(formatCellData(rilLteCells.getContext(), "%03d", cell.getMcc()));
-		row.addView(newMcc);
+		mcc.setText(formatCellData(rilLteCells.getContext(), "%03d", cellTower.getMcc()));
 
-		TextView newMnc = new TextView(rilLteCells.getContext());
-		newMnc.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newMnc.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newMnc.setText(formatCellData(rilLteCells.getContext(), "%02d", cell.getMnc()));
-		row.addView(newMnc);
+		mnc.setText(formatCellData(rilLteCells.getContext(), "%02d", cellTower.getMnc()));
 
-		TextView newTac = new TextView(rilLteCells.getContext());
-		newTac.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 5));
-		newTac.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newTac.setText(formatCellData(rilLteCells.getContext(), null, cell.getTac()));
-		row.addView(newTac);
+		area.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getTac()));
 
-		TextView newCi = new TextView(rilLteCells.getContext());
-		newCi.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 9));
-		newCi.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		if ((mainActivity.prefCid) && (cell.getCi() != CellTower.UNKNOWN)) {
-			int eNodeBId = cell.getCi() / 0x100;
-			int sectorId = cell.getCi() % 0x100;
-			newCi.setText(String.format("%d-%d", eNodeBId, sectorId));
+		if ((mainActivity.prefCid) && (cellTower.getCi() != CellTower.UNKNOWN)) {
+			int eNodeBId = cellTower.getCi() / 0x100;
+			int sectorId = cellTower.getCi() % 0x100;
+			cell.setText(String.format("%d-%d", eNodeBId, sectorId));
 		} else
-			newCi.setText(formatCellData(rilLteCells.getContext(), null, cell.getCi()));
-		row.addView(newCi);
+			cell.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getCi()));
 
-		TextView newPci = new TextView(rilLteCells.getContext());
-		newPci.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 3));
-		newPci.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newPci.setText(formatCellData(rilLteCells.getContext(), null, cell.getPci()));
-		row.addView(newPci);
+		unit.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getPci()));
 
-		TextView newDbm = new TextView(rilLteCells.getContext());
-		newDbm.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 4));
-		newDbm.setTextAppearance(rilLteCells.getContext(), android.R.style.TextAppearance_Medium);
-		newDbm.setText(formatCellDbm(rilLteCells.getContext(), null, cell.getDbm()));
-		row.addView(newDbm);
+		dbm.setText(formatCellDbm(rilLteCells.getContext(), null, cellTower.getDbm()));
 
 		rilLteCells.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
