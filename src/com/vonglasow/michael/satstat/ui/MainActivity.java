@@ -192,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	SharedPreferences mSharedPreferences;
 	
 	boolean prefUnitType = true;
+	boolean prefKnots = false;
 	int prefCoord = Const.KEY_PREF_COORD_DECIMAL;
 	boolean prefUtc = false;
 	boolean prefCid = false;
@@ -353,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		prefUnitType = mSharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
+		prefKnots = mSharedPreferences.getBoolean(Const.KEY_PREF_KNOTS, prefKnots);
 		prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		prefUtc = mSharedPreferences.getBoolean(Const.KEY_PREF_UTC, prefUtc);
 		prefCid = mSharedPreferences.getBoolean(Const.KEY_PREF_CID, prefCid);
@@ -676,6 +678,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			registerLocationProviders();
 		} else if (key.equals(Const.KEY_PREF_UNIT_TYPE)) {
 			prefUnitType = sharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
+		} else if (key.equals(Const.KEY_PREF_KNOTS)) {
+			prefKnots = sharedPreferences.getBoolean(Const.KEY_PREF_KNOTS, prefKnots);
 		} else if (key.equals(Const.KEY_PREF_COORD)) {
 			prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		} else if (key.equals(Const.KEY_PREF_UTC)) {

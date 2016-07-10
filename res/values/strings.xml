@@ -135,6 +135,7 @@
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_mph">&#x00a0;mph</string>
+    <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="unit_feet">&#x00a0;ft</string>
     <string name="pref_notify">GPS fix notification</string>
@@ -182,6 +183,8 @@
     <string name="pref_data">Data display</string>
     <string name="pref_unit">Use metric units</string>
     <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string>
+    <string name="pref_knots">Show speed in knots</string>
+    <string name="pref_knots_summary">If unchecked, metric or imperial units (as selected above) will be used</string>
     <string name="pref_coord">Coordinates</string>
 
     <string-array name="prefs_coord_keys">

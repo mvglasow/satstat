@@ -61,6 +61,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	private int mStatus = GPS_INACTIVE;
 	
 	private boolean prefUnitType = true;
+	private boolean prefKnots = false;
 	private int prefCoord = Const.KEY_PREF_COORD_DECIMAL;
 	private boolean mNotifyFix = false;
 	private boolean mNotifySearch = false;
@@ -201,8 +202,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 			}
 			if (location.hasSpeed()) {
 				text = text + (text.equals("")?"":", ") + String.format("%.0f%s",
-						(location.getSpeed() * (prefUnitType ? 3.6 : 2.23694)),
-						getString(((prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
+						(location.getSpeed() * (prefKnots ? 1.943844 : prefUnitType ? 3.6 : 2.23694)),
+						getString(((prefKnots) ? R.string.unit_kn : (prefUnitType) ? R.string.unit_km_h : R.string.unit_mph)));
 			}
 			if (location.hasAccuracy()) {
 				text = text + (text.equals("")?"":", ") + String.format("\u03b5 = %.0f%s",

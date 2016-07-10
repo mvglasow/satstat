@@ -7,6 +7,11 @@
             android:key="pref_unit_type"
             android:summary="@string/pref_unit_summary"
             android:title="@string/pref_unit" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_knots"
+            android:summary="@string/pref_knots_summary"
+            android:title="@string/pref_knots" />
 
         <ListPreference
             android:defaultValue="0"
