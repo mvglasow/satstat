@@ -599,7 +599,7 @@ public class RadioSectionFragment extends Fragment {
 			cell.setText(formatCellData(rilCells.getContext(), null, cellTower.getCid()));
 			cell2.setText(String.format("%d-%d", rtcid, cid));
 		}
-		cell2.setVisibility(mainActivity.prefCid2 ? View.VISIBLE : View.GONE);
+		cell2.setVisibility((mainActivity.prefCid2 && (cellTower.getCid() > 0x0ffff)) ? View.VISIBLE : View.GONE);
 
 		unit.setText(formatCellData(rilCells.getContext(), null, cellTower.getPsc()));
 
