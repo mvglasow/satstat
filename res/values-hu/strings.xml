@@ -248,6 +248,7 @@
     <string name="status_perm_offline_map">Offline térkép letöltéséhez engedélyezned kell a hozzáférést a Tárolóhoz</string>
     <string name="notify_perm_title">A SatStat megigényli a szükséges jogokat</string>
     <string name="notify_perm_body">Érintsd meg az engedélyezéshez vagy tiltáshoz</string>
-
+    <string name="pref_cid2">Mindkét cella ID formátum megjelenítése</string>
+    <string name="pref_cid2_summary">Megjelenítés különválasztott és egyben lévő formában is. A fentebb kiválasztott formátum jelenik meg felül.</string>
 
 </resources>
