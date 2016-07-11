@@ -196,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 	int prefCoord = Const.KEY_PREF_COORD_DECIMAL;
 	boolean prefUtc = false;
 	boolean prefCid = false;
+	boolean prefCid2 = false;
 	int prefWifiSort = 0;
 	boolean prefMapOffline = false;
 	String prefMapPath = Const.MAP_PATH_DEFAULT;
@@ -358,6 +359,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 		prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		prefUtc = mSharedPreferences.getBoolean(Const.KEY_PREF_UTC, prefUtc);
 		prefCid = mSharedPreferences.getBoolean(Const.KEY_PREF_CID, prefCid);
+		prefCid2 = mSharedPreferences.getBoolean(Const.KEY_PREF_CID2, prefCid2);
 		prefWifiSort = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
 		prefMapOffline = mSharedPreferences.getBoolean(Const.KEY_PREF_MAP_OFFLINE, prefMapOffline);
 		prefMapPath = mSharedPreferences.getString(Const.KEY_PREF_MAP_PATH, prefMapPath);
@@ -686,6 +688,8 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
 			prefUtc = sharedPreferences.getBoolean(Const.KEY_PREF_UTC, prefUtc);
 		} else if (key.equals(Const.KEY_PREF_CID)) {
 			prefCid = sharedPreferences.getBoolean(Const.KEY_PREF_CID, prefCid);
+		} else if (key.equals(Const.KEY_PREF_CID2)) {
+			prefCid2 = sharedPreferences.getBoolean(Const.KEY_PREF_CID2, prefCid2);
 		} else if (key.equals(Const.KEY_PREF_WIFI_SORT)) {
 			prefWifiSort = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_WIFI_SORT, Integer.toString(prefWifiSort)));
 		} else if (key.equals(Const.KEY_PREF_MAP_OFFLINE)) {
