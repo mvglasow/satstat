@@ -31,6 +31,11 @@
             android:key="pref_cid"
             android:summary="@string/pref_cid_summary"
             android:title="@string/pref_cid" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_cid2"
+            android:summary="@string/pref_cid2_summary"
+            android:title="@string/pref_cid2" />
 
         <ListPreference
             android:defaultValue="0"

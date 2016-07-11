@@ -577,6 +577,7 @@ public class RadioSectionFragment extends Fragment {
 		TextView mnc = (TextView) row.findViewById(R.id.mnc);
 		TextView area = (TextView) row.findViewById(R.id.area);
 		TextView cell = (TextView) row.findViewById(R.id.cell);
+		TextView cell2 = (TextView) row.findViewById(R.id.cell2);
 		TextView unit = (TextView) row.findViewById(R.id.unit);
 		TextView dbm = (TextView) row.findViewById(R.id.dbm);
 
@@ -589,12 +590,16 @@ public class RadioSectionFragment extends Fragment {
 
 		area.setText(formatCellData(rilCells.getContext(), null, cellTower.getLac()));
 
+		int rtcid = cellTower.getCid() / 0x10000;
+		int cid = cellTower.getCid() % 0x10000;
 		if ((mainActivity.prefCid) && (cellTower.getCid() != CellTower.UNKNOWN) && (cellTower.getCid() > 0x0ffff)) {
-			int rtcid = cellTower.getCid() / 0x10000;
-			int cid = cellTower.getCid() % 0x10000;
 			cell.setText(String.format("%d-%d", rtcid, cid));
-		} else
+			cell2.setText(formatCellData(rilCells.getContext(), null, cellTower.getCid()));
+		} else {
 			cell.setText(formatCellData(rilCells.getContext(), null, cellTower.getCid()));
+			cell2.setText(String.format("%d-%d", rtcid, cid));
+		}
+		cell2.setVisibility((mainActivity.prefCid2 && (cellTower.getCid() > 0x0ffff)) ? View.VISIBLE : View.GONE);
 
 		unit.setText(formatCellData(rilCells.getContext(), null, cellTower.getPsc()));
 
@@ -611,6 +616,7 @@ public class RadioSectionFragment extends Fragment {
 		TextView mnc = (TextView) row.findViewById(R.id.mnc);
 		TextView area = (TextView) row.findViewById(R.id.area);
 		TextView cell = (TextView) row.findViewById(R.id.cell);
+		TextView cell2 = (TextView) row.findViewById(R.id.cell2);
 		TextView unit = (TextView) row.findViewById(R.id.unit);
 		TextView dbm = (TextView) row.findViewById(R.id.dbm);
 
@@ -623,12 +629,16 @@ public class RadioSectionFragment extends Fragment {
 
 		area.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getTac()));
 
+		int eNodeBId = cellTower.getCi() / 0x100;
+		int sectorId = cellTower.getCi() % 0x100;
 		if ((mainActivity.prefCid) && (cellTower.getCi() != CellTower.UNKNOWN)) {
-			int eNodeBId = cellTower.getCi() / 0x100;
-			int sectorId = cellTower.getCi() % 0x100;
 			cell.setText(String.format("%d-%d", eNodeBId, sectorId));
-		} else
+			cell2.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getCi()));
+		} else {
 			cell.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getCi()));
+			cell2.setText(String.format("%d-%d", eNodeBId, sectorId));
+		}
+		cell2.setVisibility(mainActivity.prefCid2 ? View.VISIBLE : View.GONE);
 
 		unit.setText(formatCellData(rilLteCells.getContext(), null, cellTower.getPci()));
 

@@ -8,6 +8,7 @@
         android:id="@+id/type"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="2"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -15,6 +16,7 @@
         android:id="@+id/mcc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="3"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -22,6 +24,7 @@
         android:id="@+id/mnc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="3"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -29,20 +32,35 @@
         android:id="@+id/area"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="5"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/cell"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="9"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/cell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/cell2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/unit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="3"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -50,6 +68,7 @@
         android:id="@+id/dbm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="4"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

@@ -276,5 +276,7 @@
     <string name="status_perm_offline_map">To use offline maps, you must grant permission to access files</string>
     <string name="notify_perm_title">SatStat is requesting permissions</string>
     <string name="notify_perm_body">Touch to grant or deny</string>
+    <string name="pref_cid2">Display both cell ID formats</string>
+    <string name="pref_cid2_summary">Show both split and non-split forms, with the one selected above appearing on top</string>
 
 </resources>

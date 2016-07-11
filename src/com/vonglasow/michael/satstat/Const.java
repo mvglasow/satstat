@@ -111,7 +111,7 @@ public class Const {
 	public static final String KEY_PREF_MAP_LON = "pref_map_lon";
 	public static final String KEY_PREF_MAP_ZOOM = "pref_map_zoom";
 	public static final String KEY_PREF_UNIT_TYPE = "pref_unit_type";
-	public static final String KEY_PREF_KNOTS = "pref_unit_knots";
+	public static final String KEY_PREF_KNOTS = "pref_knots";
 	public static final String KEY_PREF_MAP_OFFLINE = "pref_map_offline";
 	public static final String KEY_PREF_MAP_PATH = "pref_map_path";
 	public static final String KEY_PREF_MAP_CACHED_PATH = "pref_map_cached_path";
@@ -124,6 +124,7 @@ public class Const {
 	public static final int KEY_PREF_COORD_MGRS = 3;
 	public static final String KEY_PREF_UTC = "pref_utc";
 	public static final String KEY_PREF_CID = "pref_cid";
+	public static final String KEY_PREF_CID2 = "pref_cid2";
 	public static final String KEY_PREF_WIFI_SORT = "pref_wifi_sort";
 
 
