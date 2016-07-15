@@ -132,6 +132,20 @@ public class Const {
 	 * Tile cache name for tiles downloaded from Mapquest
 	 */
 	public static final String TILE_CACHE_MAPQUEST = "MapQuest";
+	
+	/**
+	 * Tile servers for Mapquest
+	 */
+	public static final String[] TILE_SERVER_MAPQUEST = {
+		"otile1.mqcdn.com",
+		"otile2.mqcdn.com",
+		"otile3.mqcdn.com",
+		"otile4.mqcdn.com"
+	};
+	
+	public static final String TILE_URL_MAPQUEST = "/tiles/1.0.0/map/";
+	
+	public static final String TILE_EXTENSION_MAPQUEST = "png";
 
 
 	/**

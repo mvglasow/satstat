@@ -62,6 +62,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -390,6 +391,13 @@ public class MapSectionFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
 		float density = this.getContext().getResources().getDisplayMetrics().density;
 
+		String versionName;
+		try {
+			versionName = mainActivity.getPackageManager().getPackageInfo(mainActivity.getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			versionName = "unknown";
+		}
+
 		mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
 		mapAttribution = (TextView) rootView.findViewById(R.id.mapAttribution);
 
@@ -433,13 +441,12 @@ public class MapSectionFragment extends Fragment {
 		providerInvalidationHandler = new Handler();
 		providerInvalidators = new HashMap<String, Runnable>();
 
-		onlineTileSource = new OnlineTileSource(new String[]{
-				"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
-		}, 80);
+		onlineTileSource = new OnlineTileSource(Const.TILE_SERVER_MAPQUEST, 80);
+		onlineTileSource.setUserAgent(String.format("%s/%s (%s)", "SatStat", versionName, System.getProperty("http.agent")));
 		onlineTileSource.setName(Const.TILE_CACHE_MAPQUEST)
 		.setAlpha(false)
-		.setBaseUrl("/tiles/1.0.0/map/")
-		.setExtension("png")
+		.setBaseUrl(Const.TILE_URL_MAPQUEST)
+		.setExtension(Const.TILE_EXTENSION_MAPQUEST)
 		.setParallelRequestsLimit(8)
 		.setProtocol("http")
 		.setTileSize(256)
