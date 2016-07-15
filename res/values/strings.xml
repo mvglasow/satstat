@@ -204,8 +204,7 @@
     <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string>
     <string name="pref_cid">Split UMTS/LTE cell IDs</string>
     <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string>
-    <string name="osm_attribution" translatable="false">© OpenStreetMap</string>
-    <string name="mapquest_attribution" translatable="false">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
+    <string name="osm_attribution" translatable="false">© OpenStreetMap contributors</string>
     <string name="title_activity_legend">Legend</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Satellite used in fix</string>

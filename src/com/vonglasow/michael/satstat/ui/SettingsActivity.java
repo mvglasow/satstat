@@ -221,7 +221,7 @@ public class SettingsActivity extends AppCompatActivity implements OnPreferenceC
 			TileCache mapRendererTileCache = AndroidUtil.createExternalStorageTileCache(this,
 					Const.TILE_CACHE_INTERNAL_RENDER_THEME, 0, 256, true);
 			TileCache mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this,
-					Const.TILE_CACHE_MAPQUEST, 0, 256, true);
+					Const.TILE_CACHE_OSM, 0, 256, true);
 			mapRendererTileCache.purge();
 			mapDownloadTileCache.purge();
 			mapRendererTileCache.destroy();
