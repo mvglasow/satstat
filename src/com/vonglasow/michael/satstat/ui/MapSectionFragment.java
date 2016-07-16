@@ -62,6 +62,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -285,7 +286,7 @@ public class MapSectionFragment extends Fragment {
 			// use online map tiles
 			if (mapDownloadTileCache == null)
 				mapDownloadTileCache = AndroidUtil.createExternalStorageTileCache(this.getContext(),
-						Const.TILE_CACHE_MAPQUEST,
+						Const.TILE_CACHE_OSM,
 						Math.round(AndroidUtil.getMinimumCacheSize(this.getContext(),
 								mapMap.getModel().displayModel.getTileSize(),
 								mapMap.getModel().frameBufferModel.getOverdrawFactor(),
@@ -297,7 +298,13 @@ public class MapSectionFragment extends Fragment {
 					mapMap.getModel().mapViewPosition, onlineTileSource,
 					AndroidGraphicFactory.INSTANCE);
 			layers.add(0, mapDownloadLayer);
-			mapAttribution.setText(R.string.mapquest_attribution);
+			/*
+			 * Since tiles are now sourced from OSM (following Mapquest's decision to discontinue their free
+			 * tile service), attribution is the same for online and offline. This may change if we switch
+			 * to a different tile source (or allow multiple ones) - therefore, attribution should still
+			 * depend on the map source.
+			 */
+			mapAttribution.setText(R.string.osm_attribution);
 		} else
 			mapAttribution.setText("");
 
@@ -390,6 +397,13 @@ public class MapSectionFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_main_map, container, false);
 		float density = this.getContext().getResources().getDisplayMetrics().density;
 
+		String versionName;
+		try {
+			versionName = mainActivity.getPackageManager().getPackageInfo(mainActivity.getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			versionName = "unknown";
+		}
+
 		mapReattach = (ImageButton) rootView.findViewById(R.id.mapReattach);
 		mapAttribution = (TextView) rootView.findViewById(R.id.mapAttribution);
 
@@ -433,13 +447,12 @@ public class MapSectionFragment extends Fragment {
 		providerInvalidationHandler = new Handler();
 		providerInvalidators = new HashMap<String, Runnable>();
 
-		onlineTileSource = new OnlineTileSource(new String[]{
-				"otile1.mqcdn.com", "otile2.mqcdn.com", "otile3.mqcdn.com", "otile4.mqcdn.com"
-		}, 80);
-		onlineTileSource.setName(Const.TILE_CACHE_MAPQUEST)
+		onlineTileSource = new OnlineTileSource(Const.TILE_SERVER_OSM, 80);
+		onlineTileSource.setUserAgent(String.format("%s/%s (%s)", "SatStat", versionName, System.getProperty("http.agent")));
+		onlineTileSource.setName(Const.TILE_CACHE_OSM)
 		.setAlpha(false)
-		.setBaseUrl("/tiles/1.0.0/map/")
-		.setExtension("png")
+		.setBaseUrl(Const.TILE_URL_OSM)
+		.setExtension(Const.TILE_EXTENSION_OSM)
 		.setParallelRequestsLimit(8)
 		.setProtocol("http")
 		.setTileSize(256)

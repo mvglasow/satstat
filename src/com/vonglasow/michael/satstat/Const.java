@@ -129,9 +129,28 @@ public class Const {
 
 
 	/**
-	 * Tile cache name for tiles downloaded from Mapquest
+	 * Tile cache name for tiles downloaded from OSM
 	 */
-	public static final String TILE_CACHE_MAPQUEST = "MapQuest";
+	public static final String TILE_CACHE_OSM = "OSM";
+	
+	/**
+	 * Tile servers for Mapquest
+	 */
+	public static final String[] TILE_SERVER_OSM = {
+		"a.tile.openstreetmap.org",
+		"b.tile.openstreetmap.org",
+		"c.tile.openstreetmap.org"
+	};
+	
+	/**
+	 * Tile URL for OSM (anything between server name and zoom level)
+	 */
+	public static final String TILE_URL_OSM = "";
+	
+	/**
+	 * Tile extension for OSM
+	 */
+	public static final String TILE_EXTENSION_OSM = "png";
 
 
 	/**
