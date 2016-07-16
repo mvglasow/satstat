@@ -160,6 +160,8 @@
     <string name="pref_data">Duomenų nurodymas</string>
     <string name="pref_unit">Naudoti metrinius vienetus</string>
     <string name="pref_unit_summary">Jeigu neišrinkta, bus naudojami JAV matavimo vinetai (išskyrus jutikliams)</string>
+    <string name="pref_knots">Nurodyti greitį mazgais</string>
+    <string name="pref_knots_summary">Jeigu neišrinkta, bus naudojami metrini arba JAV vienetai (pagal bendrą vienetų nustatymą) will be used</string>
     <string name="pref_coord">Koordinatės</string>
 
     <string-array name="prefs_coord_keys">
@@ -173,8 +175,6 @@
     <string name="pref_utc_summary">Naudoti UTC vietienio laiko juosto vietoj GPS laiko nurodymui</string>
     <string name="pref_cid">Sudalyti UMTS/LTE ląstelių ID kodus</string>
     <string name="pref_cid_summary">Sudalyti ID kodus į RNCID/CID arba eNodeB/sector ID</string>
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Legenda</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Palydovas vartojamas vietovei nustatyti</string>
@@ -224,5 +224,13 @@
     <string name="action_yes">Taip</string>
     <string name="action_no">Ne</string>
     <string name="status_downloads_completed">Visi atsisiuntimai yra pabaigti</string>
+    <string name="status_perm_map_download">Kad galėtumete atsisiųsti offline žemėlapius, reikia leidimo failus įrenginyje pasiekti</string>
+    <string name="status_perm_location">Kad galėtumete matyti vietovės arba bevielių tinklų informacijas, reikia leidimo įrenginio vietovės informaciją pasiekti</string>
+    <string name="status_perm_refresh_agps">Kad galėtumete atnaujinti AGPS duomenis, reikia leidimo įrenginio vietovės informaciją pasiekti</string>
+    <string name="status_perm_offline_map">Kad galėtumete naudoti offline žemėlapius, reikia leidimo failus įrenginyje pasiekti</string>
+    <string name="notify_perm_title">SatStat prašo leidimus</string>
+    <string name="notify_perm_body">Palieskite, norėdami leisti arba atmesti</string>
+    <string name="pref_cid2">Nurodyti abi ląstelių ID formas</string>
+    <string name="pref_cid2_summary">Nurodyti ir sudalytą ir nesudalytą formą (anksčiau išrinkta forma bus nurodama viršuje)</string>
 
 </resources>

@@ -127,6 +127,7 @@
         &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="pref_notify">Notifica posizione GPS</string>
     <string name="pref_notify_summary">Avvisa quando un\'applicazione ottiene la mia posizione dal GPS</string>
@@ -160,7 +161,9 @@
     <string name="pref_loc_prov_summary">Mostrare le fonti di localizzazione selezionati sulla mappa</string>
     <string name="pref_data">Rappresentazione dati</string>
     <string name="pref_unit">Usare unità metriche</string>
-    <string name="pref_unit_summary">Se non selezionato, verrano utilizzate delle unità imperiali (eccetto per i sensori)</string>
+    <string name="pref_unit_summary">Se non selezionato, verranno utilizzate delle unità imperiali (eccetto per i sensori)</string>
+    <string name="pref_knots">Mostrare velocità en nodi</string>
+    <string name="pref_knots_summary">Se non selezionato, verranno delle unità metriche o imperiali (secondo l\'impostazione qui sopra) will be used</string>
     <string name="pref_coord">Coordinati</string>
 
     <string-array name="prefs_coord_keys">
@@ -174,8 +177,6 @@
     <string name="pref_utc_summary">Usare GPS anziché il fuso orario locale per mostrare il tempo GPS</string>
     <string name="pref_cid">Suddividere cell ID UMTS/LTE</string>
     <string name="pref_cid_summary">Suddividere gli ID di cellule UMTS o LTE in RNCID/CID o eNodeB/sector ID</string>
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Legenda</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Satellite utilizzato per la localizzazione</string>
@@ -225,5 +226,13 @@
     <string name="action_yes">Sì</string>
     <string name="action_no">No</string>
     <string name="status_downloads_completed">Tutti i download hanno finito</string>
+    <string name="status_perm_map_download">Per scaricare delle mappe offline, bisogna consentire l\'accesso alle file sul dispositivo</string>
+    <string name="status_perm_location">Per vedere posizione o reti, bisogna consentire l\'accesso alla posizione di questo dispositivo</string>
+    <string name="status_perm_refresh_agps">Per ricaricare dati AGPS, bisogna consentire l\'accesso alla posizione di questo dispositivo</string>
+    <string name="status_perm_offline_map">Per utilizzare delle mappe offline, bisogna consentire l\'accesso alle file sul dispositivo</string>
+    <string name="notify_perm_title">SatStat sta richiedendo permessi</string>
+    <string name="notify_perm_body">Tocca per consentire o negare</string>
+    <string name="pref_cid2">Mostrare cell ID in entrambi formati</string>
+    <string name="pref_cid2_summary">Mostrare sia la forma suddivisa che quella combinata (quella selezionata sopra verrà mostrata sopra l\'altra)</string>
 
 </resources>

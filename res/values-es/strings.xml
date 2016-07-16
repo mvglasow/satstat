@@ -127,6 +127,7 @@
         &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="pref_notify">Notificación de ubicación GPS</string>
     <string name="pref_notify_summary">Notificarme cuando una aplicación obtenga mi ubicación desde GPS</string>
@@ -161,6 +162,8 @@
     <string name="pref_data">Representación de dados</string>
     <string name="pref_unit">Usar unidades métricas</string>
     <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
+    <string name="pref_knots">Mostrar velocidad en nudos</string>
+    <!-- <string name="pref_knots_summary">If unchecked, metric or imperial units (as selected above) will be used</string> -->
     <string name="pref_coord">Coordenadas</string>
 
     <string-array name="prefs_coord_keys">
@@ -173,8 +176,6 @@
     <!-- <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string> -->
     <!-- <string name="pref_cid">Split UMTS/LTE cell IDs</string> -->
     <!-- <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string> -->
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Leyenda</string>
     <string name="title_legend_gps">GPS</string>
     <!-- <string name="title_legend_gps_used">Satellite used in fix</string> -->
@@ -224,5 +225,13 @@
     <string name="action_yes">Si</string>
     <string name="action_no">No</string>
     <string name="status_downloads_completed">Todas las descargas están terminadas</string>
+    <string name="status_perm_map_download">Para descargar mapas offline, tienes que permitir el acceso a archivos de tu dispositivo</string>
+    <string name="status_perm_location">Para ver ubicación o redes inalámbricas, tienes que permitir el acceso a la ubicación de tu dispositivo</string>
+    <string name="status_perm_refresh_agps">Para actualizar dados AGPS, tienes que permitir el acceso a la ubicación de tu dispositivo</string>
+    <string name="status_perm_offline_map">Para usar mapas offline, tienes que permitir el acceso a archivos de tu dispositivo</string>
+    <string name="notify_perm_title">SatStat necesita permisos</string>
+    <string name="notify_perm_body">Toca para permitir o rechazar</string>
+    <!-- <string name="pref_cid2">Display both cell ID formats</string> -->
+    <!-- <string name="pref_cid2_summary">Show both split and non-split forms, with the one selected above appearing on top</string> -->
 
 </resources>

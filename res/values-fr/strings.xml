@@ -121,6 +121,7 @@
         &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="pref_notify">Notification de localisation GPS</string>
     <string name="pref_notify_summary">Me notifier lorsqu\'une application m\'a localisé via GPS</string>
@@ -155,6 +156,8 @@
     <!-- <string name="pref_data">Data display</string> -->
     <!-- <string name="pref_unit">Use metric units</string> -->
     <!-- <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
+    <string name="pref_knots">Montrer vitesse en nœuds</string>
+    <!-- <string name="pref_knots_summary">If unchecked, metric or imperial units (as selected above) will be used</string> -->
     <string name="pref_coord">Coordonnées</string>
 
     <string-array name="prefs_coord_keys">
@@ -167,8 +170,6 @@
     <!-- <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string> -->
     <!-- <string name="pref_cid">Split UMTS/LTE cell IDs</string> -->
     <!-- <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string> -->
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Légende</string>
     <string name="title_legend_gps">GPS</string>
     <!-- <string name="title_legend_gps_used">Satellite used in fix</string> -->

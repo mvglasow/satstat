@@ -131,6 +131,7 @@
         &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="pref_notify">GPS-Standorthinweis</string>
     <string name="pref_notify_summary">Benachrichtigen, wenn eine Applikation meinen Standort mit GPS bestimmt hat</string>
@@ -166,6 +167,8 @@
     <string name="pref_data">Datenanzeige</string>
     <string name="pref_unit">Metrische Einheiten verwenden</string>
     <string name="pref_unit_summary">Wenn abgewählt, werden amerikanische Maßeinheiten verwendet (Ausnahme Sensoransicht)</string>
+    <string name="pref_knots">Geschwindigkeit in Knoten anzeigen</string>
+    <string name="pref_knots_summary">Wenn abgewählt, werden metrische oder amerikanische Maßeinheiten verwendet (wie oben ausgewählt)</string>
     <string name="pref_coord">Koordinaten</string>
 
     <string-array name="prefs_coord_keys">
@@ -179,8 +182,6 @@
     <string name="pref_utc_summary">GPS-Zeit in UTC statt in Ortszeit anzeigen</string>
     <string name="pref_cid">UMTS/LTE Cell-IDs teilen</string>
     <string name="pref_cid_summary">Cell-IDs in RNCID/CID bzw. eNodeB/Sector ID aufteilen</string>
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Legende</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Satellit zur Positionsbestimmung verwendet</string>
@@ -230,5 +231,13 @@
     <string name="action_yes">Ja</string>
     <string name="action_no">Nein</string>
     <string name="status_downloads_completed">Alle Downloads sind abgeschlossen</string>
+    <string name="status_perm_map_download">Um Offline-Karten herunterzuladen, müssen Sie den Zugriff auf Dateien zulassen</string>
+    <string name="status_perm_location">Standort- und Funknetzinformationen werden erst angezeigt, wenn Sie den Zugriff auf den Standort Ihres Geräts zulassen</string>
+    <string name="status_perm_refresh_agps">Um AGPS-Daten zu aktualisieren, müsen Sie den Zugriff auf den Standort Ihres Geräts zulassen</string>
+    <string name="status_perm_offline_map">Um Offline-Karten zu benutzen, müssen Sie den Zugriff auf Dateien zulassen</string>
+    <string name="notify_perm_title">SatStat benötigt Berechtigungen</string>
+    <string name="notify_perm_body">Zum Zulassen oder Verweigern antippen</string>
+    <string name="pref_cid2">Cell-IDs in beiden Formaten anzeigen</string>
+    <string name="pref_cid2_summary">Sowohl die geteilte als auch die ungeteilte Form werden angezeigt; die vorherige Option gibt an, welche Form zuerst erscheint</string>
 
 </resources>
