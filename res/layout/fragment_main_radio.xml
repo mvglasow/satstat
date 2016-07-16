@@ -129,7 +129,10 @@
         <TableLayout
             android:id="@+id/rilLteCells"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/listDivider"
+            android:showDividers="beginning|middle" >
+
         </TableLayout>
     </LinearLayout>
 
@@ -261,7 +264,9 @@
 	    <TableLayout
 	        android:id="@+id/rilCells"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
+	        android:layout_height="wrap_content"
+	        android:divider="?android:attr/listDivider"
+	        android:showDividers="beginning|middle" >
 	
 	    </TableLayout>
 	
@@ -366,7 +371,9 @@
 	    <TableLayout
 	        android:id="@+id/rilCdmaCells"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
+	        android:layout_height="wrap_content"
+	        android:divider="?android:attr/listDivider"
+	        android:showDividers="beginning|middle" >
 	
 	    </TableLayout>
 	</LinearLayout>
@@ -419,7 +426,9 @@
         android:id="@+id/wifiAps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:divider="?android:attr/listDivider"
+        android:orientation="vertical"
+        android:showDividers="beginning|middle" >
 
     </LinearLayout>
     

@@ -201,12 +201,6 @@ public class RadioSectionFragment extends Fragment {
 			}
 		};
 
-		View divider = new View(wifiAps.getContext());
-		divider.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, 1));
-		divider.setBackgroundColor(getResources().getColor(android.R.color.tertiary_text_dark));
-		divider.setOnClickListener(clis);
-		wifiAps.addView(divider);
-
 		LinearLayout wifiLayout = new LinearLayout(wifiAps.getContext());
 		wifiLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		wifiLayout.setOrientation(LinearLayout.HORIZONTAL);
