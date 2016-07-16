@@ -132,6 +132,7 @@
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
     <string name="unit_mph">&#x00a0;mph</string>
+    <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="unit_feet">&#x00a0;ft</string>
     <string name="pref_notify">GPS fix pozíció értesítés</string>
@@ -182,8 +183,6 @@
     <string name="pref_utc_summary">A GPS fix pozíció megjelenítése UTC szerint helyi idő helyett.</string>
     <string name="pref_cid">UMTS/LTE cella ID-k különválasztása</string>
     <string name="pref_cid_summary">Cella ID-k különválasztása RNCID/CID vagy eNodeB/sector ID szerint</string>
-    <string name="osm_attribution">© OpenStreetMap</string>
-    <string name="mapquest_attribution">© OpenStreetMap. Tiles Courtesy of MapQuest.</string>
     <string name="title_activity_legend">Jelmagyarázat</string>
     <string name="title_legend_gps">GPS</string>
     <string name="title_legend_gps_used">Fix pozícióhoz felhasznált műholdak</string>
