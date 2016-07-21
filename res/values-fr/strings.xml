@@ -19,6 +19,7 @@
     <string name="title_section1">GPS</string>
     <string name="title_section2">Capteurs</string>
     <string name="title_section3">Radio</string>
+    <string name="title_section4">Carte</string>
     <string name="title_gps_lat">Latitude</string>
     <string name="title_gps_lon">Longitude</string>
     <string name="title_gps_coord">Coordonnées</string>
@@ -80,17 +81,22 @@
     <string name="title_radio_mnc">MNC</string>
     <string name="title_radio_cellid">Cell ID</string>
     <string name="title_radio_lac">LAC</string>
+    <string name="title_radio_psc">PSC</string>
     <string name="title_radio_asu">ASU</string>
     <string name="title_radio_cdma">CDMA</string>
     <string name="title_radio_sid">SID</string>
     <string name="title_radio_nid">NID</string>
     <string name="title_radio_bsid">BSID</string>
+    <string name="title_radio_lte">LTE</string>
+    <string name="title_radio_tac">TAC</string>
+    <string name="title_radio_pci">PCI</string>
     <string name="title_radio_wifi">WiFi</string>
     <string name="title_radio_mac">BSSID (MAC)</string>
     <string name="title_radio_channel">Ch</string>
     <string name="title_radio_level">dBm</string>
     <string name="title_activity_about">A propos</string>
     <string name="about_caption">Location, Sensor and Radio Network Status</string>
+    <string name="about_version">Version</string>
     <string name="about_text">&lt;p&gt;
         Si quelque chose ne fonctionne pas comme il le devrait,
         ou si vous avez une idée pour rendre l\'application meilleure, vous pouvez
@@ -121,6 +127,7 @@
         &lt;a href="https://github.com/mvglasow/satstat&gt;https://github.com/mvglasow/satstat&lt;/a&gt;</string>
     <string name="unit_degree">°</string>
     <string name="unit_km_h">&#x00a0;km/h</string>
+    <string name="unit_mph">&#x00a0;mph</string>
     <string name="unit_kn">&#x00a0;kn</string>
     <string name="unit_meter">&#x00a0;m</string>
     <string name="pref_notify">Notification de localisation GPS</string>
@@ -148,6 +155,7 @@
     </string-array>
 
     <string name="pref_lastupdate">Dernière mise à jour</string>
+    <string name="pref_lastupdate_summary">%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</string>
     <string name="pref_networks">Réseaux</string>
     <string name="pref_networks_summary">Recharger données AGPS lorsque mon appareil se connecte à un des réseaux selectionnés</string>
     <string name="pref_map">Carte</string>
@@ -192,6 +200,13 @@
     <string name="title_legend_map">Carte</string>
     <!-- <string name="title_legend_map_prov">Location from %s provider</string> -->
     <!-- <string name="title_legend_map_stale">Stale location from any provider</string> -->
+    <string name="title_nmea_001_032">GPS</string>
+    <string name="title_nmea_033_054">SBAS</string>
+    <string name="title_nmea_055_064">55–64</string>
+    <string name="title_nmea_065_088">GLONASS</string>
+    <string name="title_nmea_097_192">97–192</string>
+    <string name="title_nmea_193_195">QZSS</string>
+    <string name="title_nmea_201_235">Beidou</string>
     <string name="pref_wifi_sort">Trier les reseaux WiFi</string>
 
     <string-array name="prefs_wifi_sort_keys">
@@ -201,9 +216,33 @@
         <item>Par niveau du signal</item>
     </string-array>
 
+    <string name="pref_map_offline">Utiliser la carte hors connexion</string>
+    <string name="pref_map_offline_summary">Rendu des cartes sur l'appareil (nécessite le téléchargement d'une carte hors connexion)</string>
+    <string name="pref_map_path">Dossier des cartes hors connexion</string>
+    <string name="map_path_title">Chemin du dossier des cartes hors connexion:</string>
+    <string name="map_path_fileman">Pour parcourrir le dossier des cartes hors connexion, vous devez installer un gestionnaire de fichiers compatible.</string>
+    <string name="map_path_cm_filemanager">Gestionnaire de fichier CM</string>
+    <string name="map_path_oi_filemanager">Gestionnaire de fichiers OI</string>
     <string name="action_ok">OK</string>
     <string name="action_cancel">Annuler</string>
+    <string name="pref_map_download">Télécharger la carte hors connexion</string>
+    <string name="pref_map_purge">Effacer le cache des tuiles de carte</string>
+    <string name="pref_map_purge_summary">Forcer le téléchargement ou le rendu des tuiles, utile en cas de problème</string>
+    <string name="status_map_purged">Cache des tuiles de carte effacé</string>
+    <string name="title_activity_map_download">Télécharger la carte hors connexion</string>
+    <string name="status_folder_empty">Le dossier est vide</string>
+    <string name="status_already_downloading">Le téléchargement d'une carte du même nom est déjà en cours.</string>
+    <string name="confirm_download">Il semble que vous ayez déjà une copie à jour de cette carte. Voulez-vous vraiment la télécharger ?</string>
     <string name="action_yes">Oui</string>
     <string name="action_no">Non</string>
+    <string name="status_downloads_completed">Tous les téléchargements sont terminés</string>
+    <string name="status_perm_map_download">Pour télécharger les cartes hors connexion, vous devez donner la permission d'accéder aux fichiers</string>
+    <string name="status_perm_location">Aucune position ou information radio ne peut être affichée sans la permission d'accéder à la position de l'appareil</string>
+    <string name="status_perm_refresh_agps">Pour rafraîchir les données AGPS, vous devez donner la permission d'accéder à la position de l'appareil</string>
+    <string name="status_perm_offline_map">Pour utiliser les cartes hors connexion, vous devez donner la permission d'accéder aux fichiers</string>
+    <string name="notify_perm_title">SatStat requiert des permissions</string>
+    <string name="notify_perm_body">Toucher pour accepter ou refuser</string>
+    <string name="pref_cid2">Afficher les deux formats de cellule</string>
+    <string name="pref_cid2_summary">Afficher les deux formes fractionnées et non fractionnées, avec celui sélectionné ci-dessus apparaissant au-dessus</string>
 
 </resources>
