@@ -46,9 +46,13 @@
             android:title="@string/pref_wifi_sort" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_map" >
+        <!--
+        Due to an apparent bug in API 17 and lower (possibly also 18),
+        setting android:summary on a MultiSelectListPreference (or descendant)
+        will cause a NPE upon initialization, hence we need to do this programatically.
+         -->
         <com.vonglasow.michael.satstat.widgets.LocProviderPreference
             android:key="pref_loc_prov"
-            android:summary="@string/pref_loc_prov_summary"
             android:title="@string/pref_loc_prov" />
 
         <CheckBoxPreference

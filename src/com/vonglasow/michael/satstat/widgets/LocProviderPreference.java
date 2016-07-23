@@ -3,6 +3,8 @@ package com.vonglasow.michael.satstat.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vonglasow.michael.satstat.R;
+
 import android.content.Context;
 import android.location.LocationManager;
 import android.preference.MultiSelectListPreference;
@@ -15,12 +17,14 @@ public class LocProviderPreference extends MultiSelectListPreference {
 	public LocProviderPreference(Context context) {
 		super(context);
 		mContext = context;
+		setSummary(R.string.pref_loc_prov_summary);
 		updateProviders();
 	}
 
 	public LocProviderPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = context;
+		setSummary(R.string.pref_loc_prov_summary);
 		updateProviders();
 	}
 	
