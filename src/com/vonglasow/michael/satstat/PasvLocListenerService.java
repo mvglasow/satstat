@@ -275,7 +275,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		prefUnitType = mSharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefUnitType);
-		prefKnots = mSharedPreferences.getBoolean(Const.KEY_PREF_UNIT_TYPE, prefKnots);
+		prefKnots = mSharedPreferences.getBoolean(Const.KEY_PREF_KNOTS, prefKnots);
 		prefCoord = Integer.valueOf(mSharedPreferences.getString(Const.KEY_PREF_COORD, Integer.toString(prefCoord)));
 		mNotifyFix = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_FIX, mNotifyFix);
 		mNotifySearch = mSharedPreferences.getBoolean(Const.KEY_PREF_NOTIFY_SEARCH, mNotifySearch);
