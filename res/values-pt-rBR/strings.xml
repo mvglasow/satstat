@@ -239,5 +239,13 @@
     <string name="action_yes">Sim</string>
     <string name="action_no">Não</string>
     <string name="status_downloads_completed">Todos os downloads foram completados</string>
+    <string name="status_perm_map_download">Para baixar mapas offline, você deve permitir o acesso a seus arquivos</string>
+    <string name="status_perm_location">Nenhuma informação de localização ou rádio será mostrada a menos que você autorize o acesso à localização do dispositivo</string>
+    <string name="status_perm_refresh_agps">Para recarregar os dados AGPS, você deve permitir o acesso à localização do dispositivo</string>
+    <string name="status_perm_offline_map">Para usar mapas offline, você deve permitir o acesso a seus arquivos</string>
+    <string name="notify_perm_title">SatStat está pedindo permissões</string>
+    <string name="notify_perm_body">Toque para permitir ou negar</string>
+    <string name="pref_cid2">Mostrar ambos formatos de ID de célula</string>
+    <string name="pref_cid2_summary">Mostrar tanto a forma dividida quanto a não dividida, com a selecionada aparecendo no topo</string>
 
 </resources>
