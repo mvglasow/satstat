@@ -175,6 +175,7 @@
         <item>Graus, minutos</item>
         <item>Graus, minutos, segundos</item>
         <item>MGRS</item>
+        <item>UTM</item>
     </string-array>
 
     <string name="pref_utc">Exibir hora do GPS em UTC</string>

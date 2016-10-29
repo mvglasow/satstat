@@ -192,12 +192,14 @@
         <item>Degrees, minutes</item>
         <item>Degrees, minutes, seconds</item>
         <item>MGRS</item>
+        <item>UTM</item>
     </string-array>
     <string-array name="prefs_coord_values" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <item>4</item>
     </string-array>
 
     <string name="pref_utc">Display GPS time in UTC</string>
@@ -277,5 +279,6 @@
     <string name="notify_perm_body">Touch to grant or deny</string>
     <string name="pref_cid2">Display both cell ID formats</string>
     <string name="pref_cid2_summary">Show both split and non-split forms, with the one selected above appearing on top</string>
+    <string name="utm_outside_latitude_range">Position outside UTM range</string>
 
 </resources>

@@ -170,6 +170,7 @@
         <item>Graus i minuts</item>
         <item>Graus, minuts i segons</item>
         <item>MGRS</item>
+        <item>UTM</item>
     </string-array>
 
     <string name="pref_utc">Mostra temps GPS en UTC</string>
