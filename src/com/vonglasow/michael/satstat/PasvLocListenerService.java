@@ -172,7 +172,7 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 				double minY = 60.0 * (decY - degY);
 				double decX = lon;
 				double degX = (int) decX;
-				double minX = 60.0 * (decY - degY);
+				double minX = 60.0 * (decX - degX);
 				title = String.format("%.0f%s %.3f' %s %.0f%s %.3f' %s",
 						degY, getString(R.string.unit_degree), minY + /*rounding*/ 0.0005, ns,
 						degX, getString(R.string.unit_degree), minX + /*rounding*/ 0.0005, ew);
