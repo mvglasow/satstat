@@ -137,8 +137,9 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles) {
 		downloadProgress.setVisibility(View.GONE);
 		builder.clear();
-		for (RemoteFile rf : rfiles)
-			builder.sequentiallyAddNextNode(rf, 0);
+		if (rfiles != null)
+			for (RemoteFile rf : rfiles)
+				builder.sequentiallyAddNextNode(rf, 0);
 	}
 	
 	@Override
