@@ -38,6 +38,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 /**
@@ -57,6 +60,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 	RemoteDirListTask dirListTask = null;
 	ProgressBar downloadProgress;
+	LinearLayout downloadErrorLayout;
+	Button downloadRetry;
 	private TreeViewList treeView;
 	private DownloadTreeStateManager manager = null;
 	private TreeBuilder<RemoteFile> builder = null;
@@ -84,6 +89,8 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		downloadProgress = (ProgressBar) findViewById(R.id.downloadProgress);
+		downloadErrorLayout = (LinearLayout) findViewById(R.id.downloadErrorLayout);
+		downloadRetry = (Button) findViewById(R.id.downloadRetry);
 		treeView = (TreeViewList) findViewById(R.id.downloadList);
 		/*
 		 * FIXME: Android wants the number of distinct layouts, which here is the same as the number of
@@ -101,8 +108,25 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeView.setCollapsedDrawable(getResources().getDrawable(R.drawable.ic_expand_more));
 		treeView.setExpandedDrawable(getResources().getDrawable(R.drawable.ic_expand_less));
 		treeView.setIndentWidth(24);
+		treeView.setVisibility(View.GONE);
 
-		
+		downloadErrorLayout.setVisibility(View.GONE);
+
+		OnClickListener clis = new OnClickListener () {
+			@Override
+			public void onClick(View v) {
+				if (v == downloadRetry) {
+					treeView.setVisibility(View.GONE);
+					downloadErrorLayout.setVisibility(View.GONE);
+					downloadProgress.setVisibility(View.VISIBLE);
+					// get data from server
+					dirListTask = new RemoteDirListTask(MapDownloadActivity.this, null);
+					dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
+				}
+			}
+		};
+		downloadRetry.setOnClickListener(clis);
+
 		List<RemoteFile> topItems = manager.getChildren(null);
 		if ((topItems == null) || (topItems.size() == 0)) {
 			downloadProgress.setVisibility(View.VISIBLE);
@@ -137,9 +161,15 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 	public void onRemoteDirListReady(RemoteDirListTask task, RemoteFile[] rfiles) {
 		downloadProgress.setVisibility(View.GONE);
 		builder.clear();
-		if (rfiles != null)
+		if (rfiles != null) {
+			treeView.setVisibility(View.VISIBLE);
+			downloadErrorLayout.setVisibility(View.GONE);
 			for (RemoteFile rf : rfiles)
 				builder.sequentiallyAddNextNode(rf, 0);
+		} else {
+			treeView.setVisibility(View.GONE);
+			downloadErrorLayout.setVisibility(View.VISIBLE);
+		}
 	}
 	
 	@Override

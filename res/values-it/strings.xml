@@ -234,5 +234,7 @@
     <string name="notify_perm_body">Tocca per consentire o negare</string>
     <string name="pref_cid2">Mostrare cell ID in entrambi formati</string>
     <string name="pref_cid2_summary">Mostrare sia la forma suddivisa che quella combinata (quella selezionata sopra verrà mostrata sopra l\'altra)</string>
-
+    <string name="download_error">Errore nello scaricamento della lista di mappe dal server</string>
+    <string name="download_retry">Riprova</string>
+    
 </resources>

@@ -232,5 +232,7 @@
     <string name="notify_perm_body">Palieskite, norėdami leisti arba atmesti</string>
     <string name="pref_cid2">Nurodyti abi ląstelių ID formas</string>
     <string name="pref_cid2_summary">Nurodyti ir sudalytą ir nesudalytą formą (anksčiau išrinkta forma bus nurodama viršuje)</string>
-
+    <string name="download_error">Klaida parsiunčiant žemelapių sąraša</string>
+    <string name="download_retry">Pabandyti dar kartą</string>
+    
 </resources>
