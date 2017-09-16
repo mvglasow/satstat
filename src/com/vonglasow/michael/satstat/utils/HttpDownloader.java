@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -40,10 +41,34 @@ import android.util.Log;
  * Provides methods to browse and download from HTTP sites with an FTP-like UI (folder lists).
  */
 public class HttpDownloader {
+	private static final String CONTENT_LENGTH = "content-length";
+
 	private static final String TAG = "HttpDownloader";
 	
 	private static final RemoteFileComparator comparator = new RemoteFileComparator();
-	
+
+	/**
+	 * @brief Returns the value of the {@code content-length} header field as a long.
+	 * 
+	 * This is a workaround for a limitation of the Android API, which has no native method to
+	 * report content lengths in excess of 2 GB on API levels lower than N.
+	 * 
+	 * @param connection The URL connection
+	 * 
+	 * @return Content length in bytes, or -1 if an error occurs
+	 */
+	private static long getContentLength(URLConnection connection) {
+		long res = -1;
+		try {
+			res = Long.valueOf(connection.getHeaderField(CONTENT_LENGTH));
+		} catch (Exception e) {
+			// do nothing and return -1
+		}
+		if (res < 0)
+			res = -1;
+		return res;
+	}
+
 	/**
 	 * @brief Retrieves information about a remote file or directory
 	 * 
@@ -95,7 +120,7 @@ public class HttpDownloader {
 					isDirectory = false;
 				}
 			}
-			size = http.getContentLength();
+			size = getContentLength(http);
 			timestamp = http.getLastModified();
 			//Log.d(TAG, String.format("\tContent Type: %s\n\tSize: %d\n\tTimestamp: %d", http.getContentType(), http.getContentLength(), http.getLastModified()));
 		} catch (IOException e) {
