@@ -349,7 +349,9 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
 
 		listTasks.remove(task);
 		
-		if (rfiles.length == 0) {
+		if (rfiles == null) {
+			// TODO
+		} else if (rfiles.length == 0) {
 			manager.refresh();
 			handleItemClick(null, parent);
 		} else
