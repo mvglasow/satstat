@@ -417,6 +417,7 @@ public class DownloadTreeViewAdapter extends AbstractTreeViewAdapter<RemoteFile>
     		DownloadManager.Request request = new DownloadManager.Request(uri);
     		//request.setTitle(rfile.name);
     		//request.setDescription("SatStat map download");
+    		request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
     		//request.setDestinationInExternalFilesDir(getActivity(), dirType, subPath)
     		request.setDestinationUri(destUri);
     		Log.d(TAG, String.format("Ready to download %s to %s (local name %s)", uri.toString(), destUri.toString(), mapFile.getName()));
