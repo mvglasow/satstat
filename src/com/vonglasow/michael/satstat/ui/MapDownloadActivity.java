@@ -108,8 +108,7 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 		treeView.setCollapsedDrawable(getResources().getDrawable(R.drawable.ic_expand_more));
 		treeView.setExpandedDrawable(getResources().getDrawable(R.drawable.ic_expand_less));
 		treeView.setIndentWidth(24);
-		treeView.setVisibility(View.GONE);
-
+		
 		downloadErrorLayout.setVisibility(View.GONE);
 
 		OnClickListener clis = new OnClickListener () {
@@ -129,8 +128,9 @@ public class MapDownloadActivity extends AppCompatActivity implements RemoteDirL
 
 		List<RemoteFile> topItems = manager.getChildren(null);
 		if ((topItems == null) || (topItems.size() == 0)) {
+			treeView.setVisibility(View.GONE);
 			downloadProgress.setVisibility(View.VISIBLE);
-			// get data from FTP
+			// get data from server
 			dirListTask = new RemoteDirListTask(this, null);
 			dirListTask.execute(MAP_DOWNLOAD_BASE_URL);
 		}
