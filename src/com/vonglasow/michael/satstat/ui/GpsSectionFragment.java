@@ -30,6 +30,7 @@ import uk.me.jstott.jcoord.MGRSRef;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -84,6 +85,15 @@ public class GpsSectionFragment extends Fragment {
 	private TextView gpsOrientation;
 	private TextView gpsSats;
 	private TextView gpsTtff;
+
+	/*
+	 * Last known gravity and magnetic field vector
+	 */
+	private float[] gravity;
+	private float[] geomagnetic;
+
+	/* Whether the orientation sensor returns valid data */
+	private boolean hasOrientation = false;
 
 
 	public GpsSectionFragment() {
@@ -268,12 +278,35 @@ public class GpsSectionFragment extends Fragment {
 	/**
 	 * Called by {@link MainActivity} when a sensor's reading changes.
 	 * Rotates sky plot according to bearing.
+	 * 
+	 * If {@code TYPE_ORIENTATION} data is available, preference is given to that value, which
+	 * appeared to be more accurate in tests. Otherwise orientation is obtained from the rotation
+	 * vector of the device, based on {@link TYPE_ACCELEROMETER} and {@code TYPE_MAGNETIC_FIELD}
+	 * sensor data.
 	 */
 	public void onSensorChanged(SensorEvent event) {
 		switch (event.sensor.getType()) {
-		case Sensor.TYPE_ORIENTATION:
-			gpsStatusView.setYaw(event.values[0]);
+		case Sensor.TYPE_ACCELEROMETER:
+			gravity = event.values.clone();
 			break;
+		case Sensor.TYPE_MAGNETIC_FIELD:
+			geomagnetic = event.values.clone();
+			break;
+		case Sensor.TYPE_ORIENTATION:
+			if (event.values[0] != 0) {
+				hasOrientation = true;
+				gpsStatusView.setYaw(event.values[0]);
+			}
+			break;
+		}
+
+		if ((gravity != null) && (geomagnetic != null) && !hasOrientation) {
+			float[] ypr = new float[3];
+			float[] r = new float[16];
+			float[] i = new float[16];
+			SensorManager.getRotationMatrix(r, i, gravity, geomagnetic);
+			ypr = SensorManager.getOrientation(r, ypr);
+			gpsStatusView.setYaw((float) Math.toDegrees(ypr[0]));
 		}
 	}
 }
