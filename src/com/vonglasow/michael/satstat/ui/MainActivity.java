@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
     
 	//The rate in microseconds at which we would like to receive updates from the sensors.
 	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
-	private static final int iSensorRate = 200000; //Default is 20,000 for accel, 5,000 for gyro
+	private static final int iSensorRate = 20000; //Default is 20,000 for accel, 5,000 for gyro
 
 	GpsSectionFragment gpsSectionFragment = null;
 	SensorSectionFragment sensorSectionFragment = null;
