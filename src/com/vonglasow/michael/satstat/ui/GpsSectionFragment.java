@@ -191,11 +191,11 @@ public class GpsSectionFragment extends Fragment {
 			gpsLonLayout.setVisibility(View.VISIBLE);
 			double dec = location.getLatitude();
 			double deg = (int) dec;
-			double min = 60.0 * (dec - deg);
+			double min = Math.abs(60.0 * (dec - deg));
 			gpsLat.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
 			dec = location.getLongitude();
 			deg = (int) dec;
-			min = 60.0 * (dec - deg);
+			min = Math.abs(60.0 * (dec - deg));
 			gpsLon.setText(String.format("%.0f%s %.3f'", deg, getString(R.string.unit_degree), min + /*rounding*/ 0.0005));
 		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_SEC) {
 			gpsCoordLayout.setVisibility(View.GONE);
@@ -204,14 +204,14 @@ public class GpsSectionFragment extends Fragment {
 			double dec = location.getLatitude();
 			double deg = (int) dec;
 			double tmp = 60.0 * (dec - deg);
-			double min = (int) tmp;
-			double sec = 60.0 * (tmp - min);
+			double min = (int) Math.abs(tmp);
+			double sec = Math.abs(60.0 * (tmp - min));
 			gpsLat.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
 			dec = location.getLongitude();
 			deg = (int) dec;
 			tmp = 60.0 * (dec - deg);
-			min = (int) tmp;
-			sec = 60.0 * (tmp - min);
+			min = (int) Math.abs(tmp);
+			sec = Math.abs(60.0 * (tmp - min));
 			gpsLon.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
 		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_MGRS) {
 			gpsLatLayout.setVisibility(View.GONE);
