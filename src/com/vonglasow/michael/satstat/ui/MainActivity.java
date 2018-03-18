@@ -133,17 +133,15 @@ public class MainActivity extends AppCompatActivity implements GpsStatus.Listene
      * Whether we are running on a wide-screen device
      */
     boolean isWideScreen;
-    
-	// The rate in microseconds at which we would like to receive
-	// updates from the sensors.  This is chosen to meet the
-	// mission of SatStat, which is to let the human to know the
-	// values reported and to evaluate if the sensors are working.
-	// At very high rates, the numbers cannot be read, and and
-	// very slow rates, it is hard to tell if the updates would
-	// work at faster rates.  We choose 100 ms as a reasonable
-	// tradeoff.
 
-	//private static final int iSensorRate = SensorManager.SENSOR_DELAY_UI;
+    /**
+     * The rate in microseconds at which we would like to receive updates from the sensors.
+     * 
+     * This is chosen to meet the mission of SatStat, which is to let the human know the values reported
+     * and evaluate if the sensors are working. At very high rates, the numbers cannot be read, and at
+     * very slow rates, it is hard to tell if the updates would work at faster rates. We chose 100 ms as
+     * a reasonable tradeoff.
+     */
 	private static final int iSensorRate = 100000;
 
 	GpsSectionFragment gpsSectionFragment = null;
