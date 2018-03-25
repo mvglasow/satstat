@@ -214,6 +214,7 @@
     <string name="action_ok">Gerai</string>
     <string name="action_cancel">Atšaukti</string>
     <string name="pref_map_download">Atsisiųsti offline žemėlapį</string>
+    <string name="pref_map_download_summary">Atsisiųsti Mapsforge žemėlapių</string>
     <string name="pref_map_purge">Išvalyti talpykloje saugomas kaladėles</string>
     <string name="pref_map_purge_summary">Visos žemėlapio kaladėlės bus parsiunčiamos arba atvaizduojamos iš naujo, naudinga bėdašaudystei</string>
     <string name="status_map_purged">Talpykloje saugomos kaladėlės išvalytos</string>

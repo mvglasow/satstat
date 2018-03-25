@@ -227,6 +227,7 @@
     <string name="action_ok">OK</string>
     <string name="action_cancel">Annuler</string>
     <string name="pref_map_download">Télécharger la carte hors connexion</string>
+    <string name="pref_map_download_summary">Télécharger des cartes de Mapsforge</string>
     <string name="pref_map_purge">Effacer le cache des tuiles de carte</string>
     <string name="pref_map_purge_summary">Forcer le téléchargement ou le rendu des tuiles, utile en cas de problème</string>
     <string name="status_map_purged">Cache des tuiles de carte effacé</string>
