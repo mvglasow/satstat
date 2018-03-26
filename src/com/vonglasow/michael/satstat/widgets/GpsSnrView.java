@@ -41,7 +41,7 @@ public class GpsSnrView extends View {
 	/**
 	 * The highest currently supported NMEA ID.
 	 */
-	private final int MAX_NMEA_ID = 235;
+	private final int MAX_NMEA_ID = 336;
 
 	private Iterable<GpsSatellite> mSats;
 
@@ -75,6 +75,8 @@ public class GpsSnrView extends View {
 	 * 193–195: QZSS
 	 * 196–200: QZSS (future extensions?)
 	 * 201–235: Beidou
+	 * 236–300: not used
+	 * 301–336: Galileo
 	 */
 	private boolean draw_1_32 = false;
 	private boolean draw_33_54 = false;
@@ -85,6 +87,8 @@ public class GpsSnrView extends View {
 	private boolean draw_193_195 = false;
 	private boolean draw_196_200 = false;
 	private boolean draw_201_235 = false;
+	private boolean draw_236_300 = false;
+	private boolean draw_301_336 = false;
 
 
 	/**
@@ -239,7 +243,15 @@ public class GpsSnrView extends View {
 		
 		if (draw_201_235)
 			drawLabel(canvas, getContext().getResources().getString(R.string.title_nmea_201_235), 201, 35, numBars);
-		
+
+		// 236–300 (currently unused)
+		if (draw_236_300)
+			drawLabel(canvas, getContext().getResources().getString(R.string.title_nmea_236_300), 236, 65, numBars);
+
+		// 301–336 is Galileo
+		if (draw_301_336)
+			drawLabel(canvas, getContext().getResources().getString(R.string.title_nmea_301_336), 301, 36, numBars);
+
 		// range boundaries and auxiliary lines (after every 4th satellite)
 		for (int nmeaID = 1; nmeaID < MAX_NMEA_ID; nmeaID++) {
 			int pos = getGridPos(nmeaID);
@@ -254,6 +266,8 @@ public class GpsSnrView extends View {
 				case 192:
 				case 200:
 				case 235:
+				case 300:
+				case 336:
 					paint = gridPaintStrong;
 					break;
 				case 54:
@@ -360,9 +374,21 @@ public class GpsSnrView extends View {
 								if (nmeaID > 195) {
 									if (!draw_193_195) skip+=3;
 									if (nmeaID > 200) {
-										if (nmeaID > MAX_NMEA_ID) return -1;
-										else if (!draw_201_235) return -1;
-										else if (!draw_196_200) skip+=5;
+										if (!draw_196_200) skip+=5;
+										if (nmeaID > 235) {
+											if (!draw_201_235) skip+=35;
+											if (nmeaID > 300) {
+												if (nmeaID > MAX_NMEA_ID) return -1;
+												else if (!draw_301_336) return -1;
+												else if (!draw_236_300) skip+=65;
+											} else {
+												// 235 < nmeaID <= 300
+												if (!draw_236_300) return -1;
+											}
+										} else {
+											// 200 < nmeaID <= 235
+											if (!draw_201_235) return -1;
+										}
 									} else {
 										// 195 < nmeaID <= 200
 										if (!draw_196_200) return -1;
@@ -402,9 +428,10 @@ public class GpsSnrView extends View {
 	/**
 	 * Returns the number of SNR bars to draw
 	 * 
-	 * The number of bars to draw varies depending on the systems supported by
-	 * the device. The most common numbers are 32 for a GPS-only receiver or 56
-	 * for a combined GPS/GLONASS receiver.
+	 * The number of bars to draw varies depending on the systems supported by the device. Common
+	 * numbers are 32 for a GPS-only receiver, 56 for a combined GPS/GLONASS receiver or 91 for a
+	 * combined GPS/GLONASS/Beidou receiver. Another 36 bars are needed for Galileo; some receivers
+	 * require additional bars for regional GNSS or assistance systems.
 	 * 
 	 * @return The number of bars to draw
 	 */
@@ -417,7 +444,9 @@ public class GpsSnrView extends View {
 				+ (draw_97_192 ? 96 : 0)
 				+ (draw_193_195 ? 3 : 0)
 				+ (draw_196_200 ? 5 : 0)
-				+ (draw_201_235 ? 35 : 0);
+				+ (draw_201_235 ? 35 : 0)
+				+ (draw_236_300 ? 65 : 0)
+				+ (draw_301_336 ? 36 : 0);
 	}
 
 	/**
@@ -458,6 +487,10 @@ public class GpsSnrView extends View {
 					draw_196_200 = true;
 				} else if (prn <= 235) {
 					draw_201_235 = true;
+				} else if (prn <= 300) {
+					draw_236_300 = true; // TODO: same as above, do we really want to enable this?
+				} else if (prn <= 336) {
+					draw_301_336 = true;
 				} else {
 					Log.w(TAG, String.format("Got satellite with NMEA ID %d, possibly unsupported system", prn));
 				}
@@ -467,7 +500,8 @@ public class GpsSnrView extends View {
 		 * No need to check for extended ranges here - if they get drawn, so
 		 * will their corresponding base range.
 		 */
-		if (!(draw_1_32 || draw_33_54 || draw_65_88 || draw_97_192 || draw_193_195 || draw_201_235))
+		if (!(draw_1_32 || draw_33_54 || draw_65_88 || draw_97_192 || draw_193_195 || draw_201_235
+				|| draw_236_300 || draw_301_336))
 			draw_1_32 = true;
 	}
 	

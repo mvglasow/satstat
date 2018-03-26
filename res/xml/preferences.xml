@@ -67,6 +67,7 @@
             android:title="@string/pref_map_path" />
         <Preference
             android:key="pref_map_download"
+            android:summary="@string/pref_map_download_summary"
             android:title="@string/pref_map_download" />
         <Preference
             android:key="pref_map_purge"

@@ -216,6 +216,7 @@
     <string name="action_ok">D\'acord</string>
     <string name="action_cancel">Cancel·la</string>
     <string name="pref_map_download">Baixar mapa offline</string>
+    <string name="pref_map_download_summary">Baixar mapes desde Mapsforge</string>
     <string name="pref_map_purge">Esborrar les teseles a memòria cau</string>
     <string name="pref_map_purge_summary">Todes les teseles seran baixades o renderitzades de nou, útil en cas de problemes</string>
     <string name="status_map_purged">Les teseles a memòria cau han estat esborrades</string>

@@ -222,6 +222,7 @@
     <string name="action_ok">OK</string>
     <string name="action_cancel">Abbrechen</string>
     <string name="pref_map_download">Offline-Karte herunterladen</string>
+    <string name="pref_map_download_summary">Kartenmaterial von Mapsforge laden</string>
     <string name="pref_map_purge">Karten-Cache löschen</string>
     <string name="pref_map_purge_summary">Alle Kacheln werden neu heruntergeladen oder gerendert, hilfreich bei der Fehlersuche</string>
     <string name="status_map_purged">Karten-Cache gelöscht</string>
@@ -241,5 +242,7 @@
     <string name="pref_cid2">Cell-IDs in beiden Formaten anzeigen</string>
     <string name="pref_cid2_summary">Sowohl die geteilte als auch die ungeteilte Form werden angezeigt; die vorherige Option gibt an, welche Form zuerst erscheint</string>
     <string name="utm_outside_latitude_range">UTM-Koordinaten nicht definiert</string>
-
+    <string name="download_error">Beim Abruf der Liste vom Server ist ein Fehler aufgetreten</string>
+    <string name="download_retry">Erneut versuchen</string>
+    
 </resources>

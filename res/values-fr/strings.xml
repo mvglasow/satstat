@@ -162,11 +162,11 @@
     <string name="pref_map">Carte</string>
     <string name="pref_loc_prov">Sources de localisation</string>
     <string name="pref_loc_prov_summary">Montrer les sources de localisation selectionnées sur la carte</string>
-    <!-- TODO <string name="pref_data">Data display</string> -->
-    <!-- TODO <string name="pref_unit">Use metric units</string> -->
-    <!-- TODO <string name="pref_unit_summary">If unchecked, Imperial units will be used (except in sensor view)</string> -->
+    <string name="pref_data">Affichage des données</string> 
+    <string name="pref_unit">Utiliser des unités métriques</string>
+    <string name="pref_unit_summary">Si ce n\'est pas coché, les unités impériales seront utilisées sauf dans la vue des capteurs</string>
     <string name="pref_knots">Montrer vitesse en nœuds</string>
-    <!-- TODO <string name="pref_knots_summary">If unchecked, metric or imperial units (as selected above) will be used</string> -->
+    <string name="pref_knots_summary">Si ce n\'est pas coché, les unités métriques ou impériales (selon ce qui est sélectionné plus haut) seront utilisées</string>
     <string name="pref_coord">Coordonnées</string>
 
     <string-array name="prefs_coord_keys">
@@ -176,14 +176,14 @@
         <item>MGRS</item>
         <item>UTM</item>
     </string-array>
-    <!-- TODO <string name="pref_utc">Display GPS time in UTC</string> -->
-    <!-- TODO <string name="pref_utc_summary">Display GPS fix time in UTC rather than in local time</string> -->
-    <!-- TODO <string name="pref_cid">Split UMTS/LTE cell IDs</string> -->
-    <!-- TODO <string name="pref_cid_summary">Split cell IDs into RNCID/CID or eNodeB/sector ID</string> -->
+    <string name="pref_utc">Afficher l\'heure du GPS en UTC</string>
+    <string name="pref_utc_summary">Afficher l\'heure du fix GPS en UTC au lieu de l\'heure locale</string>
+	<string name="pref_cid">Séparer les identifiants de cellules UMTS/LTE</string>
+	<string name="pref_cid_summary">Séparer les identifiants de cellules en RNCID/CID ou eNodeB/Sector ID</string>
     <string name="title_activity_legend">Légende</string>
     <string name="title_legend_gps">GPS</string>
-    <!-- TODO <string name="title_legend_gps_used">Satellite used in fix</string> -->
-    <!-- TODO <string name="title_legend_gps_unused">Satellite not used in fix</string> -->
+    <string name="title_legend_gps_used">Satellite utilisé pour le fix</string>
+    <string name="title_legend_gps_unused">Satellite non utilisé pour le fix</string>
     <string name="title_legend_sensors">Capteurs</string>
     <string name="title_legend_sensors_high">Justesse haute</string>
     <string name="title_legend_sensors_medium">Justesse moyenne</string>
@@ -198,10 +198,10 @@
     <string name="title_legend_radio_psk">Sécurité WPA-PSK (personal)</string>
     <string name="title_legend_radio_eap">Sécurité WPA-EAP (enterprise)</string>
     <string name="title_legend_radio_adhoc">WiFi ad hoc</string>
-    <!-- TODO <string name="title_legend_radio_unknown">Unknown WiFi type</string> -->
+    <string name="title_legend_radio_unknown">Type de réseau WiFi inconnu</string>
     <string name="title_legend_map">Carte</string>
-    <!-- TODO <string name="title_legend_map_prov">Location from %s provider</string> -->
-    <!-- TODO <string name="title_legend_map_stale">Stale location from any provider</string> -->
+    <string name="title_legend_map_prov">Localisation fournie par %s</string>
+    <string name="title_legend_map_stale">Dernière localisation connue (périmée)</string>
     <string name="title_nmea_001_032">GPS</string>
     <string name="title_nmea_033_054">SBAS</string>
     <string name="title_nmea_055_064">55–64</string>
@@ -228,6 +228,7 @@
     <string name="action_ok">OK</string>
     <string name="action_cancel">Annuler</string>
     <string name="pref_map_download">Télécharger la carte hors connexion</string>
+    <string name="pref_map_download_summary">Télécharger des cartes de Mapsforge</string>
     <string name="pref_map_purge">Effacer le cache des tuiles de carte</string>
     <string name="pref_map_purge_summary">Forcer le téléchargement ou le rendu des tuiles, utile en cas de problème</string>
     <string name="status_map_purged">Cache des tuiles de carte effacé</string>

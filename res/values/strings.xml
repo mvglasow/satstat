@@ -28,7 +28,7 @@
     <string name="title_gps_coord">Coordinates</string>
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Speed</string>
-    <string name="title_gps_alt">Elevation</string>
+    <string name="title_gps_alt">Altitude</string>
     <string name="title_gps_time">Last Fix Obtained</string>
     <string name="title_gps_bear">Bearing</string>
     <string name="title_gps_orient">Orientation</string>
@@ -236,6 +236,8 @@
     <string name="title_nmea_097_192">97–192</string>
     <string name="title_nmea_193_195">QZSS</string>
     <string name="title_nmea_201_235">Beidou</string>
+    <string name="title_nmea_236_300">236–300</string>
+    <string name="title_nmea_301_336">Galileo</string>
     <string name="pref_wifi_sort">Sort WiFi networks</string>
 
     <string-array name="prefs_wifi_sort_keys">
@@ -261,6 +263,7 @@
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
     <string name="pref_map_download">Download offline map</string>
+    <string name="pref_map_download_summary">Get maps from Mapsforge</string>
     <string name="pref_map_purge">Clear map tile cache</string>
     <string name="pref_map_purge_summary">Force all tiles to be fetched or rendered again, useful for troubleshooting</string>
     <string name="status_map_purged">Map tile cache cleared</string>
@@ -280,5 +283,7 @@
     <string name="pref_cid2">Display both cell ID formats</string>
     <string name="pref_cid2_summary">Show both split and non-split forms, with the one selected above appearing on top</string>
     <string name="utm_outside_latitude_range">Position outside UTM range</string>
+    <string name="download_error">An error occurred while trying to retrieve the list of maps from the server</string>
+    <string name="download_retry">Retry</string>
 
 </resources>

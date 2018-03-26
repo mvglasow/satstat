@@ -542,7 +542,7 @@ public class RadioSectionFragment extends Fragment {
 
 
 	protected void showCellCdma(CellTowerCdma cellTower) {
-		TableRow row = (TableRow) mainActivity.getLayoutInflater().inflate(R.layout.ril_list_item, null);
+		TableRow row = (TableRow) mainActivity.getLayoutInflater().inflate(R.layout.ril_cdma_list_item, null);
 		TextView type = (TextView) row.findViewById(R.id.type);
 		TextView sid = (TextView) row.findViewById(R.id.sid);
 		TextView nid = (TextView) row.findViewById(R.id.nid);

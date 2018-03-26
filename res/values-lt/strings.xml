@@ -24,7 +24,7 @@
     <string name="title_gps_coord">Koordinatės</string>
     <string name="title_gps_decl">Dekl.</string>
     <string name="title_gps_speed">Greitis</string>
-    <string name="title_gps_alt">Aukštis</string>
+    <string name="title_gps_alt">Altitudė</string>
     <string name="title_gps_time">Paskutinis padėties nustatymas</string>
     <string name="title_gps_bear">Kryptis</string>
     <string name="title_gps_orient">Orientation</string>
@@ -215,6 +215,7 @@
     <string name="action_ok">Gerai</string>
     <string name="action_cancel">Atšaukti</string>
     <string name="pref_map_download">Atsisiųsti offline žemėlapį</string>
+    <string name="pref_map_download_summary">Atsisiųsti Mapsforge žemėlapių</string>
     <string name="pref_map_purge">Išvalyti talpykloje saugomas kaladėles</string>
     <string name="pref_map_purge_summary">Visos žemėlapio kaladėlės bus parsiunčiamos arba atvaizduojamos iš naujo, naudinga bėdašaudystei</string>
     <string name="status_map_purged">Talpykloje saugomos kaladėlės išvalytos</string>
@@ -233,5 +234,7 @@
     <string name="notify_perm_body">Palieskite, norėdami leisti arba atmesti</string>
     <string name="pref_cid2">Nurodyti abi ląstelių ID formas</string>
     <string name="pref_cid2_summary">Nurodyti ir sudalytą ir nesudalytą formą (anksčiau išrinkta forma bus nurodama viršuje)</string>
-
+    <string name="download_error">Klaida parsiunčiant žemelapių sąraša</string>
+    <string name="download_retry">Pabandyti dar kartą</string>
+    
 </resources>

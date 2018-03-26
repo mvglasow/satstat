@@ -217,6 +217,7 @@
     <string name="action_ok">OK</string>
     <string name="action_cancel">Annulla</string>
     <string name="pref_map_download">Scarica mappa offline</string>
+    <string name="pref_map_download_summary">Scarica mappe di Mapsforge</string>
     <string name="pref_map_purge">Svuotare tile cache</string>
     <string name="pref_map_purge_summary">Tutte le tile saranno scaricate o renderizzate di nuovo, utile in caso di problemi</string>
     <string name="status_map_purged">Tile cache svuotato</string>
@@ -235,5 +236,7 @@
     <string name="notify_perm_body">Tocca per consentire o negare</string>
     <string name="pref_cid2">Mostrare cell ID in entrambi formati</string>
     <string name="pref_cid2_summary">Mostrare sia la forma suddivisa che quella combinata (quella selezionata sopra verrà mostrata sopra l\'altra)</string>
-
+    <string name="download_error">Errore nello scaricamento della lista di mappe dal server</string>
+    <string name="download_retry">Riprova</string>
+    
 </resources>
