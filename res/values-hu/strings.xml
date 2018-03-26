@@ -234,6 +234,7 @@
     <string name="action_ok">OK</string>
     <string name="action_cancel">Mégse</string>
     <string name="pref_map_download">Offline térkép letöltése</string>
+    <string name="pref_map_download_summary">Térképek beszerzése a Mapsforge-tól</string>
     <string name="pref_map_purge">Térképcsempék gyorsítótárának törlése</string>
     <string name="pref_map_purge_summary">Az összes térképcsempe újratöltésének vagy újrarajzolásának kényszerítése. Hibakereséshez hasznos lehet</string>
     <string name="status_map_purged">A térképcsempék gyorsítótára kiürítve</string>
@@ -252,6 +253,7 @@
     <string name="notify_perm_body">Érintsd meg az engedélyezéshez vagy tiltáshoz</string>
     <string name="pref_cid2">Mindkét cella ID formátum megjelenítése</string>
     <string name="pref_cid2_summary">Megjelenítés különválasztott és egyben lévő formában is. A fentebb kiválasztott formátum jelenik meg felül.</string>
+    <string name="utm_outside_latitude_range">A pozíció kívül esik az UTM tartományán</string>
     <string name="download_error">Hiba történt a térképlista letöltése közben</string>
     <string name="download_retry">Újra</string>
 
