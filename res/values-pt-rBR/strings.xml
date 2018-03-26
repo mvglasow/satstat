@@ -25,7 +25,7 @@
     <string name="title_gps_coord">Coordenadas</string>
     <string name="title_gps_decl">Decl.</string>
     <string name="title_gps_speed">Velocidade</string>
-    <string name="title_gps_alt">Elevação</string>
+    <string name="title_gps_alt">Altitude</string>
     <string name="title_gps_time">Último Fix Obtido</string>
     <string name="title_gps_bear">Rolamento</string>
     <string name="title_gps_orient">Orientação</string>

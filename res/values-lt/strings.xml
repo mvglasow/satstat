@@ -24,7 +24,7 @@
     <string name="title_gps_coord">Koordinatės</string>
     <string name="title_gps_decl">Dekl.</string>
     <string name="title_gps_speed">Greitis</string>
-    <string name="title_gps_alt">Aukštis</string>
+    <string name="title_gps_alt">Altitudė</string>
     <string name="title_gps_time">Paskutinis padėties nustatymas</string>
     <string name="title_gps_bear">Kryptis</string>
     <string name="title_gps_orient">Orientation</string>
