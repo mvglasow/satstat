@@ -27,6 +27,7 @@ import java.util.TimeZone;
 
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
+import com.hzi.UTM;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -218,7 +219,13 @@ public class GpsSectionFragment extends Fragment {
 			gpsLonLayout.setVisibility(View.GONE);
 			gpsCoordLayout.setVisibility(View.VISIBLE);
 			gpsCoord.setText(new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M));
+		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_UTM) {
+			gpsLatLayout.setVisibility(View.GONE);
+			gpsLonLayout.setVisibility(View.GONE);
+			gpsCoordLayout.setVisibility(View.VISIBLE);
+			gpsCoord.setText(UTM.lat_lon_to_utm(location.getLatitude(), location.getLongitude(), this.getContext()));
 		}
+
 		if (mainActivity.prefUtc)
 			df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		else

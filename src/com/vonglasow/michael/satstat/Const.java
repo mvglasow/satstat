@@ -122,6 +122,7 @@ public class Const {
 	public static final int KEY_PREF_COORD_MIN = 1;
 	public static final int KEY_PREF_COORD_SEC = 2;
 	public static final int KEY_PREF_COORD_MGRS = 3;
+	public static final int KEY_PREF_COORD_UTM = 4;
 	public static final String KEY_PREF_UTC = "pref_utc";
 	public static final String KEY_PREF_CID = "pref_cid";
 	public static final String KEY_PREF_CID2 = "pref_cid2";

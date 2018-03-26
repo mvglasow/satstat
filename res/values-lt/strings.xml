@@ -169,6 +169,7 @@
         <item>Laipsniais ir minutėmis</item>
         <item>Laipsniais, minutėmis ir sekundėmis</item>
         <item>MGRS</item>
+        <item>UTM</item>
     </string-array>
 
     <string name="pref_utc">Nurodyti GPS laiką UTC</string>

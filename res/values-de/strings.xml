@@ -176,6 +176,7 @@
         <item>Grad, Minuten</item>
         <item>Grad, Minuten, Sekunden</item>
         <item>MGRS</item>
+        <item>UTM</item>
     </string-array>
 
     <string name="pref_utc">GPS-Zeit in UTC anzeigen</string>
@@ -240,6 +241,7 @@
     <string name="notify_perm_body">Zum Zulassen oder Verweigern antippen</string>
     <string name="pref_cid2">Cell-IDs in beiden Formaten anzeigen</string>
     <string name="pref_cid2_summary">Sowohl die geteilte als auch die ungeteilte Form werden angezeigt; die vorherige Option gibt an, welche Form zuerst erscheint</string>
+    <string name="utm_outside_latitude_range">UTM-Koordinaten nicht definiert</string>
     <string name="download_error">Beim Abruf der Liste vom Server ist ein Fehler aufgetreten</string>
     <string name="download_retry">Erneut versuchen</string>
     

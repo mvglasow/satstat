@@ -25,6 +25,7 @@ import com.vonglasow.michael.satstat.utils.PermissionHelper;
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.MGRSRef;
 import android.Manifest;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -47,6 +48,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import com.hzi.UTM;
 
 public class PasvLocListenerService extends Service implements GpsStatus.Listener, LocationListener, OnSharedPreferenceChangeListener, OnRequestPermissionsResultCallback {
 
@@ -192,7 +194,9 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 						degX, getString(R.string.unit_degree), minX, secX + /*rounding*/ 0.05, ew);
 			} else if (prefCoord == Const.KEY_PREF_COORD_MGRS) {
 				title = new LatLng(location.getLatitude(), location.getLongitude()).toMGRSRef().toString(MGRSRef.PRECISION_1M);
-			}
+			} else if (prefCoord == Const.KEY_PREF_COORD_UTM) {
+                title = UTM.lat_lon_to_utm(location.getLatitude(), location.getLongitude(), this.getApplicationContext());
+            }
 
 			String text = "";
 			if (location.hasAltitude()) {
@@ -293,7 +297,8 @@ public class PasvLocListenerService extends Service implements GpsStatus.Listene
 		.setSmallIcon(R.drawable.ic_stat_notify_location)
 		.setContentTitle(getString(R.string.value_none))
 		.setContentText(getString(R.string.value_none))
-		.setWhen(0);
+		.setWhen(0)
+		.setVisibility(Notification.VISIBILITY_PUBLIC);
 
 		Intent mainIntent = new Intent(this, MainActivity.class);
 

@@ -177,6 +177,7 @@
         <item>Fok, tizedes perc</item>
         <item>Fok, perc, másodperc</item>
         <item>MGRS</item>
+        <item>UTM</item>
     </string-array>
 
     <string name="pref_utc">GPS idő megjelenítése UTC-ben</string>
