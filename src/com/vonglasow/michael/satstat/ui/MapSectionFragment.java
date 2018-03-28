@@ -179,8 +179,11 @@ public class MapSectionFragment extends Fragment {
 			needsRedraw = needsRedraw || (isStyleChanged && marker.isVisible());
 		}
 
-		if (needsRedraw)
-			mapMap.getLayerManager().redrawLayers();
+		if (needsRedraw) {
+			LayerManager manager = mapMap.getLayerManager();
+			if (manager != null)
+				manager.redrawLayers();
+		}
 		providerAppliedStyles.put(provider, sn);
 		style.recycle();
 	}
