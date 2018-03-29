@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vonglasow.michael.satstat"
-    android:versionCode="3030"
-    android:versionName="3.3" >
+    android:versionCode="30400"
+    android:versionName="3.4" >
 
     <uses-sdk
         android:minSdkVersion="11"
