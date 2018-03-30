@@ -1,0 +1,2 @@
+Update AGPS data when connecting to a WiFi network (configurable)
+Prevent crash when sensors report zero resolution

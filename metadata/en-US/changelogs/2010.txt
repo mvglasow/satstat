@@ -1,0 +1,20 @@
+Add option for metric vs. Imperial measurement units
+Add option for UTC vs. local time for GPS timestamps
+Add option to split UMTS/LTE cell IDs
+Add options for various coordinate formats
+Add Hungarian translations, thanks to kadarivan
+Add legend for colors and symbols used
+Size graphics depending on display density
+Increase expiration delay for location providers
+Target API 19
+Introduce Material LAF
+Include notice in AGPS message that success cannot be reported
+RIL: use all available cell information sources
+Preserve state of main activity when returning from another
+Run media scanner on crash log files
+Use friendly date and time for crash log files
+RIL: display neighboring cells correctly
+RIL: show correct signal strength
+RIL: correctly separate LTE cells from GSM/UMTS cells
+Fix Mapsforge crash
+Fix color issue in Sensor view on Marshmallow

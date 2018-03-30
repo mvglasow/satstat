@@ -1,0 +1,10 @@
+Show cellular network type (#21)
+Show type of WiFi encryption (#20)
+Auto-refresh WiFi network list every second (#26)
+Touch WiFi network to pin it to the top of the list (#26)
+Hide empty cell list in network view
+Choose from all available networks for AGPS auto-update (#18)
+Check for captive portal before AGPS update attempt (#18)
+Repeat AGPS auto-update each time the interval expires if a selected network is available (#18)
+Fix minor screen real estate issue in German translation (#23)
+Prevent crash upon switching to other activities (#27)

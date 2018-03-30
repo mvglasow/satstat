@@ -1,0 +1,18 @@
+Sky plot: make compass orientation work on devices with compass but no orientation sensor
+Sky plot: add support for Galileo
+Sky plot and notification: add support for UTM coordinates
+Preferences: include a hint on map download source
+Map download: keep notification after map download finishes
+Map download: adapt to new directory layout on Mapsforge mirror server
+Metadata: add feature graphics, icon and screenshots for F-Droid
+Translations: updates for French and Hungarian
+
+Bug fixes:
+
+Sky plot: use Altitude consistently
+Sky plot and notification: display negative coordinates correctly in non-decimal formats
+Map view: fix crash caused by a rare race condition
+Map download: do not crash if retrieving the map directory fails
+Map download: correctly display map sizes above 2 GiB
+Map download: display list correctly even after screen rotation
+About screen: make links clickable

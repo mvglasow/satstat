@@ -1,0 +1,2 @@
+Fix regression from 60b8bec pushing sky plot off screen in landscape
+Log satellites with near-zero elevation/azimuth

@@ -1,0 +1,3 @@
+Fix time conversion error that could cause an endless AGPS update loop (#31)
+Typo in French translation
+Show TTFF in notification (experimental)

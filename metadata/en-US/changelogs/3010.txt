@@ -1,0 +1,3 @@
+Fix crash in Settings on API levels prior to 19 (#89)
+Update French translation (thanks eliovir)
+Use correct unit for speed in notification

@@ -1,0 +1,12 @@
+Support for offline maps, which can be shared with other Mapsforge apps (#65)
+Add option to show both UMTS/LTE cell ID representations (#77)
+Optionally show speed in knots (#74)
+Label GNSS systems in satellite SNR bar graph (#64)
+Different options to sort WiFis (#44)
+Allow manual purging of map tile cache
+Switch map tile provider from (discontinued) Mapquest to OSM (#86)
+Fully support Android's new runtime permission model (#67)
+Update to Mapsforge 0.6.1, now with proper persistent caching
+Look and feel improvements
+Fix faulty mph conversion in satellite view
+Fix memory leak when rotating or leaving and re-entering map view

@@ -1,0 +1,8 @@
+GPS status notification whenever an app accesses GPS (configurable)
+Add signal-to-noise graph for GPS/GLONASS satellites
+Translations: Catalan, German, Spanish, French, Italian, Lithuanian
+Add NESW marks to sky plot
+Lock display rotation when device is in near-horizontal position
+Use sensor resolution to determine number of decimals displayed
+Show build number in About screen
+Fix dormant sizing bug in sky plot

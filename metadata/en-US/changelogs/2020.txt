@@ -1,0 +1,2 @@
+Fix crashes when permissions are denied
+Fix memory leak when stopping or destroying main Activity

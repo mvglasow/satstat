@@ -1,0 +1,3 @@
+Support for legacy (3.0+) Android versions (#1)
+WiFi now displays channels (#2)
+Sky plot now aligned correctly when display is rotated (#4)

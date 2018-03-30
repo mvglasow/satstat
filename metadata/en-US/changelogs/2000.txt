@@ -1,0 +1,18 @@
+Map view: new view to visualize reported locations
+GPS view: display SNR bars for all known satellites (including Beidou and various SBAS systems)
+Radio cell view: add support for LTE on Android versions that support it
+Radio cell view: display neighboring cells correctly
+Radio cell view: use CellInfo on Android versions that support it
+Radio cell view: eliminate duplicate entries
+Radio cell view: show PSC for UMTS cells
+Radio cell view: display dashes instead of bogus values when data is missing
+Notifications: animate icon while searching for location
+Notifications: show correct TTFF
+Notifications: update content after losing fix
+About screen: show version
+When crashing, write crash log file
+Fix cases in which automatic AGPS download would fail silently (#38)
+Update mobile network type even when no data connection is active (#30)
+Fix screen orientation lock issue on landscape-default devices (#32)
+Do not crash upon receiving location updates with NaN coordinates (#35)
+Do not crash when radio is not connected

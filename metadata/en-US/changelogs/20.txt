@@ -1,0 +1,5 @@
+AGPS data download
+Support for 5 GHz WiFI frequencies (#9)
+Tab navigation in action bar in addition to swiping
+Prevent NPE when returning to main activity
+Improved sizing for sky plot to avoid pushing vies off the screen (#6)
