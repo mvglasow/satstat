@@ -1,6 +1,6 @@
 /*
  * Copyright © 2013–2016 Michael von Glasow.
- * 
+ *
  * This file is part of LSRN Tools.
  *
  * LSRN Tools is free software: you can redistribute it and/or modify
@@ -202,17 +202,19 @@ public class GpsSectionFragment extends Fragment {
 			gpsCoordLayout.setVisibility(View.GONE);
 			gpsLatLayout.setVisibility(View.VISIBLE);
 			gpsLonLayout.setVisibility(View.VISIBLE);
+
 			double dec = location.getLatitude();
 			double deg = (int) dec;
-			double tmp = 60.0 * (dec - deg);
-			double min = (int) Math.abs(tmp);
-			double sec = Math.abs(60.0 * (tmp - min));
+			double tmp = Math.abs(60.0 * (dec - deg));
+			double min = (int) tmp;
+			double sec = 60.0 * (tmp - min);
 			gpsLat.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
+
 			dec = location.getLongitude();
 			deg = (int) dec;
-			tmp = 60.0 * (dec - deg);
-			min = (int) Math.abs(tmp);
-			sec = Math.abs(60.0 * (tmp - min));
+			tmp = Math.abs(60.0 * (dec - deg));
+			min = (int) tmp;
+			sec = 60.0 * (tmp - min);
 			gpsLon.setText(String.format("%.0f%s %.0f' %.1f\"", deg, getString(R.string.unit_degree), min, sec + /*rounding*/ 0.05));
 		} else if (mainActivity.prefCoord == Const.KEY_PREF_COORD_MGRS) {
 			gpsLatLayout.setVisibility(View.GONE);
@@ -285,7 +287,7 @@ public class GpsSectionFragment extends Fragment {
 	/**
 	 * Called by {@link MainActivity} when a sensor's reading changes.
 	 * Rotates sky plot according to bearing.
-	 * 
+	 *
 	 * If {@code TYPE_ORIENTATION} data is available, preference is given to that value, which
 	 * appeared to be more accurate in tests. Otherwise orientation is obtained from the rotation
 	 * vector of the device, based on {@link TYPE_ACCELEROMETER} and {@code TYPE_MAGNETIC_FIELD}
